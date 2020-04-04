@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.mygreen</groupId>
+	<artifactId>sqlmapper</artifactId>
+	<name>SqlMapper</name>
+	<packaging>pom</packaging>
+	<version>0.1</version>
+	<description><![CDATA[ SqlMapper is Java Library for mapping SQL to POJO. ]]></description>
+	
+	<modules>
+		<module>sqlmapper-core</module>
+	</modules>
+	
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/mygreen/sqlmapper/issues</url>
+	</issueManagement>
+
+	<scm>
+		<connection>scm:git:ssh://github.com/mygreen/sqlmapper.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/mygreen/sqlmapper.git</developerConnection>
+		<url>https://github.com/mygreen/sqlmapper</url>
+	</scm>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
+
+	<distributionManagement>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<name>Maven Central Repository</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<organization>
+		<name>mygreen</name>
+		<url>http://mygreen.github.io/sqlmapper/</url>
+	</organization>
+
+	<developers>
+		<developer>
+			<id>mygreen</id>
+			<name>Tatsuo TSUCHIE</name>
+			<url>http://mygreen.github.io/sqlmapper/</url>
+			<roles>
+				<role>developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<properties>
+	</properties>
+
+	<repositories>
+	</repositories>
+
+	<pluginRepositories>
+	</pluginRepositories>
+	
+	<dependencies>
+	</dependencies>
+
+</project>
