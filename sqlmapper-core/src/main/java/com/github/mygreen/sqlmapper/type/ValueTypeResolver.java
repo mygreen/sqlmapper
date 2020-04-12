@@ -1,0 +1,200 @@
+package com.github.mygreen.sqlmapper.type;
+
+import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.support.lob.LobHandler;
+
+import com.github.mygreen.sqlmapper.annotation.Convert;
+import com.github.mygreen.sqlmapper.annotation.Enumerated;
+import com.github.mygreen.sqlmapper.annotation.Temporal;
+import com.github.mygreen.sqlmapper.localization.MessageBuilder;
+import com.github.mygreen.sqlmapper.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.type.enumeration.EnumOrdinalType;
+import com.github.mygreen.sqlmapper.type.enumeration.EnumStringType;
+import com.github.mygreen.sqlmapper.type.lob.LobByteArrayType;
+import com.github.mygreen.sqlmapper.type.lob.LobStringType;
+import com.github.mygreen.sqlmapper.type.standard.SqlDateType;
+import com.github.mygreen.sqlmapper.type.standard.SqlTimeType;
+import com.github.mygreen.sqlmapper.type.standard.SqlTimestampType;
+import com.github.mygreen.sqlmapper.type.standard.UtilDateType;
+
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+
+/**
+ * {@link ValueType} を管理するためのクラス。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class ValueTypeResolver {
+
+    @Getter
+    @Setter
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    @Getter
+    @Setter
+    @Autowired
+    private MessageBuilder messageBuilder;
+
+    @Getter
+    @Setter
+    @Autowired
+    private LobHandler lobHandler;
+
+    /**
+     * 型処理のマップ
+     */
+    private Map<Class<?>, ValueType<?>> typeValueMap = new ConcurrentHashMap<>();
+
+    /**
+     * プロパティメタ情報に対する値の変換処理を取得する。
+     * @param propertyMeta プロパティメタ情報
+     * @return 対応する {@link ValueType}の実装。
+     * @throws ValueTypeNotFoundException 対応する {@link ValueType} が見つからない場合。
+     */
+    public ValueType<?> getValueType(@NonNull PropertyMeta propertyMeta) {
+
+        Optional<Convert> convertAnno = propertyMeta.getAnnotation(Convert.class);
+        if(convertAnno.isPresent()) {
+            return getValueType(propertyMeta, convertAnno.get());
+        }
+
+        final Class<?> propertyType = propertyMeta.getPropertyType();
+
+        if(propertyMeta.isLob()) {
+            return getLobType(propertyMeta);
+        }
+
+        if(typeValueMap.containsKey(propertyType)) {
+            return typeValueMap.get(propertyType);
+        }
+
+        if(propertyType.isEnum()) {
+            return getEnumType(propertyMeta);
+        }
+
+        if(Date.class.isAssignableFrom(propertyType)) {
+            return getUtilDateType(propertyMeta);
+        }
+
+        throw new ValueTypeNotFoundException(propertyMeta, messageBuilder.create("typeValue.notFound")
+                .varWithClass("entityClass", propertyMeta.getDeclaringClass())
+                .var("property", propertyMeta.getName())
+                .varWithClass("propertyType", propertyType)
+                .format());
+
+    }
+
+    /**
+     * アノテーション {@link Convert} から {@link ValueType} を取得する。
+     * @param propertyMeta 対象となるプロパティメタ情報
+     * @param convertAnno 変換規則を指定するアノテーション
+     * @return {@link ValueType}のインスタンス。
+     */
+    protected ValueType<?> getValueType(final PropertyMeta propertyMeta, final Convert convertAnno) {
+
+        if(convertAnno.name().isEmpty()) {
+            return BeanUtils.instantiateClass(convertAnno.converter());
+        } else {
+            return applicationContext.getBean(convertAnno.name(), convertAnno.converter());
+        }
+    }
+
+    /**
+     * ラージオブジェクト用の{@link ValueType} を取得する。
+     * @param propertyMeta 対象となるプロパティメタ情報
+     * @return {@link ValueType}のインスタンス。
+     */
+    protected ValueType<?> getLobType(final PropertyMeta propertyMeta) {
+
+        final Class<?> propertyType = propertyMeta.getPropertyType();
+        if(String.class.isAssignableFrom(propertyType)) {
+            return new LobStringType(lobHandler);
+
+        } else if (byte[].class.isAssignableFrom(propertyType)) {
+            return new LobByteArrayType(lobHandler);
+        }
+
+        throw new ValueTypeNotFoundException(propertyMeta, messageBuilder.create("typeValue.notFoundLob")
+                .varWithClass("entityClass", propertyMeta.getDeclaringClass())
+                .var("property", propertyMeta.getName())
+                .varWithClass("propertyType", propertyType)
+                .format());
+
+    }
+
+    /**
+     * 列挙型用の{@link ValueType} を取得する。
+     * @param propertyMeta 対象となるプロパティメタ情報
+     * @return {@link ValueType}のインスタンス。
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    protected ValueType<?> getEnumType(final PropertyMeta propertyMeta) {
+
+        Optional<Enumerated> enumeratedAnno = propertyMeta.getAnnotation(Enumerated.class);
+        Class<?> propertyType = propertyMeta.getPropertyType();
+
+        if(enumeratedAnno.isPresent()) {
+            final Enumerated.EnumType enumType = enumeratedAnno.get().value();
+            if(enumType == Enumerated.EnumType.ORDINAL) {
+                return new EnumOrdinalType(propertyType, messageBuilder);
+            } else if(enumType == Enumerated.EnumType.STRING) {
+                return new EnumStringType(propertyType, messageBuilder);
+            }
+        }
+
+        // デフォルトの場合
+        return new EnumStringType(propertyType, messageBuilder);
+
+    }
+
+    /**
+     * 時制の型が不明な {@link java.util.Date} の ValueType} を取得する。
+     * @param propertyMeta 対象となるプロパティメタ情報
+     * @return {@link ValueType}のインスタンス。
+     */
+    protected ValueType<?> getUtilDateType(final PropertyMeta propertyMeta) {
+
+        Optional<Temporal> temporalAnno = propertyMeta.getAnnotation(Temporal.class);
+
+        if(temporalAnno.isPresent()) {
+            final Temporal.TemporalType temporalType = temporalAnno.get().value();
+            if(temporalType == Temporal.TemporalType.TIMESTAMP) {
+                return new UtilDateType(new SqlTimestampType());
+            } else if(temporalType == Temporal.TemporalType.DATE) {
+                return new UtilDateType(new SqlDateType());
+
+            } else if(temporalType == Temporal.TemporalType.TIME) {
+                return new UtilDateType(new SqlTimeType());
+
+            }
+        }
+
+        // デフォルトの場合
+        return new UtilDateType(new SqlTimestampType());
+
+    }
+
+
+    /**
+     * {@link ValeType} を登録します。
+     * @param <T> 関連付ける型
+     * @param type 関連付けるクラスタイプ
+     * @param typeValue {@link TypeValue}の実装
+     */
+    public <T> void register(Class<T> type, ValueType<T> typeValue) {
+        this.typeValueMap.put(type, typeValue);
+    }
+
+}

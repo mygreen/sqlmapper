@@ -1,0 +1,79 @@
+package com.github.mygreen.sqlmapper.id;
+
+import java.text.NumberFormat;
+import java.util.List;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
+
+import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
+
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+/**
+ * {@link GenerationType#SEQUENCE}方式で識別子の値を自動生成するIDジェネレータです。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+@RequiredArgsConstructor
+public class SequenceIdGenerator implements IdGenerator {
+
+    /**
+     * サポートしているクラスタイプ
+     */
+    private static final List<Class<?>> SUPPORTED_TYPE_LIST = List.of(
+            long.class, Long.class, int.class, Integer.class, String.class);
+
+    /**
+     * シーケンスをインクリメント処理します
+     */
+    private final DataFieldMaxValueIncrementer incrementer;
+
+    /**
+     * 生成する識別子のタイプ
+     */
+    private final Class<?> requiredType;
+
+    /**
+     * 文字列にマッピングするときのフォーマッター
+     */
+    @Setter
+    private NumberFormat formatter;
+
+    @Override
+    public boolean isSupportedType(Class<?> type) {
+        return SUPPORTED_TYPE_LIST.contains(type);
+    }
+
+    @Override
+    public Class<?>[] getSupportedTypes() {
+        return SUPPORTED_TYPE_LIST.toArray(new Class[SUPPORTED_TYPE_LIST.size()]);
+    }
+
+    @Override
+    public Object generateValue() {
+        if(requiredType == long.class || requiredType == Long.class) {
+            return incrementer.nextLongValue();
+
+        } else if(requiredType == int.class || requiredType == Integer.class) {
+            return incrementer.nextIntValue();
+
+        } else if(requiredType == String.class) {
+            if(formatter == null) {
+                return incrementer.nextStringValue();
+            } else {
+                synchronized (formatter) {
+                    return formatter.format(incrementer.nextLongValue());
+                }
+            }
+
+        }
+
+        throw new DataIntegrityViolationException("not supported java type : " + requiredType.getName());
+
+    }
+
+}

@@ -1,0 +1,32 @@
+package com.github.mygreen.sqlmapper.meta;
+
+import com.github.mygreen.sqlmapper.SqlMapperException;
+
+import lombok.Getter;
+
+/**
+ * エンティティ情報が不正な場合にスローされる例外です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class InvalidEntityException extends SqlMapperException {
+
+    /**
+     * エラー対象のエンティティクラス
+     * @return エラー対象のエンティティクを取得します。
+     */
+    @Getter
+    private final Class<?> entityClass;
+
+    /**
+     * インスタンスを作成する
+     * @param entityClass エラー対象のエンティティクラス
+     * @param message エラーメッセージ
+     */
+    public InvalidEntityException(final Class<?> entityClass, final String message) {
+        super(message);
+        this.entityClass = entityClass;
+    }
+}

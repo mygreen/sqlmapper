@@ -1,0 +1,36 @@
+package com.github.mygreen.sqlmapper.meta;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * カラムのメタ情報です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class ColumnMeta {
+
+    /**
+     * カラム名。
+     */
+    @Getter
+    @Setter
+    private String name;
+
+    /**
+     * 挿入可能かどうか。
+     */
+    @Getter
+    @Setter
+    private boolean insertable = true;
+
+    /**
+     * 更新可能かどうか。
+     */
+    @Getter
+    @Setter
+    private boolean updatable = true;
+
+}
