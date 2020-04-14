@@ -1,8 +1,11 @@
 package com.github.mygreen.sqlmapper;
 
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.mygreen.sqlmapper.dialect.Dialect;
+import com.github.mygreen.sqlmapper.localization.MessageBuilder;
+import com.github.mygreen.sqlmapper.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.naming.NamingRule;
 
 import lombok.Getter;
@@ -19,7 +22,7 @@ public class SqlMapperContext {
 
     @Getter
     @Setter
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Getter
     @Setter
@@ -27,8 +30,21 @@ public class SqlMapperContext {
 
     @Getter
     @Setter
+    private MessageBuilder messageBuilder;
+
+    @Getter
+    @Setter
     private Dialect dialect;
 
-//    @Getter
-//    private TransactionTemplate transactionTemplate;
+    @Getter
+    @Setter
+    private EntityMetaFactory entityMetaFactory;
+
+    /**
+     * 主キーの生成時用のトランザクションテンプレート。
+     *
+     */
+    @Getter
+    @Setter
+    private TransactionTemplate requiresNewTransactionTemplate;
 }
