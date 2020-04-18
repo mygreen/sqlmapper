@@ -36,7 +36,7 @@ public class AutoDelete<T> extends QueryBase<T> {
         this.entity = entity;
         this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());
 
-        // 削除対象の情報の整合性などのチェックを行う
+        // 処理対象の情報の整合性などのチェックを行う
         validateTarget();
     }
 
@@ -69,7 +69,7 @@ public class AutoDelete<T> extends QueryBase<T> {
     }
 
     /**
-     * クエリを実行します
+     * クエリを実行します。
      * @return 削除したレコード件数を返します。
      */
     public int execute() {
