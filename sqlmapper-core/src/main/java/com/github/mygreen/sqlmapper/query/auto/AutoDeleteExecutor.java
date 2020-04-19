@@ -1,5 +1,7 @@
 package com.github.mygreen.sqlmapper.query.auto;
 
+import static com.github.mygreen.sqlmapper.util.QueryUtils.EQ;
+
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -43,7 +45,7 @@ public class AutoDeleteExecutor {
             final String propertyName = propertyMeta.getName();
             final String paramName = "_" + propertyName;
 
-            whereClause.addAndSql(propertyMeta.getColumnMeta().getName() + " = :" + paramName);
+            whereClause.addAndSql(EQ(propertyMeta.getColumnMeta().getName(), ":" + paramName));
 
             Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
             ValueType valueType = query.getContext().getDialect().getValueType(propertyMeta);
@@ -59,7 +61,7 @@ public class AutoDeleteExecutor {
             final String propertyName = propertyMeta.getName();
             final String paramName = "_" + propertyName;
 
-            whereClause.addAndSql(propertyMeta.getColumnMeta().getName() + " = :" + paramName);
+            whereClause.addAndSql(EQ(propertyMeta.getColumnMeta().getName(), ":" + paramName));
 
             Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
             ValueType valueType = query.getContext().getDialect().getValueType(propertyMeta);

@@ -1,6 +1,6 @@
 package com.github.mygreen.sqlmapper.query.auto;
 
-import static com.github.mygreen.sqlmapper.util.QueryUtils.*;
+import static com.github.mygreen.sqlmapper.util.QueryUtils.EQ;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
