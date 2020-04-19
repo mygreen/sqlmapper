@@ -107,8 +107,8 @@ public class AutoInsert<T> extends QueryBase<T> {
 
         AutoInsertExecutor executor = new AutoInsertExecutor(this);
         try {
-            executor.prepared();
-            return executor.insert();
+            executor.prepare();
+            return executor.execute();
 
         } finally {
             completed();

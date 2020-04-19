@@ -1,23 +1,22 @@
 package com.github.mygreen.sqlmapper.query.auto;
 
-import static com.github.mygreen.sqlmapper.util.QueryUtils.EQ;
+import static com.github.mygreen.sqlmapper.util.QueryUtils.*;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
 import com.github.mygreen.sqlmapper.query.SetClause;
 import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
-public class AutoUpdateExecutor {
+public class AutoUpdateExecutor extends QueryExecutorBase {
 
     private final AutoUpdate<?> query;
 
@@ -41,12 +40,19 @@ public class AutoUpdateExecutor {
      */
     private int targetPropertyCount = 0;
 
+    public AutoUpdateExecutor(AutoUpdate<?> query) {
+        super(query.getContext());
+        this.query = query;
+    }
+
     /**
      * 実行の準備を行います
      */
     public void prepare() {
         prepareSetClause();
         prepareWhereClause();
+
+        completed();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -136,6 +142,7 @@ public class AutoUpdateExecutor {
      * @return 更新したレコード件数です。
      */
     public int execute() {
+        assertNotCompleted("execute");
 
         if(targetPropertyCount > 0) {
             log.warn(query.getContext().getMessageBuilder().create("query.skipUpdateWithNoProperty").format());

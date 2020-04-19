@@ -16,13 +16,11 @@ import com.github.mygreen.sqlmapper.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
 import com.github.mygreen.sqlmapper.query.InsertClause;
+import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
 import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
 
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
-public class AutoInsertExecutor {
+public class AutoInsertExecutor extends QueryExecutorBase {
 
     /**
      * バージョンプロパティの初期値
@@ -46,12 +44,22 @@ public class AutoInsertExecutor {
      */
     private List<String> usingIdentityGeneratedColumnNames = new ArrayList<>();
 
+    public AutoInsertExecutor(AutoInsert<?> query) {
+        super(query.getContext());
+        this.query = query;
+    }
 
-    /**
-     * 実行の準備を行います
-     */
+    @Override
+    public void prepare() {
+
+        prepareInsertClause();
+
+        completed();
+
+    }
+
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void prepared() {
+    private void prepareInsertClause() {
 
         for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
 
@@ -99,7 +107,6 @@ public class AutoInsertExecutor {
             valueType.bindValue(propertyValue, paramSource, paramName);
 
         }
-
     }
 
     /**
@@ -119,7 +126,9 @@ public class AutoInsertExecutor {
      * 挿入の実行
      * @return 更新した行数
      */
-    public int insert() {
+    public int execute() {
+
+        assertNotCompleted("execute");
 
         final SqlMapperContext context = query.getContext();
 

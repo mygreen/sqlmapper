@@ -23,7 +23,7 @@ public abstract class QueryBase<T> {
     /**
      * クエリが完了している場合に<code>true</code>です。
      */
-    protected boolean completed;
+    private boolean completed;
 
     /**
      * クエリ実行を完了した状態にします。
