@@ -8,6 +8,8 @@ import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.QueryBase;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 
 public class AutoInsert<T> extends QueryBase<T> {
@@ -15,22 +17,26 @@ public class AutoInsert<T> extends QueryBase<T> {
     /**
      * 挿入対象のエンティティのインスタンス
      */
-    final T entity;
+    @Getter(AccessLevel.PACKAGE)
+    private final T entity;
 
     /**
      * エンティティのメタ情報
      */
-    final EntityMeta entityMeta;
+    @Getter(AccessLevel.PACKAGE)
+    private final EntityMeta entityMeta;
 
     /**
      * 挿入対象とするプロパティ一覧
      */
-    final Set<String> includesProperties = new HashSet<>();
+    @Getter(AccessLevel.PACKAGE)
+    private final Set<String> includesProperties = new HashSet<>();
 
     /**
      * 挿入対象から除外するプロパティ一覧
      */
-    final Set<String> excludesProperties = new HashSet<>();
+    @Getter(AccessLevel.PACKAGE)
+    private final Set<String> excludesProperties = new HashSet<>();
 
     public AutoInsert(@NonNull SqlMapperContext context, @NonNull T entity) {
         super(context);

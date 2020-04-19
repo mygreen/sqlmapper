@@ -7,6 +7,8 @@ import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.QueryBase;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 
 public class AutoDelete<T> extends QueryBase<T> {
@@ -14,22 +16,26 @@ public class AutoDelete<T> extends QueryBase<T> {
     /**
      * 削除対象のエンティティ
      */
-    final T entity;
+    @Getter(AccessLevel.PACKAGE)
+    private final T entity;
 
     /**
      * エンティティ情報
      */
-    final EntityMeta entityMeta;
+    @Getter(AccessLevel.PACKAGE)
+    private final EntityMeta entityMeta;
 
     /**
      * バージョンプロパティを無視して削除するかどうか。
      */
-    boolean ignoreVersion = false;
+    @Getter(AccessLevel.PACKAGE)
+    private boolean ignoreVersion = false;
 
     /**
      * バージョンチェックを行った場合に、更新行数が0行でも{@link OptimisticLockingFailureException}スローしないなら<code>true</code>
      */
-    boolean suppresOptimisticLockException = false;
+    @Getter(AccessLevel.PACKAGE)
+    private boolean suppresOptimisticLockException = false;
 
     public AutoDelete(@NonNull SqlMapperContext context, @NonNull T entity) {
         super(context);

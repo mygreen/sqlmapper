@@ -34,19 +34,18 @@ public class AutoDeleteExecutor {
     /**
      * 実行の準備を行います
      */
-
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void prepare() {
 
         // 主キーを条件分として組み立てます
-        for(PropertyMeta propertyMeta : query.entityMeta.getIdPropertyMetaList()) {
+        for(PropertyMeta propertyMeta : query.getEntityMeta().getIdPropertyMetaList()) {
 
             final String propertyName = propertyMeta.getName();
             final String paramName = "_" + propertyName;
 
             whereClause.addAndSql(propertyMeta.getColumnMeta().getName() + " = :" + paramName);
 
-            Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.entity);
+            Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
             ValueType valueType = query.getContext().getDialect().getValueType(propertyMeta);
             valueType.bindValue(propertyValue, paramSource, paramName);
 
@@ -55,14 +54,14 @@ public class AutoDeleteExecutor {
 
         // 楽観的排他チェックを行うときは、バージョンキーも条件に加えます。
         if(isOptimisticLock()) {
-            final PropertyMeta propertyMeta = query.entityMeta.getVersionPropertyMeta().get();
+            final PropertyMeta propertyMeta = query.getEntityMeta().getVersionPropertyMeta().get();
 
             final String propertyName = propertyMeta.getName();
             final String paramName = "_" + propertyName;
 
             whereClause.addAndSql(propertyMeta.getColumnMeta().getName() + " = :" + paramName);
 
-            Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.entity);
+            Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
             ValueType valueType = query.getContext().getDialect().getValueType(propertyMeta);
             valueType.bindValue(propertyValue, paramSource, paramName);
 
@@ -75,7 +74,7 @@ public class AutoDeleteExecutor {
      * @return 楽観的同時実行制御を行っている場合は<code>true</code>
      */
     private boolean isOptimisticLock() {
-        return !query.ignoreVersion && query.entityMeta.hasVersionPropertyMeta();
+        return !query.isIgnoreVersion() && query.getEntityMeta().hasVersionPropertyMeta();
     }
 
     /**
@@ -85,7 +84,7 @@ public class AutoDeleteExecutor {
     public int execute() {
 
         final String sql = "DELETE FROM "
-                + query.entityMeta.getTableMeta().getFullName()
+                + query.getEntityMeta().getTableMeta().getFullName()
                 + whereClause.toSql();
 
         final int rows = query.getContext().getNamedParameterJdbcTemplate().update(sql, paramSource);
@@ -102,9 +101,9 @@ public class AutoDeleteExecutor {
      * @param rows 更新したレコード数
      */
     private void validateRows(final int rows) {
-        if(!query.suppresOptimisticLockException && rows == 0) {
+        if(!query.isSuppresOptimisticLockException() && rows == 0) {
             throw new OptimisticLockingFailureException(query.getContext().getMessageBuilder().create("query.alreadyUpdate")
-                    .var("entity", query.entity)
+                    .var("entity", query.getEntity())
                     .format());
         }
     }

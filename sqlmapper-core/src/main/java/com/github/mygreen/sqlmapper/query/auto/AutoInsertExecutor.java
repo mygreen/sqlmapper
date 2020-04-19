@@ -53,18 +53,18 @@ public class AutoInsertExecutor {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public void prepared() {
 
-        for(PropertyMeta propertyMeta : query.entityMeta.getAllColumnPropertyMeta()) {
+        for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
 
             final String propertyName = propertyMeta.getName();
             if(!propertyMeta.getColumnMeta().isInsertable()) {
                 continue;
             }
 
-            if(query.excludesProperties.contains(propertyName)) {
+            if(query.getExcludesProperties().contains(propertyName)) {
                 continue;
             }
 
-            if(!query.includesProperties.isEmpty() && !query.includesProperties.contains(propertyName)) {
+            if(!query.getIncludesProperties().isEmpty() && !query.getIncludesProperties().contains(propertyName)) {
                 continue;
             }
 
@@ -73,7 +73,7 @@ public class AutoInsertExecutor {
             // IN句の組み立て
             this.insertClause.addSql(propertyMeta.getColumnMeta().getName(), ":" + paramName);
 
-            Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.entity);
+            Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
 
             Optional<GenerationType> generationType = propertyMeta.getIdGenerationType();
             if(propertyMeta.isId() && generationType.isPresent()) {
@@ -83,14 +83,14 @@ public class AutoInsertExecutor {
                     propertyValue = null;
                 } else {
                     propertyValue = getNextVal(propertyMeta.getIdGenerator().get());
-                    PropertyValueInvoker.setPropertyValue(propertyMeta, query.entity, propertyValue);
+                    PropertyValueInvoker.setPropertyValue(propertyMeta, query.getEntity(), propertyValue);
                 }
             }
 
             if(propertyValue == null && propertyMeta.isVersion()) {
                 // バージョンキーが設定されていない場合、初期値設定する
                 propertyValue = NumberConvertUtils.convertNumber(propertyMeta.getPropertyType(), INITIAL_VERSION);
-                PropertyValueInvoker.setPropertyValue(propertyMeta, query.entity, propertyValue);
+                PropertyValueInvoker.setPropertyValue(propertyMeta, query.getEntity(), propertyValue);
 
             }
 
@@ -124,7 +124,7 @@ public class AutoInsertExecutor {
         final SqlMapperContext context = query.getContext();
 
         final String sql = "INSERT INTO "
-                + query.entityMeta.getTableMeta().getFullName()
+                + query.getEntityMeta().getTableMeta().getFullName()
                 + insertClause.toIntoSql()
                 + insertClause.toValuesSql();
 
@@ -144,11 +144,11 @@ public class AutoInsertExecutor {
                     continue;
                 }
 
-                PropertyMeta propertyMeta = query.entityMeta.getColumnPropertyMeta(entry.getKey())
+                PropertyMeta propertyMeta = query.getEntityMeta().getColumnPropertyMeta(entry.getKey())
                             .orElseThrow();
                 IdentityIdGenerator idGenerator = (IdentityIdGenerator) propertyMeta.getIdGenerator().get();
                 Object propertyValue = idGenerator.generateValue((Number)entry.getValue());
-                PropertyValueInvoker.setPropertyValue(propertyMeta, query.entity, propertyValue);
+                PropertyValueInvoker.setPropertyValue(propertyMeta, query.getEntity(), propertyValue);
 
             }
         }
