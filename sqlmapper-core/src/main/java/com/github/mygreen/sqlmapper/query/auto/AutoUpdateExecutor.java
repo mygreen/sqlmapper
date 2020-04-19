@@ -45,9 +45,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
         this.query = query;
     }
 
-    /**
-     * 実行の準備を行います
-     */
+    @Override
     public void prepare() {
         prepareSetClause();
         prepareWhereClause();
