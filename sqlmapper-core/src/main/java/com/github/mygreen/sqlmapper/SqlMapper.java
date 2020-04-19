@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper;
 
 import com.github.mygreen.sqlmapper.query.auto.AutoDelete;
 import com.github.mygreen.sqlmapper.query.auto.AutoInsert;
+import com.github.mygreen.sqlmapper.query.auto.AutoUpdate;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -37,5 +38,15 @@ public class SqlMapper {
      */
     public <T> AutoDelete<T> delete(@NonNull T entity){
         return new AutoDelete<T>(context, entity);
+    }
+
+    /**
+     * エンティティを更新します。
+     * @param <T> エンティティタイプ
+     * @param entity エンティティのインスタンス
+     * @return 更新用のクエリ
+     */
+    public <T> AutoUpdate<T> update(@NonNull T entity) {
+        return new AutoUpdate<T>(context, entity);
     }
 }
