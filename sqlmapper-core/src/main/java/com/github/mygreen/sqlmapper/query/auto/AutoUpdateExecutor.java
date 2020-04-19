@@ -97,7 +97,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
             final String paramName = "_" + propertyName;
             setClause.addSql(propertyMeta.getColumnMeta().getName(), ":" + paramName);
 
-            ValueType valueType = query.getContext().getDialect().getValueType(propertyMeta);
+            ValueType valueType = context.getDialect().getValueType(propertyMeta);
             valueType.bindValue(propertyValue, paramSource, paramName);
 
         }
@@ -118,7 +118,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
             whereClause.addAndSql(EQ(propertyMeta.getColumnMeta().getName(), ":" + paramName));
 
             final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
-            ValueType valueType = query.getContext().getDialect().getValueType(propertyMeta);
+            ValueType valueType = context.getDialect().getValueType(propertyMeta);
             valueType.bindValue(propertyValue, paramSource, paramName);
         }
 
@@ -129,7 +129,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
             whereClause.addAndSql(EQ(propertyMeta.getColumnMeta().getName(), ":" + paramName));
 
             final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
-            ValueType valueType = query.getContext().getDialect().getValueType(propertyMeta);
+            ValueType valueType = context.getDialect().getValueType(propertyMeta);
             valueType.bindValue(propertyValue, paramSource, paramName);
 
         }
@@ -143,7 +143,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
         assertNotCompleted("execute");
 
         if(targetPropertyCount > 0) {
-            log.warn(query.getContext().getMessageBuilder().create("query.skipUpdateWithNoProperty").format());
+            log.warn(context.getMessageBuilder().create("query.skipUpdateWithNoProperty").format());
             return 0;
         }
 
@@ -152,7 +152,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
                 + setClause.toSql()
                 + whereClause.toSql();
 
-        final int rows = query.getContext().getNamedParameterJdbcTemplate().update(sql, paramSource);
+        final int rows = context.getNamedParameterJdbcTemplate().update(sql, paramSource);
         if(isOptimisticLock()) {
             validateRows(rows);
         }
@@ -194,7 +194,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
      */
     private void validateRows(final int rows) {
         if(!query.isSuppresOptimisticLockException() && rows == 0) {
-            throw new OptimisticLockingFailureException(query.getContext().getMessageBuilder().create("query.alreadyUpdate")
+            throw new OptimisticLockingFailureException(context.getMessageBuilder().create("query.alreadyUpdate")
                     .var("entity", query.getEntity())
                     .format());
         }

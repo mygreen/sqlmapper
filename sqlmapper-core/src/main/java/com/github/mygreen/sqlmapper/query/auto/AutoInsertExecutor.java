@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import com.github.mygreen.sqlmapper.SqlMapperContext;
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.id.IdGenerator;
 import com.github.mygreen.sqlmapper.id.IdentityIdGenerator;
@@ -103,7 +102,7 @@ public class AutoInsertExecutor extends QueryExecutorBase {
             }
 
             // クエリのパラメータの組み立て
-            ValueType valueType = query.getContext().getDialect().getValueType(propertyMeta);
+            ValueType valueType = context.getDialect().getValueType(propertyMeta);
             valueType.bindValue(propertyValue, paramSource, paramName);
 
         }
@@ -117,7 +116,7 @@ public class AutoInsertExecutor extends QueryExecutorBase {
     private Object getNextVal(final IdGenerator generator) {
 
         // トランザクションは別にする。
-        return query.getContext().getRequiresNewTransactionTemplate().execute(action -> {
+        return context.getRequiresNewTransactionTemplate().execute(action -> {
             return generator.generateValue();
         });
     }
@@ -127,10 +126,7 @@ public class AutoInsertExecutor extends QueryExecutorBase {
      * @return 更新した行数
      */
     public int execute() {
-
         assertNotCompleted("execute");
-
-        final SqlMapperContext context = query.getContext();
 
         final String sql = "INSERT INTO "
                 + query.getEntityMeta().getTableMeta().getFullName()
