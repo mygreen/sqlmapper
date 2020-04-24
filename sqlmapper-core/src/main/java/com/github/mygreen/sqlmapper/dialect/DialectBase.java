@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.dialect;
 
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.type.ValueType;
 
 /**
@@ -36,6 +37,16 @@ public abstract class DialectBase implements Dialect {
     @Override
     public String getHintComment(final String hint) {
         return "";
+    }
+
+    @Override
+    public boolean isSupportedSelectForUpdate(final SelectForUpdateType type) {
+        return type == SelectForUpdateType.NORMAL;
+    }
+
+    @Override
+    public String getForUpdateSql(final SelectForUpdateType type, final int waitSeconds) {
+        return " FOR UPDATE";
     }
 
 }

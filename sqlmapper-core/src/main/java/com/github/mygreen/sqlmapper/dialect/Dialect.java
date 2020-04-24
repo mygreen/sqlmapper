@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer
 
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.type.ValueType;
 
 /**
@@ -76,4 +77,21 @@ public interface Dialect {
      * @return LIMIT用SQL。
      */
     String convertLimitSql(String sql, int offset, int limit);
+
+    /**
+     * SELECT文で<code>FOR UPDATE</code>をサポートしていれば<code>true</code>を返します。
+     *
+     * @param type SELECT ～ FOR UPDATEのタイプ
+     * @return SELECT文で<code>FOR UPDATE</code>をサポートしていれば<code>true</code>
+     */
+    boolean isSupportedSelectForUpdate(SelectForUpdateType type);
+
+    /**
+     * SELECT文に付加する<code>FOR UPDATE NOWAIT</code>相当のSQLを返します。
+     *
+     * @param type SELECT ～ FOR UPDATEのタイプ
+     * @param waitSeconds <code>type</code>に{@link SelectForUpdateType#WAIT} が指定された場合の待機時間(秒単位)
+     * @return SELECT文に付加する<code>FOR UPDATE</code>句のSQL
+     */
+    String getForUpdateSql(SelectForUpdateType type, int waitSeconds);
 }

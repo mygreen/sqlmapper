@@ -6,6 +6,7 @@ import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer
 import org.springframework.jdbc.support.incrementer.OracleSequenceMaxValueIncrementer;
 
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
 
 public class OracleDialect extends DialectBase {
 
@@ -66,6 +67,32 @@ public class OracleDialect extends DialectBase {
         if (isForUpdate) {
             buf.append(" for update");
         }
+        return buf.toString();
+    }
+
+    @Override
+    public boolean isSupportedSelectForUpdate(final SelectForUpdateType type) {
+        // 全てのタイプをサポートする
+        return true;
+    }
+
+    @Override
+    public String getForUpdateSql(final SelectForUpdateType type, final int waitSeconds) {
+
+        StringBuilder buf = new StringBuilder(20)
+                .append(" FOR UPDATE");
+
+        switch(type) {
+            case NORMAL:
+                break;
+            case NOWAIT:
+                buf.append(" NOWAIT");
+                break;
+            case WAIT:
+                buf.append(" WAIT ").append(waitSeconds);
+                break;
+        }
+
         return buf.toString();
     }
 }

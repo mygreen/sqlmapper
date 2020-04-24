@@ -55,6 +55,16 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
     private final OrderByClause orderByClause = new OrderByClause();
 
     /**
+     * for update句です。
+     */
+    private String forUpdateClause;
+
+    /**
+     * 実行するSQLです
+     */
+    private String executedSql;
+
+    /**
      * クエリのパラメータ
      */
     private final MapSqlParameterSource paramSource = new MapSqlParameterSource();
@@ -81,6 +91,9 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
         prepareIdVersion();
         prepareCondition();
         prepareOrderBy();
+        prepareForUpdate();
+
+        prepareSql();
 
         completed();
     }
@@ -197,65 +210,31 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
 
     }
 
-    public long getCount() {
-        assertNotCompleted("getCount");
+    /**
+     * FOR UPDATE句の準備をします。
+     */
+    private void prepareForUpdate() {
 
-        final String sql = buildSql();
-        return context.getNamedParameterJdbcTemplate().queryForObject(sql, paramSource, Long.class);
-
-
-    }
-
-    public T getSingleResult() {
-        assertNotCompleted("getSingleResult");
-
-        final String sql = buildSql();
-
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
-        return context.getNamedParameterJdbcTemplate().queryForObject(sql, paramSource, rowMapper);
-    }
-
-    public Optional<T> getOptionalResult() {
-        assertNotCompleted("getOptionalResult");
-
-        final String sql = buildSql();
-
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
-        final List<T> ret = context.getNamedParameterJdbcTemplate().query(sql, paramSource, rowMapper);
-        if(ret.isEmpty()) {
-            return Optional.empty();
-        } else {
-            return Optional.of(ret.get(0));
+        if(query.getForUpdateType() == null) {
+            this.forUpdateClause = "";
+            return;
         }
-    }
 
-    public List<T> getResultList() {
-        assertNotCompleted("getResultList");
+        // LIMIT句を指定していないかのチェック
+        if(query.getLimit() > 0 || query.getOffset() > 0) {
+            throw new IllegalOperateException(context.getMessageBuilder().create("query.notSupportPaginationWithForUpdate")
+                    .format());
+        }
 
-        final String sql = buildSql();
-
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
-        return context.getNamedParameterJdbcTemplate().query(sql, paramSource, rowMapper);
-    }
-
-    public <R> R iterate(IterationCallback<T, R> callback) {
-
-        assertNotCompleted("iterate");
-
-        final String sql = buildSql();
-
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
-        ResultSetExtractor<R> extractor = new EntityIterationResultSetExtractor<T,R>(rowMapper, callback);
-
-        return context.getNamedParameterJdbcTemplate().query(sql, paramSource, extractor);
+        final Dialect dialect = context.getDialect();
+        this.forUpdateClause = dialect.getForUpdateSql(query.getForUpdateType(), query.getForUpdateWaitSeconds());
 
     }
 
     /**
-     * クエリの組み立て
-     * @return クエリ
+     * 実行するSQLの組み立て
      */
-    private String buildSql() {
+    private void prepareSql() {
 
         final Dialect dialect = context.getDialect();
 
@@ -272,13 +251,60 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
                 + fromClause.toSql()
                 + whereClause.toSql()
                 + orderByClause.toSql()
-                ;
+                + forUpdateClause;
 
         if(query.getLimit() > 0 || query.getLimit() == 0 && query.getOffset() > 0) {
             sql = dialect.convertLimitSql(sql, query.getOffset(), query.getLimit());
         }
 
-        return sql;
+        this.executedSql = sql;
 
     }
+
+
+    public long getCount() {
+        assertNotCompleted("getCount");
+
+        return context.getNamedParameterJdbcTemplate().queryForObject(executedSql, paramSource, Long.class);
+
+
+    }
+
+    public T getSingleResult() {
+        assertNotCompleted("getSingleResult");
+
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
+        return context.getNamedParameterJdbcTemplate().queryForObject(executedSql, paramSource, rowMapper);
+    }
+
+    public Optional<T> getOptionalResult() {
+        assertNotCompleted("getOptionalResult");
+
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
+        final List<T> ret = context.getNamedParameterJdbcTemplate().query(executedSql, paramSource, rowMapper);
+        if(ret.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(ret.get(0));
+        }
+    }
+
+    public List<T> getResultList() {
+        assertNotCompleted("getResultList");
+
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
+        return context.getNamedParameterJdbcTemplate().query(executedSql, paramSource, rowMapper);
+    }
+
+    public <R> R iterate(IterationCallback<T, R> callback) {
+
+        assertNotCompleted("iterate");
+
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
+        ResultSetExtractor<R> extractor = new EntityIterationResultSetExtractor<T,R>(rowMapper, callback);
+
+        return context.getNamedParameterJdbcTemplate().query(executedSql, paramSource, extractor);
+
+    }
+
 }

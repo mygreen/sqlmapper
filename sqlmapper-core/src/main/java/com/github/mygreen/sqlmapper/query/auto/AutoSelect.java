@@ -8,11 +8,13 @@ import java.util.Set;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.github.mygreen.sqlmapper.SqlMapperContext;
+import com.github.mygreen.sqlmapper.dialect.Dialect;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.IterationCallback;
 import com.github.mygreen.sqlmapper.query.QueryBase;
+import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.where.Where;
 
 import lombok.AccessLevel;
@@ -80,6 +82,18 @@ public class AutoSelect<T> extends QueryBase<T> {
      */
     @Getter(AccessLevel.PACKAGE)
     private Object versionPropertyValue;
+
+    /**
+     * SELECT ～ FOR UPDATEのタイプです。
+     */
+    @Getter(AccessLevel.PACKAGE)
+    private SelectForUpdateType forUpdateType;
+
+    /**
+     * SELECT ～ FOR UPDATEでの待機時間 (秒単位) です。
+     */
+    @Getter(AccessLevel.PACKAGE)
+    private int forUpdateWaitSeconds = 0;
 
     /**
      * {@link AutoSelect}を作成します。
@@ -196,7 +210,7 @@ public class AutoSelect<T> extends QueryBase<T> {
     }
 
     /**
-     * where句の条件にIdプロパティ(主キー)を指定します。
+     * WHERE句の条件にIdプロパティ(主キー)を指定します。
      *
      * @param idPropertyValues IDプロパティの値。エンティティに定義している順で指定する必要があります。
      * @return 自身のインスタンス。
@@ -219,7 +233,7 @@ public class AutoSelect<T> extends QueryBase<T> {
     }
 
     /**
-     * where句の条件にバージョンプロパティを指定します。
+     * WHERE句の条件にバージョンプロパティを指定します。
      *
      * @param versionPropertyValue バージョンプロパティの値。
      * @return 自身のインスタンス
@@ -235,6 +249,64 @@ public class AutoSelect<T> extends QueryBase<T> {
 
         this.versionPropertyValue = versionPropertyValue;
 
+        return this;
+    }
+
+    /**
+     * {@literal FOR UPDATE} を追加します。
+     * @return このインスタンス自身。
+     * @throws IllegalOperateException DBMSがこの操作をサポートしていない場合にスローされます。
+     */
+    public AutoSelect<T> forUpdate() {
+        final Dialect dialect = context.getDialect();
+        if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NORMAL)) {
+            throw new IllegalOperateException(context.getMessageBuilder().create("query.notSupportSelectForUpdate")
+                    .varWithClass("entityType", baseClass)
+                    .var("dialectName", dialect.getName())
+                    .format());
+        }
+
+        this.forUpdateType = SelectForUpdateType.NORMAL;
+        return this;
+    }
+
+    /**
+     * {@literal FOR UPDATE NOWAIT} を追加します。
+     * @return このインスタンス自身。
+     * @throws IllegalOperateException DBMSがこの操作をサポートしていない場合にスローされます。
+     */
+    public AutoSelect<T> forUpdateNoWait() {
+
+        final Dialect dialect = context.getDialect();
+        if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NOWAIT)) {
+            throw new IllegalOperateException(context.getMessageBuilder().create("query.notSupportSelectForUpdateNowait")
+                    .varWithClass("entityType", baseClass)
+                    .var("dialectName", dialect.getName())
+                    .format());
+        }
+
+        this.forUpdateType = SelectForUpdateType.NOWAIT;
+        return this;
+    }
+
+    /**
+     * {@literal FOR UPDATE WAIT} を追加します。
+     * @param seconds  ロックを獲得できるまでの最大待機時間(秒単位)
+     * @return このインスタンス自身。
+     * @throws IllegalOperateException DBMSがこの操作をサポートしていない場合にスローされます。
+     */
+    public AutoSelect<T> forUpdateWait(final int seconds) {
+
+        final Dialect dialect = context.getDialect();
+        if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.WAIT)) {
+            throw new IllegalOperateException(context.getMessageBuilder().create("query.notSupportSelectForUpdateWait")
+                    .varWithClass("entityType", baseClass)
+                    .var("dialectName", dialect.getName())
+                    .format());
+        }
+
+        this.forUpdateType = SelectForUpdateType.WAIT;
+        this.forUpdateWaitSeconds = seconds;
         return this;
     }
 
