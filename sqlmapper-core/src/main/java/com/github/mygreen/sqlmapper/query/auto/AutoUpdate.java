@@ -191,7 +191,7 @@ public class AutoUpdate<T> extends QueryBase<T> {
 
     /**
      * beforeから変更のあったプロパティだけを更新対象とします。
-     * <p>引数 {@code beforeStates} のサイズが {@code 0} のときは何もしません。
+     * <p>引数 {@literal beforeStates} のサイズが {@literal 0} のときは何もしません。
      * @param beforeStates 変更前の状態を持つマップ。（key=プロパティ名、value=プロパティ値）
      * @return このインスタンス自身。
      */

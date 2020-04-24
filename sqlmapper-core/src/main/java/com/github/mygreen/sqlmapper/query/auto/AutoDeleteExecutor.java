@@ -1,7 +1,5 @@
 package com.github.mygreen.sqlmapper.query.auto;
 
-import static com.github.mygreen.sqlmapper.util.QueryUtils.*;
-
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -9,7 +7,9 @@ import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
 import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
 import com.github.mygreen.sqlmapper.query.WhereClause;
-import com.github.mygreen.sqlmapper.type.ValueType;
+import com.github.mygreen.sqlmapper.where.SimpleWhere;
+import com.github.mygreen.sqlmapper.where.WhereVisitor;
+import com.github.mygreen.sqlmapper.where.WhereVisitorParamContext;
 
 /**
  *
@@ -27,9 +27,19 @@ public class AutoDeleteExecutor<T> extends QueryExecutorBase {
     private final WhereClause whereClause = new WhereClause();
 
     /**
+     * 実行するSQLです
+     */
+    private String executedSql;
+
+    /**
      * クエリのパラメータ
      */
     private final MapSqlParameterSource paramSource = new MapSqlParameterSource();
+
+    /**
+     * クエリ条件のパラメータに関する情報
+     */
+    private final WhereVisitorParamContext paramContext = new WhereVisitorParamContext(paramSource);
 
     public AutoDeleteExecutor(AutoDelete<T> query) {
         super(query.getContext());
@@ -40,6 +50,7 @@ public class AutoDeleteExecutor<T> extends QueryExecutorBase {
     public void prepare() {
 
         prepareCondition();
+        prepareSql();
 
         completed();
 
@@ -48,37 +59,39 @@ public class AutoDeleteExecutor<T> extends QueryExecutorBase {
     /**
      * 条件文の組み立てを行います
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     private void prepareCondition() {
+
+        final SimpleWhere where = new SimpleWhere();
+
         // 主キーを条件分として組み立てます
         for(PropertyMeta propertyMeta : query.getEntityMeta().getIdPropertyMetaList()) {
-
-            final String propertyName = propertyMeta.getName();
-            final String paramName = "_" + propertyName;
-
-            whereClause.addAndSql(EQ(propertyMeta.getColumnMeta().getName(), ":" + paramName));
-
             Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
-            ValueType valueType = context.getDialect().getValueType(propertyMeta);
-            valueType.bindValue(propertyValue, paramSource, paramName);
-
-
+            where.eq(propertyMeta.getName(), propertyValue);
         }
 
         // 楽観的排他チェックを行うときは、バージョンキーも条件に加えます。
         if(isOptimisticLock()) {
             final PropertyMeta propertyMeta = query.getEntityMeta().getVersionPropertyMeta().get();
-
-            final String propertyName = propertyMeta.getName();
-            final String paramName = "_" + propertyName;
-
-            whereClause.addAndSql(EQ(propertyMeta.getColumnMeta().getName(), ":" + paramName));
-
             Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
-            ValueType valueType = context.getDialect().getValueType(propertyMeta);
-            valueType.bindValue(propertyValue, paramSource, paramName);
-
+            where.eq(propertyMeta.getName(), propertyValue);
         }
+
+        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta(), paramContext);
+        where.accept(visitor);
+
+        this.whereClause.addSql(visitor.getCriteria());
+    }
+
+    /**
+     * 実行するSQLを組み立てます。
+     */
+    public void prepareSql() {
+
+        final String sql = "DELETE FROM "
+                + query.getEntityMeta().getTableMeta().getFullName()
+                + whereClause.toSql();
+
+        this.executedSql = sql;
     }
 
     /**
@@ -97,11 +110,7 @@ public class AutoDeleteExecutor<T> extends QueryExecutorBase {
 
         assertNotCompleted("execute");
 
-        final String sql = "DELETE FROM "
-                + query.getEntityMeta().getTableMeta().getFullName()
-                + whereClause.toSql();
-
-        final int rows = context.getNamedParameterJdbcTemplate().update(sql, paramSource);
+        final int rows = context.getNamedParameterJdbcTemplate().update(executedSql, paramSource);
         if(isOptimisticLock()) {
             validateRows(rows);
         }

@@ -1,7 +1,5 @@
 package com.github.mygreen.sqlmapper.query.auto;
 
-import static com.github.mygreen.sqlmapper.util.QueryUtils.*;
-
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -12,6 +10,9 @@ import com.github.mygreen.sqlmapper.query.SetClause;
 import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
+import com.github.mygreen.sqlmapper.where.SimpleWhere;
+import com.github.mygreen.sqlmapper.where.WhereVisitor;
+import com.github.mygreen.sqlmapper.where.WhereVisitorParamContext;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,9 +32,19 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
     private final WhereClause whereClause = new WhereClause();
 
     /**
+     * 実行するSQLです
+     */
+    private String executedSql;
+
+    /**
      * クエリのパラメータ
      */
     private final MapSqlParameterSource paramSource = new MapSqlParameterSource();
+
+    /**
+     * クエリ条件のパラメータに関する情報
+     */
+    private final WhereVisitorParamContext paramContext = new WhereVisitorParamContext(paramSource);
 
     /**
      * 更新対象のプロパティの個数
@@ -48,7 +59,9 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
     @Override
     public void prepare() {
         prepareSetClause();
-        prepareWhereClause();
+        prepareCondition();
+
+        prepareSql();
 
         completed();
     }
@@ -110,29 +123,40 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
         }
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private void prepareWhereClause() {
+    private void prepareCondition() {
+
+        final SimpleWhere where = new SimpleWhere();
+
         // WHERE句の準備 - 主キー
         for(PropertyMeta propertyMeta : query.getEntityMeta().getIdPropertyMetaList()) {
-            final String paramName = "_" + propertyMeta.getName();
-            whereClause.addAndSql(EQ(propertyMeta.getColumnMeta().getName(), ":" + paramName));
-
             final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
-            ValueType valueType = context.getDialect().getValueType(propertyMeta);
-            valueType.bindValue(propertyValue, paramSource, paramName);
+            where.eq(propertyMeta.getName(), propertyValue);
         }
 
         // WHERE句の準備 - バージョンキー
         if(!query.isIncludeVersion() && query.getEntityMeta().hasVersionPropertyMeta()) {
             final PropertyMeta propertyMeta = query.getEntityMeta().getVersionPropertyMeta().get();
-            final String paramName = "_" + propertyMeta.getName();
-            whereClause.addAndSql(EQ(propertyMeta.getColumnMeta().getName(), ":" + paramName));
 
             final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
-            ValueType valueType = context.getDialect().getValueType(propertyMeta);
-            valueType.bindValue(propertyValue, paramSource, paramName);
-
+            where.eq(propertyMeta.getName(), propertyValue);
         }
+
+        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta(), paramContext);
+        where.accept(visitor);
+
+        this.whereClause.addSql(visitor.getCriteria());
+
+    }
+
+    /**
+     * 実行するSQLを組み立てます
+     */
+    private void prepareSql() {
+        final String sql = "UPDATE "
+                + setClause.toSql()
+                + whereClause.toSql();
+
+        this.executedSql = sql;
     }
 
     /**
@@ -147,12 +171,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
             return 0;
         }
 
-
-        final String sql = "UPDATE "
-                + setClause.toSql()
-                + whereClause.toSql();
-
-        final int rows = context.getNamedParameterJdbcTemplate().update(sql, paramSource);
+        final int rows = context.getNamedParameterJdbcTemplate().update(executedSql, paramSource);
         if(isOptimisticLock()) {
             validateRows(rows);
         }
