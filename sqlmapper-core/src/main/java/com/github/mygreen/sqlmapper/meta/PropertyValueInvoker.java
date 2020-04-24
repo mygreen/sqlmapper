@@ -20,7 +20,7 @@ public class PropertyValueInvoker {
      * @param propertyMeta 取得対象のプロパティ情報
      * @param entityObject 親のオブジェクト
      * @param propertyValue 設定するプロパティの値
-     * @throw {@link NullPointerException} 引数{@code entityObject}がnullの場合
+     * @throw {@link NullPointerException} 引数{@literal entityObject}がnullの場合
      */
     public static void setPropertyValue(final @NonNull PropertyMeta propertyMeta,
             final @NonNull Object entityObject, final Object propertyValue) {

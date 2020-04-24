@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper;
 
 import com.github.mygreen.sqlmapper.query.auto.AutoDelete;
 import com.github.mygreen.sqlmapper.query.auto.AutoInsert;
+import com.github.mygreen.sqlmapper.query.auto.AutoSelect;
 import com.github.mygreen.sqlmapper.query.auto.AutoUpdate;
 
 import lombok.Getter;
@@ -19,6 +20,16 @@ public class SqlMapper {
 
     @Getter
     private final SqlMapperContext context;
+
+    /**
+     * テーブルを参照します。
+     * @param <T> エンティティタイプ
+     * @param baseClass エンティティのクラス
+     * @return 参照用のクエリ
+     */
+    public <T> AutoSelect<T> selectFrom(@NonNull Class<T> baseClass) {
+        return new AutoSelect<T>(context, baseClass);
+    }
 
     /**
      * エンティティを挿入します

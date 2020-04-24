@@ -104,7 +104,7 @@ public class EntityMeta {
     /**
      * プロパティメタデータがあるかどうかを返します。
      * @param propertyName プロパティ名
-     * @return {@code true}のときプロパティメタデータがあります。
+     * @return {@literal true}のときプロパティメタデータがあります。
      */
     public boolean hasPropertyMeta(String propertyName) {
         return propertyMetaMap.containsKey(propertyName);
@@ -140,7 +140,7 @@ public class EntityMeta {
 
     /**
      * バージョンを表すプロパティメタデータを持つかどうか。
-     * @return バージョンを表すプロパティメタデータがあれば {@code true} を返します。
+     * @return バージョンを表すプロパティメタデータがあれば {@literal true} を返します。
      */
     public boolean hasVersionPropertyMeta() {
         return versionPropertyMeta.isPresent();

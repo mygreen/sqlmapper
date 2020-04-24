@@ -28,4 +28,14 @@ public abstract class DialectBase implements Dialect {
         return propertyMeta.getValueType();
     }
 
+    @Override
+    public String getCountSql() {
+        return "count(*)";
+    }
+
+    @Override
+    public String getHintComment(final String hint) {
+        return "";
+    }
+
 }

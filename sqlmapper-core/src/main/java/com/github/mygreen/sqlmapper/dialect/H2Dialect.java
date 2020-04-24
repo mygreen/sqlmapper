@@ -19,7 +19,7 @@ public class H2Dialect extends DialectBase {
     /**
      * {@inheritDoc}
      *
-     * @return {@code h2} を返します。
+     * @return {@literal h2} を返します。
      */
     @Override
     public String getName() {
@@ -43,6 +43,25 @@ public class H2Dialect extends DialectBase {
     @Override
     public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
         return new H2SequenceMaxValueIncrementer(dataSource, sequenceName);
+    }
+
+    @Override
+    public String convertLimitSql(String sql, int offset, int limit) {
+
+        StringBuilder buf = new StringBuilder(sql.length() + 20);
+        buf.append(sql);
+        if (offset > 0) {
+            buf.append(" limit ");
+            buf.append(limit);
+            buf.append(" offset ");
+            buf.append(offset);
+        } else {
+            buf.append(" limit ");
+            buf.append(limit);
+        }
+
+        return buf.toString();
+
     }
 
 

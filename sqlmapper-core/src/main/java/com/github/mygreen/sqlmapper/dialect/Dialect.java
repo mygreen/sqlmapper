@@ -52,4 +52,28 @@ public interface Dialect {
      * @return 値タイプ
      */
     ValueType<?> getValueType(PropertyMeta propertyMeta);
+
+    /**
+     * 件数取得用のSQLのSELECT句を取得します。
+     * @return SELECT句
+     */
+    String getCountSql();
+
+    /**
+     * ヒントコメントを返します。
+     * <p>ヒント句をサポートしていないDBの場合は空文字を返します。</p>
+     *
+     * @param hint ヒント
+     * @return ヒントコメント
+     */
+    String getHintComment(String hint);
+
+    /**
+     * LIMIT用SQLに変換します。
+     * @param sql SQL
+     * @param offset オフセット。省略する場合は {@literal -1}を指定します。
+     * @param limit リミット。省略する場合は {@literal -1} を指定します。
+     * @return LIMIT用SQL。
+     */
+    String convertLimitSql(String sql, int offset, int limit);
 }
