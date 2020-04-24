@@ -10,7 +10,7 @@ import com.github.mygreen.sqlmapper.query.SetClause;
 import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
-import com.github.mygreen.sqlmapper.where.SimpleWhere;
+import com.github.mygreen.sqlmapper.where.WhereBuilder;
 import com.github.mygreen.sqlmapper.where.WhereVisitor;
 import com.github.mygreen.sqlmapper.where.WhereVisitorParamContext;
 
@@ -125,7 +125,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
 
     private void prepareCondition() {
 
-        final SimpleWhere where = new SimpleWhere();
+        final WhereBuilder where = new WhereBuilder();
 
         // WHERE句の準備 - 主キー
         for(PropertyMeta propertyMeta : query.getEntityMeta().getIdPropertyMetaList()) {

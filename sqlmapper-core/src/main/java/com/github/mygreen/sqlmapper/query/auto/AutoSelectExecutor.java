@@ -20,7 +20,7 @@ import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
 import com.github.mygreen.sqlmapper.query.SelectClause;
 import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.util.QueryUtils;
-import com.github.mygreen.sqlmapper.where.SimpleWhere;
+import com.github.mygreen.sqlmapper.where.WhereBuilder;
 import com.github.mygreen.sqlmapper.where.WhereVisitor;
 import com.github.mygreen.sqlmapper.where.WhereVisitorParamContext;
 
@@ -160,7 +160,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
                     .format());
         }
 
-        final SimpleWhere where = new SimpleWhere();
+        final WhereBuilder where = new WhereBuilder();
 
         // IDの条件指定
         for(int i=0; i < query.getIdPropertyValues().length; i++) {
