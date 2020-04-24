@@ -1,0 +1,1 @@
+insert into customer values ('001', 'Taro', 'Yamada', '2000-10-01', 0);

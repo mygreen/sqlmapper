@@ -62,6 +62,11 @@ public class NoDbTestConfig extends SqlMapperConfigureSupport {
                 String sequenceName) {
             return null;
         }
+
+        @Override
+        public String convertLimitSql(String sql, int offset, int limit) {
+           return sql;
+        }
     }
 
 
