@@ -17,9 +17,9 @@ import com.github.mygreen.sqlmapper.where.WhereVisitorParamContext;
  * @author T.TSUCHIE
  *
  */
-public class AutoDeleteExecutor<T> extends QueryExecutorBase {
+public class AutoDeleteExecutor extends QueryExecutorBase {
 
-    private final AutoDelete<T> query;
+    private final AutoDelete<?> query;
 
     /**
      * where句
@@ -41,7 +41,7 @@ public class AutoDeleteExecutor<T> extends QueryExecutorBase {
      */
     private final WhereVisitorParamContext paramContext = new WhereVisitorParamContext(paramSource);
 
-    public AutoDeleteExecutor(AutoDelete<T> query) {
+    public AutoDeleteExecutor(AutoDelete<?> query) {
         super(query.getContext());
         this.query = query;
     }
