@@ -1,5 +1,6 @@
 package com.github.mygreen.sqlmapper;
 
+import com.github.mygreen.sqlmapper.query.auto.AutoAnyDelete;
 import com.github.mygreen.sqlmapper.query.auto.AutoDelete;
 import com.github.mygreen.sqlmapper.query.auto.AutoInsert;
 import com.github.mygreen.sqlmapper.query.auto.AutoSelect;
@@ -49,6 +50,16 @@ public class SqlMapper {
      */
     public <T> AutoDelete<T> delete(@NonNull T entity){
         return new AutoDelete<T>(context, entity);
+    }
+
+    /**
+     * 任意の条件に対してテーブルのレコードを削除します。
+     * @param <T> エンティティタイプ
+     * @param baseClass エンティティのクラス
+     * @return 削除用のクエリ
+     */
+    public <T> AutoAnyDelete<T> deleteFrom(@NonNull Class<T> baseClass) {
+        return new AutoAnyDelete<T>(context, baseClass);
     }
 
     /**
