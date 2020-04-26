@@ -26,8 +26,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.mygreen.sqlmapper.SqlMapper;
+import com.github.mygreen.sqlmapper.SqlMapperContext;
 import com.github.mygreen.sqlmapper.dialect.Dialect;
 import com.github.mygreen.sqlmapper.localization.CustomFunctions;
 import com.github.mygreen.sqlmapper.localization.ExpressionEvaluator;
@@ -61,7 +64,6 @@ import com.github.mygreen.sqlmapper.util.ClassUtils;
  * @author T.TSUCHIE
  *
  */
-//@ComponentScan
 @PropertySource("classpath:/com/github/mygreen/sqlmapper/sqlmapper.properties")
 public abstract class SqlMapperConfigureSupport implements ApplicationContextAware {
 
@@ -75,9 +77,27 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
        this.applicationContext = applicationContext;
     }
 
+    @Bean
     public SqlMapper sqlMapper() {
-        //TODO
-        return null;
+        return new SqlMapper(sqlMapperContext());
+    }
+
+    @Bean
+    public SqlMapperContext sqlMapperContext() {
+
+        SqlMapperContext context = new SqlMapperContext();
+        context.setNamedParameterJdbcTemplate(namedParameterJdbcTemplate());
+        context.setNamingRule(namingRule());
+        context.setMessageBuilder(messageBuilder());
+        context.setDialect(dialect());
+        context.setEntityMetaFactory(entityMetaFactory());
+
+        TransactionTemplate requiresNewTransactionTemplate = new TransactionTemplate(transactionManager(dataSource()));
+        requiresNewTransactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        context.setRequiresNewTransactionTemplate(requiresNewTransactionTemplate);
+
+        return context;
+
     }
 
     @Bean
