@@ -73,6 +73,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
             final String propertyName = propertyMeta.getName();
             final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
 
+            // 主キーは検索条件に入れるので対象外
             if(propertyMeta.isId() || !propertyMeta.getColumnMeta().isUpdatable()) {
                 continue;
             }
@@ -153,6 +154,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
      */
     private void prepareSql() {
         final String sql = "UPDATE "
+                + query.getEntityMeta().getTableMeta().getFullName()
                 + setClause.toSql()
                 + whereClause.toSql();
 
@@ -166,7 +168,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
     public int execute() {
         assertNotCompleted("execute");
 
-        if(targetPropertyCount > 0) {
+        if(targetPropertyCount == 0) {
             log.warn(context.getMessageBuilder().create("query.skipUpdateWithNoProperty").format());
             return 0;
         }
