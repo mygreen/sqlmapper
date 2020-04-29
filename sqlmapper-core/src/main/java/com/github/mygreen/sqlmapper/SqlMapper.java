@@ -1,6 +1,10 @@
 package com.github.mygreen.sqlmapper;
 
+import java.util.List;
+
+import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.auto.AutoAnyDelete;
+import com.github.mygreen.sqlmapper.query.auto.AutoBatchInsert;
 import com.github.mygreen.sqlmapper.query.auto.AutoDelete;
 import com.github.mygreen.sqlmapper.query.auto.AutoInsert;
 import com.github.mygreen.sqlmapper.query.auto.AutoSelect;
@@ -53,6 +57,16 @@ public class SqlMapper {
     }
 
     /**
+     * エンティティを更新します。
+     * @param <T> エンティティタイプ
+     * @param entity エンティティのインスタンス
+     * @return 更新用のクエリ
+     */
+    public <T> AutoUpdate<T> update(@NonNull T entity) {
+        return new AutoUpdate<T>(context, entity);
+    }
+
+    /**
      * 任意の条件に対してテーブルのレコードを削除します。
      * @param <T> エンティティタイプ
      * @param baseClass エンティティのクラス
@@ -63,12 +77,26 @@ public class SqlMapper {
     }
 
     /**
-     * エンティティを更新します。
+     * 複数のエンティティを挿入します。
      * @param <T> エンティティタイプ
-     * @param entity エンティティのインスタンス
-     * @return 更新用のクエリ
+     * @param entities エンティティの並び
+     * @return 挿入用のクエリ
+     * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
-    public <T> AutoUpdate<T> update(@NonNull T entity) {
-        return new AutoUpdate<T>(context, entity);
+    @SuppressWarnings("unchecked")
+    public <T> AutoBatchInsert<T> insertBatch(T... entities) {
+        return new AutoBatchInsert<T>(context, entities);
     }
+
+    /**
+     * 複数のエンティティを挿入します。
+     * @param <T> エンティティタイプ
+     * @param entities エンティティの並び
+     * @return 挿入用のクエリ
+     * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
+     */
+    public <T> AutoBatchInsert<T> insertBatch(List<T> entities) {
+        return new AutoBatchInsert<T>(context, entities);
+    }
+
 }

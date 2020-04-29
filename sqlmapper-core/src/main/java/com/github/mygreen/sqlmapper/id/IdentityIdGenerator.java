@@ -48,7 +48,10 @@ public class IdentityIdGenerator implements IdGenerator {
         return SUPPORTED_TYPE_LIST.toArray(new Class[SUPPORTED_TYPE_LIST.size()]);
     }
 
-    @Deprecated
+    /**
+     * {@inheritDoc}
+     * @throws UnsupportedOperationException このメソッドを呼び出したときに必ずスローされます。
+     */
     @Override
     public Object generateValue() {
         throw new UnsupportedOperationException("this method is not supported.");

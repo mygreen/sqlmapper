@@ -24,7 +24,7 @@ public class AutoInsertExecutor extends QueryExecutorBase {
     /**
      * バージョンプロパティの初期値
      */
-    private static final long INITIAL_VERSION = 1L;
+    public static final long INITIAL_VERSION = 1L;
 
     private final AutoInsert<?> query;
 
@@ -32,6 +32,11 @@ public class AutoInsertExecutor extends QueryExecutorBase {
      * INSERTのINTO句とVALUES句
      */
     private InsertClause insertClause = new InsertClause();
+
+    /**
+     * 実行するSQLです
+     */
+    private String executedSql;
 
     /**
      * クエリのパラメータ
@@ -52,6 +57,8 @@ public class AutoInsertExecutor extends QueryExecutorBase {
     public void prepare() {
 
         prepareInsertClause();
+
+        prepareSql();
 
         completed();
 
@@ -80,6 +87,7 @@ public class AutoInsertExecutor extends QueryExecutorBase {
             // IN句の組み立て
             this.insertClause.addSql(propertyMeta.getColumnMeta().getName(), ":" + paramName);
 
+            // パラメータの組み立て
             Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
 
             Optional<GenerationType> generationType = propertyMeta.getIdGenerationType();
@@ -122,24 +130,32 @@ public class AutoInsertExecutor extends QueryExecutorBase {
     }
 
     /**
+     * 実行するSQLを組み立てます
+     */
+    private void prepareSql() {
+        final String sql = "INSERT INTO "
+                + query.getEntityMeta().getTableMeta().getFullName()
+                + insertClause.toIntoSql()
+                + insertClause.toValuesSql();
+
+        this.executedSql = sql;
+    }
+
+    /**
      * 挿入の実行
      * @return 更新した行数
      */
     public int execute() {
         assertNotCompleted("execute");
 
-        final String sql = "INSERT INTO "
-                + query.getEntityMeta().getTableMeta().getFullName()
-                + insertClause.toIntoSql()
-                + insertClause.toValuesSql();
-
         final int rows;
         if(this.usingIdentityGeneratedColumnNames.isEmpty()) {
-            rows = context.getNamedParameterJdbcTemplate().update(sql, this.paramSource);
+            // 主キーがIDENTITYによる生成でない場合
+            rows = context.getNamedParameterJdbcTemplate().update(executedSql, this.paramSource);
 
         } else {
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            rows = context.getNamedParameterJdbcTemplate().update(sql, paramSource, keyHolder,
+            rows = context.getNamedParameterJdbcTemplate().update(executedSql, paramSource, keyHolder,
                     usingIdentityGeneratedColumnNames.toArray(new String[usingIdentityGeneratedColumnNames.size()]));
 
             // 生成した主キーをエンティティに設定する
