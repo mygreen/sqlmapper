@@ -107,6 +107,7 @@ public class SqlMapper {
      * @return 更新用のクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
+    @SuppressWarnings("unchecked")
     public <T> AutoBatchUpdate<T> updateBatch(T... entities) {
         return new AutoBatchUpdate<T>(context, entities);
     }
@@ -119,6 +120,29 @@ public class SqlMapper {
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
     public <T> AutoBatchUpdate<T> updateBatch(List<T> entities) {
+        return new AutoBatchUpdate<T>(context, entities);
+    }
+
+    /**
+     * 複数のエンティティを削除します。
+     * @param <T> エンティティタイプ
+     * @param entities エンティティの並び
+     * @return 削除用のクエリ
+     * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
+     */
+    @SuppressWarnings("unchecked")
+    public <T> AutoBatchUpdate<T> deleteBatch(T... entities) {
+        return new AutoBatchUpdate<T>(context, entities);
+    }
+
+    /**
+     * 複数のエンティティを削除します。
+     * @param <T> エンティティタイプ
+     * @param entities エンティティの並び
+     * @return 削除用のクエリ
+     * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
+     */
+    public <T> AutoBatchUpdate<T> deleteBatch(List<T> entities) {
         return new AutoBatchUpdate<T>(context, entities);
     }
 
