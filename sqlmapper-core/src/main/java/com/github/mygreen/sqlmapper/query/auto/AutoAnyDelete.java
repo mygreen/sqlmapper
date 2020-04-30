@@ -52,7 +52,7 @@ public class AutoAnyDelete<T> extends QueryBase<T> {
      */
     public int execute() {
 
-        assertNotCompleted("execute");
+        assertNotCompleted("executeAnyDelete");
 
         AutoAnyDeleteExecutor executor = new AutoAnyDeleteExecutor(this);
         try {

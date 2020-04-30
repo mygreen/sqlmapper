@@ -146,7 +146,7 @@ public class AutoInsertExecutor extends QueryExecutorBase {
      * @return 更新した行数
      */
     public int execute() {
-        assertNotCompleted("execute");
+        assertNotCompleted("executeInsert");
 
         final int rows;
         if(this.usingIdentityGeneratedColumnNames.isEmpty()) {

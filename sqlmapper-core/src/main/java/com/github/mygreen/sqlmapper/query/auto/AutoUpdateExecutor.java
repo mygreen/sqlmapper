@@ -59,7 +59,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
     @Override
     public void prepare() {
         prepareSetClause();
-        prepareCondition();
+        prepareWhereClause();
 
         prepareSql();
 
@@ -111,7 +111,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
             final String paramName = "_" + propertyName;
             setClause.addSql(propertyMeta.getColumnMeta().getName(), ":" + paramName);
 
-            ValueType valueType = context.getDialect().getValueType(propertyMeta);
+            final ValueType valueType = context.getDialect().getValueType(propertyMeta);
             valueType.bindValue(propertyValue, paramSource, paramName);
 
         }
@@ -124,7 +124,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
         }
     }
 
-    private void prepareCondition() {
+    private void prepareWhereClause() {
 
         final WhereBuilder where = new WhereBuilder();
 
@@ -166,7 +166,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
      * @return 更新したレコード件数です。
      */
     public int execute() {
-        assertNotCompleted("execute");
+        assertNotCompleted("executeUpdate");
 
         if(targetPropertyCount == 0) {
             log.warn(context.getMessageBuilder().create("query.skipUpdateWithNoProperty").format());

@@ -79,7 +79,7 @@ public class AutoAnyDeleteExecutor extends QueryExecutorBase {
      */
     public int execute() {
 
-        assertNotCompleted("execute");
+        assertNotCompleted("executeAnyDelete");
 
         final int rows = context.getNamedParameterJdbcTemplate().update(executedSql, paramSource);
         return rows;

@@ -60,6 +60,14 @@ public class AutoBatchInsert<T> extends QueryBase<T> {
     }
 
     /**
+     * 処理対象のエンティティの個数を取得します。
+     * @return エンティティの個数
+     */
+    int getEntitySize() {
+        return entities.length;
+    }
+
+    /**
      * 指定のプロパティのみを挿入対象とします。
      * <p>アノテーション {@literal @Column(insertable = false)} が設定されているプロパティは対象外となります。</p>
      *
@@ -118,7 +126,7 @@ public class AutoBatchInsert<T> extends QueryBase<T> {
      */
     public int execute() {
 
-        assertNotCompleted("execute");
+        assertNotCompleted("executeBatchInsert");
 
         AutoBatchInsertExecutor executor = new AutoBatchInsertExecutor(this);
         try {

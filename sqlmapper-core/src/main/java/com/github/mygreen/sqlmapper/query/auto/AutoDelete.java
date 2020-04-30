@@ -80,7 +80,7 @@ public class AutoDelete<T> extends QueryBase<T> {
      */
     public int execute() {
 
-        assertNotCompleted("execute");
+        assertNotCompleted("executeDelete");
 
         AutoDeleteExecutor executor = new AutoDeleteExecutor(this);
         try {

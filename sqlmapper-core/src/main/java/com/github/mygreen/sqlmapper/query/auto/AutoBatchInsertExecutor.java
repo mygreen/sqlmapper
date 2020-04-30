@@ -20,6 +20,7 @@ import com.github.mygreen.sqlmapper.query.InsertClause;
 import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
 import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
+import com.github.mygreen.sqlmapper.util.QueryUtils;
 
 /**
  *
@@ -70,6 +71,8 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
     @Override
     public void prepare() {
 
+        this.paramSources = new MapSqlParameterSource[query.getEntitySize()];
+
         prepareInsertClause();
 
         prepareSql();
@@ -82,8 +85,7 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void prepareInsertClause() {
 
-        final int dataSize = query.getEntities().length;
-        this.paramSources = new MapSqlParameterSource[dataSize];
+        final int dataSize = query.getEntitySize();
 
         for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
 
@@ -107,13 +109,7 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
 
             // 各レコードのパラメータを作成する。
             for(int i=0; i < dataSize; i++) {
-
-                // パラメータの組み立て
-                final MapSqlParameterSource paramSource = paramSources[i];
-                if(paramSource == null) {
-                    paramSources[i] = new MapSqlParameterSource();
-                }
-
+                final MapSqlParameterSource paramSource = QueryUtils.get(paramSources, i);
                 Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity(i));
 
                 Optional<GenerationType> generationType = propertyMeta.getIdGenerationType();
@@ -176,7 +172,7 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
 
     public int execute() {
 
-        assertNotCompleted("execute");
+        assertNotCompleted("executeBatchInsert");
 
         final int rows;
         if(this.usingIdentityGeneratedColumnNames.isEmpty()) {

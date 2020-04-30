@@ -49,7 +49,7 @@ public class AutoDeleteExecutor extends QueryExecutorBase {
     @Override
     public void prepare() {
 
-        prepareCondition();
+        prepareWhereClause();
         prepareSql();
 
         completed();
@@ -59,7 +59,7 @@ public class AutoDeleteExecutor extends QueryExecutorBase {
     /**
      * 条件文の組み立てを行います
      */
-    private void prepareCondition() {
+    private void prepareWhereClause() {
 
         final WhereBuilder where = new WhereBuilder();
 
@@ -108,7 +108,7 @@ public class AutoDeleteExecutor extends QueryExecutorBase {
      */
     public int execute() {
 
-        assertNotCompleted("execute");
+        assertNotCompleted("executeDelete");
 
         final int rows = context.getNamedParameterJdbcTemplate().update(executedSql, paramSource);
         if(isOptimisticLock()) {

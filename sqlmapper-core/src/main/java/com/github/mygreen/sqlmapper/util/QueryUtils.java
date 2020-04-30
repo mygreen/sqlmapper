@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.util;
 
 import java.util.List;
 
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.util.StringUtils;
 
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
@@ -118,6 +119,22 @@ public class QueryUtils {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * 指定したインデックスのSQLパラメータソースを取得します。
+     * <p>インスタンスが存在しなければ、新しく作成します。</p>
+     * @param paramSources 取得対象のSQLパラメータソース。
+     * @param index インデックス
+     * @return SQLパラメータソース。
+     */
+    public static MapSqlParameterSource get(MapSqlParameterSource[] paramSources, int index) {
+        MapSqlParameterSource paramSource = paramSources[index];
+        if(paramSource == null) {
+            paramSources[index] = new MapSqlParameterSource();
+        }
+
+        return paramSource;
     }
 
 }

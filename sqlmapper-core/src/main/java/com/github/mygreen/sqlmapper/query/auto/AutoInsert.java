@@ -103,7 +103,7 @@ public class AutoInsert<T> extends QueryBase<T> {
      */
     public int execute() {
 
-        assertNotCompleted("execute");
+        assertNotCompleted("executeInsert");
 
         AutoInsertExecutor executor = new AutoInsertExecutor(this);
         try {

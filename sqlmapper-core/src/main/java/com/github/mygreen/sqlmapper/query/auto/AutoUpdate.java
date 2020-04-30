@@ -140,7 +140,6 @@ public class AutoUpdate<T> extends QueryBase<T> {
                         .format());
             }
 
-
             this.includesProperties.add(nameStr);
         }
 
@@ -163,7 +162,6 @@ public class AutoUpdate<T> extends QueryBase<T> {
                         .var("properyName", nameStr)
                         .format());
             }
-
 
             this.excludesProperties.add(nameStr);
         }
@@ -209,7 +207,7 @@ public class AutoUpdate<T> extends QueryBase<T> {
      */
     public int execute() {
 
-        assertNotCompleted("execute");
+        assertNotCompleted("executeUpdate");
 
         AutoUpdateExecutor executor = new AutoUpdateExecutor(this);
 
@@ -221,7 +219,5 @@ public class AutoUpdate<T> extends QueryBase<T> {
             completed();
         }
     }
-
-
 
 }
