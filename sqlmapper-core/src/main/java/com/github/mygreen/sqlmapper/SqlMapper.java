@@ -5,6 +5,7 @@ import java.util.List;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.auto.AutoAnyDelete;
 import com.github.mygreen.sqlmapper.query.auto.AutoBatchInsert;
+import com.github.mygreen.sqlmapper.query.auto.AutoBatchUpdate;
 import com.github.mygreen.sqlmapper.query.auto.AutoDelete;
 import com.github.mygreen.sqlmapper.query.auto.AutoInsert;
 import com.github.mygreen.sqlmapper.query.auto.AutoSelect;
@@ -97,6 +98,28 @@ public class SqlMapper {
      */
     public <T> AutoBatchInsert<T> insertBatch(List<T> entities) {
         return new AutoBatchInsert<T>(context, entities);
+    }
+
+    /**
+     * 複数のエンティティを更新します。
+     * @param <T> エンティティタイプ
+     * @param entities エンティティの並び
+     * @return 更新用のクエリ
+     * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
+     */
+    public <T> AutoBatchUpdate<T> updateBatch(T... entities) {
+        return new AutoBatchUpdate<T>(context, entities);
+    }
+
+    /**
+     * 複数のエンティティを更新します。
+     * @param <T> エンティティタイプ
+     * @param entities エンティティの並び
+     * @return 更新用のクエリ
+     * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
+     */
+    public <T> AutoBatchUpdate<T> updateBatch(List<T> entities) {
+        return new AutoBatchUpdate<T>(context, entities);
     }
 
 }
