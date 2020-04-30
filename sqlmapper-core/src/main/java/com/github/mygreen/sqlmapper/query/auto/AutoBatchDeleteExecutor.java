@@ -118,7 +118,7 @@ public class AutoBatchDeleteExecutor extends QueryExecutorBase {
      */
     public int execute() {
 
-        assertNotCompleted("executeDelete");
+        assertNotCompleted("executeBatchDelete");
 
         final int rows = context.getNamedParameterJdbcTemplate().update(executedSql, paramSource);
         if(isOptimisticLock()) {

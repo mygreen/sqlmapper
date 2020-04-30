@@ -106,7 +106,7 @@ public class AutoBatchDelete<T> extends QueryBase<T> {
      */
     public int execute() {
 
-        assertNotCompleted("executeDelete");
+        assertNotCompleted("executeBatchDelete");
 
         AutoBatchDeleteExecutor executor = new AutoBatchDeleteExecutor(this);
         try {
