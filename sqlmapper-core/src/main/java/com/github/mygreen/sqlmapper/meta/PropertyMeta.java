@@ -8,9 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.github.mygreen.sqlmapper.annotation.CreatedAt;
+import com.github.mygreen.sqlmapper.annotation.CreatedBy;
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue;
 import com.github.mygreen.sqlmapper.annotation.Id;
 import com.github.mygreen.sqlmapper.annotation.Lob;
+import com.github.mygreen.sqlmapper.annotation.ModifiedAt;
+import com.github.mygreen.sqlmapper.annotation.ModifiedBy;
 import com.github.mygreen.sqlmapper.annotation.Transient;
 import com.github.mygreen.sqlmapper.annotation.Version;
 import com.github.mygreen.sqlmapper.id.IdGenerator;
@@ -242,7 +246,7 @@ public class PropertyMeta {
      * 主キーかどうか判定する。
      * <p>アノテーション {@link Id}を付与されているかどうかで判定する。</p>
      *
-     * @return 主キーの場合はtrueを返す。
+     * @return 主キーの場合は {@literal true}  を返す。
      */
     public boolean isId() {
 
@@ -267,7 +271,7 @@ public class PropertyMeta {
 
     /**
      * 永続化対象外かどうか判定する。
-     * @return 永続化対象外のときtrueを返す。
+     * @return 永続化対象外のとき {@literal true} を返す。
      */
     public boolean isTransient() {
         return hasAnnotation(Transient.class);
@@ -275,7 +279,7 @@ public class PropertyMeta {
 
     /**
      * バージョンキーかどうか判定する。
-     * @return バージョンキーのときtrueを返す。
+     * @return バージョンキーのとき {@literal true} を返す。
      */
     public boolean isVersion() {
         return hasAnnotation(Version.class);
@@ -288,6 +292,38 @@ public class PropertyMeta {
      */
     public boolean isLob() {
         return hasAnnotation(Lob.class);
+    }
+
+    /**
+     * 作成日時用のプロパティがかどうか判定する。
+     * @return 作成日時用のプロパティのとき {@literal true} を返す。
+     */
+    public boolean isCreatedAt() {
+        return hasAnnotation(CreatedAt.class);
+    }
+
+    /**
+     * 作成者用のプロパティがかどうか判定する。
+     * @return 作成者用のプロパティのとき {@literal true} を返す。
+     */
+    public boolean isCreatedBy() {
+        return hasAnnotation(CreatedBy.class);
+    }
+
+    /**
+     * 修正日時用のプロパティがかどうか判定する。
+     * @return 修正日時用のプロパティのとき {@literal true} を返す。
+     */
+    public boolean isModifiedAt() {
+        return hasAnnotation(ModifiedAt.class);
+    }
+
+    /**
+     * 修正者用のプロパティがかどうか判定する。
+     * @return 修正者用のプロパティのとき {@literal true} を返す。
+     */
+    public boolean isModifiedBy() {
+        return hasAnnotation(ModifiedBy.class);
     }
 
 

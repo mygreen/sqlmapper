@@ -34,6 +34,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.github.mygreen.sqlmapper.SqlMapper;
 import com.github.mygreen.sqlmapper.SqlMapperContext;
 import com.github.mygreen.sqlmapper.dialect.Dialect;
+import com.github.mygreen.sqlmapper.event.listener.AuditingEntityListener;
 import com.github.mygreen.sqlmapper.localization.CustomFunctions;
 import com.github.mygreen.sqlmapper.localization.ExpressionEvaluator;
 import com.github.mygreen.sqlmapper.localization.MessageBuilder;
@@ -209,6 +210,11 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     @Bean
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
         return new NamedParameterJdbcTemplate(dataSource());
+    }
+
+    @Bean
+    public AuditingEntityListener auditingEntityListener() {
+        return new AuditingEntityListener();
     }
 
     @Bean

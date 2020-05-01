@@ -57,6 +57,30 @@ public class EntityMeta {
     private Optional<PropertyMeta> versionPropertyMeta = Optional.empty();
 
     /**
+     * 作成日時用のカラムプロパティ
+     */
+    @Getter
+    private Optional<PropertyMeta> createdAtPropertyMeta = Optional.empty();
+
+    /**
+     * 作成者用のカラムプロパティ
+     */
+    @Getter
+    private Optional<PropertyMeta> createdByPropertyMeta = Optional.empty();
+
+    /**
+     * 修正日時用のカラムプロパティ
+     */
+    @Getter
+    private Optional<PropertyMeta> modifiedAtPropertyMeta = Optional.empty();
+
+    /**
+     * 修正者用のカラムプロパティ
+     */
+    @Getter
+    private Optional<PropertyMeta> modifiedByPropertyMeta = Optional.empty();
+
+    /**
      * カラム用のプロパティ情報
      * <p>key=カラム名</p>
      */
@@ -147,6 +171,38 @@ public class EntityMeta {
     }
 
     /**
+     * 作成日時を表すプロパティのメタデータを持つかどうか。
+     * @return 作成日時を表すプロパティのメタデータがあれば {@literal true} を返す。
+     */
+    public boolean hasCreatedAtPropertyMeta() {
+        return createdAtPropertyMeta.isPresent();
+    }
+
+    /**
+     * 作成者を表すプロパティのメタデータを持つかどうか。
+     * @return 作成者を表すプロパティのメタデータがあれば {@literal true} を返す。
+     */
+    public boolean hasCreatedByPropertyMeta() {
+        return createdByPropertyMeta.isPresent();
+    }
+
+    /**
+     * 修正日時を表すプロパティのメタデータを持つかどうか。
+     * @return 修正日時を表すプロパティのメタデータがあれば {@literal true} を返す。
+     */
+    public boolean hasModifiedAtPropertyMeta() {
+        return modifiedAtPropertyMeta.isPresent();
+    }
+
+    /**
+     * 修正者を表すプロパティのメタデータを持つかどうか。
+     * @return 修正者を表すプロパティのメタデータがあれば {@literal true} を返す。
+     */
+    public boolean hasModifiedByPropertyMeta() {
+        return modifiedByPropertyMeta.isPresent();
+    }
+
+    /**
      * 役割を持つプロパティを設定する
      * @param propertyMeta 対象のプロパティメタ情報
      */
@@ -162,6 +218,22 @@ public class EntityMeta {
 
         if(propertyMeta.isVersion()) {
             this.versionPropertyMeta = Optional.of(propertyMeta);
+        }
+
+        if(propertyMeta.isCreatedAt()) {
+            this.createdAtPropertyMeta = Optional.of(propertyMeta);
+        }
+
+        if(propertyMeta.isCreatedBy()) {
+            this.createdByPropertyMeta = Optional.of(propertyMeta);
+        }
+
+        if(propertyMeta.isModifiedAt()) {
+            this.modifiedAtPropertyMeta = Optional.of(propertyMeta);
+        }
+
+        if(propertyMeta.isModifiedBy()) {
+            this.modifiedByPropertyMeta = Optional.of(propertyMeta);
         }
 
         if(propertyMeta.getColumnMeta() != null) {

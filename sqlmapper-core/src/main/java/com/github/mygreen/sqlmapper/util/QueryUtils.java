@@ -1,5 +1,9 @@
 package com.github.mygreen.sqlmapper.util;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -135,6 +139,32 @@ public class QueryUtils {
         }
 
         return paramSource;
+    }
+
+    /**
+     * 指定したタイプでの現在の日時を取得します。
+     * @param type 取得対象のタイプ
+     * @return 現在の日時
+     * @throws IllegalArgumentException typeがサポートしていない日時型の場合。
+     */
+    public static Object now(final Class<?> type) {
+
+        if(Date.class.isAssignableFrom(type)) {
+            // java.util.Date の子クラス(java.sql.XXXX) の場合
+            return new Date();
+
+        } else if(LocalDate.class.isAssignableFrom(type)) {
+            return LocalDate.now();
+
+        } else if(LocalTime.class.isAssignableFrom(type)) {
+            return LocalTime.now();
+
+        } else if(LocalDateTime.class.isAssignableFrom(type)) {
+            return LocalDateTime.now();
+
+        }
+
+        throw new IllegalArgumentException("not support date time type : " + type.getName());
     }
 
 }

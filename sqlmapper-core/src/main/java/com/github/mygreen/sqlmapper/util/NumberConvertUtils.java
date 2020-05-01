@@ -17,6 +17,7 @@ public class NumberConvertUtils {
      * @param type 変換後のクラスタイプ
      * @param value 変換対象の値
      * @return インクリメントした値。引数valueがnullのときはnullを返す。
+     * @throws IllegalArgumentException typeがサポートしていない数値型の場合。
      */
     public static Number incrementNumber(final Class<?> type, final Object value) {
 
