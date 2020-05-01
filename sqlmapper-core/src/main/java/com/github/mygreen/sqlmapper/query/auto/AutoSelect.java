@@ -9,6 +9,8 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.github.mygreen.sqlmapper.SqlMapperContext;
 import com.github.mygreen.sqlmapper.dialect.Dialect;
+import com.github.mygreen.sqlmapper.event.PostListSelectEvent;
+import com.github.mygreen.sqlmapper.event.PostSelectEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
@@ -336,10 +338,14 @@ public class AutoSelect<T> extends QueryBase<T> {
     public T getSingleResult() {
         assertNotCompleted("getSingleResult");
 
-        AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
+        final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
         try {
             executor.prepare();
-            return executor.getSingleResult();
+            final T result = executor.getSingleResult();
+
+            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(this, entityMeta, result));
+            return result;
+
         } finally {
             completed();
         }
@@ -353,10 +359,17 @@ public class AutoSelect<T> extends QueryBase<T> {
     public Optional<T> getOptionalResult() {
         assertNotCompleted("getOptionalResult");
 
-        AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
+        final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
         try{
             executor.prepare();
-            return executor.getOptionalResult();
+            final Optional<T> result = executor.getOptionalResult();
+
+            // 値が存在する場合のみイベントを実行する。
+            result.ifPresent(e ->
+                context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(this, entityMeta, e)));
+
+            return result;
+
         } finally {
             completed();
         }
@@ -370,10 +383,14 @@ public class AutoSelect<T> extends QueryBase<T> {
     public List<T> getResultList() {
         assertNotCompleted("getResultList");
 
-        AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
+        final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
         try{
             executor.prepare();
-            return executor.getResultList();
+            final List<T> result = executor.getResultList();
+
+            context.getApplicationEventPublisher().publishEvent(new PostListSelectEvent(this, entityMeta, result));
+            return result;
+
         } finally {
             completed();
         }
