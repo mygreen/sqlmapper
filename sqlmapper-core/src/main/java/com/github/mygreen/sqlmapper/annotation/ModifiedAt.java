@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.github.mygreen.sqlmapper.config.AuditingEntityListener;
+import com.github.mygreen.sqlmapper.audit.AuditingEntityListener;
 
 /**
  * レコードが修正された日時を表すプロパティに付与します。

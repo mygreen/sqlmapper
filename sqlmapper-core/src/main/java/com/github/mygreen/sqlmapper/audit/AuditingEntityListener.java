@@ -1,5 +1,9 @@
-package com.github.mygreen.sqlmapper.config;
+package com.github.mygreen.sqlmapper.audit;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -11,7 +15,6 @@ import com.github.mygreen.sqlmapper.event.PreInsertEvent;
 import com.github.mygreen.sqlmapper.event.PreUpdateEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.util.QueryUtils;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -36,21 +39,29 @@ public class AuditingEntityListener implements InitializingBean {
     @Autowired(required=false)
     protected AuditorProvider<?> auditorProvider;
 
+    /**
+     * {@inheritDoc}
+     * 監査情報を提供する {@link AuditorProvider}がSpringのコンテナに登録されていない場合は、
+     * デフォルトの空の情報を設定します。
+     */
     @Override
     public void afterPropertiesSet() throws Exception {
-        // auditorProviderが登録されていない場合は、デフォルトの空の情報を設定します。
         if(auditorProvider == null) {
             this.auditorProvider = new AuditorProvider<Object>() {
 
                 @Override
                 public Optional<Object> getCurrentAuditor() {
-                    log.warn("should injection bean " + AuditorProvider.class.getName());
+                    log.warn("should be injecting spring bean of " + AuditorProvider.class.getName());
                     return Optional.empty();
                 }
             };
         }
     }
 
+    /**
+     * 挿入前にエンティティに監査情報を設定します。
+     * @param event イベント情報。
+     */
     @EventListener
     public void onPreInsert(final PreInsertEvent event) {
 
@@ -78,6 +89,10 @@ public class AuditingEntityListener implements InitializingBean {
 
     }
 
+    /**
+     * 更新前にエンティティに監査情報を設定します。
+     * @param event イベント情報。
+     */
     @EventListener
     public void onPreUpdate(final PreUpdateEvent event) {
 
@@ -95,6 +110,10 @@ public class AuditingEntityListener implements InitializingBean {
 
     }
 
+    /**
+     * バッチ処理による挿入前にエンティティに監査情報を設定します。
+     * @param event イベント情報。
+     */
     @EventListener
     public void onPreBatchInsert(final PreBatchInsertEvent event) {
 
@@ -134,6 +153,10 @@ public class AuditingEntityListener implements InitializingBean {
 
     }
 
+    /**
+     * バッチ処理による更新前にエンティティに監査情報を設定します。
+     * @param event イベント情報。
+     */
     @EventListener
     public void onPreBatchUpdate(final PreBatchInsertEvent event) {
 
@@ -160,9 +183,25 @@ public class AuditingEntityListener implements InitializingBean {
      * 監査情報としての現在の日時を取得します。
      * @param propertyType プロパティのクラスタイプ。
      * @return プロパティのタイプに対応した現在の日時。
+     * @throws IllegalArgumentException typeがサポートしていない日時型の場合。
      */
     protected Object getCurrentDateTime(final Class<?> propertyType) {
-        return QueryUtils.now(propertyType);
+        if(Date.class.isAssignableFrom(propertyType)) {
+            // java.util.Date の子クラス(java.sql.XXXX) の場合
+            return new Date();
+
+        } else if(LocalDate.class.isAssignableFrom(propertyType)) {
+            return LocalDate.now();
+
+        } else if(LocalTime.class.isAssignableFrom(propertyType)) {
+            return LocalTime.now();
+
+        } else if(LocalDateTime.class.isAssignableFrom(propertyType)) {
+            return LocalDateTime.now();
+
+        }
+
+        throw new IllegalArgumentException("not support datetime type : " + propertyType.getName());
     }
 
 }
