@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.github.mygreen.sqlmapper.event.listener.AuditingEntityListener;
+import com.github.mygreen.sqlmapper.config.AuditingEntityListener;
 
 /**
  * レコードの修正が誰にされたかを表すプロパティに付与します。

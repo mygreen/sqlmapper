@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.event.listener;
+package com.github.mygreen.sqlmapper.config;
 
 import java.util.Optional;
 
@@ -52,7 +52,7 @@ public class AuditingEntityListener implements InitializingBean {
     }
 
     @EventListener
-    public void onPreInsertEvent(final PreInsertEvent event) {
+    public void onPreInsert(final PreInsertEvent event) {
 
         final EntityMeta entityMeta = event.getEntityMeta();
 
@@ -79,7 +79,7 @@ public class AuditingEntityListener implements InitializingBean {
     }
 
     @EventListener
-    public void onPreUpdateEvent(final PreUpdateEvent event) {
+    public void onPreUpdate(final PreUpdateEvent event) {
 
         final EntityMeta entityMeta = event.getEntityMeta();
 
@@ -96,7 +96,7 @@ public class AuditingEntityListener implements InitializingBean {
     }
 
     @EventListener
-    public void onPreBatchInsertEvent(final PreBatchInsertEvent event) {
+    public void onPreBatchInsert(final PreBatchInsertEvent event) {
 
         final EntityMeta entityMeta = event.getEntityMeta();
 
@@ -135,7 +135,7 @@ public class AuditingEntityListener implements InitializingBean {
     }
 
     @EventListener
-    public void onPreBatchUpdateEvent(final PreBatchInsertEvent event) {
+    public void onPreBatchUpdate(final PreBatchInsertEvent event) {
 
         final EntityMeta entityMeta = event.getEntityMeta();
 

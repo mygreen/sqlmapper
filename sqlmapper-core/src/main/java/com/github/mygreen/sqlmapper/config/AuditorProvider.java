@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.event.listener;
+package com.github.mygreen.sqlmapper.config;
 
 import java.util.Optional;
 
