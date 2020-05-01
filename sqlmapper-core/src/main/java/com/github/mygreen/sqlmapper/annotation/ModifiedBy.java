@@ -7,9 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.github.mygreen.sqlmapper.config.AuditingEntityListener;
+import com.github.mygreen.sqlmapper.config.AuditorProvider;
 
 /**
  * レコードの修正が誰にされたかを表すプロパティに付与します。
+ * <p>プロパティに値を設定するには、{@link AuditorProvider} の実装をSpringのコンテナに登録する必要があります。</p>
  * <p>{@link AuditingEntityListener} により処理されます。</p>
  *
  * @author T.TSUCHIE
