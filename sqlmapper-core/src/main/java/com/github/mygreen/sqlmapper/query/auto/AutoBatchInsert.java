@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.github.mygreen.sqlmapper.SqlMapperContext;
+import com.github.mygreen.sqlmapper.event.PostBatchInsertEvent;
+import com.github.mygreen.sqlmapper.event.PreBatchInsertEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.QueryBase;
@@ -127,11 +129,15 @@ public class AutoBatchInsert<T> extends QueryBase<T> {
     public int execute() {
 
         assertNotCompleted("executeBatchInsert");
+        context.getApplicationEventPublisher().publishEvent(new PreBatchInsertEvent(this, entityMeta, entities));
 
-        AutoBatchInsertExecutor executor = new AutoBatchInsertExecutor(this);
+        final AutoBatchInsertExecutor executor = new AutoBatchInsertExecutor(this);
         try {
             executor.prepare();
-            return executor.execute();
+            final int result = executor.execute();
+
+            context.getApplicationEventPublisher().publishEvent(new PostBatchInsertEvent(this, entityMeta, entities));
+            return result;
 
         } finally {
             completed();

@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.github.mygreen.sqlmapper.SqlMapperContext;
+import com.github.mygreen.sqlmapper.event.PostInsertEvent;
+import com.github.mygreen.sqlmapper.event.PreInsertEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.QueryBase;
@@ -104,11 +106,15 @@ public class AutoInsert<T> extends QueryBase<T> {
     public int execute() {
 
         assertNotCompleted("executeInsert");
+        context.getApplicationEventPublisher().publishEvent(new PreInsertEvent(this, entityMeta, entity));
 
-        AutoInsertExecutor executor = new AutoInsertExecutor(this);
+        final AutoInsertExecutor executor = new AutoInsertExecutor(this);
         try {
             executor.prepare();
-            return executor.execute();
+            final int result = executor.execute();
+
+            context.getApplicationEventPublisher().publishEvent(new PostInsertEvent(this, entityMeta, entity));
+            return result;
 
         } finally {
             completed();

@@ -7,6 +7,8 @@ import java.util.Set;
 import org.springframework.dao.OptimisticLockingFailureException;
 
 import com.github.mygreen.sqlmapper.SqlMapperContext;
+import com.github.mygreen.sqlmapper.event.PostBatchUpdateEvent;
+import com.github.mygreen.sqlmapper.event.PreBatchUpdateEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.QueryBase;
@@ -169,12 +171,16 @@ public class AutoBatchUpdate<T> extends QueryBase<T> {
     public int execute() {
 
         assertNotCompleted("executeBatchUpdate");
+        context.getApplicationEventPublisher().publishEvent(new PreBatchUpdateEvent(this, entityMeta, entities));
 
-        AutoBatchUpdateExecutor executor = new AutoBatchUpdateExecutor(this);
+        final AutoBatchUpdateExecutor executor = new AutoBatchUpdateExecutor(this);
 
         try {
             executor.prepare();
-            return executor.execute();
+            final int result= executor.execute();
+
+            context.getApplicationEventPublisher().publishEvent(new PostBatchUpdateEvent(this, entityMeta, entities));
+            return result;
 
         } finally {
             completed();

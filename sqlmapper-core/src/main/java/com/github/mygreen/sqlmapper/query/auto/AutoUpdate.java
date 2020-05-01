@@ -9,6 +9,8 @@ import java.util.Set;
 import org.springframework.dao.OptimisticLockingFailureException;
 
 import com.github.mygreen.sqlmapper.SqlMapperContext;
+import com.github.mygreen.sqlmapper.event.PostUpdateEvent;
+import com.github.mygreen.sqlmapper.event.PreUpdateEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
@@ -208,12 +210,16 @@ public class AutoUpdate<T> extends QueryBase<T> {
     public int execute() {
 
         assertNotCompleted("executeUpdate");
+        context.getApplicationEventPublisher().publishEvent(new PreUpdateEvent(this, entityMeta, entity));
 
-        AutoUpdateExecutor executor = new AutoUpdateExecutor(this);
+        final AutoUpdateExecutor executor = new AutoUpdateExecutor(this);
 
         try {
             executor.prepare();
-            return executor.execute();
+            final int result = executor.execute();
+
+            context.getApplicationEventPublisher().publishEvent(new PostUpdateEvent(this, entityMeta, entity));
+            return result;
 
         } finally {
             completed();

@@ -3,6 +3,8 @@ package com.github.mygreen.sqlmapper.query.auto;
 import org.springframework.dao.OptimisticLockingFailureException;
 
 import com.github.mygreen.sqlmapper.SqlMapperContext;
+import com.github.mygreen.sqlmapper.event.PostDeleteEvent;
+import com.github.mygreen.sqlmapper.event.PreDeleteEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.QueryBase;
@@ -81,11 +83,15 @@ public class AutoDelete<T> extends QueryBase<T> {
     public int execute() {
 
         assertNotCompleted("executeDelete");
+        context.getApplicationEventPublisher().publishEvent(new PreDeleteEvent(this, entityMeta, entity));
 
-        AutoDeleteExecutor executor = new AutoDeleteExecutor(this);
+        final AutoDeleteExecutor executor = new AutoDeleteExecutor(this);
         try {
             executor.prepare();
-            return executor.execute();
+            final int result = executor.execute();
+
+            context.getApplicationEventPublisher().publishEvent(new PostDeleteEvent(this, entityMeta, entity));
+            return result;
 
         } finally {
             completed();

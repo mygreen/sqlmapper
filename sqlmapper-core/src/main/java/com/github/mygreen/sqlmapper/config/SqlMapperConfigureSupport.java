@@ -16,6 +16,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.PropertySource;
@@ -65,9 +67,11 @@ import com.github.mygreen.sqlmapper.util.ClassUtils;
  *
  */
 @PropertySource("classpath:/com/github/mygreen/sqlmapper/sqlmapper.properties")
-public abstract class SqlMapperConfigureSupport implements ApplicationContextAware {
+public abstract class SqlMapperConfigureSupport implements ApplicationContextAware, ApplicationEventPublisherAware {
 
     private ApplicationContext applicationContext;
+
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     protected Environment env;
@@ -75,6 +79,11 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
        this.applicationContext = applicationContext;
+    }
+
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @Bean
@@ -91,6 +100,7 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
         context.setMessageBuilder(messageBuilder());
         context.setDialect(dialect());
         context.setEntityMetaFactory(entityMetaFactory());
+        context.setApplicationEventPublisher(applicationEventPublisher);
 
         TransactionTemplate requiresNewTransactionTemplate = new TransactionTemplate(transactionManager(dataSource()));
         requiresNewTransactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);

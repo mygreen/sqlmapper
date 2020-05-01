@@ -1,5 +1,6 @@
 package com.github.mygreen.sqlmapper;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -47,4 +48,11 @@ public class SqlMapperContext {
     @Getter
     @Setter
     private TransactionTemplate requiresNewTransactionTemplate;
+
+    /**
+     * 各SQL実行時のイベントを配信する機能
+     */
+    @Getter
+    @Setter
+    private ApplicationEventPublisher applicationEventPublisher;
 }

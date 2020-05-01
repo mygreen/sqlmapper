@@ -5,6 +5,8 @@ import java.util.Collection;
 import org.springframework.dao.OptimisticLockingFailureException;
 
 import com.github.mygreen.sqlmapper.SqlMapperContext;
+import com.github.mygreen.sqlmapper.event.PostBatchDeleteEvent;
+import com.github.mygreen.sqlmapper.event.PreBatchDeleteEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.QueryBase;
@@ -107,11 +109,15 @@ public class AutoBatchDelete<T> extends QueryBase<T> {
     public int execute() {
 
         assertNotCompleted("executeBatchDelete");
+        context.getApplicationEventPublisher().publishEvent(new PreBatchDeleteEvent(this, entityMeta, entities));
 
-        AutoBatchDeleteExecutor executor = new AutoBatchDeleteExecutor(this);
+        final AutoBatchDeleteExecutor executor = new AutoBatchDeleteExecutor(this);
         try {
             executor.prepare();
-            return executor.execute();
+            final int result = executor.execute();
+
+            context.getApplicationEventPublisher().publishEvent(new PostBatchDeleteEvent(this, entityMeta, entities));
+            return result;
 
         } finally {
             completed();
