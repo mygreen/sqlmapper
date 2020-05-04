@@ -1,6 +1,7 @@
 package com.github.mygreen.sqlmapper;
 
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -55,4 +56,13 @@ public class SqlMapperContext {
     @Getter
     @Setter
     private ApplicationEventPublisher applicationEventPublisher;
+
+    /**
+     * SQLファイルを読み込むときのリソースローダー。
+     */
+    @Getter
+    @Setter
+    private ResourceLoader resourceLoader;
+
+
 }

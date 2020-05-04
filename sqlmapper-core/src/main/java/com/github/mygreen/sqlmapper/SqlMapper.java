@@ -1,5 +1,6 @@
 package com.github.mygreen.sqlmapper;
 
+import java.net.MalformedURLException;
 import java.util.List;
 
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
@@ -10,6 +11,7 @@ import com.github.mygreen.sqlmapper.query.auto.AutoDelete;
 import com.github.mygreen.sqlmapper.query.auto.AutoInsert;
 import com.github.mygreen.sqlmapper.query.auto.AutoSelect;
 import com.github.mygreen.sqlmapper.query.auto.AutoUpdate;
+import com.github.mygreen.sqlmapper.query.sql.SqSelect;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -144,6 +146,29 @@ public class SqlMapper {
      */
     public <T> AutoBatchUpdate<T> deleteBatch(List<T> entities) {
         return new AutoBatchUpdate<T>(context, entities);
+    }
+
+    /**
+     * SQLファイルを元にテーブルを参照します。
+     * @param <T> エンティティタイプ
+     * @param baseClass エンティティのクラス
+     * @param path SQLファイルのパス。
+     * @return SQLファイル参照用のクエリ
+     */
+    public <T> SqSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path) {
+        return new SqSelect<T>(context, context.getResourceLoader().getResource(path));
+    }
+
+    /**
+     * SQLファイルを元にテーブルを参照します。
+     * @param <T> エンティティタイプ
+     * @param baseClass エンティティのクラス
+     * @param path SQLファイルのパス
+     * @param parameter パラメータ
+     * @return SQLファイル参照用のクエリ
+     */
+    public <T> SqSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path, Object parameter) throws MalformedURLException {
+        return new SqSelect<T>(context, context.getResourceLoader().getResource(path), parameter);
     }
 
 }

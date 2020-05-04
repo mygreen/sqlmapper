@@ -102,6 +102,7 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
         context.setDialect(dialect());
         context.setEntityMetaFactory(entityMetaFactory());
         context.setApplicationEventPublisher(applicationEventPublisher);
+        context.setResourceLoader(applicationContext);
 
         TransactionTemplate requiresNewTransactionTemplate = new TransactionTemplate(transactionManager(dataSource()));
         requiresNewTransactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
