@@ -21,23 +21,24 @@ import java.util.regex.Pattern;
 import org.springframework.core.style.ToStringCreator;
 
 import com.github.mygreen.sqlmapper.sql.SqlContext;
-import com.github.mygreen.sqlmapper.sql.SqlContextImpl;
 
 /**
  * {@link Node} representing the <code>WHERE</code> clause of an SQL.
  *
  * @author higa
+ * @author T.TSUCHIE
  */
 public class AddWhereIfNode extends ContainerNode {
 
-    Pattern pat = Pattern.compile("\\s*(order\\sby)|$)");
+    private static Pattern pat = Pattern.compile("\\s*(order\\sby)|$)");
 
     public AddWhereIfNode() {
     }
 
     @Override
-    public void accept(SqlContext ctx) {
-        SqlContext childCtx = new SqlContextImpl(ctx);
+    public void accept(final SqlContext ctx) {
+
+        SqlContext childCtx = new SqlContext(ctx);
         super.accept(childCtx);
         if (childCtx.isEnabled()) {
             String sql = childCtx.getSql();
@@ -45,8 +46,8 @@ public class AddWhereIfNode extends ContainerNode {
             if (!m.lookingAt()) {
                 sql = " WHERE " + sql;
             }
-            ctx.addSql(sql, childCtx.getBindVariables(), childCtx
-                    .getBindVariableTypes());
+            ctx.addSql(sql, childCtx.getBindParameter());
+//            ctx.addSql(sql, childCtx.getBindVariables(), childCtx.getBindVariableTypes());
         }
     }
 

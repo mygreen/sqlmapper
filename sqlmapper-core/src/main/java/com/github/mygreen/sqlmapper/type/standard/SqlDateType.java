@@ -3,15 +3,23 @@ package com.github.mygreen.sqlmapper.type.standard;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.github.mygreen.sqlmapper.annotation.Temporal.TemporalType;
 
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 public class SqlDateType implements SqlTemporalType<Date> {
+
+    private final String pattern;
+
+    public SqlDateType() {
+        this("yyyy-MM-dd");
+    }
+
+    public SqlDateType(final String pattern) {
+        this.pattern = pattern;
+    }
 
     @Override
     public TemporalType getTemporalType() {
@@ -33,6 +41,11 @@ public class SqlDateType implements SqlTemporalType<Date> {
     public void bindValue(Date value, MapSqlParameterSource paramSource, String paramName) {
 
         paramSource.addValue(paramName, value);
+    }
+
+    @Override
+    public String getAsText(Date value) {
+        return new SimpleDateFormat(pattern).format(value);
     }
 
 }

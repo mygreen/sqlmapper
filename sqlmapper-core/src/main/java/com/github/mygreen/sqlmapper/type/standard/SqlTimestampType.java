@@ -3,15 +3,23 @@ package com.github.mygreen.sqlmapper.type.standard;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.github.mygreen.sqlmapper.annotation.Temporal.TemporalType;
 
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 public class SqlTimestampType implements SqlTemporalType<Timestamp> {
+
+    private final String pattern;
+
+    public SqlTimestampType() {
+        this("yyyy-MM-dd HH:mm:ss.SSS");
+    }
+
+    public SqlTimestampType(final String pattern) {
+        this.pattern = pattern;
+    }
 
     @Override
     public TemporalType getTemporalType() {
@@ -33,5 +41,10 @@ public class SqlTimestampType implements SqlTemporalType<Timestamp> {
     public void bindValue(Timestamp value, MapSqlParameterSource paramSource, String paramName) {
 
         paramSource.addValue(paramName, value);
+    }
+
+    @Override
+    public String getAsText(Timestamp value) {
+        return new SimpleDateFormat(pattern).format(value);
     }
 }

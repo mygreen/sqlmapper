@@ -74,4 +74,9 @@ public class EnumOrdinalType<T extends Enum<T>> implements ValueType<T> {
         paramSource.addValue(paramName, sqlType);
 
     }
+
+    @Override
+    public String getAsText(T value) {
+        return String.valueOf(value.ordinal());
+    }
 }

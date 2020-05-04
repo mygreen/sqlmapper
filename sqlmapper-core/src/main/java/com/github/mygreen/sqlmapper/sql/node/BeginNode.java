@@ -18,12 +18,12 @@ package com.github.mygreen.sqlmapper.sql.node;
 import org.springframework.core.style.ToStringCreator;
 
 import com.github.mygreen.sqlmapper.sql.SqlContext;
-import com.github.mygreen.sqlmapper.sql.SqlContextImpl;
 
 /**
  * {@code BGEIN} コメントに対応する{@link Node}です。
  *
  * @author higa
+ * @author T.TSUCHIE
  */
 public class BeginNode extends ContainerNode {
 
@@ -32,10 +32,11 @@ public class BeginNode extends ContainerNode {
 
     @Override
     public void accept(final SqlContext ctx) {
-        SqlContext childCtx = new SqlContextImpl(ctx);
+        SqlContext childCtx = new SqlContext(ctx);
         super.accept(childCtx);
         if (childCtx.isEnabled()) {
-            ctx.addSql(childCtx.getSql(), childCtx.getBindVariables(), childCtx.getBindVariableTypes());
+            ctx.addSql(childCtx.getSql(), childCtx.getBindParameter());
+//            ctx.addSql(childCtx.getSql(), childCtx.getBindVariables(), childCtx.getBindVariableTypes());
         }
     }
 

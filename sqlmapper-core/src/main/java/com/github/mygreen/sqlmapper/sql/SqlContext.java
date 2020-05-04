@@ -1,5 +1,5 @@
 /*
- * Copyright 2004-2014 the Seasar Foundation and the Others.
+ * Copyright 2004-2010 the Seasar Foundation and the Others.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,15 @@
  */
 package com.github.mygreen.sqlmapper.sql;
 
-import java.beans.PropertyEditor;
-
 import org.springframework.beans.PropertyAccessor;
-import org.springframework.beans.PropertyEditorRegistry;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+
+import com.github.mygreen.sqlmapper.type.ValueType;
+import com.github.mygreen.sqlmapper.type.ValueTypeResolver;
+import com.github.mygreen.sqlmapper.where.NamedParameterContext;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <code>SQL</code>を実行するときのコンテキストです。 コンテキストで<code>SQL</code>を実行するのに必要な情報を組み立てた後、
@@ -31,119 +36,128 @@ import org.springframework.beans.PropertyEditorRegistry;
  * @author higa
  *
  */
-public interface SqlContext {
+public class SqlContext {
+
+    private StringBuffer sqlBuf = new StringBuffer(255);
 
     /**
-     * 名前に応じた引数を返します。
-     *
-     * @param name 引数名
-     * @return 名前に応じた引数
+     * SQLテンプレート中の変数をバインドした情報
      */
-    Object getArg(String name);
+    @Getter
+    private NamedParameterContext bindParameter = new NamedParameterContext(new MapSqlParameterSource());
 
     /**
-     * 引数が存在するかどうかを返します。
-     *
-     * @param name 引数名
-     * @return 引数が存在するか
+     * <code>BEGIN</code>コメントと<code>END</code>コメントで、囲まれた子供のコンテキストが有効かどうか。
      */
-
-    boolean hasArg(String name);
+    @Setter
+    @Getter
+    private boolean enabled = true;
 
     /**
-     * 名前に応じた引数のクラスを返します。 <code>getArg()</code>が<code>null</code>を返す場合があるので、
-     * このメソッドが用意されています。
-     *
-     * @param name 引数名
-     * @return 名前に応じた引数のクラスを返します。
+     * パラメータに指定したオブジェクトに対するアクセッサーを取得します。
      */
-    Class<?> getArgType(String name);
+    @Setter
+    @Getter
+    private PropertyAccessor propertyAccessor;
 
     /**
-     * 引数を追加します。
-     *
-     * @param name 引数名
-     * @param arg 引数
-     * @param argType 引数の型
+     * パラメータで指定した値を変換するために使用します。
      */
-    void addArg(String name, Object arg, Class<?> argType);
+    @Setter
+    @Getter
+    private ValueTypeResolver valueTypeResolver;
 
     /**
-     * 追加されたすべての<code>SQL</code>を返します。
-     *
-     * @return <code>SQL</code>
+     * 親のノードの情報。
      */
-    String getSql();
+    @Getter
+    private SqlContext parent;
+
+    public SqlContext() {
+    }
 
     /**
-     * 追加されたすべてのバインド変数の配列を返します。
+     * Creates a <code>SqlContextImpl</code> with a specific <code>parent</code>
      *
-     * @return バインド変数の配列
+     * @param parent the parent context.
      */
-    Object[] getBindVariables();
+    public SqlContext(final SqlContext parent) {
+        this.parent = parent;
+        this.enabled = false;
+
+        // パラメータ変数の現在まで払い出されたインデックス情報の引継ぎ
+        this.bindParameter.setArgIndex(parent.bindParameter.getArgIndex());
+
+        // 各種情報の引継ぎ
+        this.propertyAccessor = parent.propertyAccessor;
+        this.valueTypeResolver = parent.valueTypeResolver;
+
+    }
 
     /**
-     * 追加されたすべてのバインド変数の型の配列を返します。
-     *
-     * @return バインド変数の型の配列
+     * 変数名を払い出す。
+     * @return 変数名
      */
-    Class<?>[] getBindVariableTypes();
+    public String createArgName() {
+        return bindParameter.createArgName();
+    }
+
+    /**
+     * 指定した件数の変数名を払い出す。
+     * @param count 払い出す件数。
+     * @return 変数名
+     */
+    public String[] createArgNames(int count) {
+        return bindParameter.createArgNames(count);
+    }
+
+    /**
+     * <code>SQL</code>を取得します。
+     *
+     * @return SQL
+     */
+    public String getSql() {
+        return sqlBuf.toString();
+    }
 
     /**
      * <code>SQL</code>を追加します。
      *
-     * @param sql
-     * @return コンテキスト自身
+     * @parm sql SQL
      */
-    SqlContext addSql(String sql);
+    public void addSql(String sql) {
+        sqlBuf.append(sql);
+    }
 
     /**
      * <code>SQL</code>とバインド変数を追加します。
-     *
-     * @param sql
-     * @param bindVariable
-     * @param bindVariableType
-     * @return SQLコンテキスト
-     */
-    SqlContext addSql(String sql, Object bindVariable, Class<?> bindVariableType);
-
-    /**
-     * <code>SQL</code>とバインド変数の配列を追加します。
-     *
      * @param sql SQL
-     * @param bindVariables バインドする変数の値
-     * @param bindVariableTypes バインドする変数のタイプ
-     * @return SQLコンテキスト
+     * @param bindValue バインドする変数の値
+     * @param bindName バインドする変数の名称
+     * @param valueType
      */
-    SqlContext addSql(String sql, Object[] bindVariables, Class<?>[] bindVariableTypes);
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void addSql(String sql, Object bindValue, String bindName, ValueType valueType) {
+        sqlBuf.append(sql);
+
+        if(valueType != null) {
+            valueType.bindValue(bindValue, bindParameter.getParamSource(), bindName);
+        } else {
+            bindParameter.getParamSource().addValue(bindName, bindValue);
+        }
+    }
 
     /**
-     * <code>BEGIN</code>コメントと<code>END</code>コメントで、
-     * 囲まれた子供のコンテキストが有効かどうかを返します。
-     *
-     * @return 有効かどうか
+     * <code>SQL</code>とバインド変数を追加します。
+     * @param sql SQL
+     * @param bindParameter バインドする変数情報
      */
-    boolean isEnabled();
+    public void addSql(final String sql, final NamedParameterContext bindParameter) {
+        this.sqlBuf.append(sql);
 
-    /**
-     * <code>BEGIN</code>コメントと<code>END</code>コメントで、
-     * 囲まれた子供のコンテキストが有効かどうかを設定します。
-     *
-     * @param enabled 有効かどうか
-     */
-    void setEnabled(boolean enabled);
+        // 変数のバインド情報をマージする
+        this.bindParameter.getParamSource().addValues(bindParameter.getParamSource().getValues());
+        this.bindParameter.setArgIndex(bindParameter.getArgIndex());
 
-    /**
-     * パラメータに指定したオブジェクトに対するアクセッサーを取得します。
-     * @return {@link PropertyAccessor} の実装クラスのインスタンス。
-     */
-    PropertyAccessor getPropertyAccessor();
-
-    /**
-     * 指定したパラメータで埋め込み変数を文字列にフォーマットするために使用します。
-     * 任意の値に変換したい場合、{@link PropertyEditor}を登録します。
-     *
-     * @return {@link PropertyEditorRegistry}のインスタンスを取得します。
-     */
-    PropertyEditorRegistry getPropertyEditorRegistry();
+    }
 }

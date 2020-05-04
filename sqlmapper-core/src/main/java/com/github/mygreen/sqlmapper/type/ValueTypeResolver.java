@@ -1,6 +1,8 @@
 package com.github.mygreen.sqlmapper.type;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +28,7 @@ import com.github.mygreen.sqlmapper.type.standard.UtilDateType;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -53,9 +56,14 @@ public class ValueTypeResolver {
     private LobHandler lobHandler;
 
     /**
-     * 型処理のマップ
+     * クラスタイプで関連付けられた{@link ValueType}のマップ
      */
-    private Map<Class<?>, ValueType<?>> typeValueMap = new ConcurrentHashMap<>();
+    private Map<Class<?>, ValueType<?>> typeMap = new ConcurrentHashMap<>();
+
+    /**
+     * パスで関連づけられた{@link ValueType}のマップ
+     */
+    private Map<String, ValueTypeHolder> pathMap = new ConcurrentHashMap<>();
 
     /**
      * プロパティメタ情報に対する値の変換処理を取得する。
@@ -76,8 +84,8 @@ public class ValueTypeResolver {
             return getLobType(propertyMeta);
         }
 
-        if(typeValueMap.containsKey(propertyType)) {
-            return typeValueMap.get(propertyType);
+        if(typeMap.containsKey(propertyType)) {
+            return typeMap.get(propertyType);
         }
 
         if(propertyType.isEnum()) {
@@ -93,6 +101,38 @@ public class ValueTypeResolver {
                 .var("property", propertyMeta.getName())
                 .varWithClass("propertyType", propertyType)
                 .format());
+
+    }
+
+    /**
+     * 値の変換処理を取得します。
+     * @param requiredType プロパティのクラスタイプ。
+     * @param propertyPath プロパティのパス。
+     * @return 対応する変換処理の実装を返します。見つからない場合は {@literal null} を返しまsう。
+     */
+    public ValueType<?> getValueType(@NonNull Class<?> requiredType, String propertyPath) {
+
+        // 完全なパスで比較
+        if(pathMap.containsKey(propertyPath)) {
+            return pathMap.get(propertyPath).get(requiredType);
+        }
+
+        // インデックスを除去した形式で比較
+        final List<String> strippedPaths = new ArrayList<>();
+        addStrippedPropertyPaths(strippedPaths, "", propertyPath);
+        for(String strippedPath : strippedPaths) {
+            ValueType<?> valueType = pathMap.get(strippedPath).get(requiredType);
+            if(valueType != null) {
+                return valueType;
+            }
+        }
+
+        // 見つからない場合は、クラスタイプで比較
+        if(typeMap.containsKey(requiredType)) {
+            return typeMap.get(requiredType);
+        }
+
+        return null;
 
     }
 
@@ -186,15 +226,73 @@ public class ValueTypeResolver {
 
     }
 
-
     /**
      * {@link ValeType} を登録します。
      * @param <T> 関連付ける型
      * @param type 関連付けるクラスタイプ
-     * @param typeValue {@link TypeValue}の実装
+     * @param valueType {@link ValueType}の実装
      */
-    public <T> void register(Class<T> type, ValueType<T> typeValue) {
-        this.typeValueMap.put(type, typeValue);
+    public <T> void register(@NonNull Class<T> type, @NonNull ValueType<T> valueType) {
+        this.typeMap.put(type, valueType);
+    }
+
+    /**
+     * プロパティのパスを指定して{@link ValeType} を登録します。
+     * <p>SQLテンプレート中の変数（プロパティパス／式）を元に関連付ける再に使用します。
+     *
+     * @param <T> 関連付ける型
+     * @param propertyPath プロパティパス／式
+     * @param type 関連付けるクラスタイプ
+     * @param valueType {@link TypeValue}の実装
+     */
+    public <T> void register(@NonNull String propertyPath, @NonNull Class<T> type, @NonNull ValueType<T> valueType) {
+        this.pathMap.put(propertyPath, new ValueTypeHolder(type, valueType));
+    }
+
+    /**
+     * パスからリストのインデックス([1])やマップのキー([key])を除去したものを構成する。
+     * <p>SpringFrameworkの「PropertyEditorRegistrySupport#addStrippedPropertyPaths(...)」の処理</p>
+     * @param strippedPaths 除去したパス
+     * @param nestedPath 現在のネストしたパス
+     * @param propertyPath 処理対象のパス
+     */
+    public void addStrippedPropertyPaths(List<String> strippedPaths, String nestedPath, String propertyPath) {
+
+        final int startIndex = propertyPath.indexOf('[');
+        if (startIndex != -1) {
+            final int endIndex = propertyPath.indexOf(']');
+            if (endIndex != -1) {
+                final String prefix = propertyPath.substring(0, startIndex);
+                final String key = propertyPath.substring(startIndex, endIndex + 1);
+                final String suffix = propertyPath.substring(endIndex + 1, propertyPath.length());
+
+                // Strip the first key.
+                strippedPaths.add(nestedPath + prefix + suffix);
+
+                // Search for further keys to strip, with the first key stripped.
+                addStrippedPropertyPaths(strippedPaths, nestedPath + prefix, suffix);
+
+                // Search for further keys to strip, with the first key not stripped.
+                addStrippedPropertyPaths(strippedPaths, nestedPath + prefix + key, suffix);
+            }
+        }
+    }
+
+    @RequiredArgsConstructor
+    private static class ValueTypeHolder {
+
+        private final Class<?> registeredType;
+
+        private final ValueType<?> valueType;
+
+        ValueType<?> get(final Class<?> requiredType) {
+            if(registeredType.isAssignableFrom(requiredType)) {
+                return valueType;
+            }
+
+            return null;
+        }
+
     }
 
 }

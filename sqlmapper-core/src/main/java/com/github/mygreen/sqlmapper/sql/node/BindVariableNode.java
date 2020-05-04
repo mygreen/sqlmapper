@@ -19,6 +19,7 @@ import org.springframework.beans.PropertyAccessor;
 import org.springframework.core.style.ToStringCreator;
 
 import com.github.mygreen.sqlmapper.sql.SqlContext;
+import com.github.mygreen.sqlmapper.type.ValueType;
 
 import lombok.Getter;
 
@@ -26,6 +27,7 @@ import lombok.Getter;
  * （コメントによる定義の）バインド変数のための{@link Node}です。
  *
  * @author higa
+ * @author T.TSUCHIE
  */
 public class BindVariableNode extends AbstractNode {
 
@@ -44,14 +46,17 @@ public class BindVariableNode extends AbstractNode {
         this.expression = expression;
     }
 
-	@Override
+	@SuppressWarnings("rawtypes")
+    @Override
     public void accept(final SqlContext ctx) {
 
 	    final PropertyAccessor accessor = ctx.getPropertyAccessor();
 	    Object value = accessor.getPropertyValue(expression);
 	    Class<?> clazz = accessor.getPropertyType(expression);
 
-        ctx.addSql("?", value, clazz);
+        final String paramName = ctx.createArgName();
+	    ValueType valueType = ctx.getValueTypeResolver().getValueType(clazz, expression);
+	    ctx.addSql(":" + paramName, value, paramName, valueType);
     }
 
     @Override

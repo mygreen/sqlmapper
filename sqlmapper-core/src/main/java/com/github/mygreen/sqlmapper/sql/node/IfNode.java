@@ -30,6 +30,7 @@ import lombok.Setter;
  * {@code IF} コメント用の{@link Node}です。
  *
  * @author higa
+ * @author T.TSUCHIE
  */
 public class IfNode extends ContainerNode {
 

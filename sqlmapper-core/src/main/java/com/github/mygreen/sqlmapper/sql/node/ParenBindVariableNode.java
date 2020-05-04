@@ -23,6 +23,7 @@ import org.springframework.beans.PropertyAccessor;
 import org.springframework.core.style.ToStringCreator;
 
 import com.github.mygreen.sqlmapper.sql.SqlContext;
+import com.github.mygreen.sqlmapper.type.ValueType;
 
 import lombok.Getter;
 
@@ -31,6 +32,7 @@ import lombok.Getter;
  *
  * @author higa
  * @author shuji.w6e
+ * @author T.TSUCHIE
  */
 public class ParenBindVariableNode extends AbstractNode {
 
@@ -49,7 +51,8 @@ public class ParenBindVariableNode extends AbstractNode {
         this.expression = expression;
     }
 
-	@Override
+	@SuppressWarnings("rawtypes")
+    @Override
     public void accept(final SqlContext ctx) {
 	    final PropertyAccessor accessor = ctx.getPropertyAccessor();
         final Object var = accessor.getPropertyValue(expression);
@@ -65,11 +68,18 @@ public class ParenBindVariableNode extends AbstractNode {
             bindArray(ctx, var);
         } else {
             // ただのオブジェクトの場合
-            ctx.addSql("?", var, var.getClass());
+            final String paramName = ctx.createArgName();
+            ValueType valueType = ctx.getValueTypeResolver().getValueType(var.getClass(), expression);
+            ctx.addSql(":" + paramName, var, paramName, valueType);
         }
 
     }
 
+	/**
+	 * 配列に変換します。
+	 * @param iterable
+	 * @return
+	 */
     private Object[] toArray(Iterable<?> iterable) {
         LinkedList<Object> list = new LinkedList<>();
         for (Object o : iterable) {
@@ -83,6 +93,7 @@ public class ParenBindVariableNode extends AbstractNode {
      * @param ctx the SqlContext
      * @param array the variable array
      */
+    @SuppressWarnings("rawtypes")
     private void bindArray(final SqlContext ctx, final Object array) {
         int length = Array.getLength(array);
         if (length == 0) {
@@ -95,13 +106,18 @@ public class ParenBindVariableNode extends AbstractNode {
                 clazz = o.getClass();
             }
         }
+
+        String[] paramNames = ctx.createArgNames(length);
+
         ctx.addSql("(");
         Object value = Array.get(array, 0);
-        ctx.addSql("?", value, clazz);
+        ValueType valueType = ctx.getValueTypeResolver().getValueType(clazz, expression);
+
+        ctx.addSql(":" + paramNames[0], value, paramNames[0], valueType);
         for (int i = 1; i < length; ++i) {
             ctx.addSql(", ");
             value = Array.get(array, i);
-            ctx.addSql("?", value, clazz);
+            ctx.addSql(":" + paramNames[i], value, paramNames[i], valueType);
         }
         ctx.addSql(")");
     }

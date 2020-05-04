@@ -26,7 +26,12 @@ public class BigDecimalType implements ValueType<BigDecimal> {
 
     @Override
     public void bindValue(BigDecimal value, MapSqlParameterSource paramSource, String paramName) {
-
         paramSource.addValue(paramName, value);
     }
+
+    @Override
+    public String getAsText(BigDecimal value) {
+        return value.toPlainString();
+    }
+
 }

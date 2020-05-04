@@ -27,4 +27,13 @@ public class LobByteArrayType implements ValueType<byte[]> {
     public void bindValue(byte[] value, MapSqlParameterSource paramSource, String paramName) {
         paramSource.addValue(paramName, new SqlParameterValue(Types.BLOB, new SqlLobValue(value, lobHandler)));
     }
+
+    @Override
+    public String getAsText(byte[] value) {
+        StringBuilder buff = new StringBuilder();
+        for(byte b : value) {
+            buff.append(b);
+        }
+        return buff.toString();
+    }
 }

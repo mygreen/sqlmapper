@@ -36,4 +36,18 @@ public interface ValueType<T> {
      */
     void bindValue(T value, MapSqlParameterSource paramSource, String paramName) throws SqlParameterBindException;
 
+    /**
+     * SQLに直接埋め込む値として文字列に変換します。
+     *
+     * @param value 変換する値。非nullが渡されます。
+     * @return 文字列に変換した値
+     * @throws SqlParameterBindException SQL変数の値へのバインドに失敗した場合にスローされます。
+     */
+    default String getAsText(T value) {
+        if(value == null) {
+            return null;
+        }
+        return value.toString();
+    }
+
 }

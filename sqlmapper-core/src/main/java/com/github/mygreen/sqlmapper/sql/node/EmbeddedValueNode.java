@@ -15,13 +15,12 @@
  */
 package com.github.mygreen.sqlmapper.sql.node;
 
-import java.beans.PropertyEditor;
-
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.core.style.ToStringCreator;
 
 import com.github.mygreen.sqlmapper.sql.SqlContext;
 import com.github.mygreen.sqlmapper.sql.TwoWaySQLException;
+import com.github.mygreen.sqlmapper.type.ValueType;
 
 import lombok.Getter;
 
@@ -30,6 +29,7 @@ import lombok.Getter;
  * 値を埋め込む用の{@link Node}です
  *
  * @author higa
+ * @author T.TSUCHIE
  */
 public class EmbeddedValueNode extends AbstractNode {
 
@@ -45,7 +45,8 @@ public class EmbeddedValueNode extends AbstractNode {
         this.expression = expression;
     }
 
-	@Override
+	@SuppressWarnings({"rawtypes", "unchecked"})
+    @Override
     public void accept(final SqlContext ctx) {
 
 	    final PropertyAccessor accessor = ctx.getPropertyAccessor();
@@ -54,9 +55,9 @@ public class EmbeddedValueNode extends AbstractNode {
         if (value != null) {
             // SQLファイルに埋め込むために、文字列に変換する。
             Class<?> clazz = accessor.getPropertyType(expression);
-            PropertyEditor pe = ctx.getPropertyEditorRegistry().findCustomEditor(clazz, expression);
+            ValueType valueType = ctx.getValueTypeResolver().getValueType(clazz, expression);
 
-            final String sql = pe != null ? pe.getAsText() : value.toString();
+            final String sql = valueType != null ? valueType.getAsText(value) : value.toString();
             if (sql.indexOf(';') >= 0) {
                 throw new TwoWaySQLException("semicolon is not allowed.");
             }
