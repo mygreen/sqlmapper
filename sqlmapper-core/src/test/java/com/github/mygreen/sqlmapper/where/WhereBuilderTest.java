@@ -33,7 +33,7 @@ public class WhereBuilderTest {
         where.eq("firstName", "Taro").eq("lastName", "Yamada");
 
         EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
-        WhereVisitorParamContext paramContext = new WhereVisitorParamContext(new MapSqlParameterSource());
+        NamedParameterContext paramContext = new NamedParameterContext(new MapSqlParameterSource());
 
         WhereVisitor whereVisitor = new WhereVisitor(entityMeta, paramContext);
         where.accept(whereVisitor);
@@ -48,7 +48,7 @@ public class WhereBuilderTest {
     public void testWhereBuilder_or() {
 
         EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
-        WhereVisitorParamContext paramContext = new WhereVisitorParamContext(new MapSqlParameterSource());
+        NamedParameterContext paramContext = new NamedParameterContext(new MapSqlParameterSource());
 
         WhereBuilder where = new WhereBuilder();
         where.eq("lastName", "Yamada").ge("birthday", LocalDate.of(2000, 8, 1)).or().starts("firstName", "T");

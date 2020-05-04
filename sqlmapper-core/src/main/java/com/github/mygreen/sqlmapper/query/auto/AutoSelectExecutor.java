@@ -22,7 +22,7 @@ import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.util.QueryUtils;
 import com.github.mygreen.sqlmapper.where.WhereBuilder;
 import com.github.mygreen.sqlmapper.where.WhereVisitor;
-import com.github.mygreen.sqlmapper.where.WhereVisitorParamContext;
+import com.github.mygreen.sqlmapper.where.NamedParameterContext;
 
 
 public class AutoSelectExecutor<T> extends QueryExecutorBase {
@@ -72,7 +72,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
     /**
      * クエリ条件のパラメータに関する情報
      */
-    private final WhereVisitorParamContext paramContext = new WhereVisitorParamContext(paramSource);
+    private final NamedParameterContext paramContext = new NamedParameterContext(paramSource);
 
     /**
      * 抽出対象のプロパティ情報

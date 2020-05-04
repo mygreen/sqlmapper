@@ -30,7 +30,7 @@ public class WhereVisitor {
     /**
      * SQLを組み立てる際のパラメータ情報
      */
-    private final WhereVisitorParamContext paramContext;
+    private final NamedParameterContext paramContext;
 
     /**
      * 組み立てたクライテリア
@@ -43,28 +43,6 @@ public class WhereVisitor {
      */
     public String getCriteria() {
         return criteria.toString();
-    }
-
-    /**
-     * 変数名を払い出す。
-     * @return 変数名
-     */
-    private String createArgName() {
-        return "_arg" + paramContext.nextArgIndex();
-    }
-
-    /**
-     * 指定した件数の変数名を払い出す。
-     * @param count 払い出す件数。
-     * @return 変数名
-     */
-    private String[] createArgNames(int count) {
-
-        String[] names = new String[count];
-        for(int i=0; i < count; i++) {
-            names[i] = createArgName();
-        }
-        return names;
     }
 
     /**
@@ -170,7 +148,7 @@ public class WhereVisitor {
             throw new IllegalQueryException("unknwon property : " + propertyName);
         }
 
-        String argName = createArgName();
+        String argName = paramContext.createArgName();
         ValueType valueType = propertyMeta.get().getValueType();
         valueType.bindValue(valueOperator.getValue(), paramContext.getParamSource(), argName);
 
@@ -213,7 +191,7 @@ public class WhereVisitor {
             throw new IllegalQueryException("unknwon property : " + propertyName);
         }
 
-        String[] argNames = createArgNames(valueOperator.getValueSize());
+        String[] argNames = paramContext.createArgNames(valueOperator.getValueSize());
         ValueType valueType = propertyMeta.get().getValueType();
         for(int i=0; i < valueOperator.getValueSize(); i++) {
             valueType.bindValue(valueOperator.getValue(i), paramContext.getParamSource(), argNames[i]);

@@ -12,7 +12,7 @@ import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
 import com.github.mygreen.sqlmapper.where.WhereBuilder;
 import com.github.mygreen.sqlmapper.where.WhereVisitor;
-import com.github.mygreen.sqlmapper.where.WhereVisitorParamContext;
+import com.github.mygreen.sqlmapper.where.NamedParameterContext;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +44,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
     /**
      * クエリ条件のパラメータに関する情報
      */
-    private final WhereVisitorParamContext paramContext = new WhereVisitorParamContext(paramSource);
+    private final NamedParameterContext paramContext = new NamedParameterContext(paramSource);
 
     /**
      * 更新対象のプロパティの個数
