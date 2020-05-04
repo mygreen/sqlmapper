@@ -16,63 +16,63 @@
 package com.github.mygreen.sqlmapper.sql;
 
 /**
- * The SQL Tokenizer Interface to decompose a SQL into tokens.
+ * SQLをトークンに分解するクラスです。.
  *
  * @author higa
  */
 public interface SqlTokenizer {
 
     /**
-     * @return a token
+     * @return トークンを返します。
      */
     String getToken();
 
     /**
-     * @return the SQL String
+     * @return SQLを返します。
      */
     String getSql();
 
     /**
-     * @return the SQL String until the actual position of the Tokenizer.
+     * @return 現在解析しているポジションより前のSQLを返します。
      */
     String getBefore();
 
     /**
-     * @return the SQL String after the current position of the Tokenizer.
+     * @return 現在解析しているポジションより後ろのSQLを返します。
      */
     String getAfter();
 
     /**
-     * @return the position that is currently being analyzed ty the Tokenizer.
+     * @return 現在解析しているポジションを返します。
      */
     int getPosition();
 
     /**
-     * @return the current token type.
+     * @return 現在のトークン種別を返します。
      */
     TokenType getTokenType();
 
     /**
-     * @return the next token type.
+     * @return 次のトークン種別を返します。
      */
     TokenType getNextTokenType();
 
     /**
-     * @return advanced the Tokenizer to the next token.
+     * @return 次のトークンに進みます。
      */
     TokenType next();
 
     /**
-     * Skips a token.
+     * トークンをスキップします。
      *
-     * @return the token being skipped
+     * @return スキップしたトークン
      */
     String skipToken();
 
     /**
-     * Skips the whitespace.
+     * ホワイトスペースをスキップします。
      *
-     * @return the whitespace being skipped
+     * @return スキップしたホワイストスペース
      */
     String skipWhitespace();
 

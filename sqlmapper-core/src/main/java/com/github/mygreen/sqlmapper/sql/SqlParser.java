@@ -24,9 +24,8 @@ package com.github.mygreen.sqlmapper.sql;
 public interface SqlParser {
 
     /**
-     * SQLを解析して<code>Node</code>のツリーを返します。
      *
-     * @return
+     * @return SQLを解析して<code>Node</code>のツリーを返します。
      */
     Node parse();
 }
