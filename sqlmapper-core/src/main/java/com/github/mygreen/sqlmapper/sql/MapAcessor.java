@@ -16,7 +16,7 @@ import org.springframework.core.convert.TypeDescriptor;
  * @author T.TSUCHIE
  *
  */
-public class RootMapAcessor extends AbstractNestablePropertyAccessor {
+public class MapAcessor extends AbstractNestablePropertyAccessor {
 
     private final Map<String, Object> rootObject;
 
@@ -26,7 +26,7 @@ public class RootMapAcessor extends AbstractNestablePropertyAccessor {
      * 参照対象のオブジェクトを指定してインスタンスを作成する。
      * @param object 参照対象のオブジェクト
      */
-    public RootMapAcessor(final Map<String, Object> object) {
+    public MapAcessor(final Map<String, Object> object) {
         super(object);
         this.rootObject = object;
     }
@@ -48,7 +48,7 @@ public class RootMapAcessor extends AbstractNestablePropertyAccessor {
 
     @Override
     protected AbstractNestablePropertyAccessor newNestedPropertyAccessor(Object object, String nestedPath) {
-        // マップの要素は DirectFieldAccessor に委譲する。
+        // マップの要素へのアクセスは DirectFieldAccessor に委譲する。
         return new DirectFieldAccessor(object);
     }
 
