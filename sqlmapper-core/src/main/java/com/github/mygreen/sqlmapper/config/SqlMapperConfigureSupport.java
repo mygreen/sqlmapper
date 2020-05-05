@@ -43,7 +43,7 @@ import com.github.mygreen.sqlmapper.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.meta.PropertyMetaFactory;
 import com.github.mygreen.sqlmapper.naming.DefaultNamingRule;
 import com.github.mygreen.sqlmapper.naming.NamingRule;
-import com.github.mygreen.sqlmapper.type.ValueTypeResolver;
+import com.github.mygreen.sqlmapper.type.ValueTypeRegistry;
 import com.github.mygreen.sqlmapper.type.standard.BigDecimalType;
 import com.github.mygreen.sqlmapper.type.standard.BooleanType;
 import com.github.mygreen.sqlmapper.type.standard.DoubleType;
@@ -130,7 +130,7 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
         PropertyMetaFactory propertyMetaFactory = new PropertyMetaFactory();
         propertyMetaFactory.setMessageBuilder(messageBuilder());
         propertyMetaFactory.setNamingRule(namingRule());
-        propertyMetaFactory.setValueTypeResolver(valueTypeResolver());
+        propertyMetaFactory.setValueTypeRegistry(valueTypeRegistry());
         propertyMetaFactory.setDialect(dialect());
         propertyMetaFactory.setDataSource(dataSource());
         propertyMetaFactory.setNamedParameterJdbcTemplate(namedParameterJdbcTemplate());
@@ -165,42 +165,42 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     }
 
     @Bean
-    public ValueTypeResolver valueTypeResolver() {
+    public ValueTypeRegistry valueTypeRegistry() {
 
-        ValueTypeResolver resolver = new ValueTypeResolver();
-        resolver.setApplicationContext(applicationContext);
-        resolver.setMessageBuilder(messageBuilder());
-        resolver.setLobHandler(lobHandler());
+        ValueTypeRegistry registry = new ValueTypeRegistry();
+        registry.setApplicationContext(applicationContext);
+        registry.setMessageBuilder(messageBuilder());
+        registry.setLobHandler(lobHandler());
 
-        resolver.register(String.class, new StringType());
+        registry.register(String.class, new StringType());
 
-        resolver.register(Boolean.class, new BooleanType(false));
-        resolver.register(boolean.class, new BooleanType(true));
+        registry.register(Boolean.class, new BooleanType(false));
+        registry.register(boolean.class, new BooleanType(true));
 
-        resolver.register(Short.class, new ShortType(false));
-        resolver.register(short.class, new ShortType(true));
-        resolver.register(Integer.class, new IntegerType(false));
-        resolver.register(int.class, new IntegerType(true));
-        resolver.register(Long.class, new LongType(false));
-        resolver.register(long.class, new LongType(true));
-        resolver.register(Float.class, new FloatType(false));
-        resolver.register(float.class, new FloatType(true));
-        resolver.register(Double.class, new DoubleType(false));
-        resolver.register(double.class, new DoubleType(true));
+        registry.register(Short.class, new ShortType(false));
+        registry.register(short.class, new ShortType(true));
+        registry.register(Integer.class, new IntegerType(false));
+        registry.register(int.class, new IntegerType(true));
+        registry.register(Long.class, new LongType(false));
+        registry.register(long.class, new LongType(true));
+        registry.register(Float.class, new FloatType(false));
+        registry.register(float.class, new FloatType(true));
+        registry.register(Double.class, new DoubleType(false));
+        registry.register(double.class, new DoubleType(true));
 
-        resolver.register(BigDecimal.class, new BigDecimalType());
+        registry.register(BigDecimal.class, new BigDecimalType());
 
-        resolver.register(Time.class, new SqlTimeType());
-        resolver.register(java.sql.Date.class, new SqlDateType());
-        resolver.register(Timestamp.class, new SqlTimestampType());
+        registry.register(Time.class, new SqlTimeType());
+        registry.register(java.sql.Date.class, new SqlDateType());
+        registry.register(Timestamp.class, new SqlTimestampType());
 
-        resolver.register(LocalTime.class, new LocalTimeType());
-        resolver.register(LocalDate.class, new LocalDateType());
-        resolver.register(LocalDateTime.class, new LocalDateTimeType());
+        registry.register(LocalTime.class, new LocalTimeType());
+        registry.register(LocalDate.class, new LocalDateType());
+        registry.register(LocalDateTime.class, new LocalDateTimeType());
 
-        resolver.register(UUID.class, new UUIDType());
+        registry.register(UUID.class, new UUIDType());
 
-        return resolver;
+        return registry;
     }
 
     @Bean

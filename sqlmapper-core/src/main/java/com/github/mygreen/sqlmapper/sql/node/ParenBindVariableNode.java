@@ -69,7 +69,7 @@ public class ParenBindVariableNode extends AbstractNode {
         } else {
             // ただのオブジェクトの場合
             final String paramName = ctx.createArgName();
-            ValueType valueType = ctx.getValueTypeResolver().getValueType(var.getClass(), expression);
+            ValueType valueType = ctx.getValueTypeRegistry().findValueType(var.getClass(), expression);
             ctx.addSql(":" + paramName, var, paramName, valueType);
         }
 
@@ -111,7 +111,7 @@ public class ParenBindVariableNode extends AbstractNode {
 
         ctx.addSql("(");
         Object value = Array.get(array, 0);
-        ValueType valueType = ctx.getValueTypeResolver().getValueType(clazz, expression);
+        ValueType valueType = ctx.getValueTypeRegistry().findValueType(clazz, expression);
 
         ctx.addSql(":" + paramNames[0], value, paramNames[0], valueType);
         for (int i = 1; i < length; ++i) {

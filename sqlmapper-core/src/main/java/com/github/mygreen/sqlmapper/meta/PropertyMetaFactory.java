@@ -35,7 +35,7 @@ import com.github.mygreen.sqlmapper.id.UUIDGenerator;
 import com.github.mygreen.sqlmapper.localization.MessageBuilder;
 import com.github.mygreen.sqlmapper.naming.NamingRule;
 import com.github.mygreen.sqlmapper.type.ValueType;
-import com.github.mygreen.sqlmapper.type.ValueTypeResolver;
+import com.github.mygreen.sqlmapper.type.ValueTypeRegistry;
 import com.github.mygreen.sqlmapper.util.ClassUtils;
 import com.github.mygreen.sqlmapper.util.NameUtils;
 
@@ -66,7 +66,7 @@ public class PropertyMetaFactory {
     @Getter
     @Setter
     @Autowired
-    private ValueTypeResolver valueTypeResolver;
+    private ValueTypeRegistry valueTypeRegistry;
 
     @Getter
     @Setter
@@ -124,7 +124,7 @@ public class PropertyMetaFactory {
             doIdGenerator(propertyMeta, entityMeta);
 
             // プロパティに対する型変換を設定します。
-            ValueType<?> valueType = valueTypeResolver.getValueType(propertyMeta);
+            ValueType<?> valueType = valueTypeRegistry.findValueType(propertyMeta);
             propertyMeta.setValueType(valueType);
 
 

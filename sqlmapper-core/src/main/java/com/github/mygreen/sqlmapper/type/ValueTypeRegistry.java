@@ -38,7 +38,7 @@ import lombok.Setter;
  * @author T.TSUCHIE
  *
  */
-public class ValueTypeResolver {
+public class ValueTypeRegistry {
 
     @Getter
     @Setter
@@ -71,7 +71,7 @@ public class ValueTypeResolver {
      * @return 対応する {@link ValueType}の実装。
      * @throws ValueTypeNotFoundException 対応する {@link ValueType} が見つからない場合。
      */
-    public ValueType<?> getValueType(@NonNull PropertyMeta propertyMeta) {
+    public ValueType<?> findValueType(@NonNull PropertyMeta propertyMeta) {
 
         Optional<Convert> convertAnno = propertyMeta.getAnnotation(Convert.class);
         if(convertAnno.isPresent()) {
@@ -105,12 +105,12 @@ public class ValueTypeResolver {
     }
 
     /**
-     * 値の変換処理を取得します。
+     * プロパティパスに対応した値の変換処理を取得します。
      * @param requiredType プロパティのクラスタイプ。
      * @param propertyPath プロパティのパス。
      * @return 対応する変換処理の実装を返します。見つからない場合は {@literal null} を返しまsう。
      */
-    public ValueType<?> getValueType(@NonNull Class<?> requiredType, String propertyPath) {
+    public ValueType<?> findValueType(@NonNull Class<?> requiredType, String propertyPath) {
 
         // 完全なパスで比較
         if(pathMap.containsKey(propertyPath)) {
@@ -256,7 +256,7 @@ public class ValueTypeResolver {
      * @param nestedPath 現在のネストしたパス
      * @param propertyPath 処理対象のパス
      */
-    public void addStrippedPropertyPaths(List<String> strippedPaths, String nestedPath, String propertyPath) {
+    protected void addStrippedPropertyPaths(List<String> strippedPaths, String nestedPath, String propertyPath) {
 
         final int startIndex = propertyPath.indexOf('[');
         if (startIndex != -1) {

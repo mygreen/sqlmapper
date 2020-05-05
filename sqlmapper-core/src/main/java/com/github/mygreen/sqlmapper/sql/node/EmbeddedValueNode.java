@@ -55,7 +55,7 @@ public class EmbeddedValueNode extends AbstractNode {
         if (value != null) {
             // SQLファイルに埋め込むために、文字列に変換する。
             Class<?> clazz = accessor.getPropertyType(expression);
-            ValueType valueType = ctx.getValueTypeResolver().getValueType(clazz, expression);
+            ValueType valueType = ctx.getValueTypeRegistry().findValueType(clazz, expression);
 
             final String sql = valueType != null ? valueType.getAsText(value) : value.toString();
             if (sql.indexOf(';') >= 0) {

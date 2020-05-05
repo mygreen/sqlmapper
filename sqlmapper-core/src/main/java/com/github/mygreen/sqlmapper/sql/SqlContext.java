@@ -20,7 +20,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.github.mygreen.sqlmapper.dialect.Dialect;
 import com.github.mygreen.sqlmapper.type.ValueType;
-import com.github.mygreen.sqlmapper.type.ValueTypeResolver;
+import com.github.mygreen.sqlmapper.type.ValueTypeRegistry;
 import com.github.mygreen.sqlmapper.where.NamedParameterContext;
 
 import lombok.Getter;
@@ -66,7 +66,7 @@ public class SqlContext {
      */
     @Setter
     @Getter
-    private ValueTypeResolver valueTypeResolver;
+    private ValueTypeRegistry valueTypeRegistry;
 
     @Setter
     @Getter
@@ -95,7 +95,7 @@ public class SqlContext {
 
         // 各種情報の引継ぎ
         this.propertyAccessor = parent.propertyAccessor;
-        this.valueTypeResolver = parent.valueTypeResolver;
+        this.valueTypeRegistry = parent.valueTypeRegistry;
 
     }
 
