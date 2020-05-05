@@ -4,11 +4,20 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
 import org.springframework.jdbc.support.incrementer.OracleSequenceMaxValueIncrementer;
+import org.springframework.lang.Nullable;
 
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
+import com.github.mygreen.sqlmapper.type.ValueType;
+import com.github.mygreen.sqlmapper.type.standard.BooleanType;
+import com.github.mygreen.sqlmapper.type.standard.OracleBooleanType;
 
-public class OracleDialect extends DialectBase {
+public class OracleDialect extends DialectSupport {
+
+    private final OracleBooleanType objectiveBooleanType = new OracleBooleanType(false);
+
+    private final OracleBooleanType primitiveBooleanType = new OracleBooleanType(true);
 
     @Override
     public String getName() {
@@ -32,6 +41,42 @@ public class OracleDialect extends DialectBase {
     @Override
     public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
         return new OracleSequenceMaxValueIncrementer(dataSource, sequenceName);
+    }
+
+    /**
+     * {@inheritDoc}
+     * OracleDBの場合、{@literal boolean/Boolean}のとき、整数型に変換する {@link OracleBooleanType} に変換します。
+     */
+    @Override
+    public ValueType<?> getValueType(final PropertyMeta propertyMeta) {
+        final Class<?> propertyType = propertyMeta.getPropertyType();
+        if(boolean.class.isAssignableFrom(propertyType)) {
+            return primitiveBooleanType;
+        } else if(Boolean.class.isAssignableFrom(propertyType)) {
+            return objectiveBooleanType;
+        }
+
+        return propertyMeta.getValueType();
+    }
+
+    /**
+     * {@inheritDoc}
+     * OracleDBの場合、{@literal boolean/Boolean}のとき、整数型に変換する {@link OracleBooleanType} に変換します。
+     */
+    @Override
+    public ValueType<?> getValueType(@Nullable ValueType<?> valueType) {
+        if(valueType == null) {
+            return null;
+        }
+
+        if(valueType instanceof BooleanType) {
+            if(((BooleanType)valueType).isForPrimitive()) {
+                return primitiveBooleanType;
+            } else {
+                return objectiveBooleanType;
+            }
+        }
+        return valueType;
     }
 
     @Override

@@ -41,13 +41,12 @@ public interface ValueType<T> {
      *
      * @param value 変換する値。非nullが渡されます。
      * @return 文字列に変換した値
-     * @throws SqlParameterBindException SQL変数の値へのバインドに失敗した場合にスローされます。
+     * @throws TextConversionException 値を文字列への変換に失敗したときにストローされます。
      */
-    default String getAsText(T value) {
+    default String getAsText(T value) throws TextConversionException {
         if(value == null) {
             return null;
         }
         return value.toString();
     }
-
 }

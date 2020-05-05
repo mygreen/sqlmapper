@@ -37,4 +37,18 @@ public class SqlValueConversionException extends SqlMapperException {
         this.targetValue = targetValue;
 
     }
+
+    /**
+     * インスタンスを作成します。
+     * @param convertType 変換先の型
+     * @param targetValue 変換対象の値
+     * @param message エラーメッセージ
+     * @param cause 原因となる例外
+     */
+    public SqlValueConversionException(Class<?> convertType, Object targetValue, String message, Throwable cause) {
+        super(message, cause);
+        this.convertType = convertType;
+        this.targetValue = targetValue;
+
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.github.mygreen.sqlmapper.type.ValueType;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class BooleanType implements ValueType<Boolean> {
     /**
      * プリミティブ型かどうか
      */
+    @Getter
     private final boolean forPrimitive;
 
     @Override

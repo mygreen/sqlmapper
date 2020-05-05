@@ -14,7 +14,7 @@ import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
  * @author T.TSUCHIE
  *
  */
-public class H2Dialect extends DialectBase {
+public class H2Dialect extends DialectSupport {
 
     /**
      * {@inheritDoc}
@@ -51,12 +51,12 @@ public class H2Dialect extends DialectBase {
         StringBuilder buf = new StringBuilder(sql.length() + 20);
         buf.append(sql);
         if (offset > 0) {
-            buf.append(" limit ");
+            buf.append(" LIMIT ");
             buf.append(limit);
-            buf.append(" offset ");
+            buf.append(" OFFSET ");
             buf.append(offset);
         } else {
-            buf.append(" limit ");
+            buf.append(" LIMIT ");
             buf.append(limit);
         }
 

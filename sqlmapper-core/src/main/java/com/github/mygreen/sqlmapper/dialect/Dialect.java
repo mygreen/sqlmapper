@@ -47,12 +47,23 @@ public interface Dialect {
     DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName);
 
     /**
-     * 値タイプを返します。
+     * プロパティタイプに対する値タイプを返します。
+     * Oracleなどのようにbooleanが存在しない場合は対応する{@link ValueType} に切り替えたりします。
      *
      * @param propertyMeta プロパティのメタデータ
      * @return 値タイプ
      */
     ValueType<?> getValueType(PropertyMeta propertyMeta);
+
+    /**
+     * 対応するクラスタイプに対する値タイプを返します。
+     * Oracleなどのようにbooleanが存在しない場合は対応する{@link ValueType} に切り替えたりします。
+     *
+     * @param <T> クラスタイプ
+     * @param valueType 値タイプ
+     * @return 値タイプ
+     */
+    ValueType<?> getValueType(ValueType<?> valueType);
 
     /**
      * 件数取得用のSQLのSELECT句を取得します。

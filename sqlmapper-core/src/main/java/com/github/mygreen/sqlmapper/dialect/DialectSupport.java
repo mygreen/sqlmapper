@@ -1,18 +1,21 @@
 package com.github.mygreen.sqlmapper.dialect;
 
+import org.springframework.lang.Nullable;
+
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.type.ValueType;
 
 /**
- * Dialectのベース
+ * {@link Dialect}のベースとなるクラス。
+ * 多くのDBに共通する設定はこのクラスで実装し、異なる部分を継承先で実装します。
  *
  *
  * @author T.TSUCHIE
  *
  */
-public abstract class DialectBase implements Dialect {
+public abstract class DialectSupport implements Dialect {
 
     /**
      * {@inheritDoc}
@@ -30,8 +33,13 @@ public abstract class DialectBase implements Dialect {
     }
 
     @Override
+    public ValueType<?> getValueType(@Nullable ValueType<?> valueType) {
+        return valueType;
+    }
+
+    @Override
     public String getCountSql() {
-        return "count(*)";
+        return "COUNT(*)";
     }
 
     @Override

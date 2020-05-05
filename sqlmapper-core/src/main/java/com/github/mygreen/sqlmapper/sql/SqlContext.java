@@ -18,6 +18,7 @@ package com.github.mygreen.sqlmapper.sql;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
+import com.github.mygreen.sqlmapper.dialect.Dialect;
 import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.type.ValueTypeResolver;
 import com.github.mygreen.sqlmapper.where.NamedParameterContext;
@@ -66,6 +67,10 @@ public class SqlContext {
     @Setter
     @Getter
     private ValueTypeResolver valueTypeResolver;
+
+    @Setter
+    @Getter
+    private Dialect dialect;
 
     /**
      * 親のノードの情報。
@@ -134,7 +139,7 @@ public class SqlContext {
      * @param sql SQL
      * @param bindValue バインドする変数の値
      * @param bindName バインドする変数の名称
-     * @param valueType
+     * @param valueType バインドする変数のタイプに対応する {@value ValueType}
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void addSql(String sql, Object bindValue, String bindName, ValueType valueType) {
