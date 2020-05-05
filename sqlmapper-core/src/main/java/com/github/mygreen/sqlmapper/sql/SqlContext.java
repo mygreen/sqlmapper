@@ -145,6 +145,9 @@ public class SqlContext {
     public void addSql(String sql, Object bindValue, String bindName, ValueType valueType) {
         sqlBuf.append(sql);
 
+        // Dialectで変更があるような場合は変換する。
+        valueType = dialect.getValueType(valueType);
+
         if(valueType != null) {
             valueType.bindValue(bindValue, bindParameter.getParamSource(), bindName);
         } else {
