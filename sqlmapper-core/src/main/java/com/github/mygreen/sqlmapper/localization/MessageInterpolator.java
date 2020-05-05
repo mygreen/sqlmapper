@@ -54,7 +54,7 @@ public class MessageInterpolator {
 
     /**
      * メッセージを引数varsで指定した変数で補完する。
-     * <p>{@link MessageResolver}を指定した場合、メッセージ中の変数をメッセージコードとして解決します。
+     * <p>{@link MessageSourceAccessor}を指定した場合、メッセージ中の変数をメッセージコードとして解決します。
      *
      * @param message 対象のメッセージ。
      * @param vars メッセージ中の変数に対する値のマップ。
