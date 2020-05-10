@@ -47,7 +47,8 @@ public class EntityRowMapper<T> implements RowMapper<T> {
     }
 
     /**
-     * 任意のSQL実行時のように、取得するカラムが未定のとき
+     * 任意のSQL実行時のように、取得するカラムが未定のときエンティティ情報を指定する。
+     * <p>抽出したカラムに一致するプロパティがあればマッピングする。
      * @param entityMeta エンティティのメタ情報
      */
     @SuppressWarnings("unchecked")
