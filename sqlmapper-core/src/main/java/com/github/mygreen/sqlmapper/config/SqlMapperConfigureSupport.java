@@ -43,6 +43,7 @@ import com.github.mygreen.sqlmapper.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.meta.PropertyMetaFactory;
 import com.github.mygreen.sqlmapper.naming.DefaultNamingRule;
 import com.github.mygreen.sqlmapper.naming.NamingRule;
+import com.github.mygreen.sqlmapper.query.sql.SqlLoader;
 import com.github.mygreen.sqlmapper.type.ValueTypeRegistry;
 import com.github.mygreen.sqlmapper.type.standard.BigDecimalType;
 import com.github.mygreen.sqlmapper.type.standard.BooleanType;
@@ -102,7 +103,8 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
         context.setDialect(dialect());
         context.setEntityMetaFactory(entityMetaFactory());
         context.setApplicationEventPublisher(applicationEventPublisher);
-        context.setResourceLoader(applicationContext);
+        context.setSqlLoader(sqlLoader());
+        context.setValueTypeRegistry(valueTypeRegistry());
 
         TransactionTemplate requiresNewTransactionTemplate = new TransactionTemplate(transactionManager(dataSource()));
         requiresNewTransactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -201,6 +203,12 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
         registry.register(UUID.class, new UUIDType());
 
         return registry;
+    }
+
+    @Bean
+    public SqlLoader sqlLoader() {
+        return new SqlLoader();
+
     }
 
     @Bean

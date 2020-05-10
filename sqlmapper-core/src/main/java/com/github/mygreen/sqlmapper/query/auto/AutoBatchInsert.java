@@ -126,7 +126,7 @@ public class AutoBatchInsert<T> extends QueryBase<T> {
      * クエリを実行します。
      * @return 更新した行数。
      */
-    public int execute() {
+    public int[] execute() {
 
         assertNotCompleted("executeBatchInsert");
         context.getApplicationEventPublisher().publishEvent(new PreBatchInsertEvent(this, entityMeta, entities));
@@ -134,7 +134,7 @@ public class AutoBatchInsert<T> extends QueryBase<T> {
         final AutoBatchInsertExecutor executor = new AutoBatchInsertExecutor(this);
         try {
             executor.prepare();
-            final int result = executor.execute();
+            final int[] result = executor.execute();
 
             context.getApplicationEventPublisher().publishEvent(new PostBatchInsertEvent(this, entityMeta, entities));
             return result;

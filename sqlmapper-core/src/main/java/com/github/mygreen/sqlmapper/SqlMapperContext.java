@@ -1,7 +1,6 @@
 package com.github.mygreen.sqlmapper;
 
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -9,6 +8,8 @@ import com.github.mygreen.sqlmapper.dialect.Dialect;
 import com.github.mygreen.sqlmapper.localization.MessageBuilder;
 import com.github.mygreen.sqlmapper.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.naming.NamingRule;
+import com.github.mygreen.sqlmapper.query.sql.SqlLoader;
+import com.github.mygreen.sqlmapper.type.ValueTypeRegistry;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -58,11 +59,14 @@ public class SqlMapperContext {
     private ApplicationEventPublisher applicationEventPublisher;
 
     /**
-     * SQLファイルを読み込むときのリソースローダー。
+     * SQLテンプレートを読み込みキャッシュ管理する。
      */
     @Getter
     @Setter
-    private ResourceLoader resourceLoader;
+    private SqlLoader sqlLoader;
 
+    @Getter
+    @Setter
+    private ValueTypeRegistry valueTypeRegistry;
 
 }

@@ -12,7 +12,7 @@ import com.github.mygreen.sqlmapper.sql.MapAcessor;
 import com.github.mygreen.sqlmapper.sql.Node;
 import com.github.mygreen.sqlmapper.sql.SqlContext;
 
-public class SqlUpdate<T> extends QueryBase<T> {
+public class SqlCount<T> extends QueryBase<T> {
 
     /**
      * パラメータです。
@@ -35,13 +35,13 @@ public class SqlUpdate<T> extends QueryBase<T> {
     private MapSqlParameterSource paramSource;
 
 
-    public SqlUpdate(SqlMapperContext context, Node node, Object parameter) {
+    public SqlCount(SqlMapperContext context, Node node, Object parameter) {
         super(context);
         this.node = node;
         this.parameter = parameter;
     }
 
-    public SqlUpdate(SqlMapperContext context, Node node) {
+    public SqlCount(SqlMapperContext context, Node node) {
         this(context, node, null);
     }
 
@@ -84,17 +84,16 @@ public class SqlUpdate<T> extends QueryBase<T> {
     }
 
     /**
-     * 更新クエリを実行します。
-     * @return 更新したレコード件数を返します。
+     * カウント用のクエリを実行します。
+     * @return カウント結果
      */
-    public int execute() {
-        assertNotCompleted("executeSqlUpdate");
+    public long getCount() {
+        assertNotCompleted("getCount");
 
         prepare();
 
         try {
-            int rows = context.getNamedParameterJdbcTemplate().update(executedSql, paramSource);
-            return rows;
+            return context.getNamedParameterJdbcTemplate().queryForObject(executedSql, paramSource, Long.class);
         } finally {
             completed();
         }

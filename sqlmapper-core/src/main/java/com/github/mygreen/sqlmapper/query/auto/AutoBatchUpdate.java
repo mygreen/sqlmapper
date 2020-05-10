@@ -168,7 +168,7 @@ public class AutoBatchUpdate<T> extends QueryBase<T> {
      * 更新クエリを実行します。
      * @return 更新したレコード件数を返します。
      */
-    public int execute() {
+    public int[] execute() {
 
         assertNotCompleted("executeBatchUpdate");
         context.getApplicationEventPublisher().publishEvent(new PreBatchUpdateEvent(this, entityMeta, entities));
@@ -177,7 +177,7 @@ public class AutoBatchUpdate<T> extends QueryBase<T> {
 
         try {
             executor.prepare();
-            final int result= executor.execute();
+            final int[] result= executor.execute();
 
             context.getApplicationEventPublisher().publishEvent(new PostBatchUpdateEvent(this, entityMeta, entities));
             return result;

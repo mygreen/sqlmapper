@@ -1,6 +1,5 @@
 package com.github.mygreen.sqlmapper;
 
-import java.net.MalformedURLException;
 import java.util.List;
 
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
@@ -11,7 +10,10 @@ import com.github.mygreen.sqlmapper.query.auto.AutoDelete;
 import com.github.mygreen.sqlmapper.query.auto.AutoInsert;
 import com.github.mygreen.sqlmapper.query.auto.AutoSelect;
 import com.github.mygreen.sqlmapper.query.auto.AutoUpdate;
-import com.github.mygreen.sqlmapper.query.sql.SqSelect;
+import com.github.mygreen.sqlmapper.query.sql.SqlBatchUpdate;
+import com.github.mygreen.sqlmapper.query.sql.SqlCount;
+import com.github.mygreen.sqlmapper.query.sql.SqlSelect;
+import com.github.mygreen.sqlmapper.query.sql.SqlUpdate;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -155,8 +157,8 @@ public class SqlMapper {
      * @param path SQLファイルのパス。
      * @return SQLファイル参照用のクエリ
      */
-    public <T> SqSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path) {
-        return new SqSelect<T>(context, context.getResourceLoader().getResource(path));
+    public <T> SqlSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path) {
+        return new SqlSelect<T>(context, baseClass, context.getSqlLoader().loadSqlFileAsNode(path));
     }
 
     /**
@@ -167,8 +169,71 @@ public class SqlMapper {
      * @param parameter パラメータ
      * @return SQLファイル参照用のクエリ
      */
-    public <T> SqSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path, Object parameter) throws MalformedURLException {
-        return new SqSelect<T>(context, context.getResourceLoader().getResource(path), parameter);
+    public <T> SqlSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path, Object parameter) {
+        return new SqlSelect<T>(context, baseClass, context.getSqlLoader().loadSqlFileAsNode(path), parameter);
+    }
+
+    /**
+     * カウント用のSQLファイルを実行します。
+     * @param path SQLファイルのパス
+     * @return カウント結果
+     */
+    public long getCountBySqlFile(@NonNull String path) {
+        return new SqlCount<>(context, context.getSqlLoader().loadSqlFileAsNode(path))
+                .getCount();
+    }
+
+    /**
+     * カウント用のSQLファイルを実行します。
+     * @param path SQLファイルのパス
+     * @param parameter パラメータ
+     * @return カウント結果
+     */
+    public long getCountBySqlFile(@NonNull String path, Object parameter) {
+        return new SqlCount<>(context, context.getSqlLoader().loadSqlFileAsNode(path), parameter)
+                .getCount();
+    }
+
+    /**
+     * SQLファイルを元にテーブルを更新（追加/更新/削除）をします。
+     * @param path SQLファイルのパス
+     * @return SQLファイル更新用のクエリ
+     */
+    public SqlUpdate<?> updateBySqlFile(@NonNull String path) {
+        return new SqlUpdate<>(context, context.getSqlLoader().loadSqlFileAsNode(path));
+    }
+
+    /**
+     * SQLファイルを元にテーブルを更新（追加/更新/削除）をします。
+     * @param path SQLファイルのパス
+     * @param parameter パラメータ
+     * @return SQLファイル更新用のクエリ
+     */
+    public SqlUpdate<?> updateBySqlFile(@NonNull String path, Object parameter) {
+        return new SqlUpdate<>(context, context.getSqlLoader().loadSqlFileAsNode(path), parameter);
+    }
+
+    /**
+     *
+     * @param <T>
+     * @param path
+     * @param parameters
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public <T> SqlBatchUpdate<T> updateBatchBySqlFile(@NonNull String path, T... parameters) {
+        return new SqlBatchUpdate<T>(context, context.getSqlLoader().loadSqlFileAsNode(path), parameters);
+    }
+
+    /**
+     *
+     * @param <T>
+     * @param path
+     * @param parameters
+     * @return
+     */
+    public <T> SqlBatchUpdate<T> updateBatchBySqlFile(@NonNull String path, List<T> parameters) {
+        return new SqlBatchUpdate<T>(context, context.getSqlLoader().loadSqlFileAsNode(path), parameters);
     }
 
 }

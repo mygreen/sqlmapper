@@ -1,7 +1,6 @@
 package com.github.mygreen.sqlmapper.query.auto;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -170,15 +169,14 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
         this.executedSql = sql;
     }
 
-    public int execute() {
+    public int[] execute() {
 
         assertNotCompleted("executeBatchInsert");
 
-        final int rows;
         if(this.usingIdentityGeneratedColumnNames.isEmpty()) {
             // 主キーがIDENTITYによる生成でない場合
             int[] res = context.getNamedParameterJdbcTemplate().batchUpdate(executedSql, paramSources);
-            rows = Arrays.stream(res).sum();
+            return res;
 
         } else {
             // １件ずつ処理する
@@ -207,9 +205,7 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
 
             }
 
-            rows = Arrays.stream(res).sum();
+            return res;
         }
-
-        return rows;
     }
 }

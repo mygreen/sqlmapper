@@ -1,7 +1,5 @@
 package com.github.mygreen.sqlmapper.query.auto;
 
-import java.util.Arrays;
-
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
@@ -172,16 +170,15 @@ public class AutoBatchUpdateExecutor extends QueryExecutorBase {
      * 更新処理を実行します。
      * @return 更新したレコード件数です。
      */
-    public int execute() {
+    public int[] execute() {
         assertNotCompleted("executeBatchUpdate");
 
         if(targetPropertyCount == 0) {
             log.warn(context.getMessageBuilder().create("query.skipUpdateWithNoProperty").format());
-            return 0;
+            return new int[query.getEntitySize()];
         }
 
         int[] res = context.getNamedParameterJdbcTemplate().batchUpdate(executedSql, paramSources);
-        final int rows = Arrays.stream(res).sum();
 
         final int dataSize = query.getEntitySize();
         for(int i=0; i < dataSize; i++) {
@@ -196,7 +193,7 @@ public class AutoBatchUpdateExecutor extends QueryExecutorBase {
             }
         }
 
-        return rows;
+        return res;
 
     }
 
