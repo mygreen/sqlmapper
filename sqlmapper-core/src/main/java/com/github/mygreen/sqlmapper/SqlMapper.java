@@ -214,11 +214,11 @@ public class SqlMapper {
     }
 
     /**
-     *
-     * @param <T>
-     * @param path
-     * @param parameters
-     * @return
+     * SQLファイルを元にテーブルをバッチ更新（追加/更新/削除）します。
+     * @param <T> パラメータのタイプ
+     * @param path SQLファイルのパス
+     * @param parameters パラメータ
+     * @return 更新用のクエリ
      */
     @SuppressWarnings("unchecked")
     public <T> SqlBatchUpdate<T> updateBatchBySqlFile(@NonNull String path, T... parameters) {
@@ -226,14 +226,100 @@ public class SqlMapper {
     }
 
     /**
-     *
-     * @param <T>
-     * @param path
-     * @param parameters
-     * @return
+     * SQLファイルを元にテーブルをバッチ更新（追加/更新/削除）します。
+     * @param <T> パラメータのタイプ
+     * @param path SQLファイルのパス
+     * @param parameters パラメータ
+     * @return 更新用のクエリ
      */
     public <T> SqlBatchUpdate<T> updateBatchBySqlFile(@NonNull String path, List<T> parameters) {
         return new SqlBatchUpdate<T>(context, context.getSqlLoader().loadSqlFileAsNode(path), parameters);
+    }
+
+    /**
+     * SQLを元にテーブルを参照します。
+     * @param <T> エンティティタイプ
+     * @param baseClass エンティティのクラス
+     * @param path SQL
+     * @return SQL参照用のクエリ
+     */
+    public <T> SqlSelect<T> selectBySql(@NonNull Class<T> baseClass, @NonNull String sql) {
+        return new SqlSelect<T>(context, baseClass, context.getSqlLoader().loadSqlTextAsNode(sql));
+    }
+
+    /**
+     * SQLを元にテーブルを参照します。
+     * @param <T> エンティティタイプ
+     * @param baseClass エンティティのクラス
+     * @param path SQL
+     * @param parameter パラメータ
+     * @return SQL参照用のクエリ
+     */
+    public <T> SqlSelect<T> selectBySql(@NonNull Class<T> baseClass, @NonNull String sql, Object parameter) {
+        return new SqlSelect<T>(context, baseClass, context.getSqlLoader().loadSqlTextAsNode(sql), parameter);
+    }
+
+    /**
+     * カウント用のSQLを実行します。
+     * @param path SQL
+     * @return カウント結果
+     */
+    public long getCountBySql(@NonNull String sql) {
+        return new SqlCount<>(context, context.getSqlLoader().loadSqlTextAsNode(sql))
+                .getCount();
+    }
+
+    /**
+     * カウント用のSQLを実行します。
+     * @param path SQL
+     * @param parameter パラメータ
+     * @return カウント結果
+     */
+    public long getCountBySql(@NonNull String sql, Object parameter) {
+        return new SqlCount<>(context, context.getSqlLoader().loadSqlTextAsNode(sql), parameter)
+                .getCount();
+    }
+
+    /**
+     * SQLを元にテーブルを更新（追加/更新/削除）をします。
+     * @param path SQL
+     * @return SQL更新用のクエリ
+     */
+    public SqlUpdate<?> updateBySql(@NonNull String sql) {
+        return new SqlUpdate<>(context, context.getSqlLoader().loadSqlTextAsNode(sql));
+    }
+
+    /**
+     * SQLを元にテーブルを更新（追加/更新/削除）をします。
+     * @param path SQL
+     * @param parameter パラメータ
+     * @return SQL更新用のクエリ
+     */
+    public SqlUpdate<?> updateBySql(@NonNull String sql, Object parameter) {
+        return new SqlUpdate<>(context, context.getSqlLoader().loadSqlTextAsNode(sql), parameter);
+    }
+
+    /**
+     * SQLを元にテーブルをバッチ更新（追加/更新/削除）します。
+     * @param <T> パラメータのタイプ
+     * @param path SQL
+     * @param parameters パラメータ
+     * @return 更新用のクエリ
+     */
+    @SuppressWarnings("unchecked")
+    public <T> SqlBatchUpdate<T> updateBatchBySql(@NonNull String sql, T... parameters) {
+        return new SqlBatchUpdate<T>(context, context.getSqlLoader().loadSqlTextAsNode(sql), parameters);
+    }
+
+    /**
+     * SQLを元にテーブルをバッチ更新（追加/更新/削除）します。
+     * @param <T> パラメータのタイプ
+     * @param path SQL
+     * @param parameters パラメータ
+     * @return 更新用のクエリ
+     */
+    public <T> SqlBatchUpdate<T> updateBatchBySql(@NonNull String sql, List<T> parameters) {
+        return new SqlBatchUpdate<T>(context, context.getSqlLoader().loadSqlTextAsNode(sql), parameters);
     }
 
 }
