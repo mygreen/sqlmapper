@@ -1,7 +1,9 @@
 package com.github.mygreen.sqlmapper.query.auto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
@@ -12,7 +14,6 @@ import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
 import com.github.mygreen.sqlmapper.where.WhereBuilder;
 import com.github.mygreen.sqlmapper.where.WhereVisitor;
-import com.github.mygreen.sqlmapper.where.NamedParameterContext;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,14 +38,9 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
     private String executedSql;
 
     /**
-     * クエリのパラメータ
+     * クエリのパラメータです。
      */
-    private final MapSqlParameterSource paramSource = new MapSqlParameterSource();
-
-    /**
-     * クエリ条件のパラメータに関する情報
-     */
-    private final NamedParameterContext paramContext = new NamedParameterContext(paramSource);
+    private final List<Object> paramValues = new ArrayList<>();
 
     /**
      * 更新対象のプロパティの個数
@@ -106,13 +102,11 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
 
             this.targetPropertyCount++;
 
-
             // SET句の組み立て
-            final String paramName = "_" + propertyName;
-            setClause.addSql(propertyMeta.getColumnMeta().getName(), ":" + paramName);
+            setClause.addSql(propertyMeta.getColumnMeta().getName(), "?");
 
-            final ValueType valueType = context.getDialect().getValueType(propertyMeta);
-            valueType.bindValue(propertyValue, paramSource, paramName);
+            final ValueType valueType = propertyMeta.getValueType();
+            paramValues.add(valueType.getSqlParameterValue(propertyValue));
 
         }
 
@@ -142,10 +136,11 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
             where.eq(propertyMeta.getName(), propertyValue);
         }
 
-        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta(), paramContext);
+        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta());
         where.accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());
+        this.paramValues.addAll(visitor.getParamValues());
 
     }
 
@@ -173,7 +168,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
             return 0;
         }
 
-        final int rows = context.getNamedParameterJdbcTemplate().update(executedSql, paramSource);
+        final int rows = context.getJdbcTemplate().update(executedSql, paramValues.toArray());
         if(isOptimisticLock()) {
             validateRows(rows);
         }

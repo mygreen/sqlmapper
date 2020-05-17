@@ -1,5 +1,6 @@
 package com.github.mygreen.sqlmapper.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -33,6 +34,15 @@ public class QueryUtils {
         }
         return result;
 
+    }
+
+    /**
+     * {@link String}の配列に変換して返します。
+     * @param list 要素が文字列のリスト
+     * @return {@link String}の配列
+     */
+    public static String[] toArray(List<String> list) {
+        return list.toArray(new String[list.size()]);
     }
 
     /**
@@ -135,6 +145,42 @@ public class QueryUtils {
         }
 
         return paramSource;
+    }
+
+    /**
+     * 指定したインデックスのSQLパラメータソースを取得します。
+     * <p>インスタンスが存在しなければ、新しく作成します。</p>
+     * @param batchParams 取得対象のSQLパラメータソース。
+     * @param index インデックス
+     * @return SQLパラメータソース。
+     */
+    public static List<Object> get(List<Object>[] batchParams, int index) {
+        List<Object> params = batchParams[index];
+        if(params == null) {
+            batchParams[index] = new ArrayList<>();
+        }
+        return params;
+    }
+
+    /**
+     * JdbcItemplate用のバッチ実行用のパラメータの形式に変換する。
+     * @param batchParams 変換対象のパラメータ
+     * @return {@code List<Object[]>} の毛市域に変換したパラメータ。
+     */
+    public static List<Object[]> convertBatchArgs(List<Object>[] batchParams) {
+
+        List<Object[]> batchArgs = new ArrayList<>();
+        for(List<Object> params : batchParams) {
+            int size = params.size();
+            Object[] args = new Object[size];
+            for(int i=0; i < size; i++) {
+                args[i] = params.get(i);
+            }
+            batchArgs.add(args);
+        }
+
+        return batchArgs;
+
     }
 
 }

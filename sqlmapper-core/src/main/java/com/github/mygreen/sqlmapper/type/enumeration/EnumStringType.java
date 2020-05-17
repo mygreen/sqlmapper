@@ -7,8 +7,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-
 import com.github.mygreen.sqlmapper.localization.MessageBuilder;
 import com.github.mygreen.sqlmapper.type.SqlValueConversionException;
 import com.github.mygreen.sqlmapper.type.ValueType;
@@ -68,10 +66,10 @@ public class EnumStringType<T extends Enum<T>> implements ValueType<T> {
     }
 
     @Override
-    public void bindValue(T value, MapSqlParameterSource paramSource, String paramName) {
+    public Object getSqlParameterValue(T value) {
 
         String sqlType = (value != null ? value.name() : null);
-        paramSource.addValue(paramName, sqlType);
+        return sqlType;
 
     }
 

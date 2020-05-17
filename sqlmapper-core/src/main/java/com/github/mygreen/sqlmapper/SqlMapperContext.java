@@ -1,7 +1,7 @@
 package com.github.mygreen.sqlmapper;
 
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.mygreen.sqlmapper.dialect.Dialect;
@@ -25,7 +25,7 @@ public class SqlMapperContext {
 
     @Getter
     @Setter
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     @Getter
     @Setter

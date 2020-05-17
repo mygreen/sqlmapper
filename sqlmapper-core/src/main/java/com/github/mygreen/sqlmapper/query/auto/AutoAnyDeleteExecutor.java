@@ -1,11 +1,11 @@
 package com.github.mygreen.sqlmapper.query.auto;
 
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
 import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.where.WhereVisitor;
-import com.github.mygreen.sqlmapper.where.NamedParameterContext;
 
 public class AutoAnyDeleteExecutor extends QueryExecutorBase {
 
@@ -22,14 +22,9 @@ public class AutoAnyDeleteExecutor extends QueryExecutorBase {
     private String executedSql;
 
     /**
-     * クエリのパラメータ
+     * クエリのパラメータです。
      */
-    private final MapSqlParameterSource paramSource = new MapSqlParameterSource();
-
-    /**
-     * クエリ条件のパラメータに関する情報
-     */
-    private final NamedParameterContext paramContext = new NamedParameterContext(paramSource);
+    private final List<Object> paramValues = new ArrayList<>();
 
     public AutoAnyDeleteExecutor(AutoAnyDelete<?> query) {
         super(query.getContext());
@@ -55,10 +50,11 @@ public class AutoAnyDeleteExecutor extends QueryExecutorBase {
             return;
         }
 
-        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta(), paramContext);
+        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta());
         query.getCriteria().accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());
+        this.paramValues.addAll(visitor.getParamValues());
     }
 
     /**
@@ -81,7 +77,7 @@ public class AutoAnyDeleteExecutor extends QueryExecutorBase {
 
         assertNotCompleted("executeAnyDelete");
 
-        final int rows = context.getNamedParameterJdbcTemplate().update(executedSql, paramSource);
+        final int rows = context.getJdbcTemplate().update(executedSql, paramValues.toArray());
         return rows;
 
 

@@ -5,8 +5,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-
 import com.github.mygreen.sqlmapper.type.ValueType;
 
 public class UtilDateType implements ValueType<Date> {
@@ -34,8 +32,8 @@ public class UtilDateType implements ValueType<Date> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void bindValue(Date value, MapSqlParameterSource paramSource, String paramName) {
-        temporalConverter.bindValue(value, paramSource, paramName);
+    public Object getSqlParameterValue(Date value) {
+        return  temporalConverter.getSqlParameterValue(value);
     }
 
     @Override

@@ -3,8 +3,6 @@ package com.github.mygreen.sqlmapper.type.standard;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-
 import com.github.mygreen.sqlmapper.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
@@ -29,12 +27,12 @@ public class LongType implements ValueType<Long> {
     }
 
     @Override
-    public void bindValue(Long value, MapSqlParameterSource paramSource, String paramName) {
+    public Object getSqlParameterValue(Long value) {
 
         if(value == null && forPrimitive) {
             value = 0L;
         }
 
-        paramSource.addValue(paramName, value);
+        return value;
     }
 }

@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.springframework.jdbc.core.SqlParameterValue;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.jdbc.support.lob.LobHandler;
 
@@ -24,7 +23,7 @@ public class LobStringType implements ValueType<String> {
     }
 
     @Override
-    public void bindValue(String value, MapSqlParameterSource paramSource, String paramName) {
-        paramSource.addValue(paramName, new SqlParameterValue(Types.CLOB, new SqlLobValue(value, lobHandler)));
+    public Object getSqlParameterValue(String value) {
+        return new SqlParameterValue(Types.CLOB, new SqlLobValue(value, lobHandler));
     }
 }

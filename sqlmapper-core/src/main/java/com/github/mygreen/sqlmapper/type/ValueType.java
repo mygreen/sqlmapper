@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.SqlParameterValue;
 
 /**
  * SQL(JDBC)とマッピング先の型を表すインタフェースです。
@@ -27,14 +27,15 @@ public interface ValueType<T> {
     T getValue(ResultSet rs, int columnIndex) throws SQLException, SqlValueConversionException;
 
     /**
-     * SQL変数に値をバインドします。
+     * SQLのパラメータ変数として値を取得します。
+     * <p>JDBCが対応していないタイプの場合は、対応している値に変換します。</p>
+     * <p>{@link SqlParameterValue} として返すことで、特殊な値を対応することができます。</p>
      *
-     * @param value バインドする値。
-     * @param paramSource 変数をバインドするパラメータ情報。
-     * @param paramName バインドする変数名。
+     * @param value 変換する値
+     * @return SQLのパラメータ変数。
      * @throws SqlParameterBindException SQL変数の値へのバインドに失敗した場合にスローされます。
      */
-    void bindValue(T value, MapSqlParameterSource paramSource, String paramName) throws SqlParameterBindException;
+    Object getSqlParameterValue(T value) throws SqlParameterBindException;
 
     /**
      * SQLに直接埋め込む値として文字列に変換します。

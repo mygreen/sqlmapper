@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.KeyHolder;
 
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
@@ -15,7 +15,6 @@ import com.github.mygreen.sqlmapper.id.IdGenerator;
 import com.github.mygreen.sqlmapper.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.query.InsertClause;
 import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
 import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
@@ -37,27 +36,27 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
     private final AutoBatchInsert<?> query;
 
     /**
-     * INSERTのINTO句とVALUES句
-     */
-    private InsertClause insertClause = new InsertClause();
-
-    /**
-     * 実行するSQLです
-     */
-    private String executedSql;
-
-    /**
      * クエリのパラメータ - エンティティごとの設定
      */
-    private MapSqlParameterSource[] paramSources;
+    private MapSqlParameterSource[] batchParams;
+
+    /**
+     * 挿入するカラム名
+     */
+    private List<String> usingColumnNames = new ArrayList<>();
 
     /**
      * IDENTITYによる主キーの自動生成を使用するカラム名
      */
-    private List<String> usingIdentityGeneratedColumnNames = new ArrayList<>();
+    private List<String> usingIdentityKeyColumnNames = new ArrayList<>();
 
     /**
-     * 生成したキー
+     * レコードの挿入操作を行う処理
+     */
+    private SimpleJdbcInsert insertOperation;
+
+    /**
+     * シーケンスやテーブルによる主キーの生成したキー
      * <p>key=カラム名、value=全レコード分の生成したキーの値</p>
      */
     private Map<String, Object[]> generatedKeysMap = new HashMap<String, Object[]>();
@@ -70,19 +69,17 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
     @Override
     public void prepare() {
 
-        this.paramSources = new MapSqlParameterSource[query.getEntitySize()];
+        this.batchParams = new MapSqlParameterSource[query.getEntitySize()];
 
-        prepareInsertClause();
-
-        prepareSql();
+        prepareSqlParam();
+        prepareInsertOperation();
 
         completed();
-
 
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private void prepareInsertClause() {
+    private void prepareSqlParam() {
 
         final int dataSize = query.getEntitySize();
 
@@ -101,22 +98,21 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
                 continue;
             }
 
-            final String paramName = "_" + propertyName;
-
-            // IN句の組み立て
-            this.insertClause.addSql(propertyMeta.getColumnMeta().getName(), ":" + paramName);
+            final String columnName = propertyMeta.getColumnMeta().getName();
 
             // 各レコードのパラメータを作成する。
             for(int i=0; i < dataSize; i++) {
-                final MapSqlParameterSource paramSource = QueryUtils.get(paramSources, i);
+                final MapSqlParameterSource paramSource = QueryUtils.get(batchParams, i);
                 Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity(i));
 
                 Optional<GenerationType> generationType = propertyMeta.getIdGenerationType();
                 if(propertyMeta.isId() && generationType.isPresent()) {
                     if(generationType.get() == GenerationType.IDENTITY) {
-                        //IDENTITYの場合は、クエリ実行後に取得するため、対象のカラム情報を一時保存しておく。
-                        usingIdentityGeneratedColumnNames.add(propertyMeta.getColumnMeta().getName());
-                        propertyValue = null;
+                        if(i == 0) {
+                            //IDENTITYの場合は、クエリ実行後に取得するため、対象のカラム情報を１回だけ
+                            usingIdentityKeyColumnNames.add(columnName);
+                        }
+                        continue;
                     } else {
                         propertyValue = getNextVal(propertyMeta.getIdGenerator().get(), propertyMeta.getColumnMeta().getName(), i);
                         PropertyValueInvoker.setPropertyValue(propertyMeta, query.getEntity(i), propertyValue);
@@ -131,9 +127,14 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
                 }
 
                 // クエリのパラメータの組み立て
-                ValueType valueType = context.getDialect().getValueType(propertyMeta);
-                valueType.bindValue(propertyValue, paramSource, paramName);
+                ValueType valueType = propertyMeta.getValueType();
+                paramSource.addValue(columnName, valueType.getSqlParameterValue(propertyValue));
 
+            }
+
+            // IDENTITYの主キーでない場合は通常カラムとして追加
+            if(!usingIdentityKeyColumnNames.contains(columnName)) {
+                usingColumnNames.add(columnName);
             }
 
         }
@@ -148,7 +149,7 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
      */
     private Object getNextVal(final IdGenerator generator, final String columnName, final int index) {
 
-        // レコードの件数分、まとめてキーを生成しておき、キャッシュしておく。
+        // 1レコードの主キーをまとめてキーを生成しておき、キャッシュしておく。
         Object[] generatedKeys = generatedKeysMap.computeIfAbsent(columnName, v ->
                 context.getRequiresNewTransactionTemplate().execute(action -> {
                     return generator.generateValues(query.getEntities().length);
@@ -158,25 +159,26 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
     }
 
     /**
-     * 実行するSQLを組み立てます
+     * SQLの実行をする処理を組み立てます
      */
-    private void prepareSql() {
-        final String sql = "INSERT INTO "
-                + query.getEntityMeta().getTableMeta().getFullName()
-                + insertClause.toIntoSql()
-                + insertClause.toValuesSql();
+    private void prepareInsertOperation() {
 
-        this.executedSql = sql;
+        this.insertOperation = new SimpleJdbcInsert(context.getJdbcTemplate())
+                .withTableName(query.getEntityMeta().getTableMeta().getFullName())
+                .usingColumns(QueryUtils.toArray(usingColumnNames));
+
+        if(!usingIdentityKeyColumnNames.isEmpty()) {
+            insertOperation.usingGeneratedKeyColumns(QueryUtils.toArray(usingIdentityKeyColumnNames));
+        }
     }
 
     public int[] execute() {
 
         assertNotCompleted("executeBatchInsert");
 
-        if(this.usingIdentityGeneratedColumnNames.isEmpty()) {
+        if(this.usingIdentityKeyColumnNames.isEmpty()) {
             // 主キーがIDENTITYによる生成でない場合
-            int[] res = context.getNamedParameterJdbcTemplate().batchUpdate(executedSql, paramSources);
-            return res;
+            return insertOperation.executeBatch(batchParams);
 
         } else {
             // １件ずつ処理する
@@ -184,24 +186,22 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
             int[] res = new int[dataSize];
             for(int i=0; i < dataSize; i++) {
 
-                KeyHolder keyHolder = new GeneratedKeyHolder();
-                res[i] = context.getNamedParameterJdbcTemplate().update(executedSql, paramSources[i], keyHolder,
-                        usingIdentityGeneratedColumnNames.toArray(new String[usingIdentityGeneratedColumnNames.size()]));
-
+                final KeyHolder keyHolder = insertOperation.executeAndReturnKeyHolder(batchParams[i]);
                 // 生成した主キーをエンティティに設定する
                 for(Map.Entry<String, Object> entry : keyHolder.getKeys().entrySet()) {
 
-                    if(!usingIdentityGeneratedColumnNames.contains(entry.getKey())) {
+                    if(!usingIdentityKeyColumnNames.contains(entry.getKey())) {
                         continue;
                     }
 
-                    PropertyMeta propertyMeta = query.getEntityMeta().getColumnPropertyMeta(entry.getKey())
-                                .orElseThrow();
+                    PropertyMeta propertyMeta = query.getEntityMeta().getColumnPropertyMeta(entry.getKey()).orElseThrow();
                     IdentityIdGenerator idGenerator = (IdentityIdGenerator) propertyMeta.getIdGenerator().get();
                     Object propertyValue = idGenerator.generateValue((Number)entry.getValue());
                     PropertyValueInvoker.setPropertyValue(propertyMeta, query.getEntity(i), propertyValue);
 
                 }
+
+                res[i] = 1;
 
             }
 

@@ -1,7 +1,8 @@
 package com.github.mygreen.sqlmapper.query.auto;
 
+import java.util.List;
+
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
@@ -27,7 +28,7 @@ public class AutoBatchUpdateExecutor extends QueryExecutorBase {
     /**
      * クエリのパラメータ - エンティティごとの設定
      */
-    private MapSqlParameterSource[] paramSources;
+    private List<Object>[] batchParams;
 
     /**
      * SET句
@@ -49,9 +50,10 @@ public class AutoBatchUpdateExecutor extends QueryExecutorBase {
         this.query = query;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void prepare() {
-        this.paramSources = new MapSqlParameterSource[query.getEntitySize()];
+        this.batchParams = new List[query.getEntitySize()];
 
         prepareSetClause();
         prepareWhereClause();
@@ -89,16 +91,16 @@ public class AutoBatchUpdateExecutor extends QueryExecutorBase {
 
 
             // SET句の組み立て
-            final String paramName = "_" + propertyName;
-            setClause.addSql(propertyMeta.getColumnMeta().getName(), ":" + paramName);
+            setClause.addSql(propertyMeta.getColumnMeta().getName(), "?");
 
-            final ValueType valueType = context.getDialect().getValueType(propertyMeta);
+            final ValueType valueType = propertyMeta.getValueType();
 
             // 各レコードのパラメータを作成する。
             for(int i=0; i < dataSize; i++) {
-                final MapSqlParameterSource paramSource = QueryUtils.get(paramSources, i);
+
+                final List<Object> params = QueryUtils.get(batchParams, i);
                 final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity(i));
-                valueType.bindValue(propertyValue, paramSource, paramName);
+                params.add(valueType.getSqlParameterValue(propertyValue));
 
             }
 
@@ -120,16 +122,15 @@ public class AutoBatchUpdateExecutor extends QueryExecutorBase {
         // WHERE句の準備 - 主キー
         for(PropertyMeta propertyMeta : query.getEntityMeta().getIdPropertyMetaList()) {
 
-            final String paramName = "_" + propertyMeta.getName();
-            whereClause.addAndSql(propertyMeta.getColumnMeta().getName() + " = :" + paramName);
+            whereClause.addAndSql(propertyMeta.getColumnMeta().getName() + " = ?");
 
-            final ValueType valueType = context.getDialect().getValueType(propertyMeta);
+            final ValueType valueType = propertyMeta.getValueType();
 
             // 各レコードのパラメータを作成する。
             for(int i=0; i < dataSize; i++) {
-                final MapSqlParameterSource paramSource = QueryUtils.get(paramSources, i);
+                final List<Object> params = QueryUtils.get(batchParams, i);
                 final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity(i));
-                valueType.bindValue(propertyValue, paramSource, paramName);
+                params.add(valueType.getSqlParameterValue(propertyValue));
 
             }
         }
@@ -138,17 +139,15 @@ public class AutoBatchUpdateExecutor extends QueryExecutorBase {
         if(!query.isIncludeVersion() && query.getEntityMeta().hasVersionPropertyMeta()) {
             final PropertyMeta propertyMeta = query.getEntityMeta().getVersionPropertyMeta().get();
 
+            whereClause.addAndSql(propertyMeta.getColumnMeta().getName() + " = ?");
 
-            final String paramName = "_" + propertyMeta.getName();
-            whereClause.addAndSql(propertyMeta.getColumnMeta().getName() + " = :" + paramName);
-
-            final ValueType valueType = context.getDialect().getValueType(propertyMeta);
+            final ValueType valueType = propertyMeta.getValueType();
 
             // 各レコードのパラメータを作成する。
             for(int i=0; i < dataSize; i++) {
-                final MapSqlParameterSource paramSource = QueryUtils.get(paramSources, i);
+                final List<Object> params = QueryUtils.get(batchParams, i);
                 final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity(i));
-                valueType.bindValue(propertyValue, paramSource, paramName);
+                params.add(valueType.getSqlParameterValue(propertyValue));
             }
         }
 
@@ -178,7 +177,7 @@ public class AutoBatchUpdateExecutor extends QueryExecutorBase {
             return new int[query.getEntitySize()];
         }
 
-        int[] res = context.getNamedParameterJdbcTemplate().batchUpdate(executedSql, paramSources);
+        int[] res = context.getJdbcTemplate().batchUpdate(executedSql, QueryUtils.convertBatchArgs(batchParams));
 
         final int dataSize = query.getEntitySize();
         for(int i=0; i < dataSize; i++) {

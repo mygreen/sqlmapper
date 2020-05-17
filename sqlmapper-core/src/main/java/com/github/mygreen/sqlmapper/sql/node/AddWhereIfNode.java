@@ -46,7 +46,7 @@ public class AddWhereIfNode extends ContainerNode {
             if (!m.lookingAt()) {
                 sql = " WHERE " + sql;
             }
-            ctx.addSql(sql, childCtx.getBindParameter());
+            ctx.addSql(sql, childCtx.getBindParams());
 //            ctx.addSql(sql, childCtx.getBindVariables(), childCtx.getBindVariableTypes());
         }
     }

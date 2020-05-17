@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-
 import com.github.mygreen.sqlmapper.type.ValueType;
 
 public class LocalDateType implements ValueType<LocalDate> {
@@ -38,9 +36,9 @@ public class LocalDateType implements ValueType<LocalDate> {
     }
 
     @Override
-    public void bindValue(LocalDate value, MapSqlParameterSource paramSource, String paramName) {
+    public Object getSqlParameterValue(LocalDate value) {
         Date sqlValue = (value != null ? Date.valueOf(value) : null);
-        paramSource.addValue(paramName, sqlValue);
+        return sqlValue;
     }
 
     @Override

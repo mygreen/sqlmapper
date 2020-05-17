@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.util.StringUtils;
 
 import com.github.mygreen.sqlmapper.dialect.Dialect;
@@ -22,7 +21,6 @@ import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.util.QueryUtils;
 import com.github.mygreen.sqlmapper.where.WhereBuilder;
 import com.github.mygreen.sqlmapper.where.WhereVisitor;
-import com.github.mygreen.sqlmapper.where.NamedParameterContext;
 
 
 public class AutoSelectExecutor<T> extends QueryExecutorBase {
@@ -65,14 +63,9 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
     private String executedSql;
 
     /**
-     * クエリのパラメータ
+     * クエリのパラメータです。
      */
-    private final MapSqlParameterSource paramSource = new MapSqlParameterSource();
-
-    /**
-     * クエリ条件のパラメータに関する情報
-     */
-    private final NamedParameterContext paramContext = new NamedParameterContext(paramSource);
+    private final List<Object> paramValues = new ArrayList<>();
 
     /**
      * 抽出対象のプロパティ情報
@@ -173,10 +166,11 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
             where.eq(query.getEntityMeta().getVersionPropertyMeta().get().getName(), query.getVersionPropertyValue());
         }
 
-        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta(), paramContext);
+        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta());
         where.accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());
+        this.paramValues.addAll(visitor.getParamValues());
 
 
     }
@@ -190,10 +184,11 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
             return;
         }
 
-        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta(), paramContext);
+        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta());
         query.getCriteria().accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());
+        this.paramValues.addAll(visitor.getParamValues());
 
     }
 
@@ -265,7 +260,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
     public long getCount() {
         assertNotCompleted("getCount");
 
-        return context.getNamedParameterJdbcTemplate().queryForObject(executedSql, paramSource, Long.class);
+        return context.getJdbcTemplate().queryForObject(executedSql, Long.class, paramValues.toArray());
 
 
     }
@@ -274,14 +269,14 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
         assertNotCompleted("getSingleResult");
 
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
-        return context.getNamedParameterJdbcTemplate().queryForObject(executedSql, paramSource, rowMapper);
+        return context.getJdbcTemplate().queryForObject(executedSql, paramValues.toArray(), rowMapper);
     }
 
     public Optional<T> getOptionalResult() {
         assertNotCompleted("getOptionalResult");
 
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
-        final List<T> ret = context.getNamedParameterJdbcTemplate().query(executedSql, paramSource, rowMapper);
+        final List<T> ret = context.getJdbcTemplate().query(executedSql, paramValues.toArray(), rowMapper);
         if(ret.isEmpty()) {
             return Optional.empty();
         } else {
@@ -293,7 +288,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
         assertNotCompleted("getResultList");
 
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
-        return context.getNamedParameterJdbcTemplate().query(executedSql, paramSource, rowMapper);
+        return context.getJdbcTemplate().query(executedSql, paramValues.toArray(), rowMapper);
     }
 
     public <R> R iterate(IterationCallback<T, R> callback) {
@@ -303,7 +298,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
         ResultSetExtractor<R> extractor = new EntityIterationResultSetExtractor<T,R>(rowMapper, callback);
 
-        return context.getNamedParameterJdbcTemplate().query(executedSql, paramSource, extractor);
+        return context.getJdbcTemplate().query(executedSql, paramValues.toArray(), extractor);
 
     }
 

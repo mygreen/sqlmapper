@@ -5,8 +5,6 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
 
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-
 import com.github.mygreen.sqlmapper.annotation.Temporal.TemporalType;
 
 public class SqlTimeType implements SqlTemporalType<Time> {
@@ -38,9 +36,8 @@ public class SqlTimeType implements SqlTemporalType<Time> {
     }
 
     @Override
-    public void bindValue(Time value, MapSqlParameterSource paramSource, String paramName) {
-
-        paramSource.addValue(paramName, value);
+    public Object getSqlParameterValue(Time value) {
+        return value;
     }
 
     @Override

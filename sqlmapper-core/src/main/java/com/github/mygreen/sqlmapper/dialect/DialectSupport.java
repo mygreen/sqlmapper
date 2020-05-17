@@ -3,7 +3,6 @@ package com.github.mygreen.sqlmapper.dialect;
 import org.springframework.lang.Nullable;
 
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
-import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.type.ValueType;
 
@@ -25,11 +24,6 @@ public abstract class DialectSupport implements Dialect {
     @Override
     public GenerationType getDefaultGenerationType() {
         return GenerationType.TABLE;
-    }
-
-    @Override
-    public ValueType<?> getValueType(PropertyMeta propertyMeta) {
-        return propertyMeta.getValueType();
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.github.mygreen.sqlmapper.where;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,9 +28,10 @@ public class WhereVisitor {
     private final EntityMeta entityMeta;
 
     /**
-     * SQLを組み立てる際のパラメータ情報
+     * SQL中のパラメータ変数。
+     *
      */
-    private final NamedParameterContext paramContext;
+    private List<Object> paramValues = new ArrayList<>();
 
     /**
      * 組み立てたクライテリア
@@ -43,6 +44,15 @@ public class WhereVisitor {
      */
     public String getCriteria() {
         return criteria.toString();
+    }
+
+    /**
+     * SQLのパラメータ変数を取得します。
+     * SQLのプレースホルダ―順に設定されています。
+     * @return SQL中のパラメータ変数。
+     */
+    public List<Object> getParamValues() {
+        return Collections.unmodifiableList(paramValues);
     }
 
     /**
@@ -92,12 +102,13 @@ public class WhereVisitor {
         // 子要素の式を組み立てる。
         if(!where.getChildrenWhere().isEmpty()) {
             for(Where subWhere : where.getChildrenWhere()) {
-                WhereVisitor subVisitor = new WhereVisitor(entityMeta, paramContext);
+                WhereVisitor subVisitor = new WhereVisitor(entityMeta);
                 subVisitor.visit(subWhere);
 
                 String sql = subVisitor.getCriteria();
                 if(!sql.isEmpty()) {
                     result.add(sql);
+                    paramValues.addAll(subVisitor.getParamValues());
                 }
             }
         }
@@ -125,12 +136,14 @@ public class WhereVisitor {
 
         Where subWhere = valueOperator.getWhere();
 
-        WhereVisitor subVisitor = new WhereVisitor(entityMeta, paramContext);
+        WhereVisitor subVisitor = new WhereVisitor(entityMeta);
         subVisitor.visit(subWhere);
 
         criteria.append("(")
             .append(subVisitor.getCriteria())
             .append(")");
+
+        paramValues.addAll(subVisitor.getParamValues());
 
     }
 
@@ -148,12 +161,11 @@ public class WhereVisitor {
             throw new IllegalQueryException("unknwon property : " + propertyName);
         }
 
-        String argName = paramContext.createArgName();
         ValueType valueType = propertyMeta.get().getValueType();
-        valueType.bindValue(valueOperator.getValue(), paramContext.getParamSource(), argName);
+        paramValues.add(valueType.getSqlParameterValue(valueOperator.getValue()));
 
         String columnName = propertyMeta.get().getColumnMeta().getName();
-        String sql = valueOperator.getSql(columnName, ":" + argName);
+        String sql = valueOperator.getSql(columnName, "?");
         criteria.append(sql);
 
     }
@@ -191,18 +203,15 @@ public class WhereVisitor {
             throw new IllegalQueryException("unknwon property : " + propertyName);
         }
 
-        String[] argNames = paramContext.createArgNames(valueOperator.getValueSize());
+        String[] varName = new String[valueOperator.getValueSize()];
         ValueType valueType = propertyMeta.get().getValueType();
         for(int i=0; i < valueOperator.getValueSize(); i++) {
-            valueType.bindValue(valueOperator.getValue(i), paramContext.getParamSource(), argNames[i]);
+            varName[i] = "?";
+            paramValues.add(valueType.getSqlParameterValue(valueOperator.getValue(i)));
         }
 
-        String[] varNames = Arrays.stream(argNames)
-            .map(n -> ":" + n)
-            .toArray(String[]::new);
-
         String columnName = propertyMeta.get().getColumnMeta().getName();
-        String sql = valueOperator.getSql(columnName, varNames);
+        String sql = valueOperator.getSql(columnName, varName);
         criteria.append(sql);
 
     }

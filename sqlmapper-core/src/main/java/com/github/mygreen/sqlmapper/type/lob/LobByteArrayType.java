@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.springframework.jdbc.core.SqlParameterValue;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.jdbc.support.lob.LobHandler;
 
@@ -24,8 +23,8 @@ public class LobByteArrayType implements ValueType<byte[]> {
     }
 
     @Override
-    public void bindValue(byte[] value, MapSqlParameterSource paramSource, String paramName) {
-        paramSource.addValue(paramName, new SqlParameterValue(Types.BLOB, new SqlLobValue(value, lobHandler)));
+    public Object getSqlParameterValue(byte[] value) {
+        return new SqlParameterValue(Types.BLOB, new SqlLobValue(value, lobHandler));
     }
 
     @Override

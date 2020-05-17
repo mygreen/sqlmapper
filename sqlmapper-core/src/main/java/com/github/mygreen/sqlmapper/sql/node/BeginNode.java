@@ -35,7 +35,7 @@ public class BeginNode extends ContainerNode {
         SqlContext childCtx = new SqlContext(ctx);
         super.accept(childCtx);
         if (childCtx.isEnabled()) {
-            ctx.addSql(childCtx.getSql(), childCtx.getBindParameter());
+            ctx.addSql(childCtx.getSql(), childCtx.getBindParams());
 //            ctx.addSql(childCtx.getSql(), childCtx.getBindVariables(), childCtx.getBindVariableTypes());
         }
     }

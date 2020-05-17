@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.PropertyAccessor;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.github.mygreen.sqlmapper.SqlMapperContext;
 import com.github.mygreen.sqlmapper.query.QueryBase;
@@ -32,7 +31,7 @@ public class SqlCount<T> extends QueryBase<T> {
     /**
      * クエリのパラメータ
      */
-    private MapSqlParameterSource paramSource;
+    private Object[] paramValues;
 
 
     public SqlCount(SqlMapperContext context, Node node, Object parameter) {
@@ -61,7 +60,7 @@ public class SqlCount<T> extends QueryBase<T> {
         node.accept(sqlContext);
 
         this.executedSql = sqlContext.getSql();
-        this.paramSource = sqlContext.getBindParameter().getParamSource();
+        this.paramValues = sqlContext.getBindParams().toArray();
     }
 
     /**
@@ -93,7 +92,7 @@ public class SqlCount<T> extends QueryBase<T> {
         prepare();
 
         try {
-            return context.getNamedParameterJdbcTemplate().queryForObject(executedSql, paramSource, Long.class);
+            return context.getJdbcTemplate().queryForObject(executedSql, paramValues, Long.class);
         } finally {
             completed();
         }

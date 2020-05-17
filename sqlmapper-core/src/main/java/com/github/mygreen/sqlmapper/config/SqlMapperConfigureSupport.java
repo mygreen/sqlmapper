@@ -24,7 +24,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -97,7 +97,7 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     public SqlMapperContext sqlMapperContext() {
 
         SqlMapperContext context = new SqlMapperContext();
-        context.setNamedParameterJdbcTemplate(namedParameterJdbcTemplate());
+        context.setJdbcTemplate(jdbcTemplate());
         context.setNamingRule(namingRule());
         context.setMessageBuilder(messageBuilder());
         context.setDialect(dialect());
@@ -135,7 +135,7 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
         propertyMetaFactory.setValueTypeRegistry(valueTypeRegistry());
         propertyMetaFactory.setDialect(dialect());
         propertyMetaFactory.setDataSource(dataSource());
-        propertyMetaFactory.setNamedParameterJdbcTemplate(namedParameterJdbcTemplate());
+        propertyMetaFactory.setJdbcTemplate(jdbcTemplate());
         propertyMetaFactory.setEnv(env);
 
         return propertyMetaFactory;
@@ -217,8 +217,8 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     }
 
     @Bean
-    public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
-        return new NamedParameterJdbcTemplate(dataSource());
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate(dataSource());
     }
 
     @Bean

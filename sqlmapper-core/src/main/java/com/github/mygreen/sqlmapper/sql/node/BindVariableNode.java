@@ -54,9 +54,8 @@ public class BindVariableNode extends AbstractNode {
 	    Object value = accessor.getPropertyValue(expression);
 	    Class<?> clazz = accessor.getPropertyType(expression);
 
-        final String paramName = ctx.createArgName();
 	    ValueType valueType = ctx.getValueTypeRegistry().findValueType(clazz, expression);
-	    ctx.addSql(":" + paramName, value, paramName, valueType);
+	    ctx.addSql("?", value, valueType);
     }
 
     @Override

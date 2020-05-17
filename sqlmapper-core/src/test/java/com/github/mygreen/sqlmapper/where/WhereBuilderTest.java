@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -33,13 +32,12 @@ public class WhereBuilderTest {
         where.eq("firstName", "Taro").eq("lastName", "Yamada");
 
         EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
-        NamedParameterContext paramContext = new NamedParameterContext(new MapSqlParameterSource());
 
-        WhereVisitor whereVisitor = new WhereVisitor(entityMeta, paramContext);
+        WhereVisitor whereVisitor = new WhereVisitor(entityMeta);
         where.accept(whereVisitor);
 
         String sql = whereVisitor.getCriteria();
-        assertEquals("FIRST_NAME = :_arg0 AND LAST_NAME = :_arg1", sql);
+        assertEquals("FIRST_NAME = ? AND LAST_NAME = ?", sql);
 
     }
 
@@ -48,16 +46,15 @@ public class WhereBuilderTest {
     public void testWhereBuilder_or() {
 
         EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
-        NamedParameterContext paramContext = new NamedParameterContext(new MapSqlParameterSource());
 
         WhereBuilder where = new WhereBuilder();
         where.eq("lastName", "Yamada").ge("birthday", LocalDate.of(2000, 8, 1)).or().starts("firstName", "T");
 
-        WhereVisitor whereVisitor = new WhereVisitor(entityMeta, paramContext);
+        WhereVisitor whereVisitor = new WhereVisitor(entityMeta);
         where.accept(whereVisitor);
 
         String sql = whereVisitor.getCriteria();
-        assertEquals("(LAST_NAME = :_arg0 AND BIRTHDAY >= :_arg1) OR (FIRST_NAME LIKE :_arg2)", sql);
+        assertEquals("(LAST_NAME = ? AND BIRTHDAY >= ?) OR (FIRST_NAME LIKE ?)", sql);
 
 
     }

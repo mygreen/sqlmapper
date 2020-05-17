@@ -1,9 +1,8 @@
 package com.github.mygreen.sqlmapper.id;
 
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 
 import com.github.mygreen.sqlmapper.util.NameUtils;
@@ -17,7 +16,7 @@ import com.github.mygreen.sqlmapper.util.NameUtils;
  */
 public class TableIdIncrementer extends AllocatableIdGenerator {
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     private final TableIdContext context;
 
@@ -27,9 +26,9 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
 
     private String sqlUpdate;
 
-    public TableIdIncrementer(NamedParameterJdbcTemplate namedParameterJdbcTemplate, TableIdContext context) {
+    public TableIdIncrementer(JdbcTemplate jdbcTemplate, TableIdContext context) {
         super(context.getAllocationSize());
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.jdbcTemplate = jdbcTemplate;
         this.context = context;
 
         init();
@@ -51,7 +50,7 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
                     .append(tableName)
                     .append(" WHERE ")
                     .append(context.getPkColumn())
-                    .append(" = :name")
+                    .append(" = ?")
                     .append(" FOR UPDATE")
                     .toString();
 
@@ -62,7 +61,7 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
                 .append(context.getPkColumn())
                 .append(", ")
                 .append(context.getValueColumn())
-                .append(" ) VALUES (:name, :value)")
+                .append(" ) VALUES (?, ?)")
                 .toString();
 
         this.sqlUpdate = new StringBuilder(100)
@@ -72,9 +71,9 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
                 .append(context.getValueColumn())
                 .append(" = ")
                 .append(context.getValueColumn())
-                .append(" + :value WHERE ")
+                .append(" + ? WHERE ")
                 .append(context.getPkColumn())
-                .append(" = :name")
+                .append(" = ?")
                 .toString();
     }
 
@@ -100,7 +99,7 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
 
     private Long selectTable(final String name) {
 
-        List<Long> result = namedParameterJdbcTemplate.queryForList(sqlSelect, Map.of("name", name), Long.class);
+        List<Long> result = jdbcTemplate.queryForList(sqlSelect, Long.class, name);
         if(result.isEmpty()) {
             return null;
         } else {
@@ -109,11 +108,11 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
     }
 
     private void insertTable(final String name, final long value) {
-        namedParameterJdbcTemplate.update(sqlInsert, Map.of("name", name, "value", value));
+        jdbcTemplate.update(sqlInsert, name, value);
     }
 
     private void updateTable(final String name, final long incrementValue) {
-        namedParameterJdbcTemplate.update(sqlUpdate, Map.of("name", name, "value", incrementValue));
+        jdbcTemplate.update(sqlUpdate, name, incrementValue);
     }
 
 }

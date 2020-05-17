@@ -5,7 +5,6 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
 
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
-import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.type.ValueType;
 
@@ -46,14 +45,14 @@ public interface Dialect {
      */
     DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName);
 
-    /**
-     * プロパティタイプに対する値タイプを返します。
-     * Oracleなどのようにbooleanが存在しない場合は対応する{@link ValueType} に切り替えたりします。
-     *
-     * @param propertyMeta プロパティのメタデータ
-     * @return 値タイプ
-     */
-    ValueType<?> getValueType(PropertyMeta propertyMeta);
+//    /**
+//     * プロパティタイプに対する値タイプを返します。
+//     * Oracleなどのようにbooleanが存在しない場合は対応する{@link ValueType} に切り替えたりします。
+//     *
+//     * @param propertyMeta プロパティのメタデータ
+//     * @return 値タイプ
+//     */
+//    ValueType<?> getValueType(PropertyMeta propertyMeta);
 
     /**
      * 対応するクラスタイプに対する値タイプを返します。

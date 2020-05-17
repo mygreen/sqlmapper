@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.ReflectionUtils;
 
 import com.github.mygreen.sqlmapper.annotation.Column;
@@ -81,7 +81,7 @@ public class PropertyMetaFactory {
     @Getter
     @Setter
     @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     @Getter
     @Setter
@@ -125,6 +125,9 @@ public class PropertyMetaFactory {
 
             // プロパティに対する型変換を設定します。
             ValueType<?> valueType = valueTypeRegistry.findValueType(propertyMeta);
+
+            // OracleなどBoolean型を純粋にサポートしていない場合は、int型に変換するタイプに変換する。
+            valueType = dialect.getValueType(valueType);
             propertyMeta.setValueType(valueType);
 
 
@@ -416,7 +419,7 @@ public class PropertyMetaFactory {
             }
 
             TableIdGenerator tableIdGenerator = new TableIdGenerator(
-                    new TableIdIncrementer(namedParameterJdbcTemplate, tableIdContext),
+                    new TableIdIncrementer(jdbcTemplate, tableIdContext),
                     propertyMeta.getPropertyType(), sequenceName);
 
             if(!annoGeneratedValue.get().format().isEmpty()) {

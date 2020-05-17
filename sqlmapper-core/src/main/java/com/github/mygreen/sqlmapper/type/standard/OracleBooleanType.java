@@ -3,8 +3,6 @@ package com.github.mygreen.sqlmapper.type.standard;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-
 import com.github.mygreen.sqlmapper.type.ValueType;
 
 import lombok.Getter;
@@ -31,13 +29,13 @@ public class OracleBooleanType implements ValueType<Boolean> {
     }
 
     @Override
-    public void bindValue(Boolean value, MapSqlParameterSource paramSource, String paramName) {
+    public Object getSqlParameterValue(Boolean value) {
 
         if(value == null && forPrimitive) {
             value = false;
         }
 
         final int sqlValue = value ? 1 : 0;
-        paramSource.addValue(paramName, sqlValue);
+        return sqlValue;
     }
 }

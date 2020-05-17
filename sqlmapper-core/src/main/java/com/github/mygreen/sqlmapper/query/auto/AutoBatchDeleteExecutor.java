@@ -1,7 +1,9 @@
 package com.github.mygreen.sqlmapper.query.auto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
@@ -9,7 +11,6 @@ import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
 import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.where.WhereBuilder;
 import com.github.mygreen.sqlmapper.where.WhereVisitor;
-import com.github.mygreen.sqlmapper.where.NamedParameterContext;
 
 /**
  *
@@ -32,14 +33,9 @@ public class AutoBatchDeleteExecutor extends QueryExecutorBase {
     private String executedSql;
 
     /**
-     * クエリのパラメータ
+     * クエリのパラメータです。
      */
-    private final MapSqlParameterSource paramSource = new MapSqlParameterSource();
-
-    /**
-     * クエリ条件のパラメータに関する情報
-     */
-    private final NamedParameterContext paramContext = new NamedParameterContext(paramSource);
+    private final List<Object> paramValues = new ArrayList<>();
 
     public AutoBatchDeleteExecutor(AutoBatchDelete<?> query) {
         super(query.getContext());
@@ -86,10 +82,11 @@ public class AutoBatchDeleteExecutor extends QueryExecutorBase {
 
         }
 
-        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta(), paramContext);
+        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta());
         where.accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());
+        this.paramValues.add(visitor.getParamValues());
     }
 
     /**
@@ -120,7 +117,7 @@ public class AutoBatchDeleteExecutor extends QueryExecutorBase {
 
         assertNotCompleted("executeBatchDelete");
 
-        final int rows = context.getNamedParameterJdbcTemplate().update(executedSql, paramSource);
+        final int rows = context.getJdbcTemplate().update(executedSql, paramValues.toArray());
         if(isOptimisticLock()) {
             validateRows(rows);
         }

@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-
 import com.github.mygreen.sqlmapper.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
@@ -25,8 +23,8 @@ public class BigDecimalType implements ValueType<BigDecimal> {
     }
 
     @Override
-    public void bindValue(BigDecimal value, MapSqlParameterSource paramSource, String paramName) {
-        paramSource.addValue(paramName, value);
+    public Object getSqlParameterValue(BigDecimal value) {
+        return value;
     }
 
     @Override

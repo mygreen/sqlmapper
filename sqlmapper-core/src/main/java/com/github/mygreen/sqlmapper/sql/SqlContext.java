@@ -15,13 +15,14 @@
  */
 package com.github.mygreen.sqlmapper.sql;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.PropertyAccessor;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.github.mygreen.sqlmapper.dialect.Dialect;
 import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.type.ValueTypeRegistry;
-import com.github.mygreen.sqlmapper.where.NamedParameterContext;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -42,10 +43,10 @@ public class SqlContext {
     private StringBuffer sqlBuf = new StringBuffer(255);
 
     /**
-     * SQLテンプレート中の変数をバインドした情報
+     * SQLテンプレート中の変数をバインドしたパラメータ
      */
     @Getter
-    private NamedParameterContext bindParameter = new NamedParameterContext(new MapSqlParameterSource());
+    private List<Object> bindParams = new ArrayList<>();
 
     /**
      * <code>BEGIN</code>コメントと<code>END</code>コメントで、囲まれた子供のコンテキストが有効かどうか。
@@ -90,30 +91,10 @@ public class SqlContext {
         this.parent = parent;
         this.enabled = false;
 
-        // パラメータ変数の現在まで払い出されたインデックス情報の引継ぎ
-        this.bindParameter.setArgIndex(parent.bindParameter.getArgIndex());
-
         // 各種情報の引継ぎ
         this.propertyAccessor = parent.propertyAccessor;
         this.valueTypeRegistry = parent.valueTypeRegistry;
 
-    }
-
-    /**
-     * 変数名を払い出す。
-     * @return 変数名
-     */
-    public String createArgName() {
-        return bindParameter.createArgName();
-    }
-
-    /**
-     * 指定した件数の変数名を払い出す。
-     * @param count 払い出す件数。
-     * @return 変数名
-     */
-    public String[] createArgNames(int count) {
-        return bindParameter.createArgNames(count);
     }
 
     /**
@@ -142,30 +123,27 @@ public class SqlContext {
      * @param valueType バインドする変数のタイプに対応する {@value ValueType}
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public void addSql(String sql, Object bindValue, String bindName, ValueType valueType) {
+    public void addSql(String sql, Object bindValue, ValueType valueType) {
         sqlBuf.append(sql);
 
         // Dialectで変更があるような場合は変換する。
         valueType = dialect.getValueType(valueType);
 
         if(valueType != null) {
-            valueType.bindValue(bindValue, bindParameter.getParamSource(), bindName);
+            bindParams.add(valueType.getSqlParameterValue(bindValue));
         } else {
-            bindParameter.getParamSource().addValue(bindName, bindValue);
+            bindParams.add(bindValue);
         }
     }
 
     /**
      * <code>SQL</code>とバインド変数を追加します。
      * @param sql SQL
-     * @param bindParameter バインドする変数情報
+     * @param bindParams バインドする変数情報
      */
-    public void addSql(final String sql, final NamedParameterContext bindParameter) {
+    public void addSql(final String sql, final List<Object> bindParams) {
         this.sqlBuf.append(sql);
-
-        // 変数のバインド情報をマージする
-        this.bindParameter.getParamSource().addValues(bindParameter.getParamSource().getValues());
-        this.bindParameter.setArgIndex(bindParameter.getArgIndex());
+        this.bindParams.addAll(bindParams);
 
     }
 }

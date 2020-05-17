@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.github.mygreen.sqlmapper.dialect.Dialect;
 import com.github.mygreen.sqlmapper.mapper.EntityIterationResultSetExtractor;
@@ -29,7 +28,7 @@ public class SqlSelectExecutor<T> extends QueryExecutorBase {
     /**
      * クエリのパラメータ
      */
-    private MapSqlParameterSource paramSource;
+    private Object[] paramValues;
 
     public SqlSelectExecutor(SqlSelect<T> query) {
         super(query.getContext());
@@ -58,8 +57,7 @@ public class SqlSelectExecutor<T> extends QueryExecutorBase {
         query.getNode().accept(sqlContext);
 
         this.executedSql = sqlContext.getSql();
-
-        this.paramSource = sqlContext.getBindParameter().getParamSource();
+        this.paramValues = sqlContext.getBindParams().toArray();
 
     }
 
@@ -86,14 +84,14 @@ public class SqlSelectExecutor<T> extends QueryExecutorBase {
         assertNotCompleted("getSingleResult");
 
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getEntityMeta());
-        return context.getNamedParameterJdbcTemplate().queryForObject(executedSql, paramSource, rowMapper);
+        return context.getJdbcTemplate().queryForObject(executedSql, paramValues, rowMapper);
     }
 
     public Optional<T> getOptionalResult() {
         assertNotCompleted("getOptionalResult");
 
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getEntityMeta());
-        final List<T> ret = context.getNamedParameterJdbcTemplate().query(executedSql, paramSource, rowMapper);
+        final List<T> ret = context.getJdbcTemplate().query(executedSql, paramValues, rowMapper);
         if(ret.isEmpty()) {
             return Optional.empty();
         } else {
@@ -105,7 +103,7 @@ public class SqlSelectExecutor<T> extends QueryExecutorBase {
         assertNotCompleted("getResultList");
 
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getEntityMeta());
-        return context.getNamedParameterJdbcTemplate().query(executedSql, paramSource, rowMapper);
+        return context.getJdbcTemplate().query(executedSql, paramValues, rowMapper);
     }
 
     public <R> R iterate(IterationCallback<T, R> callback) {
@@ -115,7 +113,7 @@ public class SqlSelectExecutor<T> extends QueryExecutorBase {
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getEntityMeta());
         ResultSetExtractor<R> extractor = new EntityIterationResultSetExtractor<T,R>(rowMapper, callback);
 
-        return context.getNamedParameterJdbcTemplate().query(executedSql, paramSource, extractor);
+        return context.getJdbcTemplate().query(executedSql, paramValues, extractor);
 
     }
 

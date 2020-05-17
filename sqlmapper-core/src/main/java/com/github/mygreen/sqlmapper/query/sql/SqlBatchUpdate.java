@@ -1,11 +1,12 @@
 package com.github.mygreen.sqlmapper.query.sql;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.beans.PropertyAccessor;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.github.mygreen.sqlmapper.SqlMapperContext;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
@@ -36,7 +37,7 @@ public class SqlBatchUpdate<T> extends QueryBase<T> {
     /**
      * クエリのパラメータ
      */
-    private MapSqlParameterSource[] paramSourceList;
+    private List<Object[]> batchParams;
 
     public SqlBatchUpdate(@NonNull SqlMapperContext context, @NonNull Node node, @NonNull T[] parameters) {
         super(context);
@@ -65,7 +66,7 @@ public class SqlBatchUpdate<T> extends QueryBase<T> {
 
         final int size = parameters.length;
         this.executedSqlList = new String[size];
-        this.paramSourceList = new MapSqlParameterSource[size];
+        this.batchParams = new ArrayList<>(size);
 
         for(int i=0; i < size; i++) {
             SqlContext sqlContext = new SqlContext();
@@ -76,7 +77,7 @@ public class SqlBatchUpdate<T> extends QueryBase<T> {
             node.accept(sqlContext);
 
             this.executedSqlList[i] = sqlContext.getSql();
-            this.paramSourceList[i] = sqlContext.getBindParameter().getParamSource();
+            this.batchParams.add(sqlContext.getBindParams().toArray());
 
         }
     }
@@ -114,7 +115,7 @@ public class SqlBatchUpdate<T> extends QueryBase<T> {
             int[] result = new int[size];
 
             for(int i=0; i < size; i++) {
-                int rows = context.getNamedParameterJdbcTemplate().update(executedSqlList[i], paramSourceList[i]);
+                int rows = context.getJdbcTemplate().update(executedSqlList[i], batchParams.get(i));
                 result[i] = rows;
             }
 
