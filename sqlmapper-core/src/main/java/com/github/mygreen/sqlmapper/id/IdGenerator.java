@@ -33,7 +33,7 @@ public interface IdGenerator {
 
     /**
      * 指定した個数分の識別子を新たに生成します。
-     * @param num 生成した識別子
+     * @param num 生成する識別子の個数
      * @return DataIntegrityViolationException 識別子の生成に失敗した場合にスローされます。
      */
     default Object[] generateValues(int num) {
