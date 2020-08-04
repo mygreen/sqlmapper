@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.support.lob.LobHandler;
 
+import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.sqlmapper.annotation.Convert;
 import com.github.mygreen.sqlmapper.annotation.Enumerated;
 import com.github.mygreen.sqlmapper.annotation.Temporal;
-import com.github.mygreen.sqlmapper.localization.MessageBuilder;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.type.enumeration.EnumOrdinalType;
 import com.github.mygreen.sqlmapper.type.enumeration.EnumStringType;
@@ -48,7 +48,7 @@ public class ValueTypeRegistry {
     @Getter
     @Setter
     @Autowired
-    private MessageBuilder messageBuilder;
+    private MessageFormatter messageFormatter;
 
     @Getter
     @Setter
@@ -96,10 +96,10 @@ public class ValueTypeRegistry {
             return getUtilDateType(propertyMeta);
         }
 
-        throw new ValueTypeNotFoundException(propertyMeta, messageBuilder.create("typeValue.notFound")
-                .varWithClass("entityClass", propertyMeta.getDeclaringClass())
-                .var("property", propertyMeta.getName())
-                .varWithClass("propertyType", propertyType)
+        throw new ValueTypeNotFoundException(propertyMeta, messageFormatter.create("typeValue.notFound")
+                .paramWithClass("entityClass", propertyMeta.getDeclaringClass())
+                .param("property", propertyMeta.getName())
+                .paramWithClass("propertyType", propertyType)
                 .format());
 
     }
@@ -166,10 +166,10 @@ public class ValueTypeRegistry {
             return new LobByteArrayType(lobHandler);
         }
 
-        throw new ValueTypeNotFoundException(propertyMeta, messageBuilder.create("typeValue.notFoundLob")
-                .varWithClass("entityClass", propertyMeta.getDeclaringClass())
-                .var("property", propertyMeta.getName())
-                .varWithClass("propertyType", propertyType)
+        throw new ValueTypeNotFoundException(propertyMeta, messageFormatter.create("typeValue.notFoundLob")
+                .paramWithClass("entityClass", propertyMeta.getDeclaringClass())
+                .param("property", propertyMeta.getName())
+                .paramWithClass("propertyType", propertyType)
                 .format());
 
     }
@@ -188,14 +188,14 @@ public class ValueTypeRegistry {
         if(enumeratedAnno.isPresent()) {
             final Enumerated.EnumType enumType = enumeratedAnno.get().value();
             if(enumType == Enumerated.EnumType.ORDINAL) {
-                return new EnumOrdinalType(propertyType, messageBuilder);
+                return new EnumOrdinalType(propertyType, messageFormatter);
             } else if(enumType == Enumerated.EnumType.STRING) {
-                return new EnumStringType(propertyType, messageBuilder);
+                return new EnumStringType(propertyType, messageFormatter);
             }
         }
 
         // デフォルトの場合
-        return new EnumStringType(propertyType, messageBuilder);
+        return new EnumStringType(propertyType, messageFormatter);
 
     }
 

@@ -39,7 +39,7 @@ public class AutoBatchInsert<T> extends QueryBase<T> {
         super(context);
 
         if(entities.length == 0) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.notEmptyEntity")
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.notEmptyEntity")
                     .format());
         }
 
@@ -82,9 +82,9 @@ public class AutoBatchInsert<T> extends QueryBase<T> {
         for(CharSequence name : propertyNames) {
             final String nameStr = name.toString();
             if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
-                throw new IllegalOperateException(context.getMessageBuilder().create("query.noIncludeProperty")
-                        .varWithClass("classType", entityMeta.getEntityType())
-                        .var("propertyName", nameStr)
+                throw new IllegalOperateException(context.getMessageFormatter().create("query.noIncludeProperty")
+                        .paramWithClass("classType", entityMeta.getEntityType())
+                        .param("propertyName", nameStr)
                         .format());
             }
 
@@ -108,9 +108,9 @@ public class AutoBatchInsert<T> extends QueryBase<T> {
         for(CharSequence name : propertyNames) {
             final String nameStr = name.toString();
             if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
-                throw new IllegalOperateException(context.getMessageBuilder().create("entity.noIncludeProperty")
-                        .varWithClass("classType", entityMeta.getEntityType())
-                        .var("propertyName", nameStr)
+                throw new IllegalOperateException(context.getMessageFormatter().create("entity.noIncludeProperty")
+                        .paramWithClass("classType", entityMeta.getEntityType())
+                        .param("propertyName", nameStr)
                         .format());
             }
 

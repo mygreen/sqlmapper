@@ -39,9 +39,9 @@ public abstract class QueryExecutorBase {
      */
     protected void assertNotCompleted(final String methodName) {
         if(!completed) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.notPrepared")
-                    .varWithClass("classType", getClass())
-                    .var("methodName", methodName)
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.notPrepared")
+                    .paramWithClass("classType", getClass())
+                    .param("methodName", methodName)
                     .format());
         }
     }

@@ -4,8 +4,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.sqlmapper.dialect.Dialect;
-import com.github.mygreen.sqlmapper.localization.MessageBuilder;
 import com.github.mygreen.sqlmapper.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.naming.NamingRule;
 import com.github.mygreen.sqlmapper.query.sql.SqlLoader;
@@ -33,7 +33,7 @@ public class SqlMapperContext {
 
     @Getter
     @Setter
-    private MessageBuilder messageBuilder;
+    private MessageFormatter messageFormatter;
 
     @Getter
     @Setter

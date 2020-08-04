@@ -43,7 +43,7 @@ public class SqlBatchUpdate<T> extends QueryBase<T> {
         super(context);
 
         if(parameters.length == 0) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.notEmptyParameter")
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.notEmptyParameter")
                     .format());
         }
 

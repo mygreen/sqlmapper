@@ -42,7 +42,7 @@ public class AutoBatchDelete<T> extends QueryBase<T> {
         super(context);
 
         if(entities.length == 0) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.notEmptyEntity")
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.notEmptyEntity")
                     .format());
         }
 
@@ -60,8 +60,8 @@ public class AutoBatchDelete<T> extends QueryBase<T> {
     private void validateTarget() {
         // 主キーを持つかどうかのチェック
         if(entityMeta.getIdPropertyMetaList().isEmpty()) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.requiredId")
-                    .varWithClass("entityType", entityMeta.getEntityType())
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.requiredId")
+                    .paramWithClass("entityType", entityMeta.getEntityType())
                     .format());
         }
     }

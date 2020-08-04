@@ -173,7 +173,7 @@ public class AutoBatchUpdateExecutor extends QueryExecutorBase {
         assertNotCompleted("executeBatchUpdate");
 
         if(targetPropertyCount == 0) {
-            log.warn(context.getMessageBuilder().create("query.skipUpdateWithNoProperty").format());
+            log.warn(context.getMessageFormatter().create("query.skipUpdateWithNoProperty").format());
             return new int[query.getEntitySize()];
         }
 
@@ -225,8 +225,8 @@ public class AutoBatchUpdateExecutor extends QueryExecutorBase {
      */
     private void validateRows(final Object entity, final int rows) {
         if(!query.isSuppresOptimisticLockException() && rows == 0) {
-            throw new OptimisticLockingFailureException(context.getMessageBuilder().create("query.alreadyUpdate")
-                    .var("entity", entity)
+            throw new OptimisticLockingFailureException(context.getMessageFormatter().create("query.alreadyUpdate")
+                    .param("entity", entity)
                     .format());
         }
     }

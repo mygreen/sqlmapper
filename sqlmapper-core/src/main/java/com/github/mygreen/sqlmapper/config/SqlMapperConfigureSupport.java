@@ -1,13 +1,11 @@
 package com.github.mygreen.sqlmapper.config;
 
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.sql.DataSource;
@@ -23,7 +21,6 @@ import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
@@ -31,14 +28,14 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.github.mygreen.messageformatter.MessageFormatter;
+import com.github.mygreen.messageformatter.MessageInterpolator;
+import com.github.mygreen.messageformatter.expression.ExpressionEvaluator;
+import com.github.mygreen.messageformatter.expression.SpelExpressionEvaluator;
 import com.github.mygreen.sqlmapper.SqlMapper;
 import com.github.mygreen.sqlmapper.SqlMapperContext;
 import com.github.mygreen.sqlmapper.audit.AuditingEntityListener;
 import com.github.mygreen.sqlmapper.dialect.Dialect;
-import com.github.mygreen.sqlmapper.localization.CustomFunctions;
-import com.github.mygreen.sqlmapper.localization.ExpressionEvaluator;
-import com.github.mygreen.sqlmapper.localization.MessageBuilder;
-import com.github.mygreen.sqlmapper.localization.MessageInterpolator;
 import com.github.mygreen.sqlmapper.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.meta.PropertyMetaFactory;
 import com.github.mygreen.sqlmapper.naming.DefaultNamingRule;
@@ -60,7 +57,6 @@ import com.github.mygreen.sqlmapper.type.standard.SqlTimeType;
 import com.github.mygreen.sqlmapper.type.standard.SqlTimestampType;
 import com.github.mygreen.sqlmapper.type.standard.StringType;
 import com.github.mygreen.sqlmapper.type.standard.UUIDType;
-import com.github.mygreen.sqlmapper.util.ClassUtils;
 
 /**
  *
@@ -99,7 +95,7 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
         SqlMapperContext context = new SqlMapperContext();
         context.setJdbcTemplate(jdbcTemplate());
         context.setNamingRule(namingRule());
-        context.setMessageBuilder(messageBuilder());
+        context.setMessageFormatter(messageFormatter());
         context.setDialect(dialect());
         context.setEntityMetaFactory(entityMetaFactory());
         context.setApplicationEventPublisher(applicationEventPublisher);
@@ -118,7 +114,7 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     public EntityMetaFactory entityMetaFactory() {
 
         EntityMetaFactory entityMetaFactory = new EntityMetaFactory();
-        entityMetaFactory.setMessageBuilder(messageBuilder());
+        entityMetaFactory.setMessageFormatter(messageFormatter());
         entityMetaFactory.setNamingRule(namingRule());
         entityMetaFactory.setPropertyMetaFactory(propertyMetaFactory());
 
@@ -130,7 +126,7 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     public PropertyMetaFactory propertyMetaFactory() {
 
         PropertyMetaFactory propertyMetaFactory = new PropertyMetaFactory();
-        propertyMetaFactory.setMessageBuilder(messageBuilder());
+        propertyMetaFactory.setMessageFormatter(messageFormatter());
         propertyMetaFactory.setNamingRule(namingRule());
         propertyMetaFactory.setValueTypeRegistry(valueTypeRegistry());
         propertyMetaFactory.setDialect(dialect());
@@ -149,20 +145,18 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     }
 
     @Bean
-    public MessageBuilder messageBuilder() {
+    public MessageFormatter messageFormatter() {
 
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.addBasenames("com/github/mygreen/sqlmapper/localization/messages");
+        messageSource.addBasenames("com/github/mygreen/sqlmapper/messages");
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setUseCodeAsDefaultMessage(true);
         messageSource.setFallbackToSystemLocale(false);
 
-        SpelExpressionParser parser = new SpelExpressionParser();
-        Map<String, Method> customFunctions = ClassUtils.createStaticMethodMap(CustomFunctions.class,"");
-        ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(parser, customFunctions);
+        ExpressionEvaluator expressionEvaluator = new SpelExpressionEvaluator();
         MessageInterpolator messageInterpolator = new MessageInterpolator(expressionEvaluator);
 
-        return new MessageBuilder(messageSource, messageInterpolator);
+        return new MessageFormatter(messageSource, messageInterpolator);
 
     }
 
@@ -171,7 +165,7 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
 
         ValueTypeRegistry registry = new ValueTypeRegistry();
         registry.setApplicationContext(applicationContext);
-        registry.setMessageBuilder(messageBuilder());
+        registry.setMessageFormatter(messageFormatter());
         registry.setLobHandler(lobHandler());
 
         registry.register(String.class, new StringType());

@@ -59,9 +59,9 @@ public class AutoInsert<T> extends QueryBase<T> {
         for(CharSequence name : propertyNames) {
             final String nameStr = name.toString();
             if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
-                throw new IllegalOperateException(context.getMessageBuilder().create("query.noIncludeProperty")
-                        .varWithClass("classType", entityMeta.getEntityType())
-                        .var("propertyName", nameStr)
+                throw new IllegalOperateException(context.getMessageFormatter().create("query.noIncludeProperty")
+                        .paramWithClass("classType", entityMeta.getEntityType())
+                        .param("propertyName", nameStr)
                         .format());
             }
 
@@ -85,9 +85,9 @@ public class AutoInsert<T> extends QueryBase<T> {
         for(CharSequence name : propertyNames) {
             final String nameStr = name.toString();
             if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
-                throw new IllegalOperateException(context.getMessageBuilder().create("entity.noIncludeProperty")
-                        .varWithClass("classType", entityMeta.getEntityType())
-                        .var("propertyName", nameStr)
+                throw new IllegalOperateException(context.getMessageFormatter().create("entity.noIncludeProperty")
+                        .paramWithClass("classType", entityMeta.getEntityType())
+                        .param("propertyName", nameStr)
                         .format());
             }
 

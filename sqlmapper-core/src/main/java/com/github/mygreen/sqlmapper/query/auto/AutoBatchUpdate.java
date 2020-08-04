@@ -53,7 +53,7 @@ public class AutoBatchUpdate<T> extends QueryBase<T> {
         super(context);
 
         if(entities.length == 0) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.notEmptyEntity")
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.notEmptyEntity")
                     .format());
         }
 
@@ -71,8 +71,8 @@ public class AutoBatchUpdate<T> extends QueryBase<T> {
     private void validateTarget() {
         // 主キーを持つかどうかのチェック
         if(entityMeta.getIdPropertyMetaList().isEmpty()) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.requiredId")
-                    .varWithClass("entityType", entityMeta.getEntityType())
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.requiredId")
+                    .paramWithClass("entityType", entityMeta.getEntityType())
                     .format());
         }
     }
@@ -129,9 +129,9 @@ public class AutoBatchUpdate<T> extends QueryBase<T> {
         for(CharSequence name : propertyNames) {
             final String nameStr = name.toString();
             if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
-                throw new IllegalOperateException(context.getMessageBuilder().create("query.noIncludeProperty")
-                        .varWithClass("classType", entityMeta.getEntityType())
-                        .var("properyName", nameStr)
+                throw new IllegalOperateException(context.getMessageFormatter().create("query.noIncludeProperty")
+                        .paramWithClass("classType", entityMeta.getEntityType())
+                        .param("properyName", nameStr)
                         .format());
             }
 
@@ -152,9 +152,9 @@ public class AutoBatchUpdate<T> extends QueryBase<T> {
         for(CharSequence name : propertyNames) {
             final String nameStr = name.toString();
             if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
-                throw new IllegalOperateException(context.getMessageBuilder().create("entity.prop.noInclude")
-                        .varWithClass("classType", entityMeta.getEntityType())
-                        .var("properyName", nameStr)
+                throw new IllegalOperateException(context.getMessageFormatter().create("entity.prop.noInclude")
+                        .paramWithClass("classType", entityMeta.getEntityType())
+                        .param("properyName", nameStr)
                         .format());
             }
 

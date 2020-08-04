@@ -15,6 +15,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.ReflectionUtils;
 
+import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.sqlmapper.annotation.Column;
 import com.github.mygreen.sqlmapper.annotation.Enumerated;
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue;
@@ -32,7 +33,6 @@ import com.github.mygreen.sqlmapper.id.TableIdContext;
 import com.github.mygreen.sqlmapper.id.TableIdGenerator;
 import com.github.mygreen.sqlmapper.id.TableIdIncrementer;
 import com.github.mygreen.sqlmapper.id.UUIDGenerator;
-import com.github.mygreen.sqlmapper.localization.MessageBuilder;
 import com.github.mygreen.sqlmapper.naming.NamingRule;
 import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.type.ValueTypeRegistry;
@@ -61,7 +61,7 @@ public class PropertyMetaFactory {
     @Getter
     @Setter
     @Autowired
-    private MessageBuilder messageBuilder;
+    private MessageFormatter messageFormatter;
 
     @Getter
     @Setter
@@ -157,10 +157,10 @@ public class PropertyMetaFactory {
             final Class<? extends Annotation> annoClass = anno.annotationType();
 
             if(propertyMeta.hasAnnotation(annoClass)) {
-                final String message = messageBuilder.create("property.anno.duplicated")
-                        .varWithClass("classType", field.getDeclaringClass())
-                        .var("property", field.getName())
-                        .varWithAnno("anno", annoClass)
+                final String message = messageFormatter.create("property.anno.duplicated")
+                        .paramWithClass("classType", field.getDeclaringClass())
+                        .param("property", field.getName())
+                        .paramWithAnno("anno", annoClass)
                         .format();
                 log.warn(message);
                 continue;
@@ -213,10 +213,10 @@ public class PropertyMetaFactory {
             final Class<? extends Annotation> annoClass = anno.annotationType();
 
             if(propertyMeta.hasAnnotation(annoClass)) {
-                final String message = messageBuilder.create("property.anno.duplicated")
-                        .varWithClass("classType", method.getDeclaringClass())
-                        .var("property", method.getName())
-                        .varWithAnno("anno", annoClass)
+                final String message = messageFormatter.create("property.anno.duplicated")
+                        .paramWithClass("classType", method.getDeclaringClass())
+                        .param("property", method.getName())
+                        .paramWithAnno("anno", annoClass)
                         .format();
                 log.warn(message);
                 continue;
@@ -259,10 +259,10 @@ public class PropertyMetaFactory {
             final Class<? extends Annotation> annoClass = anno.annotationType();
 
             if(propertyMeta.hasAnnotation(annoClass)) {
-                final String message = messageBuilder.create("property.anno.duplicated")
-                        .varWithClass("classType", method.getDeclaringClass())
-                        .var("property", method.getName())
-                        .varWithAnno("anno", annoClass)
+                final String message = messageFormatter.create("property.anno.duplicated")
+                        .paramWithClass("classType", method.getDeclaringClass())
+                        .param("property", method.getName())
+                        .paramWithAnno("anno", annoClass)
                         .format();
                 log.warn(message);
                 continue;
@@ -388,26 +388,26 @@ public class PropertyMetaFactory {
                 if(a.initialValue() >= 0) {
                     tableIdContext.setInitialValue(a.initialValue());
                 } else {
-                    throw new InvalidEntityException(entityMeta.getEntityType(), messageBuilder.create("property.anno.attr.min")
-                            .varWithClass("classType", entityMeta.getEntityType())
-                            .var("property", propertyMeta.getName())
-                            .varWithAnno("anno", TableGenerator.class)
-                            .var("attrName", "initialValue")
-                            .var("attrValue", a.initialValue())
-                            .var("min", 0)
+                    throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.min")
+                            .paramWithClass("classType", entityMeta.getEntityType())
+                            .param("property", propertyMeta.getName())
+                            .paramWithAnno("anno", TableGenerator.class)
+                            .param("attrName", "initialValue")
+                            .param("attrValue", a.initialValue())
+                            .param("min", 0)
                             .format());
                 }
 
                 if(a.allocationSize() >= 1) {
                     tableIdContext.setAllocationSize(a.allocationSize());
                 } else {
-                    throw new InvalidEntityException(entityMeta.getEntityType(), messageBuilder.create("property.anno.attr.min")
-                            .varWithClass("classType", entityMeta.getEntityType())
-                            .var("property", propertyMeta.getName())
-                            .varWithAnno("anno", TableGenerator.class)
-                            .var("attrName", "allocationSize")
-                            .var("attrValue", a.allocationSize())
-                            .var("min", 1)
+                    throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.min")
+                            .paramWithClass("classType", entityMeta.getEntityType())
+                            .param("property", propertyMeta.getName())
+                            .paramWithAnno("anno", TableGenerator.class)
+                            .param("attrName", "allocationSize")
+                            .param("attrValue", a.allocationSize())
+                            .param("min", 1)
                             .format());
                 }
 
@@ -433,22 +433,22 @@ public class PropertyMetaFactory {
             idGenerator = new UUIDGenerator(propertyType);
 
         } else {
-            throw new InvalidEntityException(entityMeta.getEntityType(), messageBuilder.create("property.anno.attr.notSupportValue")
-                    .varWithClass("classType", entityMeta.getClass())
-                    .var("property", propertyMeta.getName())
-                    .varWithAnno("anno", GeneratedValue.class)
-                    .var("attrName", "strategy")
-                    .varWithEnum("attrValue", generationType)
+            throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.notSupportValue")
+                    .paramWithClass("classType", entityMeta.getClass())
+                    .param("property", propertyMeta.getName())
+                    .paramWithAnno("anno", GeneratedValue.class)
+                    .param("attrName", "strategy")
+                    .paramWithEnum("attrValue", generationType)
                     .format());
         }
 
         if(!idGenerator.isSupportedType(propertyType)) {
-            throw new InvalidEntityException(entityMeta.getClass(), messageBuilder.create("property.anno.notSupportTypeList")
-                    .varWithClass("classType", entityMeta.getEntityType())
-                    .var("property", propertyMeta.getName())
-                    .varWithAnno("anno", GeneratedValue.class)
-                    .varWithClass("actualType", propertyType)
-                    .varWithClass("expectedTypeList", idGenerator.getSupportedTypes())
+            throw new InvalidEntityException(entityMeta.getClass(), messageFormatter.create("property.anno.notSupportTypeList")
+                    .paramWithClass("classType", entityMeta.getEntityType())
+                    .param("property", propertyMeta.getName())
+                    .paramWithAnno("anno", GeneratedValue.class)
+                    .paramWithClass("actualType", propertyType)
+                    .paramWithClass("expectedTypeList", idGenerator.getSupportedTypes())
                     .format());
         }
 
@@ -476,22 +476,22 @@ public class PropertyMetaFactory {
                 && propertyType != Integer.class && propertyType != int.class
                 && propertyType != Long.class && propertyType != long.class) {
 
-            throw new InvalidEntityException(declaringClass, messageBuilder.create("property.anno.notSupportTypeList")
-                    .varWithClass("entityType", declaringClass)
-                    .var("propperty", propertyMeta.getName())
-                    .varWithAnno("anno", Id.class)
-                    .varWithClass("actualType", propertyType)
-                    .varWithClass("expectedTypeList", String.class, Integer.class, int.class, Long.class, long.class)
+            throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.notSupportTypeList")
+                    .paramWithClass("entityType", declaringClass)
+                    .param("propperty", propertyMeta.getName())
+                    .paramWithAnno("anno", Id.class)
+                    .paramWithClass("actualType", propertyType)
+                    .paramWithClass("expectedTypeList", String.class, Integer.class, int.class, Long.class, long.class)
                     .format());
         }
 
         // 主キーでないのに値の生成用のアノテーションが付与されている場合
         if(!propertyMeta.isId() && propertyMeta.hasAnnotation(GeneratedValue.class)) {
 
-            throw new InvalidEntityException(declaringClass, messageBuilder.create("property.anno.notIdWithGeneratedValue")
-                    .varWithClass("entityType", declaringClass)
-                    .var("propperty", propertyMeta.getName())
-                    .varWithAnno("anno", GeneratedValue.class)
+            throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.notIdWithGeneratedValue")
+                    .paramWithClass("entityType", declaringClass)
+                    .param("propperty", propertyMeta.getName())
+                    .paramWithAnno("anno", GeneratedValue.class)
                     .format());
         }
 
@@ -499,12 +499,12 @@ public class PropertyMetaFactory {
         // 列挙型のタイプチェック
         if(propertyMeta.hasAnnotation(Enumerated.class) && !propertyType.isEnum()) {
 
-            throw new InvalidEntityException(declaringClass, messageBuilder.create("property.anno.notSupportType")
-                    .varWithClass("entityType", declaringClass)
-                    .var("propperty", propertyMeta.getName())
-                    .varWithAnno("anno", Enumerated.class)
-                    .varWithClass("actualType", propertyType)
-                    .varWithClass("expectedType", Enum.class)
+            throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.notSupportType")
+                    .paramWithClass("entityType", declaringClass)
+                    .param("propperty", propertyMeta.getName())
+                    .paramWithAnno("anno", Enumerated.class)
+                    .paramWithClass("actualType", propertyType)
+                    .paramWithClass("expectedType", Enum.class)
                     .format());
         }
 
@@ -513,12 +513,12 @@ public class PropertyMetaFactory {
                 && propertyType != Integer.class && propertyType != int.class
                 && propertyType != Long.class && propertyType != long.class) {
 
-            throw new InvalidEntityException(declaringClass, messageBuilder.create("property.anno.notSupportTypeList")
-                    .varWithClass("entityType", declaringClass)
-                    .var("propperty", propertyMeta.getName())
-                    .varWithAnno("anno", Version.class)
-                    .varWithClass("actualType", propertyType)
-                    .varWithClass("expectedTypeList", Integer.class, int.class, Long.class, long.class)
+            throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.notSupportTypeList")
+                    .paramWithClass("entityType", declaringClass)
+                    .param("propperty", propertyMeta.getName())
+                    .paramWithAnno("anno", Version.class)
+                    .paramWithClass("actualType", propertyType)
+                    .paramWithClass("expectedTypeList", Integer.class, int.class, Long.class, long.class)
                     .format());
 
         }
@@ -528,10 +528,10 @@ public class PropertyMetaFactory {
                 && propertyType == java.util.Date.class) {
 
             // 時制の型が不明なプロパティに対して、@Temporalが付与されていない場合
-            throw new InvalidEntityException(declaringClass, messageBuilder.create("property.anno.requiredAnnoTemporal")
-                    .varWithClass("entityType", declaringClass)
-                    .var("propperty", propertyMeta.getName())
-                    .varWithAnno("anno", Temporal.class)
+            throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.requiredAnnoTemporal")
+                    .paramWithClass("entityType", declaringClass)
+                    .param("propperty", propertyMeta.getName())
+                    .paramWithAnno("anno", Temporal.class)
                     .format());
         }
 

@@ -14,8 +14,8 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.util.StringUtils;
 
+import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.sqlmapper.dialect.Dialect;
-import com.github.mygreen.sqlmapper.localization.MessageBuilder;
 import com.github.mygreen.sqlmapper.sql.Node;
 import com.github.mygreen.sqlmapper.sql.SqlParser;
 import com.github.mygreen.sqlmapper.sql.SqlParserImpl;
@@ -71,7 +71,7 @@ public class SqlLoader {
     @Getter
     @Setter
     @Autowired
-    private MessageBuilder messageBuilder;
+    private MessageFormatter messageBuilder;
 
     /**
      * SQLのキャッシュ結果
@@ -159,7 +159,7 @@ public class SqlLoader {
         } catch(IOException e) {
             // 読み込めない場合
             throw new TwoWaySQLException(messageBuilder.create("sqlTemplate.failLoad")
-                    .var("path", dialectPath)
+                    .param("path", dialectPath)
                     .format());
 
         }
@@ -174,14 +174,14 @@ public class SqlLoader {
         } catch(IOException e) {
             // 読み込めない場合
             throw new TwoWaySQLException(messageBuilder.create("sqlTemplate.failLoad")
-                    .var("path", path)
+                    .param("path", path)
                     .format());
 
         }
 
         // 読み込み対象のファイルが見つからない場合
         throw new TwoWaySQLException(messageBuilder.create("sqlTemplate.notReadable")
-                .var("path", path)
+                .param("path", path)
                 .format());
 
     }

@@ -40,9 +40,9 @@ public abstract class QueryBase<T> {
      */
     protected void assertNotCompleted(final String methodName) {
         if(completed) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.twiceExecution")
-                    .varWithClass("classType", getClass())
-                    .var("methodName", methodName)
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.twiceExecution")
+                    .paramWithClass("classType", getClass())
+                    .param("methodName", methodName)
                     .format());
         }
     }

@@ -7,7 +7,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.mygreen.sqlmapper.localization.MessageBuilder;
+import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.sqlmapper.type.SqlValueConversionException;
 import com.github.mygreen.sqlmapper.type.ValueType;
 
@@ -17,16 +17,16 @@ public class EnumStringType<T extends Enum<T>> implements ValueType<T> {
 
     private final Class<T> enumType;
 
-    private final MessageBuilder messageBuilder;
+    private final MessageFormatter messageFormatter;
 
     /**
      * キーが文字列、値が列挙型のマップ
      */
     private final Map<String, Enum<?>> toObjectMap;
 
-    public EnumStringType(@NonNull Class<T> enumClass, MessageBuilder messageBuilder) {
+    public EnumStringType(@NonNull Class<T> enumClass, MessageFormatter messageFormatter) {
         this.enumType = enumClass;
-        this.messageBuilder = messageBuilder;
+        this.messageFormatter = messageFormatter;
         this.toObjectMap = createToObjectMap(enumClass);
     }
 
@@ -55,9 +55,9 @@ public class EnumStringType<T extends Enum<T>> implements ValueType<T> {
 
         T value = (T)toObjectMap.get(sqlValue);
         if(value == null) {
-            throw new SqlValueConversionException(enumType, sqlValue, messageBuilder.create("typeValue.conversionFail")
-                    .var("value", sqlValue)
-                    .varWithClass("classType", enumType)
+            throw new SqlValueConversionException(enumType, sqlValue, messageFormatter.create("typeValue.conversionFail")
+                    .param("value", sqlValue)
+                    .paramWithClass("classType", enumType)
                     .format());
         }
 

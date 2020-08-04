@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
 
+import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.sqlmapper.annotation.Entity;
 import com.github.mygreen.sqlmapper.annotation.MappedSuperclass;
 import com.github.mygreen.sqlmapper.annotation.Table;
 import com.github.mygreen.sqlmapper.annotation.Version;
-import com.github.mygreen.sqlmapper.localization.MessageBuilder;
 import com.github.mygreen.sqlmapper.naming.NamingRule;
 
 import lombok.Getter;
@@ -40,7 +40,7 @@ public class EntityMetaFactory {
     @Getter
     @Setter
     @Autowired
-    private MessageBuilder messageBuilder;
+    private MessageFormatter messageFormatter;
 
     @Getter
     @Setter
@@ -78,9 +78,9 @@ public class EntityMetaFactory {
 
         final Entity annoEntity = entityClass.getAnnotation(Entity.class);
         if(annoEntity == null) {
-            throw new InvalidEntityException(entityClass, messageBuilder.create("entity.anno.required")
-                    .varWithClass("entityClass", entityClass)
-                    .varWithAnno("anno", Entity.class)
+            throw new InvalidEntityException(entityClass, messageFormatter.create("entity.anno.required")
+                    .paramWithClass("entityClass", entityClass)
+                    .paramWithAnno("anno", Entity.class)
                     .format());
         }
 
@@ -203,8 +203,8 @@ public class EntityMetaFactory {
                 .filter(p -> !p.isTransient())
                 .count();
         if(propertyCount == 0) {
-            throw new InvalidEntityException(entityClass, messageBuilder.create("entity.prop.empty")
-                    .varWithClass("classType", entityClass)
+            throw new InvalidEntityException(entityClass, messageFormatter.create("entity.prop.empty")
+                    .paramWithClass("classType", entityClass)
                     .format());
         }
 
@@ -222,9 +222,9 @@ public class EntityMetaFactory {
 
         }
         if(douplicatedColumnPropertyNames.size() > 0) {
-            throw new InvalidEntityException(entityClass, messageBuilder.create("entity.prop.columnDuplicated")
-                    .varWithClass("classType", entityClass)
-                    .var("propertyNames", douplicatedColumnPropertyNames)
+            throw new InvalidEntityException(entityClass, messageFormatter.create("entity.prop.columnDuplicated")
+                    .paramWithClass("classType", entityClass)
+                    .param("propertyNames", douplicatedColumnPropertyNames)
                     .format());
         }
 
@@ -238,10 +238,10 @@ public class EntityMetaFactory {
                     .map(prop -> prop.getName())
                     .collect(Collectors.toList());
 
-            throw new InvalidEntityException(entityClass, messageBuilder.create("entity.anno.multiPropertyAnno")
-                    .varWithClass("classType", entityClass)
-                    .varWithAnno("anno", Version.class)
-                    .var("propertyNames", propertyNames)
+            throw new InvalidEntityException(entityClass, messageFormatter.create("entity.anno.multiPropertyAnno")
+                    .paramWithClass("classType", entityClass)
+                    .paramWithAnno("anno", Version.class)
+                    .param("propertyNames", propertyNames)
                     .format());
         }
 
@@ -250,8 +250,8 @@ public class EntityMetaFactory {
             boolean existsId = propertyMetaList.stream()
                     .anyMatch(prop -> prop.isId());
             if(!existsId) {
-                throw new InvalidEntityException(entityClass, messageBuilder.create("entity.noIdWhenVersion")
-                        .varWithClass("classType", entityClass)
+                throw new InvalidEntityException(entityClass, messageFormatter.create("entity.noIdWhenVersion")
+                        .paramWithClass("classType", entityClass)
                         .format());
             }
         }

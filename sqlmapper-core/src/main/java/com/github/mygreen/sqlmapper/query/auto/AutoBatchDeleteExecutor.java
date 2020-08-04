@@ -132,7 +132,7 @@ public class AutoBatchDeleteExecutor extends QueryExecutorBase {
      */
     private void validateRows(final int rows) {
         if(!query.isSuppresOptimisticLockException() && rows != query.getEntitySize()) {
-            throw new OptimisticLockingFailureException(context.getMessageBuilder().create("query.alreadyBatchUpdate")
+            throw new OptimisticLockingFailureException(context.getMessageFormatter().create("query.alreadyBatchUpdate")
                     .format());
         }
     }

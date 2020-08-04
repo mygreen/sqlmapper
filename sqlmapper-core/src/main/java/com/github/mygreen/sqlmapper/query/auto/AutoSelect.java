@@ -151,9 +151,9 @@ public class AutoSelect<T> extends QueryBase<T> {
         for(CharSequence name : propertyNames) {
             final String nameStr = name.toString();
             if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
-                throw new IllegalOperateException(context.getMessageBuilder().create("query.noIncludeProperty")
-                        .varWithClass("classType", entityMeta.getEntityType())
-                        .var("properyName", nameStr)
+                throw new IllegalOperateException(context.getMessageFormatter().create("query.noIncludeProperty")
+                        .paramWithClass("classType", entityMeta.getEntityType())
+                        .param("properyName", nameStr)
                         .format());
             }
 
@@ -177,9 +177,9 @@ public class AutoSelect<T> extends QueryBase<T> {
         for(CharSequence name : propertyNames) {
             final String nameStr = name.toString();
             if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
-                throw new IllegalOperateException(context.getMessageBuilder().create("entity.prop.noInclude")
-                        .varWithClass("classType", entityMeta.getEntityType())
-                        .var("properyName", nameStr)
+                throw new IllegalOperateException(context.getMessageFormatter().create("entity.prop.noInclude")
+                        .paramWithClass("classType", entityMeta.getEntityType())
+                        .param("properyName", nameStr)
                         .format());
             }
 
@@ -222,10 +222,10 @@ public class AutoSelect<T> extends QueryBase<T> {
 
         List<PropertyMeta> idPropertyMetaList = entityMeta.getIdPropertyMetaList();
         if(idPropertyMetaList.size() != idPropertyValues.length) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.noMatchIdPropertySize")
-                    .varWithClass("entityType", baseClass)
-                    .var("actualSize", idPropertyValues.length)
-                    .var("expectedSize", idPropertyMetaList.size())
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.noMatchIdPropertySize")
+                    .paramWithClass("entityType", baseClass)
+                    .param("actualSize", idPropertyValues.length)
+                    .param("expectedSize", idPropertyMetaList.size())
                     .format());
         }
 
@@ -244,8 +244,8 @@ public class AutoSelect<T> extends QueryBase<T> {
     public AutoSelect<T> version(@NonNull final Object versionPropertyValue) {
 
         if(!entityMeta.hasVersionPropertyMeta()) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.noVersionProperty")
-                    .varWithClass("entityType", baseClass)
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.noVersionProperty")
+                    .paramWithClass("entityType", baseClass)
                     .format());
         }
 
@@ -262,9 +262,9 @@ public class AutoSelect<T> extends QueryBase<T> {
     public AutoSelect<T> forUpdate() {
         final Dialect dialect = context.getDialect();
         if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NORMAL)) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.notSupportSelectForUpdate")
-                    .varWithClass("entityType", baseClass)
-                    .var("dialectName", dialect.getName())
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdate")
+                    .paramWithClass("entityType", baseClass)
+                    .param("dialectName", dialect.getName())
                     .format());
         }
 
@@ -281,9 +281,9 @@ public class AutoSelect<T> extends QueryBase<T> {
 
         final Dialect dialect = context.getDialect();
         if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NOWAIT)) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.notSupportSelectForUpdateNowait")
-                    .varWithClass("entityType", baseClass)
-                    .var("dialectName", dialect.getName())
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdateNowait")
+                    .paramWithClass("entityType", baseClass)
+                    .param("dialectName", dialect.getName())
                     .format());
         }
 
@@ -301,9 +301,9 @@ public class AutoSelect<T> extends QueryBase<T> {
 
         final Dialect dialect = context.getDialect();
         if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.WAIT)) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.notSupportSelectForUpdateWait")
-                    .varWithClass("entityType", baseClass)
-                    .var("dialectName", dialect.getName())
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdateWait")
+                    .paramWithClass("entityType", baseClass)
+                    .param("dialectName", dialect.getName())
                     .format());
         }
 

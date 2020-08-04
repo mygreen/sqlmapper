@@ -149,7 +149,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
 
         if(query.getIdPropertyValues() == null && query.getVersionPropertyValue() != null) {
             // 主キーが指定されず、バージョンだけ指定されている場合
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.emptyIdWithVersion")
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.emptyIdWithVersion")
                     .format());
         }
 
@@ -217,7 +217,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
 
         // LIMIT句を指定していないかのチェック
         if(query.getLimit() > 0 || query.getOffset() > 0) {
-            throw new IllegalOperateException(context.getMessageBuilder().create("query.notSupportPaginationWithForUpdate")
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportPaginationWithForUpdate")
                     .format());
         }
 
