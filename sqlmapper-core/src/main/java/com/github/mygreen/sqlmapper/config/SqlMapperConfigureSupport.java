@@ -32,6 +32,7 @@ import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.messageformatter.MessageInterpolator;
 import com.github.mygreen.messageformatter.expression.ExpressionEvaluator;
 import com.github.mygreen.messageformatter.expression.SpelExpressionEvaluator;
+import com.github.mygreen.splate.SqlTemplateEngine;
 import com.github.mygreen.sqlmapper.SqlMapper;
 import com.github.mygreen.sqlmapper.SqlMapperContext;
 import com.github.mygreen.sqlmapper.audit.AuditingEntityListener;
@@ -40,7 +41,6 @@ import com.github.mygreen.sqlmapper.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.meta.PropertyMetaFactory;
 import com.github.mygreen.sqlmapper.naming.DefaultNamingRule;
 import com.github.mygreen.sqlmapper.naming.NamingRule;
-import com.github.mygreen.sqlmapper.query.sql.SqlLoader;
 import com.github.mygreen.sqlmapper.type.ValueTypeRegistry;
 import com.github.mygreen.sqlmapper.type.standard.BigDecimalType;
 import com.github.mygreen.sqlmapper.type.standard.BooleanType;
@@ -99,7 +99,7 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
         context.setDialect(dialect());
         context.setEntityMetaFactory(entityMetaFactory());
         context.setApplicationEventPublisher(applicationEventPublisher);
-        context.setSqlLoader(sqlLoader());
+        context.setSqlTemplateEngine(sqlTemplateEngine());
         context.setValueTypeRegistry(valueTypeRegistry());
 
         TransactionTemplate requiresNewTransactionTemplate = new TransactionTemplate(transactionManager(dataSource()));
@@ -200,8 +200,14 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     }
 
     @Bean
-    public SqlLoader sqlLoader() {
-        return new SqlLoader();
+    public SqlTemplateEngine sqlTemplateEngine() {
+
+        final SqlTemplateEngine templateEngine = new SqlTemplateEngine();
+        templateEngine.setCached(env.getRequiredProperty("sqlmapper.sqlTemplate.cacheMode", boolean.class));
+        templateEngine.setEncoding(env.getProperty("sqlmapper.sqlTemplate.encoding"));
+        templateEngine.setSuffixName(dialect().getName());
+
+        return templateEngine;
 
     }
 

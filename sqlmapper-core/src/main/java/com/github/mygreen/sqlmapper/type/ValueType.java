@@ -5,6 +5,9 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.SqlParameterValue;
 
+import com.github.mygreen.splate.type.SqlTemplateValueType;
+import com.github.mygreen.splate.type.SqlTypeConversionException;
+
 /**
  * SQL(JDBC)とマッピング先の型を表すインタフェースです。
  *
@@ -13,7 +16,7 @@ import org.springframework.jdbc.core.SqlParameterValue;
  *
  * @param <T> マッピング先の型
  */
-public interface ValueType<T> {
+public interface ValueType<T> extends SqlTemplateValueType<T> {
 
     /**
      * カラムの値を返します。
@@ -38,16 +41,11 @@ public interface ValueType<T> {
     Object getSqlParameterValue(T value) throws SqlParameterBindException;
 
     /**
-     * SQLに直接埋め込む値として文字列に変換します。
-     *
-     * @param value 変換する値。非nullが渡されます。
-     * @return 文字列に変換した値
-     * @throws TextConversionException 値を文字列への変換に失敗したときにストローされます。
+     * {@inheritDoc}
+     * デフォルト実装として、{@link #getSqlParameterValue(Object)} に委譲されます。
      */
-    default String getAsText(T value) throws TextConversionException {
-        if(value == null) {
-            return null;
-        }
-        return value.toString();
+    @Override
+    default Object getBindVariableValue(T value) throws SqlTypeConversionException {
+        return getSqlParameterValue(value);
     }
 }

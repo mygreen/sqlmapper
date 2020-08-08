@@ -41,8 +41,8 @@ public class SqlDateType implements SqlTemporalType<Date> {
     }
 
     @Override
-    public String getAsText(Date value) {
-        return new SimpleDateFormat(pattern).format(value);
+    public String getEmbeddedValue(Date value) {
+        return value != null ? new SimpleDateFormat(pattern).format(value) : null;
     }
 
 }

@@ -37,12 +37,11 @@ public class LocalDateTimeType implements ValueType<LocalDateTime> {
 
     @Override
     public Object getSqlParameterValue(LocalDateTime value) {
-        Timestamp sqlValue = (value != null ? Timestamp.valueOf(value) : null);
-        return sqlValue;
+        return value != null ? Timestamp.valueOf(value) : null;
     }
 
     @Override
-    public String getAsText(LocalDateTime value) {
-        return formatter.format(value);
+    public String getEmbeddedValue(LocalDateTime value) {
+        return value != null ? formatter.format(value) : null;
     }
 }

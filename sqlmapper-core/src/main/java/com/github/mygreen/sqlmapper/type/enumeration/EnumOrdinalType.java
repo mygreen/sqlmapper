@@ -67,14 +67,12 @@ public class EnumOrdinalType<T extends Enum<T>> implements ValueType<T> {
 
     @Override
     public Object getSqlParameterValue(T value) {
-
-        int sqlType = (value != null ? value.ordinal() : null);
-        return sqlType;
+        return value != null ? value.ordinal() : null;
 
     }
 
     @Override
-    public String getAsText(T value) {
-        return String.valueOf(value.ordinal());
+    public String getEmbeddedValue(T value) {
+        return value != null ? String.valueOf(value.ordinal()) : null;
     }
 }

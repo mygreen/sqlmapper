@@ -5,13 +5,14 @@ import java.util.Optional;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
+import com.github.mygreen.splate.SqlTemplate;
+import com.github.mygreen.splate.SqlTemplateContext;
 import com.github.mygreen.sqlmapper.SqlMapperContext;
 import com.github.mygreen.sqlmapper.event.PostListSelectEvent;
 import com.github.mygreen.sqlmapper.event.PostSelectEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IterationCallback;
 import com.github.mygreen.sqlmapper.query.QueryBase;
-import com.github.mygreen.sqlmapper.sql.Node;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,27 +27,24 @@ public class SqlSelect<T> extends QueryBase<T> {
     private final EntityMeta entityMeta;
 
     /**
-     * パラメータです。
+     * SQLテンプレートです。
      */
     @Getter(AccessLevel.PACKAGE)
-    private final Object parameter;
+    private final SqlTemplate template;
 
     /**
-     * SQLの解析ノードです。
+     * SQLテンプレートのパラメータです。
      */
     @Getter(AccessLevel.PACKAGE)
-    private final Node node;
+    private final SqlTemplateContext parameter;
 
-    public SqlSelect(@NonNull SqlMapperContext context, @NonNull Class<T> baseClass, @NonNull Node node, Object parameter) {
+    public SqlSelect(@NonNull SqlMapperContext context, @NonNull Class<T> baseClass,
+            @NonNull SqlTemplate template, @NonNull SqlTemplateContext parameter) {
         super(context);
         this.baseClass = baseClass;
-        this.node = node;
+        this.template = template;
         this.parameter = parameter;
         this.entityMeta = context.getEntityMetaFactory().create(baseClass);
-    }
-
-    public SqlSelect(@NonNull SqlMapperContext context, @NonNull Class<T> baseClass, @NonNull Node node) {
-        this(context, baseClass, node, null);
     }
 
     /**

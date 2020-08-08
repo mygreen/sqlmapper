@@ -42,7 +42,7 @@ public class LocalTimeType implements ValueType<LocalTime> {
     }
 
     @Override
-    public String getAsText(LocalTime value) {
-        return formatter.format(value);
+    public String getEmbeddedValue(LocalTime value) {
+        return value != null ? formatter.format(value) : null;
     }
 }

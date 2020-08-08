@@ -2,6 +2,8 @@ package com.github.mygreen.sqlmapper;
 
 import java.util.List;
 
+import com.github.mygreen.splate.EmptyValueSqlTemplateContext;
+import com.github.mygreen.splate.SqlTemplateContext;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.auto.AutoAnyDelete;
 import com.github.mygreen.sqlmapper.query.auto.AutoBatchInsert;
@@ -10,7 +12,6 @@ import com.github.mygreen.sqlmapper.query.auto.AutoDelete;
 import com.github.mygreen.sqlmapper.query.auto.AutoInsert;
 import com.github.mygreen.sqlmapper.query.auto.AutoSelect;
 import com.github.mygreen.sqlmapper.query.auto.AutoUpdate;
-import com.github.mygreen.sqlmapper.query.sql.SqlBatchUpdate;
 import com.github.mygreen.sqlmapper.query.sql.SqlCount;
 import com.github.mygreen.sqlmapper.query.sql.SqlSelect;
 import com.github.mygreen.sqlmapper.query.sql.SqlUpdate;
@@ -158,7 +159,7 @@ public class SqlMapper {
      * @return SQLファイル参照用のクエリ
      */
     public <T> SqlSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path) {
-        return new SqlSelect<T>(context, baseClass, context.getSqlLoader().loadSqlFileAsNode(path));
+        return new SqlSelect<T>(context, baseClass, context.getSqlTemplateEngine().getTemplate(path), new EmptyValueSqlTemplateContext());
     }
 
     /**
@@ -166,11 +167,11 @@ public class SqlMapper {
      * @param <T> エンティティタイプ
      * @param baseClass エンティティのクラス
      * @param path SQLファイルのパス
-     * @param parameter パラメータ
+     * @param parameter SQLテンプレートのパラメータ
      * @return SQLファイル参照用のクエリ
      */
-    public <T> SqlSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path, Object parameter) {
-        return new SqlSelect<T>(context, baseClass, context.getSqlLoader().loadSqlFileAsNode(path), parameter);
+    public <T> SqlSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path, @NonNull SqlTemplateContext parameter) {
+        return new SqlSelect<T>(context, baseClass, context.getSqlTemplateEngine().getTemplate(path), parameter);
     }
 
     /**
@@ -179,7 +180,7 @@ public class SqlMapper {
      * @return カウント結果
      */
     public long getCountBySqlFile(@NonNull String path) {
-        return new SqlCount<>(context, context.getSqlLoader().loadSqlFileAsNode(path))
+        return new SqlCount<>(context, context.getSqlTemplateEngine().getTemplate(path), new EmptyValueSqlTemplateContext())
                 .getCount();
     }
 
@@ -189,8 +190,8 @@ public class SqlMapper {
      * @param parameter パラメータ
      * @return カウント結果
      */
-    public long getCountBySqlFile(@NonNull String path, Object parameter) {
-        return new SqlCount<>(context, context.getSqlLoader().loadSqlFileAsNode(path), parameter)
+    public long getCountBySqlFile(@NonNull String path, @NonNull SqlTemplateContext parameter) {
+        return new SqlCount<>(context, context.getSqlTemplateEngine().getTemplate(path), parameter)
                 .getCount();
     }
 
@@ -200,7 +201,7 @@ public class SqlMapper {
      * @return SQLファイル更新用のクエリ
      */
     public SqlUpdate<?> updateBySqlFile(@NonNull String path) {
-        return new SqlUpdate<>(context, context.getSqlLoader().loadSqlFileAsNode(path));
+        return new SqlUpdate<>(context, context.getSqlTemplateEngine().getTemplate(path), new EmptyValueSqlTemplateContext());
     }
 
     /**
@@ -209,117 +210,71 @@ public class SqlMapper {
      * @param parameter パラメータ
      * @return SQLファイル更新用のクエリ
      */
-    public SqlUpdate<?> updateBySqlFile(@NonNull String path, Object parameter) {
-        return new SqlUpdate<>(context, context.getSqlLoader().loadSqlFileAsNode(path), parameter);
-    }
-
-    /**
-     * SQLファイルを元にテーブルをバッチ更新（追加/更新/削除）します。
-     * @param <T> パラメータのタイプ
-     * @param path SQLファイルのパス
-     * @param parameters パラメータ
-     * @return 更新用のクエリ
-     */
-    @SuppressWarnings("unchecked")
-    public <T> SqlBatchUpdate<T> updateBatchBySqlFile(@NonNull String path, T... parameters) {
-        return new SqlBatchUpdate<T>(context, context.getSqlLoader().loadSqlFileAsNode(path), parameters);
-    }
-
-    /**
-     * SQLファイルを元にテーブルをバッチ更新（追加/更新/削除）します。
-     * @param <T> パラメータのタイプ
-     * @param path SQLファイルのパス
-     * @param parameters パラメータ
-     * @return 更新用のクエリ
-     */
-    public <T> SqlBatchUpdate<T> updateBatchBySqlFile(@NonNull String path, List<T> parameters) {
-        return new SqlBatchUpdate<T>(context, context.getSqlLoader().loadSqlFileAsNode(path), parameters);
+    public SqlUpdate<?> updateBySqlFile(@NonNull String path, @NonNull SqlTemplateContext parameter) {
+        return new SqlUpdate<>(context, context.getSqlTemplateEngine().getTemplate(path), parameter);
     }
 
     /**
      * SQLを元にテーブルを参照します。
      * @param <T> エンティティタイプ
      * @param baseClass エンティティのクラス
-     * @param path SQL
+     * @param sql SQL
      * @return SQL参照用のクエリ
      */
     public <T> SqlSelect<T> selectBySql(@NonNull Class<T> baseClass, @NonNull String sql) {
-        return new SqlSelect<T>(context, baseClass, context.getSqlLoader().loadSqlTextAsNode(sql));
+        return new SqlSelect<T>(context, baseClass, context.getSqlTemplateEngine().getTemplateByText(sql), new EmptyValueSqlTemplateContext());
     }
 
     /**
      * SQLを元にテーブルを参照します。
      * @param <T> エンティティタイプ
      * @param baseClass エンティティのクラス
-     * @param path SQL
+     * @param sql SQL
      * @param parameter パラメータ
      * @return SQL参照用のクエリ
      */
-    public <T> SqlSelect<T> selectBySql(@NonNull Class<T> baseClass, @NonNull String sql, Object parameter) {
-        return new SqlSelect<T>(context, baseClass, context.getSqlLoader().loadSqlTextAsNode(sql), parameter);
+    public <T> SqlSelect<T> selectBySql(@NonNull Class<T> baseClass, @NonNull String sql, SqlTemplateContext parameter) {
+        return new SqlSelect<T>(context, baseClass, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);
     }
 
     /**
      * カウント用のSQLを実行します。
-     * @param path SQL
+     * @param sql SQL
      * @return カウント結果
      */
     public long getCountBySql(@NonNull String sql) {
-        return new SqlCount<>(context, context.getSqlLoader().loadSqlTextAsNode(sql))
+        return new SqlCount<>(context, context.getSqlTemplateEngine().getTemplateByText(sql), new EmptyValueSqlTemplateContext())
                 .getCount();
     }
 
     /**
      * カウント用のSQLを実行します。
-     * @param path SQL
+     * @param sql SQL
      * @param parameter パラメータ
      * @return カウント結果
      */
-    public long getCountBySql(@NonNull String sql, Object parameter) {
-        return new SqlCount<>(context, context.getSqlLoader().loadSqlTextAsNode(sql), parameter)
+    public long getCountBySql(@NonNull String sql, SqlTemplateContext parameter) {
+        return new SqlCount<>(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter)
                 .getCount();
     }
 
     /**
      * SQLを元にテーブルを更新（追加/更新/削除）をします。
-     * @param path SQL
+     * @param sql SQL
      * @return SQL更新用のクエリ
      */
     public SqlUpdate<?> updateBySql(@NonNull String sql) {
-        return new SqlUpdate<>(context, context.getSqlLoader().loadSqlTextAsNode(sql));
+        return new SqlUpdate<>(context, context.getSqlTemplateEngine().getTemplateByText(sql), new EmptyValueSqlTemplateContext());
     }
 
     /**
      * SQLを元にテーブルを更新（追加/更新/削除）をします。
-     * @param path SQL
+     * @param sql SQL
      * @param parameter パラメータ
      * @return SQL更新用のクエリ
      */
-    public SqlUpdate<?> updateBySql(@NonNull String sql, Object parameter) {
-        return new SqlUpdate<>(context, context.getSqlLoader().loadSqlTextAsNode(sql), parameter);
-    }
-
-    /**
-     * SQLを元にテーブルをバッチ更新（追加/更新/削除）します。
-     * @param <T> パラメータのタイプ
-     * @param path SQL
-     * @param parameters パラメータ
-     * @return 更新用のクエリ
-     */
-    @SuppressWarnings("unchecked")
-    public <T> SqlBatchUpdate<T> updateBatchBySql(@NonNull String sql, T... parameters) {
-        return new SqlBatchUpdate<T>(context, context.getSqlLoader().loadSqlTextAsNode(sql), parameters);
-    }
-
-    /**
-     * SQLを元にテーブルをバッチ更新（追加/更新/削除）します。
-     * @param <T> パラメータのタイプ
-     * @param path SQL
-     * @param parameters パラメータ
-     * @return 更新用のクエリ
-     */
-    public <T> SqlBatchUpdate<T> updateBatchBySql(@NonNull String sql, List<T> parameters) {
-        return new SqlBatchUpdate<T>(context, context.getSqlLoader().loadSqlTextAsNode(sql), parameters);
+    public SqlUpdate<?> updateBySql(@NonNull String sql, SqlTemplateContext parameter) {
+        return new SqlUpdate<>(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);
     }
 
 }

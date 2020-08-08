@@ -28,7 +28,11 @@ public class LobByteArrayType implements ValueType<byte[]> {
     }
 
     @Override
-    public String getAsText(byte[] value) {
+    public String getEmbeddedValue(byte[] value) {
+        if(value == null) {
+            return null;
+        }
+
         StringBuilder buff = new StringBuilder();
         for(byte b : value) {
             buff.append(b);

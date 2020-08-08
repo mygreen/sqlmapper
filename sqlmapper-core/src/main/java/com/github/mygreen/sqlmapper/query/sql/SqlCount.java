@@ -1,27 +1,22 @@
 package com.github.mygreen.sqlmapper.query.sql;
 
-import java.util.Map;
-
-import org.springframework.beans.DirectFieldAccessor;
-import org.springframework.beans.PropertyAccessor;
-
+import com.github.mygreen.splate.ProcessResult;
+import com.github.mygreen.splate.SqlTemplate;
+import com.github.mygreen.splate.SqlTemplateContext;
 import com.github.mygreen.sqlmapper.SqlMapperContext;
 import com.github.mygreen.sqlmapper.query.QueryBase;
-import com.github.mygreen.sqlmapper.sql.MapAcessor;
-import com.github.mygreen.sqlmapper.sql.Node;
-import com.github.mygreen.sqlmapper.sql.SqlContext;
 
 public class SqlCount<T> extends QueryBase<T> {
 
     /**
-     * パラメータです。
+     * SQLテンプレート
      */
-    private Object parameter;
+    private SqlTemplate template;
 
     /**
-     * SQLの解析ノードです。
+     * SQLテンプレートのパラメータです。
      */
-    private Node node;
+    private SqlTemplateContext parameter;
 
     /**
      * 実行するSQLです
@@ -34,14 +29,10 @@ public class SqlCount<T> extends QueryBase<T> {
     private Object[] paramValues;
 
 
-    public SqlCount(SqlMapperContext context, Node node, Object parameter) {
+    public SqlCount(SqlMapperContext context, SqlTemplate template, SqlTemplateContext parameter) {
         super(context);
-        this.node = node;
+        this.template = template;
         this.parameter = parameter;
-    }
-
-    public SqlCount(SqlMapperContext context, Node node) {
-        this(context, node, null);
     }
 
     private void prepare() {
@@ -52,34 +43,9 @@ public class SqlCount<T> extends QueryBase<T> {
 
     private void prepareSql() {
 
-        SqlContext sqlContext = new SqlContext();
-        sqlContext.setDialect(context.getDialect());
-        sqlContext.setPropertyAccessor(createPropertyAccessor());
-        sqlContext.setValueTypeRegistry(context.getValueTypeRegistry());
-
-        node.accept(sqlContext);
-
-        this.executedSql = sqlContext.getSql();
-        this.paramValues = sqlContext.getBindParams().toArray();
-    }
-
-    /**
-     * SQLテンプレート中のバインド変数にアクセスするためのアクセッサ。
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    private PropertyAccessor createPropertyAccessor() {
-
-        if(parameter == null) {
-            return null;
-        }
-
-        if(Map.class.isAssignableFrom(parameter.getClass())) {
-            return new MapAcessor((Map<String, Object>)parameter);
-        }
-
-        return new DirectFieldAccessor(parameter);
-
+        final ProcessResult result = template.process(parameter);
+        this.executedSql = result.getSql();
+        this.paramValues = result.getParameters().toArray();
     }
 
     /**

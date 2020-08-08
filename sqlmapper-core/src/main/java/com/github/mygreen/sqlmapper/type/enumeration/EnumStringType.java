@@ -67,14 +67,12 @@ public class EnumStringType<T extends Enum<T>> implements ValueType<T> {
 
     @Override
     public Object getSqlParameterValue(T value) {
-
-        String sqlType = (value != null ? value.name() : null);
-        return sqlType;
+        return value != null ? value.name() : null;
 
     }
 
     @Override
-    public String getAsText(T value) {
-        return value.name();
+    public String getEmbeddedValue(T value) {
+        return value != null ? value.name() : null;
     }
 }

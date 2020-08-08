@@ -41,7 +41,7 @@ public class SqlTimeType implements SqlTemporalType<Time> {
     }
 
     @Override
-    public String getAsText(Time value) {
-        return new SimpleDateFormat(pattern).format(value);
+    public String getEmbeddedValue(Time value) {
+        return value != null ? new SimpleDateFormat(pattern).format(value) : null;
     }
 }

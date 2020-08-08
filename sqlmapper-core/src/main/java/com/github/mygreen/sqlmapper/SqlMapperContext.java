@@ -5,10 +5,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.mygreen.messageformatter.MessageFormatter;
+import com.github.mygreen.splate.SqlTemplateEngine;
 import com.github.mygreen.sqlmapper.dialect.Dialect;
 import com.github.mygreen.sqlmapper.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.naming.NamingRule;
-import com.github.mygreen.sqlmapper.query.sql.SqlLoader;
 import com.github.mygreen.sqlmapper.type.ValueTypeRegistry;
 
 import lombok.Getter;
@@ -59,11 +59,11 @@ public class SqlMapperContext {
     private ApplicationEventPublisher applicationEventPublisher;
 
     /**
-     * SQLテンプレートを読み込みキャッシュ管理する。
+     * SQLテンプレートエンジン
      */
     @Getter
     @Setter
-    private SqlLoader sqlLoader;
+    private SqlTemplateEngine sqlTemplateEngine;
 
     @Getter
     @Setter

@@ -28,8 +28,8 @@ public class BigDecimalType implements ValueType<BigDecimal> {
     }
 
     @Override
-    public String getAsText(BigDecimal value) {
-        return value.toPlainString();
+    public String getEmbeddedValue(BigDecimal value) {
+        return value != null ? value.toPlainString() : null;
     }
 
 }

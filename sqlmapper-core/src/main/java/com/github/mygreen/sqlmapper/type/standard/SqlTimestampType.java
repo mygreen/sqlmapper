@@ -41,7 +41,7 @@ public class SqlTimestampType implements SqlTemporalType<Timestamp> {
     }
 
     @Override
-    public String getAsText(Timestamp value) {
-        return new SimpleDateFormat(pattern).format(value);
+    public String getEmbeddedValue(Timestamp value) {
+        return value != null ? new SimpleDateFormat(pattern).format(value) : null;
     }
 }
