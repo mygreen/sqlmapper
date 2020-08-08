@@ -233,7 +233,7 @@ public class SqlMapper {
      * @param parameter パラメータ
      * @return SQL参照用のクエリ
      */
-    public <T> SqlSelect<T> selectBySql(@NonNull Class<T> baseClass, @NonNull String sql, SqlTemplateContext parameter) {
+    public <T> SqlSelect<T> selectBySql(@NonNull Class<T> baseClass, @NonNull String sql, @NonNull SqlTemplateContext parameter) {
         return new SqlSelect<T>(context, baseClass, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);
     }
 
@@ -253,7 +253,7 @@ public class SqlMapper {
      * @param parameter パラメータ
      * @return カウント結果
      */
-    public long getCountBySql(@NonNull String sql, SqlTemplateContext parameter) {
+    public long getCountBySql(@NonNull String sql, @NonNull SqlTemplateContext parameter) {
         return new SqlCount<>(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter)
                 .getCount();
     }
@@ -273,7 +273,7 @@ public class SqlMapper {
      * @param parameter パラメータ
      * @return SQL更新用のクエリ
      */
-    public SqlUpdate<?> updateBySql(@NonNull String sql, SqlTemplateContext parameter) {
+    public SqlUpdate<?> updateBySql(@NonNull String sql, @NonNull SqlTemplateContext parameter) {
         return new SqlUpdate<>(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);
     }
 
