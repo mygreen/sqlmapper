@@ -7,7 +7,7 @@ import com.github.mygreen.sqlmapper.SqlMapperContext;
 
 
 /**
- * SQLテンプレートによる更新です。
+ * SQLテンプレートによる更新（INSERT / UPDATE/ DELETE）です。
  *
  *
  * @author T.TSUCHIE

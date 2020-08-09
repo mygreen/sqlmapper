@@ -21,7 +21,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
- * JDBCによるSQLの実行を管理するクラスです。
+ * JDBCによるSQL実行を管理するクラスです。
  *
  * @author T.TSUCHIE
  *
@@ -34,7 +34,7 @@ public class SqlMapper {
 
     /**
      * テーブルを参照します。
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param baseClass エンティティのクラス
      * @return 参照用のクエリ
      */
@@ -44,7 +44,7 @@ public class SqlMapper {
 
     /**
      * エンティティを挿入します
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param entity エンティティのインスタンス
      * @return 挿入用のクエリ
      */
@@ -54,7 +54,7 @@ public class SqlMapper {
 
     /**
      * エンティティを削除します。
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param entity エンティティのインスタンス
      * @return 削除用のクエリ
      */
@@ -64,7 +64,7 @@ public class SqlMapper {
 
     /**
      * エンティティを更新します。
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param entity エンティティのインスタンス
      * @return 更新用のクエリ
      */
@@ -74,7 +74,7 @@ public class SqlMapper {
 
     /**
      * 任意の条件に対してテーブルのレコードを削除します。
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param baseClass エンティティのクラス
      * @return 削除用のクエリ
      */
@@ -86,7 +86,7 @@ public class SqlMapper {
      * 複数のエンティティを挿入します。
      * <p>主キーが識別子（IDENTITY）による自動生成の場合は、バッチ実行ではなく1件ずつ処理されるので注意してください。</p>
      *
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param entities エンティティの並び
      * @return 挿入用のクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
@@ -100,7 +100,7 @@ public class SqlMapper {
      * 複数のエンティティを挿入します。
      * <p>主キーが識別子（IDENTITY）による自動生成の場合は、バッチ実行ではなく1件ずつ処理されるので注意してください。</p>
      *
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param entities エンティティの並び
      * @return 挿入用のクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
@@ -111,7 +111,7 @@ public class SqlMapper {
 
     /**
      * 複数のエンティティを更新します。
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param entities エンティティの並び
      * @return 更新用のクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
@@ -123,7 +123,7 @@ public class SqlMapper {
 
     /**
      * 複数のエンティティを更新します。
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param entities エンティティの並び
      * @return 更新用のクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
@@ -134,7 +134,7 @@ public class SqlMapper {
 
     /**
      * 複数のエンティティを削除します。
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param entities エンティティの並び
      * @return 削除用のクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
@@ -146,7 +146,7 @@ public class SqlMapper {
 
     /**
      * 複数のエンティティを削除します。
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param entities エンティティの並び
      * @return 削除用のクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
@@ -157,7 +157,7 @@ public class SqlMapper {
 
     /**
      * SQLファイルを元にテーブルを参照します。
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param baseClass エンティティのクラス
      * @param path SQLファイルのパス。
      * @return SQLファイル参照用のクエリ
@@ -168,7 +168,7 @@ public class SqlMapper {
 
     /**
      * SQLファイルを元にテーブルを参照します。
-     * @param <T> エンティティタイプ
+     * @param <T> 処理対象となるエンティティの型
      * @param baseClass エンティティのクラス
      * @param path SQLファイルのパス
      * @param parameter SQLテンプレートのパラメータ
@@ -200,7 +200,7 @@ public class SqlMapper {
     }
 
     /**
-     * SQLファイルを元にテーブルを更新（追加/更新/削除）をします。
+     * SQLファイルを元にテーブルを更新（INSERT / UPDATE/ DELETE）をします。
      * @param path SQLファイルのパス
      * @return SQLファイル更新用のクエリ
      */
@@ -209,7 +209,7 @@ public class SqlMapper {
     }
 
     /**
-     * SQLファイルを元にテーブルを更新（追加/更新/削除）をします。
+     * SQLファイルを元にテーブルを更新（INSERT / UPDATE/ DELETE）をします。
      * @param path SQLファイルのパス
      * @param parameter パラメータ
      * @return SQLファイル更新用のクエリ
@@ -219,8 +219,8 @@ public class SqlMapper {
     }
 
     /**
-     * SQLを元にテーブルを参照します。
-     * @param <T> エンティティタイプ
+     * SQLを元にテーブルを検索します。
+     * @param <T> 処理対象となるエンティティの型
      * @param baseClass エンティティのクラス
      * @param sql SQL
      * @return SQL参照用のクエリ
@@ -230,8 +230,8 @@ public class SqlMapper {
     }
 
     /**
-     * SQLを元にテーブルを参照します。
-     * @param <T> エンティティタイプ
+     * SQLを元にテーブルを検索します。
+     * @param <T> 処理対象となるエンティティの型
      * @param baseClass エンティティのクラス
      * @param sql SQL
      * @param parameter パラメータ
@@ -263,7 +263,7 @@ public class SqlMapper {
     }
 
     /**
-     * SQLを元にテーブルを更新（追加/更新/削除）をします。
+     * SQLを元にテーブルを更新（INSERT / UPDATE/ DELETE）をします。
      * @param sql SQL
      * @return SQL更新用のクエリ
      */
@@ -272,7 +272,7 @@ public class SqlMapper {
     }
 
     /**
-     * SQLを元にテーブルを更新（追加/更新/削除）をします。
+     * SQLを元にテーブルを更新（INSERT / UPDATE/ DELETE）をします。
      * @param sql SQL
      * @param parameter パラメータ
      * @return SQL更新用のクエリ
