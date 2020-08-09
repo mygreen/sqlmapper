@@ -19,7 +19,7 @@ import com.github.mygreen.sqlmapper.type.standard.OracleBooleanType;
  * @author T.TSUCHIE
  *
  */
-public class OracleLegacyDialect extends DialectSupport {
+public class OracleLegacyDialect extends DialectBase {
 
     private final OracleBooleanType objectiveBooleanType = new OracleBooleanType(false);
 

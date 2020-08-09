@@ -14,7 +14,7 @@ import com.github.mygreen.sqlmapper.type.ValueType;
  * @author T.TSUCHIE
  *
  */
-public abstract class DialectSupport implements Dialect {
+public abstract class DialectBase implements Dialect {
 
     /**
      * {@inheritDoc}

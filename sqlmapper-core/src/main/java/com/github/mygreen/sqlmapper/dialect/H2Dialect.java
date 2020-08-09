@@ -14,7 +14,7 @@ import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
  * @author T.TSUCHIE
  *
  */
-public class H2Dialect extends DialectSupport {
+public class H2Dialect extends DialectBase {
 
     /**
      * {@inheritDoc}
