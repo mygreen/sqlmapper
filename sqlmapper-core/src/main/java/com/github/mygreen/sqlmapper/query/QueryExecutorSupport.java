@@ -3,21 +3,37 @@ package com.github.mygreen.sqlmapper.query;
 import com.github.mygreen.sqlmapper.SqlMapperContext;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 /**
- * クエリ実行のヘルパクラス
+ * クエリ実行のサポートクラス。
  *
  *
  * @author T.TSUCHIE
  *
- * @param <T> エンティティのタイプ
+ * @param <Q> クエリの実行条件。
+ *
  */
 @RequiredArgsConstructor
-public abstract class QueryExecutorBase {
+public abstract class QueryExecutorSupport<Q extends QuerySupport<?>> {
 
+    /**
+     * クエリの実行条件
+     */
+    @Getter
+    protected final Q query;
+
+    /**
+     * 設定情報
+     */
     @Getter
     protected final SqlMapperContext context;
+
+    public QueryExecutorSupport(@NonNull Q query) {
+        this.query = query;
+        this.context = query.getContext();
+    }
 
     /**
      * 準備が完了している場合に<code>true</code>です。

@@ -2,7 +2,7 @@ package com.github.mygreen.sqlmapper.query.auto;
 
 import com.github.mygreen.sqlmapper.SqlMapperContext;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.query.QueryBase;
+import com.github.mygreen.sqlmapper.query.QuerySupport;
 import com.github.mygreen.sqlmapper.where.Where;
 
 import lombok.AccessLevel;
@@ -10,13 +10,13 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * 任意の条件で削除を実行します。
- *
+ * 任意の条件でSQLを自動生成する削除です。
  *
  * @author T.TSUCHIE
+ * @param <T> 処理対象となるエンティティの型
  *
  */
-public class AutoAnyDelete<T> extends QueryBase<T> {
+public class AutoAnyDelete<T> extends QuerySupport<T> {
 
     @Getter(AccessLevel.PACKAGE)
     private final Class<T> baseClass;
@@ -52,17 +52,9 @@ public class AutoAnyDelete<T> extends QueryBase<T> {
      */
     public int execute() {
 
-        assertNotCompleted("executeAnyDelete");
-
         AutoAnyDeleteExecutor executor = new AutoAnyDeleteExecutor(this);
-        try {
-            executor.prepare();
-            return executor.execute();
-
-        } finally {
-            completed();
-        }
-
+        executor.prepare();
+        return executor.execute();
     }
 
 }

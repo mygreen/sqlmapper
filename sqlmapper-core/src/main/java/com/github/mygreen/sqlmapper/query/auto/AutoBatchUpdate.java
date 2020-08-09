@@ -11,13 +11,21 @@ import com.github.mygreen.sqlmapper.event.PostBatchUpdateEvent;
 import com.github.mygreen.sqlmapper.event.PreBatchUpdateEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.query.QueryBase;
+import com.github.mygreen.sqlmapper.query.QuerySupport;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class AutoBatchUpdate<T> extends QueryBase<T> {
+/**
+ * SQLを自動生成するバッチ更新です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> 処理対象となるエンティティの型
+ */
+public class AutoBatchUpdate<T> extends QuerySupport<T> {
 
     @Getter(AccessLevel.PACKAGE)
     private final T[] entities;
@@ -170,21 +178,15 @@ public class AutoBatchUpdate<T> extends QueryBase<T> {
      */
     public int[] execute() {
 
-        assertNotCompleted("executeBatchUpdate");
         context.getApplicationEventPublisher().publishEvent(new PreBatchUpdateEvent(this, entityMeta, entities));
 
         final AutoBatchUpdateExecutor executor = new AutoBatchUpdateExecutor(this);
 
-        try {
-            executor.prepare();
-            final int[] result= executor.execute();
+        executor.prepare();
+        final int[] result= executor.execute();
 
-            context.getApplicationEventPublisher().publishEvent(new PostBatchUpdateEvent(this, entityMeta, entities));
-            return result;
-
-        } finally {
-            completed();
-        }
+        context.getApplicationEventPublisher().publishEvent(new PostBatchUpdateEvent(this, entityMeta, entities));
+        return result;
     }
 
 

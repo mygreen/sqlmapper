@@ -7,13 +7,20 @@ import com.github.mygreen.sqlmapper.event.PostDeleteEvent;
 import com.github.mygreen.sqlmapper.event.PreDeleteEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.query.QueryBase;
+import com.github.mygreen.sqlmapper.query.QuerySupport;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class AutoDelete<T> extends QueryBase<T> {
+/**
+ * SQLを自動生成する削除です。
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> 処理対象となるエンティティの型
+ */
+public class AutoDelete<T> extends QuerySupport<T> {
 
     /**
      * 削除対象のエンティティ
@@ -82,20 +89,14 @@ public class AutoDelete<T> extends QueryBase<T> {
      */
     public int execute() {
 
-        assertNotCompleted("executeDelete");
         context.getApplicationEventPublisher().publishEvent(new PreDeleteEvent(this, entityMeta, entity));
 
         final AutoDeleteExecutor executor = new AutoDeleteExecutor(this);
-        try {
-            executor.prepare();
-            final int result = executor.execute();
+        executor.prepare();
+        final int result = executor.execute();
 
-            context.getApplicationEventPublisher().publishEvent(new PostDeleteEvent(this, entityMeta, entity));
-            return result;
-
-        } finally {
-            completed();
-        }
+        context.getApplicationEventPublisher().publishEvent(new PostDeleteEvent(this, entityMeta, entity));
+        return result;
 
     }
 

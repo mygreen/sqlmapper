@@ -9,11 +9,9 @@ import com.github.mygreen.splate.ProcessResult;
 import com.github.mygreen.sqlmapper.mapper.EntityIterationResultSetExtractor;
 import com.github.mygreen.sqlmapper.mapper.EntityRowMapper;
 import com.github.mygreen.sqlmapper.query.IterationCallback;
-import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
+import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
 
-public class SqlSelectExecutor<T> extends QueryExecutorBase {
-
-    private final SqlSelect<T> query;
+public class SqlSelectExecutor<T> extends QueryExecutorSupport<SqlSelect<T>> {
 
     /**
      * 実行するSQLです
@@ -26,15 +24,13 @@ public class SqlSelectExecutor<T> extends QueryExecutorBase {
     private Object[] paramValues;
 
     public SqlSelectExecutor(SqlSelect<T> query) {
-        super(query.getContext());
-        this.query = query;
+        super(query);
     }
 
     @Override
     public void prepare() {
 
         prepareSql();
-
 
         completed();
 

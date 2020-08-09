@@ -14,19 +14,17 @@ import com.github.mygreen.sqlmapper.id.IdGenerator;
 import com.github.mygreen.sqlmapper.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
+import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
 import com.github.mygreen.sqlmapper.util.QueryUtils;
 
-public class AutoInsertExecutor extends QueryExecutorBase {
+public class AutoInsertExecutor extends QueryExecutorSupport<AutoInsert<?>> {
 
     /**
      * バージョンプロパティの初期値
      */
     public static final long INITIAL_VERSION = 1L;
-
-    private final AutoInsert<?> query;
 
     /**
      * クエリのパラメータです。
@@ -49,8 +47,7 @@ public class AutoInsertExecutor extends QueryExecutorBase {
     private SimpleJdbcInsert insertOperation;
 
     public AutoInsertExecutor(AutoInsert<?> query) {
-        super(query.getContext());
-        this.query = query;
+        super(query);
     }
 
     @Override

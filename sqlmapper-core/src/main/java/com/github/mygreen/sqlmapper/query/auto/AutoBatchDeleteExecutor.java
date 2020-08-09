@@ -7,7 +7,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
+import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.where.WhereBuilder;
 import com.github.mygreen.sqlmapper.where.WhereVisitor;
@@ -18,9 +18,7 @@ import com.github.mygreen.sqlmapper.where.WhereVisitor;
  * @author T.TSUCHIE
  *
  */
-public class AutoBatchDeleteExecutor extends QueryExecutorBase {
-
-    private final AutoBatchDelete<?> query;
+public class AutoBatchDeleteExecutor extends QueryExecutorSupport<AutoBatchDelete<?>> {
 
     /**
      * where句
@@ -38,8 +36,7 @@ public class AutoBatchDeleteExecutor extends QueryExecutorBase {
     private final List<Object> paramValues = new ArrayList<>();
 
     public AutoBatchDeleteExecutor(AutoBatchDelete<?> query) {
-        super(query.getContext());
-        this.query = query;
+        super(query);
     }
 
     @Override

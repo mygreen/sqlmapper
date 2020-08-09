@@ -3,13 +3,11 @@ package com.github.mygreen.sqlmapper.query.auto;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
+import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.where.WhereVisitor;
 
-public class AutoAnyDeleteExecutor extends QueryExecutorBase {
-
-    private final AutoAnyDelete<?> query;
+public class AutoAnyDeleteExecutor extends QueryExecutorSupport<AutoAnyDelete<?>> {
 
     /**
      * where句
@@ -27,8 +25,7 @@ public class AutoAnyDeleteExecutor extends QueryExecutorBase {
     private final List<Object> paramValues = new ArrayList<>();
 
     public AutoAnyDeleteExecutor(AutoAnyDelete<?> query) {
-        super(query.getContext());
-        this.query = query;
+        super(query);
     }
 
     @Override
@@ -77,8 +74,12 @@ public class AutoAnyDeleteExecutor extends QueryExecutorBase {
 
         assertNotCompleted("executeAnyDelete");
 
-        final int rows = context.getJdbcTemplate().update(executedSql, paramValues.toArray());
-        return rows;
+        try {
+            return context.getJdbcTemplate().update(executedSql, paramValues.toArray());
+
+        } finally {
+            completed();
+        }
 
 
     }

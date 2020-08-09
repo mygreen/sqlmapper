@@ -15,7 +15,7 @@ import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.IterationCallback;
-import com.github.mygreen.sqlmapper.query.QueryBase;
+import com.github.mygreen.sqlmapper.query.QuerySupport;
 import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.where.Where;
 
@@ -23,7 +23,15 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class AutoSelect<T> extends QueryBase<T> {
+/**
+ * SQLを自動で生成する検索です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> 処理対象となるエンティティの型
+ */
+public class AutoSelect<T> extends QuerySupport<T> {
 
     @Getter(AccessLevel.PACKAGE)
     private final Class<T> baseClass;
@@ -317,16 +325,10 @@ public class AutoSelect<T> extends QueryBase<T> {
      * @return SQLが返す結果セットの行数
      */
     public long getCount() {
-        assertNotCompleted("getCount");
-
         AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, true);
-        try {
-            executor.prepare();
-            return executor.getCount();
+        executor.prepare();
+        return executor.getCount();
 
-        } finally {
-            completed();
-        }
     }
 
     /**
@@ -336,19 +338,13 @@ public class AutoSelect<T> extends QueryBase<T> {
      * @throws IncorrectResultSizeDataAccessException 1件も見つからない場合、2件以上見つかった場合にスローされます。
      */
     public T getSingleResult() {
-        assertNotCompleted("getSingleResult");
-
         final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        try {
-            executor.prepare();
-            final T result = executor.getSingleResult();
+        executor.prepare();
+        final T result = executor.getSingleResult();
 
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(this, entityMeta, result));
-            return result;
+        context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(this, entityMeta, result));
+        return result;
 
-        } finally {
-            completed();
-        }
     }
 
     /**
@@ -357,22 +353,16 @@ public class AutoSelect<T> extends QueryBase<T> {
      * @return ベースオブジェクト。1件も対象がないときは空を返します。
      */
     public Optional<T> getOptionalResult() {
-        assertNotCompleted("getOptionalResult");
-
         final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        try{
-            executor.prepare();
-            final Optional<T> result = executor.getOptionalResult();
+        executor.prepare();
+        final Optional<T> result = executor.getOptionalResult();
 
-            // 値が存在する場合のみイベントを実行する。
-            result.ifPresent(e ->
-                context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(this, entityMeta, e)));
+        // 値が存在する場合のみイベントを実行する。
+        result.ifPresent(e ->
+            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(this, entityMeta, e)));
 
-            return result;
+        return result;
 
-        } finally {
-            completed();
-        }
     }
 
     /**
@@ -381,19 +371,13 @@ public class AutoSelect<T> extends QueryBase<T> {
      * @return 1件も対象がないときは空のリストを返します。
      */
     public List<T> getResultList() {
-        assertNotCompleted("getResultList");
-
         final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        try{
-            executor.prepare();
-            final List<T> result = executor.getResultList();
+        executor.prepare();
+        final List<T> result = executor.getResultList();
 
-            context.getApplicationEventPublisher().publishEvent(new PostListSelectEvent(this, entityMeta, result));
-            return result;
+        context.getApplicationEventPublisher().publishEvent(new PostListSelectEvent(this, entityMeta, result));
+        return result;
 
-        } finally {
-            completed();
-        }
     }
 
     /**
@@ -406,15 +390,9 @@ public class AutoSelect<T> extends QueryBase<T> {
      */
     public <R> R iterate(IterationCallback<T, R> callback) {
 
-        assertNotCompleted("iterate");
-
         AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        try{
-            executor.prepare();
-            return executor.iterate(callback);
-        } finally {
-            completed();
-        }
+        executor.prepare();
+        return executor.iterate(callback);
 
     }
 }

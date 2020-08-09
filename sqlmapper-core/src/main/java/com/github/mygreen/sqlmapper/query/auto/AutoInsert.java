@@ -8,13 +8,21 @@ import com.github.mygreen.sqlmapper.event.PostInsertEvent;
 import com.github.mygreen.sqlmapper.event.PreInsertEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.query.QueryBase;
+import com.github.mygreen.sqlmapper.query.QuerySupport;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class AutoInsert<T> extends QueryBase<T> {
+/**
+ * SQLで自動で作成する挿入です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> 処理対象となるエンティティの型
+ */
+public class AutoInsert<T> extends QuerySupport<T> {
 
     /**
      * 挿入対象のエンティティのインスタンス
@@ -105,20 +113,15 @@ public class AutoInsert<T> extends QueryBase<T> {
      */
     public int execute() {
 
-        assertNotCompleted("executeInsert");
         context.getApplicationEventPublisher().publishEvent(new PreInsertEvent(this, entityMeta, entity));
 
         final AutoInsertExecutor executor = new AutoInsertExecutor(this);
-        try {
-            executor.prepare();
-            final int result = executor.execute();
+        executor.prepare();
+        final int result = executor.execute();
 
-            context.getApplicationEventPublisher().publishEvent(new PostInsertEvent(this, entityMeta, entity));
-            return result;
+        context.getApplicationEventPublisher().publishEvent(new PostInsertEvent(this, entityMeta, entity));
+        return result;
 
-        } finally {
-            completed();
-        }
     }
 
 }

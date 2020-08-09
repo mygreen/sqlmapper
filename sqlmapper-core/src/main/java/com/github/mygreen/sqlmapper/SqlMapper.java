@@ -180,7 +180,7 @@ public class SqlMapper {
      * @return カウント結果
      */
     public long getCountBySqlFile(@NonNull String path) {
-        return new SqlCount<>(context, context.getSqlTemplateEngine().getTemplate(path), new EmptyValueSqlTemplateContext())
+        return new SqlCount(context, context.getSqlTemplateEngine().getTemplate(path), new EmptyValueSqlTemplateContext())
                 .getCount();
     }
 
@@ -191,7 +191,7 @@ public class SqlMapper {
      * @return カウント結果
      */
     public long getCountBySqlFile(@NonNull String path, @NonNull SqlTemplateContext parameter) {
-        return new SqlCount<>(context, context.getSqlTemplateEngine().getTemplate(path), parameter)
+        return new SqlCount(context, context.getSqlTemplateEngine().getTemplate(path), parameter)
                 .getCount();
     }
 
@@ -200,8 +200,8 @@ public class SqlMapper {
      * @param path SQLファイルのパス
      * @return SQLファイル更新用のクエリ
      */
-    public SqlUpdate<?> updateBySqlFile(@NonNull String path) {
-        return new SqlUpdate<>(context, context.getSqlTemplateEngine().getTemplate(path), new EmptyValueSqlTemplateContext());
+    public SqlUpdate updateBySqlFile(@NonNull String path) {
+        return new SqlUpdate(context, context.getSqlTemplateEngine().getTemplate(path), new EmptyValueSqlTemplateContext());
     }
 
     /**
@@ -210,8 +210,8 @@ public class SqlMapper {
      * @param parameter パラメータ
      * @return SQLファイル更新用のクエリ
      */
-    public SqlUpdate<?> updateBySqlFile(@NonNull String path, @NonNull SqlTemplateContext parameter) {
-        return new SqlUpdate<>(context, context.getSqlTemplateEngine().getTemplate(path), parameter);
+    public SqlUpdate updateBySqlFile(@NonNull String path, @NonNull SqlTemplateContext parameter) {
+        return new SqlUpdate(context, context.getSqlTemplateEngine().getTemplate(path), parameter);
     }
 
     /**
@@ -243,7 +243,7 @@ public class SqlMapper {
      * @return カウント結果
      */
     public long getCountBySql(@NonNull String sql) {
-        return new SqlCount<>(context, context.getSqlTemplateEngine().getTemplateByText(sql), new EmptyValueSqlTemplateContext())
+        return new SqlCount(context, context.getSqlTemplateEngine().getTemplateByText(sql), new EmptyValueSqlTemplateContext())
                 .getCount();
     }
 
@@ -254,7 +254,7 @@ public class SqlMapper {
      * @return カウント結果
      */
     public long getCountBySql(@NonNull String sql, @NonNull SqlTemplateContext parameter) {
-        return new SqlCount<>(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter)
+        return new SqlCount(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter)
                 .getCount();
     }
 
@@ -263,8 +263,8 @@ public class SqlMapper {
      * @param sql SQL
      * @return SQL更新用のクエリ
      */
-    public SqlUpdate<?> updateBySql(@NonNull String sql) {
-        return new SqlUpdate<>(context, context.getSqlTemplateEngine().getTemplateByText(sql), new EmptyValueSqlTemplateContext());
+    public SqlUpdate updateBySql(@NonNull String sql) {
+        return new SqlUpdate(context, context.getSqlTemplateEngine().getTemplateByText(sql), new EmptyValueSqlTemplateContext());
     }
 
     /**
@@ -273,8 +273,8 @@ public class SqlMapper {
      * @param parameter パラメータ
      * @return SQL更新用のクエリ
      */
-    public SqlUpdate<?> updateBySql(@NonNull String sql, @NonNull SqlTemplateContext parameter) {
-        return new SqlUpdate<>(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);
+    public SqlUpdate updateBySql(@NonNull String sql, @NonNull SqlTemplateContext parameter) {
+        return new SqlUpdate(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);
     }
 
 }

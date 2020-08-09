@@ -15,13 +15,21 @@ import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.query.QueryBase;
+import com.github.mygreen.sqlmapper.query.QuerySupport;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class AutoUpdate<T> extends QueryBase<T> {
+/**
+ * SQLを自動生成する更新です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> 処理対象となるエンティティの型
+ */
+public class AutoUpdate<T> extends QuerySupport<T> {
 
     /**
      * 削除対象のエンティティ
@@ -209,21 +217,16 @@ public class AutoUpdate<T> extends QueryBase<T> {
      */
     public int execute() {
 
-        assertNotCompleted("executeUpdate");
         context.getApplicationEventPublisher().publishEvent(new PreUpdateEvent(this, entityMeta, entity));
 
         final AutoUpdateExecutor executor = new AutoUpdateExecutor(this);
 
-        try {
-            executor.prepare();
-            final int result = executor.execute();
+        executor.prepare();
+        final int result = executor.execute();
 
-            context.getApplicationEventPublisher().publishEvent(new PostUpdateEvent(this, entityMeta, entity));
-            return result;
+        context.getApplicationEventPublisher().publishEvent(new PostUpdateEvent(this, entityMeta, entity));
+        return result;
 
-        } finally {
-            completed();
-        }
     }
 
 }

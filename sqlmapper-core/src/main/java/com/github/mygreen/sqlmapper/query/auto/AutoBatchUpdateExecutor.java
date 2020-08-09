@@ -6,7 +6,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
+import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.query.SetClause;
 import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.type.ValueType;
@@ -16,9 +16,7 @@ import com.github.mygreen.sqlmapper.util.QueryUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AutoBatchUpdateExecutor extends QueryExecutorBase {
-
-    private final AutoBatchUpdate<?> query;
+public class AutoBatchUpdateExecutor extends QueryExecutorSupport<AutoBatchUpdate<?>> {
 
     /**
      * 実行するSQLです
@@ -46,8 +44,7 @@ public class AutoBatchUpdateExecutor extends QueryExecutorBase {
     private int targetPropertyCount = 0;
 
     public AutoBatchUpdateExecutor(AutoBatchUpdate<?> query) {
-        super(query.getContext());
-        this.query = query;
+        super(query);
     }
 
     @SuppressWarnings("unchecked")

@@ -15,7 +15,7 @@ import com.github.mygreen.sqlmapper.query.FromClause;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.query.IterationCallback;
 import com.github.mygreen.sqlmapper.query.OrderByClause;
-import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
+import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.query.SelectClause;
 import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.util.QueryUtils;
@@ -23,9 +23,7 @@ import com.github.mygreen.sqlmapper.where.WhereBuilder;
 import com.github.mygreen.sqlmapper.where.WhereVisitor;
 
 
-public class AutoSelectExecutor<T> extends QueryExecutorBase {
-
-    private final AutoSelect<T> query;
+public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
 
     /**
      * SELECT COUNT(*)～で行数を取得する場合に<code>true</code>
@@ -73,8 +71,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorBase {
     private PropertyMeta[] targetPropertyMetaList;
 
     public AutoSelectExecutor(AutoSelect<T> query, boolean counting) {
-        super(query.getContext());
-        this.query = query;
+        super(query);
         this.counting = counting;
     }
 

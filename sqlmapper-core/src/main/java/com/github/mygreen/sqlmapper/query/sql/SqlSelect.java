@@ -12,13 +12,19 @@ import com.github.mygreen.sqlmapper.event.PostListSelectEvent;
 import com.github.mygreen.sqlmapper.event.PostSelectEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IterationCallback;
-import com.github.mygreen.sqlmapper.query.QueryBase;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class SqlSelect<T> extends QueryBase<T> {
+/**
+ * SQLテンプレートによる検索です。
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> エンティティ情報
+ */
+public class SqlSelect<T> extends SqlTemplateQuerySupport<T> {
 
     @Getter(AccessLevel.PACKAGE)
     private final Class<T> baseClass;
@@ -26,24 +32,10 @@ public class SqlSelect<T> extends QueryBase<T> {
     @Getter(AccessLevel.PACKAGE)
     private final EntityMeta entityMeta;
 
-    /**
-     * SQLテンプレートです。
-     */
-    @Getter(AccessLevel.PACKAGE)
-    private final SqlTemplate template;
-
-    /**
-     * SQLテンプレートのパラメータです。
-     */
-    @Getter(AccessLevel.PACKAGE)
-    private final SqlTemplateContext parameter;
-
     public SqlSelect(@NonNull SqlMapperContext context, @NonNull Class<T> baseClass,
             @NonNull SqlTemplate template, @NonNull SqlTemplateContext parameter) {
-        super(context);
+        super(context, template, parameter);
         this.baseClass = baseClass;
-        this.template = template;
-        this.parameter = parameter;
         this.entityMeta = context.getEntityMetaFactory().create(baseClass);
     }
 
@@ -54,19 +46,12 @@ public class SqlSelect<T> extends QueryBase<T> {
      * @throws IncorrectResultSizeDataAccessException 1件も見つからない場合、2件以上見つかった場合にスローされます。
      */
     public T getSingleResult() {
-        assertNotCompleted("getSingleResult");
-
         final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
-        try {
-            executor.prepare();
-            final T result = executor.getSingleResult();
+        executor.prepare();
+        final T result = executor.getSingleResult();
 
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(this, entityMeta, result));
-            return result;
-
-        } finally {
-            completed();
-        }
+        context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(this, entityMeta, result));
+        return result;
     }
 
     /**
@@ -75,22 +60,16 @@ public class SqlSelect<T> extends QueryBase<T> {
      * @return ベースオブジェクト。1件も対象がないときは空を返します。
      */
     public Optional<T> getOptionalResult() {
-        assertNotCompleted("getOptionalResult");
-
         final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
-        try{
-            executor.prepare();
-            final Optional<T> result = executor.getOptionalResult();
+        executor.prepare();
+        final Optional<T> result = executor.getOptionalResult();
 
-            // 値が存在する場合のみイベントを実行する。
-            result.ifPresent(e ->
-                context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(this, entityMeta, e)));
+        // 値が存在する場合のみイベントを実行する。
+        result.ifPresent(e ->
+            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(this, entityMeta, e)));
 
-            return result;
+        return result;
 
-        } finally {
-            completed();
-        }
     }
 
     /**
@@ -99,19 +78,13 @@ public class SqlSelect<T> extends QueryBase<T> {
      * @return 1件も対象がないときは空のリストを返します。
      */
     public List<T> getResultList() {
-        assertNotCompleted("getResultList");
-
         final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
-        try{
-            executor.prepare();
-            final List<T> result = executor.getResultList();
+        executor.prepare();
+        final List<T> result = executor.getResultList();
 
-            context.getApplicationEventPublisher().publishEvent(new PostListSelectEvent(this, entityMeta, result));
-            return result;
+        context.getApplicationEventPublisher().publishEvent(new PostListSelectEvent(this, entityMeta, result));
+        return result;
 
-        } finally {
-            completed();
-        }
     }
 
     /**
@@ -124,19 +97,10 @@ public class SqlSelect<T> extends QueryBase<T> {
      */
     public <R> R iterate(IterationCallback<T, R> callback) {
 
-        assertNotCompleted("iterate");
-
-        SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
-        try{
-            executor.prepare();
-            return executor.iterate(callback);
-        } finally {
-            completed();
-        }
+        final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
+        executor.prepare();
+        return executor.iterate(callback);
 
     }
-
-
-
 
 }

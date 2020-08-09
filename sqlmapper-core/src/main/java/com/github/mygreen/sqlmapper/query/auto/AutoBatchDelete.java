@@ -9,13 +9,22 @@ import com.github.mygreen.sqlmapper.event.PostBatchDeleteEvent;
 import com.github.mygreen.sqlmapper.event.PreBatchDeleteEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.query.QueryBase;
+import com.github.mygreen.sqlmapper.query.QuerySupport;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class AutoBatchDelete<T> extends QueryBase<T> {
+
+/**
+ * SQLを自動生成するバッチ削除です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> 処理対象となるエンティティの型
+ */
+public class AutoBatchDelete<T> extends QuerySupport<T> {
 
     @Getter(AccessLevel.PACKAGE)
     private final T[] entities;
@@ -108,20 +117,14 @@ public class AutoBatchDelete<T> extends QueryBase<T> {
      */
     public int execute() {
 
-        assertNotCompleted("executeBatchDelete");
         context.getApplicationEventPublisher().publishEvent(new PreBatchDeleteEvent(this, entityMeta, entities));
 
         final AutoBatchDeleteExecutor executor = new AutoBatchDeleteExecutor(this);
-        try {
-            executor.prepare();
-            final int result = executor.execute();
+        executor.prepare();
+        final int result = executor.execute();
 
-            context.getApplicationEventPublisher().publishEvent(new PostBatchDeleteEvent(this, entityMeta, entities));
-            return result;
-
-        } finally {
-            completed();
-        }
+        context.getApplicationEventPublisher().publishEvent(new PostBatchDeleteEvent(this, entityMeta, entities));
+        return result;
 
     }
 }

@@ -15,25 +15,18 @@ import com.github.mygreen.sqlmapper.id.IdGenerator;
 import com.github.mygreen.sqlmapper.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
+import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
 import com.github.mygreen.sqlmapper.util.QueryUtils;
 
-/**
- *
- *
- * @author T.TSUCHIE
- *
- */
-public class AutoBatchInsertExecutor extends QueryExecutorBase {
+
+public class AutoBatchInsertExecutor extends QueryExecutorSupport<AutoBatchInsert<?>> {
 
     /**
      * バージョンプロパティの初期値
      */
     public static final long INITIAL_VERSION = AutoInsertExecutor.INITIAL_VERSION;
-
-    private final AutoBatchInsert<?> query;
 
     /**
      * クエリのパラメータ - エンティティごとの設定
@@ -62,8 +55,7 @@ public class AutoBatchInsertExecutor extends QueryExecutorBase {
     private Map<String, Object[]> generatedKeysMap = new HashMap<String, Object[]>();
 
     public AutoBatchInsertExecutor(AutoBatchInsert<?> query) {
-        super(query.getContext());
-        this.query = query;
+        super(query);
     }
 
     @Override

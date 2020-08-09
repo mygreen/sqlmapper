@@ -7,7 +7,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
 
 import com.github.mygreen.sqlmapper.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.query.QueryExecutorBase;
+import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.query.SetClause;
 import com.github.mygreen.sqlmapper.query.WhereClause;
 import com.github.mygreen.sqlmapper.type.ValueType;
@@ -18,9 +18,7 @@ import com.github.mygreen.sqlmapper.where.WhereVisitor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AutoUpdateExecutor extends QueryExecutorBase {
-
-    private final AutoUpdate<?> query;
+public class AutoUpdateExecutor extends QueryExecutorSupport<AutoUpdate<?>> {
 
     /**
      * SET句
@@ -48,8 +46,7 @@ public class AutoUpdateExecutor extends QueryExecutorBase {
     private int targetPropertyCount = 0;
 
     public AutoUpdateExecutor(AutoUpdate<?> query) {
-        super(query.getContext());
-        this.query = query;
+        super(query);
     }
 
     @Override

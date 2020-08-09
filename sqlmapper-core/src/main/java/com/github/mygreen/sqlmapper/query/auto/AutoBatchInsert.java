@@ -9,13 +9,22 @@ import com.github.mygreen.sqlmapper.event.PostBatchInsertEvent;
 import com.github.mygreen.sqlmapper.event.PreBatchInsertEvent;
 import com.github.mygreen.sqlmapper.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.query.QueryBase;
+import com.github.mygreen.sqlmapper.query.QuerySupport;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class AutoBatchInsert<T> extends QueryBase<T> {
+/**
+ * SQLを自動で生成するバッチ挿入です。
+ * <p>主キーが識別子（IDENTITY）による自動生成の場合は、バッチ実行ではなく一見づつ処理されるので注意してください。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> エンティティタイプ
+ */
+public class AutoBatchInsert<T> extends QuerySupport<T> {
 
     @Getter(AccessLevel.PACKAGE)
     private final T[] entities;
@@ -128,19 +137,13 @@ public class AutoBatchInsert<T> extends QueryBase<T> {
      */
     public int[] execute() {
 
-        assertNotCompleted("executeBatchInsert");
         context.getApplicationEventPublisher().publishEvent(new PreBatchInsertEvent(this, entityMeta, entities));
 
         final AutoBatchInsertExecutor executor = new AutoBatchInsertExecutor(this);
-        try {
-            executor.prepare();
-            final int[] result = executor.execute();
+        executor.prepare();
+        final int[] result = executor.execute();
 
-            context.getApplicationEventPublisher().publishEvent(new PostBatchInsertEvent(this, entityMeta, entities));
-            return result;
-
-        } finally {
-            completed();
-        }
+        context.getApplicationEventPublisher().publishEvent(new PostBatchInsertEvent(this, entityMeta, entities));
+        return result;
     }
 }
