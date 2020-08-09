@@ -12,7 +12,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.config.SqlMapperConfigureSupport;
 import com.github.mygreen.sqlmapper.dialect.Dialect;
-import com.github.mygreen.sqlmapper.dialect.DialectSupport;
+import com.github.mygreen.sqlmapper.dialect.DialectBase;
 
 /**
  * DB接続しない(NamedParameterJdbcTemplateがnull)ときの設定
@@ -45,7 +45,7 @@ public class NoDbTestConfig extends SqlMapperConfigureSupport {
         return null;
     }
 
-    static class NoDbTestDialect extends DialectSupport {
+    static class NoDbTestDialect extends DialectBase {
 
         @Override
         public String getName() {
