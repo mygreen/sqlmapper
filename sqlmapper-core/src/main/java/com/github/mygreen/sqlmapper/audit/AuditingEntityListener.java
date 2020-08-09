@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * エンティティの監査情報設定用のリスナー。
- * 監査人情報を設定する場合は、{@link AuditorProvider} の実装をBeanとして登録する必要があります。
+ * 監査人情報を設定する場合は、{@link AuditorProvider} の実装をSpringBeanとして登録する必要があります。
  *
  *
  * @author T.TSUCHIE
@@ -183,7 +183,7 @@ public class AuditingEntityListener implements InitializingBean {
      * 監査情報としての現在の日時を取得します。
      * @param propertyType プロパティのクラスタイプ。
      * @return プロパティのタイプに対応した現在の日時。
-     * @throws IllegalArgumentException typeがサポートしていない日時型の場合。
+     * @throws IllegalArgumentException 引数で指定した {@literal propertyType} がサポートしていない日時型の場合。
      */
     protected Object getCurrentDateTime(final Class<?> propertyType) {
         if(Date.class.isAssignableFrom(propertyType)) {
