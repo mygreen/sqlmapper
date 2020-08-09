@@ -5,11 +5,13 @@ import java.util.UUID;
 
 import org.springframework.dao.DataIntegrityViolationException;
 
+import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
+
 import lombok.RequiredArgsConstructor;
 
 /**
- * UUIDを生成します。
- *
+ * {@link GenerationType#UUID}方式で識別子の値を自動生成するIDジェネレータです。
+ * <p>サポートする識別子のクラスタイプは、{@link UUID} / {@link String} です。
  *
  * @author T.TSUCHIE
  *

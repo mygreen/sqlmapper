@@ -7,8 +7,10 @@ import org.springframework.util.Assert;
 
 import com.github.mygreen.sqlmapper.util.NameUtils;
 
+import lombok.NonNull;
+
 /**
- * テーブルを使って採番する処理。
+ * テーブルを使って採番を行います。
  *
  *
  * @author T.TSUCHIE
@@ -26,7 +28,7 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
 
     private String sqlUpdate;
 
-    public TableIdIncrementer(JdbcTemplate jdbcTemplate, TableIdContext context) {
+    public TableIdIncrementer(@NonNull JdbcTemplate jdbcTemplate, @NonNull TableIdContext context) {
         super(context.getAllocationSize());
         this.jdbcTemplate = jdbcTemplate;
         this.context = context;
@@ -34,6 +36,10 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
         init();
     }
 
+    /**
+     * {@link TableIdContext} を元にこのクラスの初期化を行います。
+     * <p>実行するSQLの組み立てを行います。</p>
+     */
     protected void init() {
 
         Assert.notNull(context, "tableIdContext should not be null.");

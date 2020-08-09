@@ -5,9 +5,20 @@ import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
 
+import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
+
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+/**
+ * {@link GenerationType#TABLE}方式で識別子の値を自動生成するIDジェネレータです。
+ * <p>サポートする識別子のクラスタイプは、{@code long/Long/int/Integer/String}です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @RequiredArgsConstructor
 public class TableIdGenerator implements IdGenerator {
 
@@ -16,11 +27,13 @@ public class TableIdGenerator implements IdGenerator {
     /**
      * 生成する識別子のタイプ
      */
+    @Getter
     private final Class<?> requiredType;
 
     /**
      * シーケンス名
      */
+    @Getter
     private final String sequenceName;
 
     /**
@@ -45,6 +58,11 @@ public class TableIdGenerator implements IdGenerator {
         return SUPPORTED_TYPE_LIST.toArray(new Class[SUPPORTED_TYPE_LIST.size()]);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws DataIntegrityViolationException コンストラクタで指定された引数 {@literal requiredType} がサポート対象外の場合。
+     */
     @Override
     public Object generateValue() {
         long value = incrementer.nextValue(sequenceName);

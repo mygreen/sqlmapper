@@ -8,11 +8,13 @@ import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer
 
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
  * {@link GenerationType#SEQUENCE}方式で識別子の値を自動生成するIDジェネレータです。
+ * <p>サポートする識別子のクラスタイプは、{@code long/Long/int/Integer/String}です。
  *
  *
  * @author T.TSUCHIE
@@ -30,17 +32,20 @@ public class SequenceIdGenerator implements IdGenerator {
     /**
      * シーケンスをインクリメント処理します
      */
+    @Getter
     private final DataFieldMaxValueIncrementer incrementer;
 
     /**
      * 生成する識別子のタイプ
      */
+    @Getter
     private final Class<?> requiredType;
 
     /**
      * 文字列にマッピングするときのフォーマッター
      */
     @Setter
+    @Getter
     private NumberFormat formatter;
 
     @Override
@@ -53,6 +58,11 @@ public class SequenceIdGenerator implements IdGenerator {
         return SUPPORTED_TYPE_LIST.toArray(new Class[SUPPORTED_TYPE_LIST.size()]);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws DataIntegrityViolationException コンストラクタで指定された引数 {@literal requiredType} がサポート対象外の場合。
+     */
     @Override
     public Object generateValue() {
         if(requiredType == long.class || requiredType == Long.class) {
