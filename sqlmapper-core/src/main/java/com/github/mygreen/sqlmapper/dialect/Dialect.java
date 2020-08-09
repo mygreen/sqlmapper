@@ -4,6 +4,7 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
 
+import com.github.mygreen.splate.SqlTemplateEngine;
 import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.type.ValueType;
@@ -19,7 +20,9 @@ public interface Dialect {
 
     /**
      * 方言の名称を取得します。
-     * @return
+     * <p>この値は、{@link SqlTemplateEngine#setSuffixName(String)} にも使用されます。</p>
+     *
+     * @return 方言の名称。
      */
     String getName();
 
@@ -44,15 +47,6 @@ public interface Dialect {
      * @return
      */
     DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName);
-
-//    /**
-//     * プロパティタイプに対する値タイプを返します。
-//     * Oracleなどのようにbooleanが存在しない場合は対応する{@link ValueType} に切り替えたりします。
-//     *
-//     * @param propertyMeta プロパティのメタデータ
-//     * @return 値タイプ
-//     */
-//    ValueType<?> getValueType(PropertyMeta propertyMeta);
 
     /**
      * 対応するクラスタイプに対する値タイプを返します。

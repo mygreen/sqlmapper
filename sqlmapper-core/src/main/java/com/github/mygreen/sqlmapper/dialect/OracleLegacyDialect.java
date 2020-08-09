@@ -12,12 +12,23 @@ import com.github.mygreen.sqlmapper.type.ValueType;
 import com.github.mygreen.sqlmapper.type.standard.BooleanType;
 import com.github.mygreen.sqlmapper.type.standard.OracleBooleanType;
 
-public class OracleDialect extends DialectSupport {
+/**
+ * 古いOracleDBの方言です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class OracleLegacyDialect extends DialectSupport {
 
     private final OracleBooleanType objectiveBooleanType = new OracleBooleanType(false);
 
     private final OracleBooleanType primitiveBooleanType = new OracleBooleanType(true);
 
+    /**
+     * {@inheritDoc}
+     * {@literal oracle}を返します。
+     */
     @Override
     public String getName() {
         return "oracle";
@@ -44,7 +55,7 @@ public class OracleDialect extends DialectSupport {
 
     /**
      * {@inheritDoc}
-     * OracleDBの場合、{@literal boolean/Boolean}のとき、整数型に変換する {@link OracleBooleanType} に変換します。
+     * 与えられた値が {@literal boolean/Boolean}のとき、整数型に変換する {@link OracleBooleanType} に変換します。
      */
     @Override
     public ValueType<?> getValueType(@Nullable ValueType<?> valueType) {
@@ -67,6 +78,10 @@ public class OracleDialect extends DialectSupport {
         return "/*+ " + hint + " */ ";
     }
 
+    /**
+     * {@inheritDoc}
+     * {@literal ROWNUMBER}を使用し、疑似的にLIMIT句を表現します。
+     */
     @Override
     public String convertLimitSql(String sql, int offset, int limit) {
         StringBuilder buf = new StringBuilder(sql.length() + 100);
@@ -98,6 +113,10 @@ public class OracleDialect extends DialectSupport {
         return buf.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     * 必ず{@literal true} を返します。
+     */
     @Override
     public boolean isSupportedSelectForUpdate(final SelectForUpdateType type) {
         // 全てのタイプをサポートする
