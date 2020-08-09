@@ -84,6 +84,8 @@ public class SqlMapper {
 
     /**
      * 複数のエンティティを挿入します。
+     * <p>主キーが識別子（IDENTITY）による自動生成の場合は、バッチ実行ではなく1件ずつ処理されるので注意してください。</p>
+     *
      * @param <T> エンティティタイプ
      * @param entities エンティティの並び
      * @return 挿入用のクエリ
@@ -96,6 +98,8 @@ public class SqlMapper {
 
     /**
      * 複数のエンティティを挿入します。
+     * <p>主キーが識別子（IDENTITY）による自動生成の場合は、バッチ実行ではなく1件ずつ処理されるので注意してください。</p>
+     *
      * @param <T> エンティティタイプ
      * @param entities エンティティの並び
      * @return 挿入用のクエリ
