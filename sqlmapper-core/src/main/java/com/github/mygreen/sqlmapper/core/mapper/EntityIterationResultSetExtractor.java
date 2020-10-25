@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.mapper;
+package com.github.mygreen.sqlmapper.core.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
-import com.github.mygreen.sqlmapper.query.IterationCallback;
-import com.github.mygreen.sqlmapper.query.IterationContext;
+import com.github.mygreen.sqlmapper.core.query.IterationCallback;
+import com.github.mygreen.sqlmapper.core.query.IterationContext;
 
 import lombok.RequiredArgsConstructor;
 

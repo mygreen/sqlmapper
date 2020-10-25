@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.query.auto;
+package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,20 +7,20 @@ import java.util.Optional;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.util.StringUtils;
 
-import com.github.mygreen.sqlmapper.dialect.Dialect;
-import com.github.mygreen.sqlmapper.mapper.EntityIterationResultSetExtractor;
-import com.github.mygreen.sqlmapper.mapper.EntityRowMapper;
-import com.github.mygreen.sqlmapper.meta.PropertyMeta;
-import com.github.mygreen.sqlmapper.query.FromClause;
-import com.github.mygreen.sqlmapper.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.query.IterationCallback;
-import com.github.mygreen.sqlmapper.query.OrderByClause;
-import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
-import com.github.mygreen.sqlmapper.query.SelectClause;
-import com.github.mygreen.sqlmapper.query.WhereClause;
-import com.github.mygreen.sqlmapper.util.QueryUtils;
-import com.github.mygreen.sqlmapper.where.WhereBuilder;
-import com.github.mygreen.sqlmapper.where.WhereVisitor;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.mapper.EntityIterationResultSetExtractor;
+import com.github.mygreen.sqlmapper.core.mapper.EntityRowMapper;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.query.FromClause;
+import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.IterationCallback;
+import com.github.mygreen.sqlmapper.core.query.OrderByClause;
+import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
+import com.github.mygreen.sqlmapper.core.query.SelectClause;
+import com.github.mygreen.sqlmapper.core.query.WhereClause;
+import com.github.mygreen.sqlmapper.core.util.QueryUtils;
+import com.github.mygreen.sqlmapper.core.where.WhereBuilder;
+import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
 
 
 public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {

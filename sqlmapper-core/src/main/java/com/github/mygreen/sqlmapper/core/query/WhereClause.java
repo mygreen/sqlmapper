@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.query;
+package com.github.mygreen.sqlmapper.core.query;
 
 /**
  * where句を組み立てるクラスです。

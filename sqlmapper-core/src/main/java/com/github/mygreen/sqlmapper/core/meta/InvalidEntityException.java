@@ -1,6 +1,6 @@
-package com.github.mygreen.sqlmapper.meta;
+package com.github.mygreen.sqlmapper.core.meta;
 
-import com.github.mygreen.sqlmapper.SqlMapperException;
+import com.github.mygreen.sqlmapper.core.SqlMapperException;
 
 import lombok.Getter;
 

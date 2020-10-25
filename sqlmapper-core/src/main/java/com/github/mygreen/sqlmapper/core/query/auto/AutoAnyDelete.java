@@ -1,9 +1,9 @@
-package com.github.mygreen.sqlmapper.query.auto;
+package com.github.mygreen.sqlmapper.core.query.auto;
 
-import com.github.mygreen.sqlmapper.SqlMapperContext;
-import com.github.mygreen.sqlmapper.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.query.QuerySupport;
-import com.github.mygreen.sqlmapper.where.Where;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.query.QuerySupport;
+import com.github.mygreen.sqlmapper.core.where.Where;
 
 import lombok.AccessLevel;
 import lombok.Getter;

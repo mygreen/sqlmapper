@@ -1,15 +1,15 @@
-package com.github.mygreen.sqlmapper.query.auto;
+package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.github.mygreen.sqlmapper.SqlMapperContext;
-import com.github.mygreen.sqlmapper.event.PostBatchInsertEvent;
-import com.github.mygreen.sqlmapper.event.PreBatchInsertEvent;
-import com.github.mygreen.sqlmapper.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.query.QuerySupport;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.event.PostBatchInsertEvent;
+import com.github.mygreen.sqlmapper.core.event.PreBatchInsertEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 
 import lombok.AccessLevel;
 import lombok.Getter;

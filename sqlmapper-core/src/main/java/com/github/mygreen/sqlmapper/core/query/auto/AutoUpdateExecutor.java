@@ -1,19 +1,19 @@
-package com.github.mygreen.sqlmapper.query.auto;
+package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 
-import com.github.mygreen.sqlmapper.meta.PropertyMeta;
-import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
-import com.github.mygreen.sqlmapper.query.SetClause;
-import com.github.mygreen.sqlmapper.query.WhereClause;
-import com.github.mygreen.sqlmapper.type.ValueType;
-import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
-import com.github.mygreen.sqlmapper.where.WhereBuilder;
-import com.github.mygreen.sqlmapper.where.WhereVisitor;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
+import com.github.mygreen.sqlmapper.core.query.SetClause;
+import com.github.mygreen.sqlmapper.core.query.WhereClause;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
+import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
+import com.github.mygreen.sqlmapper.core.where.WhereBuilder;
+import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
 
 import lombok.extern.slf4j.Slf4j;
 

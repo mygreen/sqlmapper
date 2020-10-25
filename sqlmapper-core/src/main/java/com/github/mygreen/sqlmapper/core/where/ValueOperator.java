@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.where;
+package com.github.mygreen.sqlmapper.core.where;
 
 /**
  * 値を伴う演算子を表現します。

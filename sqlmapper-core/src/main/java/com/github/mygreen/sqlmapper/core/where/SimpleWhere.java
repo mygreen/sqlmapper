@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.where;
+package com.github.mygreen.sqlmapper.core.where;
 
 /**
  * 入力された項目をandでつなげていく条件を組み立てるクラスです。

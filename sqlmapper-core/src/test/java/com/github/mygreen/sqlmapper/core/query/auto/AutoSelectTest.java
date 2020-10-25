@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.query.auto;
+package com.github.mygreen.sqlmapper.core.query.auto;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.github.mygreen.sqlmapper.SqlMapper;
-import com.github.mygreen.sqlmapper.query.IterationCallback;
-import com.github.mygreen.sqlmapper.query.IterationContext;
-import com.github.mygreen.sqlmapper.testdata.Customer;
-import com.github.mygreen.sqlmapper.testdata.TestConfig;
+import com.github.mygreen.sqlmapper.core.SqlMapper;
+import com.github.mygreen.sqlmapper.core.query.IterationCallback;
+import com.github.mygreen.sqlmapper.core.query.IterationContext;
+import com.github.mygreen.sqlmapper.core.testdata.Customer;
+import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes=TestConfig.class)

@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.query.sql;
+package com.github.mygreen.sqlmapper.core.query.sql;
 
 import java.util.List;
 import java.util.Optional;
@@ -7,11 +7,11 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.github.mygreen.splate.SqlTemplate;
 import com.github.mygreen.splate.SqlTemplateContext;
-import com.github.mygreen.sqlmapper.SqlMapperContext;
-import com.github.mygreen.sqlmapper.event.PostListSelectEvent;
-import com.github.mygreen.sqlmapper.event.PostSelectEvent;
-import com.github.mygreen.sqlmapper.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.query.IterationCallback;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.event.PostListSelectEvent;
+import com.github.mygreen.sqlmapper.core.event.PostSelectEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.query.IterationCallback;
 
 import lombok.AccessLevel;
 import lombok.Getter;

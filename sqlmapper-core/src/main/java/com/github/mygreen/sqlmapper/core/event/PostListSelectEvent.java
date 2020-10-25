@@ -1,10 +1,10 @@
-package com.github.mygreen.sqlmapper.event;
+package com.github.mygreen.sqlmapper.core.event;
 
 import java.util.List;
 
 import org.springframework.context.ApplicationEvent;
 
-import com.github.mygreen.sqlmapper.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 
 import lombok.Getter;
 

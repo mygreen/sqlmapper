@@ -1,6 +1,6 @@
-package com.github.mygreen.sqlmapper.meta;
+package com.github.mygreen.sqlmapper.core.meta;
 
-import com.github.mygreen.sqlmapper.util.NameUtils;
+import com.github.mygreen.sqlmapper.core.util.NameUtils;
 
 import lombok.Getter;
 import lombok.Setter;

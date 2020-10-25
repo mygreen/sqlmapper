@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.testdata;
+package com.github.mygreen.sqlmapper.core.testdata;
 
 import javax.sql.DataSource;
 
@@ -8,9 +8,9 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.github.mygreen.sqlmapper.config.SqlMapperConfigureSupport;
-import com.github.mygreen.sqlmapper.dialect.Dialect;
-import com.github.mygreen.sqlmapper.dialect.H2Dialect;
+import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigureSupport;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.dialect.H2Dialect;
 
 
 /**

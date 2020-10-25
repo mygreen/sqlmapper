@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.util;
+package com.github.mygreen.sqlmapper.core.util;
 
 import org.springframework.util.StringUtils;
 

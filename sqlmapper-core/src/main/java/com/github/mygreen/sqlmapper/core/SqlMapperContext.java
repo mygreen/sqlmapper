@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper;
+package com.github.mygreen.sqlmapper.core;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -6,10 +6,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.splate.SqlTemplateEngine;
-import com.github.mygreen.sqlmapper.dialect.Dialect;
-import com.github.mygreen.sqlmapper.meta.EntityMetaFactory;
-import com.github.mygreen.sqlmapper.naming.NamingRule;
-import com.github.mygreen.sqlmapper.type.ValueTypeRegistry;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
+import com.github.mygreen.sqlmapper.core.naming.NamingRule;
+import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
 
 import lombok.Getter;
 import lombok.Setter;

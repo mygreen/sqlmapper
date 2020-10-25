@@ -1,13 +1,13 @@
-package com.github.mygreen.sqlmapper.query.auto;
+package com.github.mygreen.sqlmapper.core.query.auto;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 
-import com.github.mygreen.sqlmapper.SqlMapperContext;
-import com.github.mygreen.sqlmapper.event.PostDeleteEvent;
-import com.github.mygreen.sqlmapper.event.PreDeleteEvent;
-import com.github.mygreen.sqlmapper.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.query.QuerySupport;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.event.PostDeleteEvent;
+import com.github.mygreen.sqlmapper.core.event.PreDeleteEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 
 import lombok.AccessLevel;
 import lombok.Getter;

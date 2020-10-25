@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.dialect;
+package com.github.mygreen.sqlmapper.core.dialect;
 
 import javax.sql.DataSource;
 
@@ -6,11 +6,11 @@ import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer
 import org.springframework.jdbc.support.incrementer.OracleSequenceMaxValueIncrementer;
 import org.springframework.lang.Nullable;
 
-import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
-import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
-import com.github.mygreen.sqlmapper.type.ValueType;
-import com.github.mygreen.sqlmapper.type.standard.BooleanType;
-import com.github.mygreen.sqlmapper.type.standard.OracleBooleanType;
+import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
+import com.github.mygreen.sqlmapper.core.type.standard.BooleanType;
+import com.github.mygreen.sqlmapper.core.type.standard.OracleBooleanType;
 
 /**
  * 古いOracleDBの方言です。

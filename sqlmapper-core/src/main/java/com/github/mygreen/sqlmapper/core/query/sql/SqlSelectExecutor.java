@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.query.sql;
+package com.github.mygreen.sqlmapper.core.query.sql;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,10 +6,10 @@ import java.util.Optional;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.github.mygreen.splate.ProcessResult;
-import com.github.mygreen.sqlmapper.mapper.EntityIterationResultSetExtractor;
-import com.github.mygreen.sqlmapper.mapper.EntityRowMapper;
-import com.github.mygreen.sqlmapper.query.IterationCallback;
-import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
+import com.github.mygreen.sqlmapper.core.mapper.EntityIterationResultSetExtractor;
+import com.github.mygreen.sqlmapper.core.mapper.EntityRowMapper;
+import com.github.mygreen.sqlmapper.core.query.IterationCallback;
+import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 
 public class SqlSelectExecutor<T> extends QueryExecutorSupport<SqlSelect<T>> {
 

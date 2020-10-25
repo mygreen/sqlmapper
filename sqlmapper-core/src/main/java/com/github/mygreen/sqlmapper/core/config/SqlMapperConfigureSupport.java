@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.config;
+package com.github.mygreen.sqlmapper.core.config;
 
 import java.math.BigDecimal;
 import java.sql.Time;
@@ -33,30 +33,30 @@ import com.github.mygreen.messageformatter.MessageInterpolator;
 import com.github.mygreen.messageformatter.expression.ExpressionEvaluator;
 import com.github.mygreen.messageformatter.expression.SpelExpressionEvaluator;
 import com.github.mygreen.splate.SqlTemplateEngine;
-import com.github.mygreen.sqlmapper.SqlMapper;
-import com.github.mygreen.sqlmapper.SqlMapperContext;
-import com.github.mygreen.sqlmapper.audit.AuditingEntityListener;
-import com.github.mygreen.sqlmapper.dialect.Dialect;
-import com.github.mygreen.sqlmapper.meta.EntityMetaFactory;
-import com.github.mygreen.sqlmapper.meta.PropertyMetaFactory;
-import com.github.mygreen.sqlmapper.naming.DefaultNamingRule;
-import com.github.mygreen.sqlmapper.naming.NamingRule;
-import com.github.mygreen.sqlmapper.type.ValueTypeRegistry;
-import com.github.mygreen.sqlmapper.type.standard.BigDecimalType;
-import com.github.mygreen.sqlmapper.type.standard.BooleanType;
-import com.github.mygreen.sqlmapper.type.standard.DoubleType;
-import com.github.mygreen.sqlmapper.type.standard.FloatType;
-import com.github.mygreen.sqlmapper.type.standard.IntegerType;
-import com.github.mygreen.sqlmapper.type.standard.LocalDateTimeType;
-import com.github.mygreen.sqlmapper.type.standard.LocalDateType;
-import com.github.mygreen.sqlmapper.type.standard.LocalTimeType;
-import com.github.mygreen.sqlmapper.type.standard.LongType;
-import com.github.mygreen.sqlmapper.type.standard.ShortType;
-import com.github.mygreen.sqlmapper.type.standard.SqlDateType;
-import com.github.mygreen.sqlmapper.type.standard.SqlTimeType;
-import com.github.mygreen.sqlmapper.type.standard.SqlTimestampType;
-import com.github.mygreen.sqlmapper.type.standard.StringType;
-import com.github.mygreen.sqlmapper.type.standard.UUIDType;
+import com.github.mygreen.sqlmapper.core.SqlMapper;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMetaFactory;
+import com.github.mygreen.sqlmapper.core.naming.DefaultNamingRule;
+import com.github.mygreen.sqlmapper.core.naming.NamingRule;
+import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
+import com.github.mygreen.sqlmapper.core.type.standard.BigDecimalType;
+import com.github.mygreen.sqlmapper.core.type.standard.BooleanType;
+import com.github.mygreen.sqlmapper.core.type.standard.DoubleType;
+import com.github.mygreen.sqlmapper.core.type.standard.FloatType;
+import com.github.mygreen.sqlmapper.core.type.standard.IntegerType;
+import com.github.mygreen.sqlmapper.core.type.standard.LocalDateTimeType;
+import com.github.mygreen.sqlmapper.core.type.standard.LocalDateType;
+import com.github.mygreen.sqlmapper.core.type.standard.LocalTimeType;
+import com.github.mygreen.sqlmapper.core.type.standard.LongType;
+import com.github.mygreen.sqlmapper.core.type.standard.ShortType;
+import com.github.mygreen.sqlmapper.core.type.standard.SqlDateType;
+import com.github.mygreen.sqlmapper.core.type.standard.SqlTimeType;
+import com.github.mygreen.sqlmapper.core.type.standard.SqlTimestampType;
+import com.github.mygreen.sqlmapper.core.type.standard.StringType;
+import com.github.mygreen.sqlmapper.core.type.standard.UUIDType;
 
 /**
  *
@@ -64,7 +64,7 @@ import com.github.mygreen.sqlmapper.type.standard.UUIDType;
  * @author T.TSUCHIE
  *
  */
-@PropertySource("classpath:/com/github/mygreen/sqlmapper/sqlmapper.properties")
+@PropertySource("classpath:/com/github/mygreen/sqlmapper/core/sqlmapper.properties")
 public abstract class SqlMapperConfigureSupport implements ApplicationContextAware, ApplicationEventPublisherAware {
 
     private ApplicationContext applicationContext;

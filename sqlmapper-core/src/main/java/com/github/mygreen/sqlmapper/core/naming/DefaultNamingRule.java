@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.naming;
+package com.github.mygreen.sqlmapper.core.naming;
 
 
 /**

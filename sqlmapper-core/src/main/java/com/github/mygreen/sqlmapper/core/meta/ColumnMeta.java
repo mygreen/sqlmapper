@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.meta;
+package com.github.mygreen.sqlmapper.core.meta;
 
 import lombok.Getter;
 import lombok.Setter;

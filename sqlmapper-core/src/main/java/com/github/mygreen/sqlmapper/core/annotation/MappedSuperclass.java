@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.annotation;
+package com.github.mygreen.sqlmapper.core.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

@@ -1,20 +1,20 @@
-package com.github.mygreen.sqlmapper;
+package com.github.mygreen.sqlmapper.core;
 
 import java.util.List;
 
 import com.github.mygreen.splate.EmptyValueSqlTemplateContext;
 import com.github.mygreen.splate.SqlTemplateContext;
-import com.github.mygreen.sqlmapper.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.query.auto.AutoAnyDelete;
-import com.github.mygreen.sqlmapper.query.auto.AutoBatchInsert;
-import com.github.mygreen.sqlmapper.query.auto.AutoBatchUpdate;
-import com.github.mygreen.sqlmapper.query.auto.AutoDelete;
-import com.github.mygreen.sqlmapper.query.auto.AutoInsert;
-import com.github.mygreen.sqlmapper.query.auto.AutoSelect;
-import com.github.mygreen.sqlmapper.query.auto.AutoUpdate;
-import com.github.mygreen.sqlmapper.query.sql.SqlCount;
-import com.github.mygreen.sqlmapper.query.sql.SqlSelect;
-import com.github.mygreen.sqlmapper.query.sql.SqlUpdate;
+import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoAnyDelete;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchInsert;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchUpdate;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoDelete;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoInsert;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoSelect;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoUpdate;
+import com.github.mygreen.sqlmapper.core.query.sql.SqlCount;
+import com.github.mygreen.sqlmapper.core.query.sql.SqlSelect;
+import com.github.mygreen.sqlmapper.core.query.sql.SqlUpdate;
 
 import lombok.Getter;
 import lombok.NonNull;

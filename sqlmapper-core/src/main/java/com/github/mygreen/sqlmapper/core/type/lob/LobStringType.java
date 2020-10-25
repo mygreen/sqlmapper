@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.type.lob;
+package com.github.mygreen.sqlmapper.core.type.lob;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.jdbc.support.lob.LobHandler;
 
-import com.github.mygreen.sqlmapper.type.ValueType;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
 

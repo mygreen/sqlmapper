@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.type;
+package com.github.mygreen.sqlmapper.core.type;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

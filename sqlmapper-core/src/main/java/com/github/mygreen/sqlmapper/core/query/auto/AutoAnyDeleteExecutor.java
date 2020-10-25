@@ -1,11 +1,11 @@
-package com.github.mygreen.sqlmapper.query.auto;
+package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
-import com.github.mygreen.sqlmapper.query.WhereClause;
-import com.github.mygreen.sqlmapper.where.WhereVisitor;
+import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
+import com.github.mygreen.sqlmapper.core.query.WhereClause;
+import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
 
 public class AutoAnyDeleteExecutor extends QueryExecutorSupport<AutoAnyDelete<?>> {
 

@@ -1,11 +1,11 @@
-package com.github.mygreen.sqlmapper.id;
+package com.github.mygreen.sqlmapper.core.id;
 
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.Assert;
 
-import com.github.mygreen.sqlmapper.util.NameUtils;
+import com.github.mygreen.sqlmapper.core.util.NameUtils;
 
 import lombok.NonNull;
 

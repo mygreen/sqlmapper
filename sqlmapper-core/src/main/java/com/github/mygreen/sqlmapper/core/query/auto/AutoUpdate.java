@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.query.auto;
+package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,14 +8,14 @@ import java.util.Set;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 
-import com.github.mygreen.sqlmapper.SqlMapperContext;
-import com.github.mygreen.sqlmapper.event.PostUpdateEvent;
-import com.github.mygreen.sqlmapper.event.PreUpdateEvent;
-import com.github.mygreen.sqlmapper.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.meta.PropertyMeta;
-import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.query.QuerySupport;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.event.PostUpdateEvent;
+import com.github.mygreen.sqlmapper.core.event.PreUpdateEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.annotation;
+package com.github.mygreen.sqlmapper.core.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -6,8 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.github.mygreen.sqlmapper.audit.AuditingEntityListener;
-import com.github.mygreen.sqlmapper.audit.AuditorProvider;
+import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
+import com.github.mygreen.sqlmapper.core.audit.AuditorProvider;
 
 /**
  * エンティティの作成が誰にされたかを表すプロパティに付与します。

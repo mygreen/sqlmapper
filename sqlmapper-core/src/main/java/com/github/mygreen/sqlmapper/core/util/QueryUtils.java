@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.util;
+package com.github.mygreen.sqlmapper.core.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.util.StringUtils;
 
-import com.github.mygreen.sqlmapper.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.meta.PropertyMeta;
-import com.github.mygreen.sqlmapper.query.QueryTokenizer;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.query.QueryTokenizer;
 
 /**
  * クエリ組み立て自のヘルパークラス

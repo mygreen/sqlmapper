@@ -1,6 +1,6 @@
-package com.github.mygreen.sqlmapper.query;
+package com.github.mygreen.sqlmapper.core.query;
 
-import com.github.mygreen.sqlmapper.SqlMapperException;
+import com.github.mygreen.sqlmapper.core.SqlMapperException;
 
 /**
  * 不正なクエリ操作を実行したときにスローされる例外です。

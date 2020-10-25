@@ -1,6 +1,6 @@
-package com.github.mygreen.sqlmapper.event;
+package com.github.mygreen.sqlmapper.core.event;
 
-import com.github.mygreen.sqlmapper.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 
 public class PostBatchUpdateEvent extends AbstractEntityBatchEvent {
 

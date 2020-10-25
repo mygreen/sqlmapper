@@ -1,4 +1,4 @@
 /**
  * ユーティリティを提供します。
  */
-package com.github.mygreen.sqlmapper.util;
+package com.github.mygreen.sqlmapper.core.util;

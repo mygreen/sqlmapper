@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.type.standard;
+package com.github.mygreen.sqlmapper.core.type.standard;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import org.springframework.jdbc.core.SqlParameterValue;
 
-import com.github.mygreen.sqlmapper.type.ValueType;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 public class UUIDType implements ValueType<UUID> {
 

@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.query;
+package com.github.mygreen.sqlmapper.core.query;
 
 /**
  * 問い合わせ結果を一件ずつ反復するためのインターフェースです。

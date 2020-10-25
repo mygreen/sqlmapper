@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.id;
+package com.github.mygreen.sqlmapper.core.id;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

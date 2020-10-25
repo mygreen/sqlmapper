@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.query.auto;
+package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.HashSet;
 import java.util.List;
@@ -7,17 +7,17 @@ import java.util.Set;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import com.github.mygreen.sqlmapper.SqlMapperContext;
-import com.github.mygreen.sqlmapper.dialect.Dialect;
-import com.github.mygreen.sqlmapper.event.PostListSelectEvent;
-import com.github.mygreen.sqlmapper.event.PostSelectEvent;
-import com.github.mygreen.sqlmapper.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.meta.PropertyMeta;
-import com.github.mygreen.sqlmapper.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.query.IterationCallback;
-import com.github.mygreen.sqlmapper.query.QuerySupport;
-import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
-import com.github.mygreen.sqlmapper.where.Where;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.event.PostListSelectEvent;
+import com.github.mygreen.sqlmapper.core.event.PostSelectEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.IterationCallback;
+import com.github.mygreen.sqlmapper.core.query.QuerySupport;
+import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
+import com.github.mygreen.sqlmapper.core.where.Where;
 
 import lombok.AccessLevel;
 import lombok.Getter;

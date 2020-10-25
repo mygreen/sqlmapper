@@ -1,10 +1,10 @@
-package com.github.mygreen.sqlmapper.type.standard;
+package com.github.mygreen.sqlmapper.core.type.standard;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.github.mygreen.sqlmapper.type.ValueType;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
 

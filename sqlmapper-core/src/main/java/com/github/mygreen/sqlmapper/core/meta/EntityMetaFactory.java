@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.meta;
+package com.github.mygreen.sqlmapper.core.meta;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
 
 import com.github.mygreen.messageformatter.MessageFormatter;
-import com.github.mygreen.sqlmapper.annotation.Entity;
-import com.github.mygreen.sqlmapper.annotation.MappedSuperclass;
-import com.github.mygreen.sqlmapper.annotation.Table;
-import com.github.mygreen.sqlmapper.annotation.Version;
-import com.github.mygreen.sqlmapper.naming.NamingRule;
+import com.github.mygreen.sqlmapper.core.annotation.Entity;
+import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
+import com.github.mygreen.sqlmapper.core.annotation.Table;
+import com.github.mygreen.sqlmapper.core.annotation.Version;
+import com.github.mygreen.sqlmapper.core.naming.NamingRule;
 
 import lombok.Getter;
 import lombok.NonNull;

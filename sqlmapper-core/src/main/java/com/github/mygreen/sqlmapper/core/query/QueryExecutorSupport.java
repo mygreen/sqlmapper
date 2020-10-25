@@ -1,6 +1,6 @@
-package com.github.mygreen.sqlmapper.query;
+package com.github.mygreen.sqlmapper.core.query;
 
-import com.github.mygreen.sqlmapper.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 
 import lombok.Getter;
 import lombok.NonNull;

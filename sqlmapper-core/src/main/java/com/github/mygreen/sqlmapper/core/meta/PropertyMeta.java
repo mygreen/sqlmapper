@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.meta;
+package com.github.mygreen.sqlmapper.core.meta;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -8,17 +8,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.github.mygreen.sqlmapper.annotation.CreatedAt;
-import com.github.mygreen.sqlmapper.annotation.CreatedBy;
-import com.github.mygreen.sqlmapper.annotation.GeneratedValue;
-import com.github.mygreen.sqlmapper.annotation.Id;
-import com.github.mygreen.sqlmapper.annotation.Lob;
-import com.github.mygreen.sqlmapper.annotation.ModifiedAt;
-import com.github.mygreen.sqlmapper.annotation.ModifiedBy;
-import com.github.mygreen.sqlmapper.annotation.Transient;
-import com.github.mygreen.sqlmapper.annotation.Version;
-import com.github.mygreen.sqlmapper.id.IdGenerator;
-import com.github.mygreen.sqlmapper.type.ValueType;
+import com.github.mygreen.sqlmapper.core.annotation.CreatedAt;
+import com.github.mygreen.sqlmapper.core.annotation.CreatedBy;
+import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
+import com.github.mygreen.sqlmapper.core.annotation.Id;
+import com.github.mygreen.sqlmapper.core.annotation.Lob;
+import com.github.mygreen.sqlmapper.core.annotation.ModifiedAt;
+import com.github.mygreen.sqlmapper.core.annotation.ModifiedBy;
+import com.github.mygreen.sqlmapper.core.annotation.Transient;
+import com.github.mygreen.sqlmapper.core.annotation.Version;
+import com.github.mygreen.sqlmapper.core.id.IdGenerator;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.Getter;
 import lombok.NonNull;

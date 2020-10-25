@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.query.auto;
+package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,15 +10,15 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.KeyHolder;
 
-import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
-import com.github.mygreen.sqlmapper.id.IdGenerator;
-import com.github.mygreen.sqlmapper.id.IdentityIdGenerator;
-import com.github.mygreen.sqlmapper.meta.PropertyMeta;
-import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.query.QueryExecutorSupport;
-import com.github.mygreen.sqlmapper.type.ValueType;
-import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
-import com.github.mygreen.sqlmapper.util.QueryUtils;
+import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.core.id.IdGenerator;
+import com.github.mygreen.sqlmapper.core.id.IdentityIdGenerator;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
+import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
+import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 
 
 public class AutoBatchInsertExecutor extends QueryExecutorSupport<AutoBatchInsert<?>> {

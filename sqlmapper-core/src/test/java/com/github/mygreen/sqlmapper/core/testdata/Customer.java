@@ -1,10 +1,10 @@
-package com.github.mygreen.sqlmapper.testdata;
+package com.github.mygreen.sqlmapper.core.testdata;
 
 import java.time.LocalDate;
 
-import com.github.mygreen.sqlmapper.annotation.Column;
-import com.github.mygreen.sqlmapper.annotation.Entity;
-import com.github.mygreen.sqlmapper.annotation.Id;
+import com.github.mygreen.sqlmapper.core.annotation.Column;
+import com.github.mygreen.sqlmapper.core.annotation.Entity;
+import com.github.mygreen.sqlmapper.core.annotation.Id;
 
 import lombok.Data;
 

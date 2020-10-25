@@ -1,11 +1,11 @@
-package com.github.mygreen.sqlmapper.type.standard;
+package com.github.mygreen.sqlmapper.core.type.standard;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.github.mygreen.sqlmapper.type.ValueType;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 public class UtilDateType implements ValueType<Date> {
 

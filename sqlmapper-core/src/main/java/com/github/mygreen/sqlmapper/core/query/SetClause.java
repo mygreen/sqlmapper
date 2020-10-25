@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.query;
+package com.github.mygreen.sqlmapper.core.query;
 
 /**
  * SET句を組み立てるクラスです。

@@ -1,11 +1,11 @@
-package com.github.mygreen.sqlmapper.dialect;
+package com.github.mygreen.sqlmapper.core.dialect;
 
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
 import org.springframework.jdbc.support.incrementer.H2SequenceMaxValueIncrementer;
 
-import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 
 /**
  * H2用の方言を扱うクラス。

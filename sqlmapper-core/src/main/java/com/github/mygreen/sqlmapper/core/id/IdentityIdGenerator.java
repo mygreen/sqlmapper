@@ -1,11 +1,11 @@
-package com.github.mygreen.sqlmapper.id;
+package com.github.mygreen.sqlmapper.core.id;
 
 import java.text.NumberFormat;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
 
-import com.github.mygreen.sqlmapper.util.NumberConvertUtils;
+import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

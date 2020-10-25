@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.meta;
+package com.github.mygreen.sqlmapper.core.meta;
 
 import java.lang.reflect.InvocationTargetException;
 

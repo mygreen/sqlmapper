@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.testdata;
+package com.github.mygreen.sqlmapper.core.testdata;
 
 import javax.sql.DataSource;
 
@@ -9,10 +9,10 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
-import com.github.mygreen.sqlmapper.config.SqlMapperConfigureSupport;
-import com.github.mygreen.sqlmapper.dialect.Dialect;
-import com.github.mygreen.sqlmapper.dialect.DialectBase;
+import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigureSupport;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.dialect.DialectBase;
 
 /**
  * DB接続しない(NamedParameterJdbcTemplateがnull)ときの設定

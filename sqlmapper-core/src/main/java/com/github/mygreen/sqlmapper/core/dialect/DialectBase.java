@@ -1,10 +1,10 @@
-package com.github.mygreen.sqlmapper.dialect;
+package com.github.mygreen.sqlmapper.core.dialect;
 
 import org.springframework.lang.Nullable;
 
-import com.github.mygreen.sqlmapper.annotation.GeneratedValue.GenerationType;
-import com.github.mygreen.sqlmapper.query.SelectForUpdateType;
-import com.github.mygreen.sqlmapper.type.ValueType;
+import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 /**
  * {@link Dialect}のベースとなるクラス。

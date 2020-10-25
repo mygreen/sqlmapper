@@ -1,6 +1,6 @@
-package com.github.mygreen.sqlmapper.event;
+package com.github.mygreen.sqlmapper.core.event;
 
-import com.github.mygreen.sqlmapper.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 
 /**
  * エンティティの挿入実行前のイベント

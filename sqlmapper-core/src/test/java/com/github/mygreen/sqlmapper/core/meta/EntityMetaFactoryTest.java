@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.meta;
+package com.github.mygreen.sqlmapper.core.meta;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -8,12 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.github.mygreen.sqlmapper.annotation.Column;
-import com.github.mygreen.sqlmapper.annotation.Entity;
-import com.github.mygreen.sqlmapper.annotation.Id;
-import com.github.mygreen.sqlmapper.annotation.Transient;
-import com.github.mygreen.sqlmapper.annotation.Version;
-import com.github.mygreen.sqlmapper.testdata.NoDbTestConfig;
+import com.github.mygreen.sqlmapper.core.annotation.Column;
+import com.github.mygreen.sqlmapper.core.annotation.Entity;
+import com.github.mygreen.sqlmapper.core.annotation.Id;
+import com.github.mygreen.sqlmapper.core.annotation.Transient;
+import com.github.mygreen.sqlmapper.core.annotation.Version;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.meta.TableMeta;
+import com.github.mygreen.sqlmapper.core.testdata.NoDbTestConfig;
 
 import lombok.Data;
 

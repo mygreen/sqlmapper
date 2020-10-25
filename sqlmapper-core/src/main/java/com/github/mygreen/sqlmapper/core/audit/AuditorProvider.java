@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.audit;
+package com.github.mygreen.sqlmapper.core.audit;
 
 import java.util.Optional;
 

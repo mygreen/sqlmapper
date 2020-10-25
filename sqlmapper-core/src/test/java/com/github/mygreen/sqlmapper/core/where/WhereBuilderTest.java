@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.where;
+package com.github.mygreen.sqlmapper.core.where;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.github.mygreen.sqlmapper.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.meta.EntityMetaFactory;
-import com.github.mygreen.sqlmapper.testdata.Customer;
-import com.github.mygreen.sqlmapper.testdata.TestConfig;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
+import com.github.mygreen.sqlmapper.core.testdata.Customer;
+import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
+import com.github.mygreen.sqlmapper.core.where.SimpleWhere;
+import com.github.mygreen.sqlmapper.core.where.WhereBuilder;
+import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
 
 
 @ExtendWith(SpringExtension.class)

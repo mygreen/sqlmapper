@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.mapper;
+package com.github.mygreen.sqlmapper.core.mapper;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -8,9 +8,9 @@ import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.RowMapper;
 
-import com.github.mygreen.sqlmapper.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.meta.PropertyMeta;
-import com.github.mygreen.sqlmapper.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
 
 /**
  * 1レコード分のエンティティをマッピングする。

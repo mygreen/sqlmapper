@@ -1,11 +1,11 @@
-package com.github.mygreen.sqlmapper.type.standard;
+package com.github.mygreen.sqlmapper.core.type.standard;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
-import com.github.mygreen.sqlmapper.annotation.Temporal.TemporalType;
+import com.github.mygreen.sqlmapper.core.annotation.Temporal.TemporalType;
 
 public class SqlTimestampType implements SqlTemporalType<Timestamp> {
 

@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.util;
+package com.github.mygreen.sqlmapper.core.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

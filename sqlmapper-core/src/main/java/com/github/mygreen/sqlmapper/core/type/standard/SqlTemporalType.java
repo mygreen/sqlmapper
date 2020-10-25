@@ -1,9 +1,9 @@
-package com.github.mygreen.sqlmapper.type.standard;
+package com.github.mygreen.sqlmapper.core.type.standard;
 
 import java.util.Date;
 
-import com.github.mygreen.sqlmapper.annotation.Temporal;
-import com.github.mygreen.sqlmapper.type.ValueType;
+import com.github.mygreen.sqlmapper.core.annotation.Temporal;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 public interface SqlTemporalType<T extends Date> extends ValueType<T> {
 

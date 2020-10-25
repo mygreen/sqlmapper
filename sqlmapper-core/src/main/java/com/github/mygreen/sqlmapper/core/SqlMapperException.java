@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper;
+package com.github.mygreen.sqlmapper.core;
 
 /**
  * SqlMapperのルート例外。

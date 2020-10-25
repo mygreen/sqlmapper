@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.testdata;
+package com.github.mygreen.sqlmapper.core.testdata;
 
 
 public enum Role {

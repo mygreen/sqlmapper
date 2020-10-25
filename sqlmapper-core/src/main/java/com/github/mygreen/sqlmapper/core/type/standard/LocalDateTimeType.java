@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.type.standard;
+package com.github.mygreen.sqlmapper.core.type.standard;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.github.mygreen.sqlmapper.type.ValueType;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 public class LocalDateTimeType implements ValueType<LocalDateTime> {
 

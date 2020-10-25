@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.type.enumeration;
+package com.github.mygreen.sqlmapper.core.type.enumeration;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.github.mygreen.messageformatter.MessageFormatter;
-import com.github.mygreen.sqlmapper.type.SqlValueConversionException;
-import com.github.mygreen.sqlmapper.type.ValueType;
+import com.github.mygreen.sqlmapper.core.type.SqlValueConversionException;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.NonNull;
 
