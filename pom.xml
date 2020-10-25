@@ -11,6 +11,8 @@
 
 	<modules>
 		<module>sqlmapper-core</module>
+		<module>sqlmapper-metamodel</module>
+		<module>sqlmapper-codegen</module>
 	</modules>
 
 	<issueManagement>
