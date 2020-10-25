@@ -6,7 +6,7 @@
 	<artifactId>sqlmapper-root</artifactId>
 	<name>SqlMapper</name>
 	<packaging>pom</packaging>
-	<version>0.1</version>
+	<version>${project.version}</version>
 	<description><![CDATA[ SqlMapper is Java Library for mapping SQL to POJO. ]]></description>
 
 	<modules>
@@ -16,7 +16,9 @@
 	</modules>
 
 	<properties>
+		<project.version>0.1</project.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>11</java.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<logback.version>1.2.3</logback.version>
