@@ -13,11 +13,7 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<java.version>11</java.version>
-		<source.encode>UTF-8</source.encode>
 		<spring.version>5.1.6.RELEASE</spring.version>
-		<slf4j.version>1.7.25</slf4j.version>
-		<logback.version>1.2.3</logback.version>
 	</properties>
 
 	<build>
@@ -70,7 +66,6 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<encoding>utf-8</encoding>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 				</configuration>
@@ -94,13 +89,6 @@
 	<dependencies>
 		<!-- Utility -->
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<version>1.18.12</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>com.github.mygreen</groupId>
 			<artifactId>splate</artifactId>
 			<version>0.2</version>
@@ -111,22 +99,6 @@
 			<artifactId>messageformatter</artifactId>
 			<version>0.2</version>
 		</dependency>
-
-		<!-- Test -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.5.2</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.assertj</groupId>
-			<artifactId>assertj-core</artifactId>
-			<version>3.13.2</version>
-			<scope>test</scope>
-		</dependency>
-
 
 		<!-- DB -->
 		<dependency>
@@ -164,23 +136,6 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-oxm</artifactId>
 			<version>${spring.version}</version>
-		</dependency>
-
-		<!-- Logger -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>${logback.version}</version>
 		</dependency>
 
 	</dependencies>
