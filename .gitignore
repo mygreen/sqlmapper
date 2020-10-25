@@ -27,8 +27,8 @@ hs_err_pid*
 /coverage.exec
 
 ## for maven.
-/bin
-/target
+bin/
+target/
 
 ## for eclipse.
 .settings
