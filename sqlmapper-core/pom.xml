@@ -87,7 +87,14 @@
 	</build>
 
 	<dependencies>
+
 		<!-- Utility -->
+		<dependency>
+			<groupId>com.github.mygreen.sqlmapper</groupId>
+			<artifactId>sqlmapper-metamodel</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.github.mygreen</groupId>
 			<artifactId>splate</artifactId>

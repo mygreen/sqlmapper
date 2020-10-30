@@ -86,6 +86,11 @@
 	</build>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.github.mygreen.sqlmapper</groupId>
+			<artifactId>sqlmapper-metamodel</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 </project>
