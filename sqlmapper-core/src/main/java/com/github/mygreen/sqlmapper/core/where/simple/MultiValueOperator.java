@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.core.where;
+package com.github.mygreen.sqlmapper.core.where.simple;
 
 import java.util.Collection;
 
@@ -29,7 +29,7 @@ public abstract class MultiValueOperator implements ValueOperator {
     }
 
     @Override
-    public void accept(WhereVisitor visitor) {
+    public void accept(SimpleWhereVisitor visitor) {
         visitor.visit(this);
     }
 

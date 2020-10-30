@@ -19,8 +19,8 @@ import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.SelectClause;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.util.QueryUtils;
-import com.github.mygreen.sqlmapper.core.where.WhereBuilder;
-import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
+import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
+import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
 
 
 public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
@@ -150,7 +150,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
                     .format());
         }
 
-        final WhereBuilder where = new WhereBuilder();
+        final SimpleWhereBuilder where = new SimpleWhereBuilder();
 
         // IDの条件指定
         for(int i=0; i < query.getIdPropertyValues().length; i++) {
@@ -163,7 +163,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
             where.eq(query.getEntityMeta().getVersionPropertyMeta().get().getName(), query.getVersionPropertyValue());
         }
 
-        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta());
+        SimpleWhereVisitor visitor = new SimpleWhereVisitor(query.getEntityMeta());
         where.accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());
@@ -181,7 +181,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
             return;
         }
 
-        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta());
+        SimpleWhereVisitor visitor = new SimpleWhereVisitor(query.getEntityMeta());
         query.getCriteria().accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());

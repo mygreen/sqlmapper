@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.core.where;
+package com.github.mygreen.sqlmapper.core.where.simple;
 
 import lombok.Getter;
 
@@ -22,7 +22,7 @@ public abstract class EmptyValueOperator implements ValueOperator {
     }
 
     @Override
-    public void accept(WhereVisitor visitor) {
+    public void accept(SimpleWhereVisitor visitor) {
         visitor.visit(this);
     }
 

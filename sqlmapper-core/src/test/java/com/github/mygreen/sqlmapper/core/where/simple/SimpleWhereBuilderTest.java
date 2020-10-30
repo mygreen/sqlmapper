@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.core.where;
+package com.github.mygreen.sqlmapper.core.where.simple;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,14 +15,11 @@ import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.testdata.Customer;
 import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
-import com.github.mygreen.sqlmapper.core.where.SimpleWhere;
-import com.github.mygreen.sqlmapper.core.where.WhereBuilder;
-import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
 
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes=TestConfig.class)
-public class WhereBuilderTest {
+public class SimpleWhereBuilderTest {
 
     @Autowired
     private EntityMetaFactory entityMetaFactory;
@@ -36,7 +33,7 @@ public class WhereBuilderTest {
 
         EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
 
-        WhereVisitor whereVisitor = new WhereVisitor(entityMeta);
+        SimpleWhereVisitor whereVisitor = new SimpleWhereVisitor(entityMeta);
         where.accept(whereVisitor);
 
         String sql = whereVisitor.getCriteria();
@@ -50,10 +47,10 @@ public class WhereBuilderTest {
 
         EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
 
-        WhereBuilder where = new WhereBuilder();
+        SimpleWhereBuilder where = new SimpleWhereBuilder();
         where.eq("lastName", "Yamada").ge("birthday", LocalDate.of(2000, 8, 1)).or().starts("firstName", "T");
 
-        WhereVisitor whereVisitor = new WhereVisitor(entityMeta);
+        SimpleWhereVisitor whereVisitor = new SimpleWhereVisitor(entityMeta);
         where.accept(whereVisitor);
 
         String sql = whereVisitor.getCriteria();

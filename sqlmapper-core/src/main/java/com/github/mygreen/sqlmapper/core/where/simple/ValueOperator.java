@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.core.where;
+package com.github.mygreen.sqlmapper.core.where.simple;
 
 /**
  * 値を伴う演算子を表現します。
@@ -13,5 +13,5 @@ public interface ValueOperator {
      * 条件分を組み立てるVisitorを受け入れます。
      * @param visitor 条件分を組み立てるVisitor
      */
-    void accept(WhereVisitor visitor);
+    void accept(SimpleWhereVisitor visitor);
 }

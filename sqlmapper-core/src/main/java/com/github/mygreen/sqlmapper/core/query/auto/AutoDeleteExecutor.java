@@ -9,8 +9,8 @@ import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
 import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
-import com.github.mygreen.sqlmapper.core.where.WhereBuilder;
-import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
+import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
+import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
 
 /**
  *
@@ -54,7 +54,7 @@ public class AutoDeleteExecutor extends QueryExecutorSupport<AutoDelete<?>> {
      */
     private void prepareWhereClause() {
 
-        final WhereBuilder where = new WhereBuilder();
+        final SimpleWhereBuilder where = new SimpleWhereBuilder();
 
         // 主キーを条件分として組み立てます
         for(PropertyMeta propertyMeta : query.getEntityMeta().getIdPropertyMetaList()) {
@@ -69,7 +69,7 @@ public class AutoDeleteExecutor extends QueryExecutorSupport<AutoDelete<?>> {
             where.eq(propertyMeta.getName(), propertyValue);
         }
 
-        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta());
+        SimpleWhereVisitor visitor = new SimpleWhereVisitor(query.getEntityMeta());
         where.accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());

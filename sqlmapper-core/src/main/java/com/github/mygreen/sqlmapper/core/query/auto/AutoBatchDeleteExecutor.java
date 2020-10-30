@@ -9,8 +9,8 @@ import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
 import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
-import com.github.mygreen.sqlmapper.core.where.WhereBuilder;
-import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
+import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
+import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
 
 /**
  *
@@ -54,7 +54,7 @@ public class AutoBatchDeleteExecutor extends QueryExecutorSupport<AutoBatchDelet
      */
     private void prepareWhereClause() {
 
-        final WhereBuilder where = new WhereBuilder();
+        final SimpleWhereBuilder where = new SimpleWhereBuilder();
 
         final int dataSize = query.getEntitySize();
 
@@ -79,7 +79,7 @@ public class AutoBatchDeleteExecutor extends QueryExecutorSupport<AutoBatchDelet
 
         }
 
-        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta());
+        SimpleWhereVisitor visitor = new SimpleWhereVisitor(query.getEntityMeta());
         where.accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());

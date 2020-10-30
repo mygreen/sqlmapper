@@ -1,4 +1,6 @@
-package com.github.mygreen.sqlmapper.core.where;
+package com.github.mygreen.sqlmapper.core.where.simple;
+
+import com.github.mygreen.sqlmapper.core.where.Where;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,7 @@ public class WhereValueOperator implements ValueOperator {
     private final Where where;
 
     @Override
-    public void accept(WhereVisitor visitor) {
+    public void accept(SimpleWhereVisitor visitor) {
         visitor.visit(this);
     }
 }

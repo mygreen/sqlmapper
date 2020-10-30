@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.core.where;
+package com.github.mygreen.sqlmapper.core.where.simple;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.util.StringUtils;
+
+import com.github.mygreen.sqlmapper.core.where.Where;
 
 import lombok.NonNull;
 

@@ -1,8 +1,10 @@
-package com.github.mygreen.sqlmapper.core.where;
+package com.github.mygreen.sqlmapper.core.where.simple;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import com.github.mygreen.sqlmapper.core.where.Where;
 
 /**
  * 入力された項目をANDやORでつなげていくような検索条件を組み立てるクラスです。
@@ -10,7 +12,7 @@ import java.util.List;
  * @author T.TSUCHIE
  *
  */
-public class WhereBuilder extends AbstractWhere<WhereBuilder> {
+public class SimpleWhereBuilder extends AbstractWhere<SimpleWhereBuilder> {
 
     /**
      * ORで区切られた塊
@@ -21,7 +23,7 @@ public class WhereBuilder extends AbstractWhere<WhereBuilder> {
      * これまでに追加された条件とこれから追加される条件をORで結合します。
      * @return このインスタンス自身
      */
-    public WhereBuilder or() {
+    public SimpleWhereBuilder or() {
         this.children.add(putAsSimplexWhere());
         return this;
     }
@@ -31,7 +33,7 @@ public class WhereBuilder extends AbstractWhere<WhereBuilder> {
      * @param where  ANDで結合される条件
      * @return このインスタンス自身
      */
-    public WhereBuilder and(final Where where) {
+    public SimpleWhereBuilder and(final Where where) {
         super.operators.add(new WhereValueOperator(where));
         return this;
     }
@@ -45,7 +47,7 @@ public class WhereBuilder extends AbstractWhere<WhereBuilder> {
     }
 
     @Override
-    public void accept(WhereVisitor visitor) {
+    public void accept(SimpleWhereVisitor visitor) {
         visitor.visit(this);
     }
 

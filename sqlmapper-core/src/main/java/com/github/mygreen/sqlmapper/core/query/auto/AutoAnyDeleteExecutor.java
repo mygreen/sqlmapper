@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
-import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
+import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
 
 public class AutoAnyDeleteExecutor extends QueryExecutorSupport<AutoAnyDelete<?>> {
 
@@ -47,7 +47,7 @@ public class AutoAnyDeleteExecutor extends QueryExecutorSupport<AutoAnyDelete<?>
             return;
         }
 
-        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta());
+        SimpleWhereVisitor visitor = new SimpleWhereVisitor(query.getEntityMeta());
         query.getCriteria().accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());

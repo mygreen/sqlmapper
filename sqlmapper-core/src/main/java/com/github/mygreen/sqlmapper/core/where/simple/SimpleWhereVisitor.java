@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.core.where;
+package com.github.mygreen.sqlmapper.core.where.simple;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,6 +9,8 @@ import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.IllegalQueryException;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
+import com.github.mygreen.sqlmapper.core.where.Where;
+import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +22,7 @@ import lombok.RequiredArgsConstructor;
  *
  */
 @RequiredArgsConstructor
-public class WhereVisitor {
+public class SimpleWhereVisitor implements WhereVisitor {
 
     /**
      * 検索対象となるテーブルのエンティティ情報
@@ -55,16 +57,12 @@ public class WhereVisitor {
         return Collections.unmodifiableList(paramValues);
     }
 
-    /**
-     * {@link Where} を処理します。
-     * @param where 条件式
-     * @throws IllegalArgumentException 不明な{@link Where}な場合にスローします。
-     */
+    @Override
     public void visit(final Where where) {
         if(where instanceof SimpleWhere) {
             visit((SimpleWhere) where);
-        } else if(where instanceof WhereBuilder) {
-            visit((WhereBuilder) where);
+        } else if(where instanceof SimpleWhereBuilder) {
+            visit((SimpleWhereBuilder) where);
         } else {
             throw new IllegalArgumentException("unknown where class : " + where.getClass().getName());
         }
@@ -88,11 +86,11 @@ public class WhereVisitor {
     }
 
     /**
-     * {@link WhereBuilder} を処理します。
+     * {@link SimpleWhereBuilder} を処理します。
      * <p>条件式を {@literal OR}でつなげます。</p>
      * @param where 条件式
      */
-    public void visit(final WhereBuilder where) {
+    public void visit(final SimpleWhereBuilder where) {
 
         List<String> result = new ArrayList<>();
 
@@ -102,7 +100,7 @@ public class WhereVisitor {
         // 子要素の式を組み立てる。
         if(!where.getChildrenWhere().isEmpty()) {
             for(Where subWhere : where.getChildrenWhere()) {
-                WhereVisitor subVisitor = new WhereVisitor(entityMeta);
+                SimpleWhereVisitor subVisitor = new SimpleWhereVisitor(entityMeta);
                 subVisitor.visit(subWhere);
 
                 String sql = subVisitor.getCriteria();
@@ -136,7 +134,7 @@ public class WhereVisitor {
 
         Where subWhere = valueOperator.getWhere();
 
-        WhereVisitor subVisitor = new WhereVisitor(entityMeta);
+        SimpleWhereVisitor subVisitor = new SimpleWhereVisitor(entityMeta);
         subVisitor.visit(subWhere);
 
         criteria.append("(")

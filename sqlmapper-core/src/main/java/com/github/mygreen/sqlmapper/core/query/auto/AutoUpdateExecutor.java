@@ -12,8 +12,8 @@ import com.github.mygreen.sqlmapper.core.query.SetClause;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
-import com.github.mygreen.sqlmapper.core.where.WhereBuilder;
-import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
+import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
+import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -117,7 +117,7 @@ public class AutoUpdateExecutor extends QueryExecutorSupport<AutoUpdate<?>> {
 
     private void prepareWhereClause() {
 
-        final WhereBuilder where = new WhereBuilder();
+        final SimpleWhereBuilder where = new SimpleWhereBuilder();
 
         // WHERE句の準備 - 主キー
         for(PropertyMeta propertyMeta : query.getEntityMeta().getIdPropertyMetaList()) {
@@ -133,7 +133,7 @@ public class AutoUpdateExecutor extends QueryExecutorSupport<AutoUpdate<?>> {
             where.eq(propertyMeta.getName(), propertyValue);
         }
 
-        WhereVisitor visitor = new WhereVisitor(query.getEntityMeta());
+        SimpleWhereVisitor visitor = new SimpleWhereVisitor(query.getEntityMeta());
         where.accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());
