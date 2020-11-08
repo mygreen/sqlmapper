@@ -10,7 +10,7 @@ import lombok.Getter;
  *
  * @param <T> エンティティタイプ
  */
-public abstract class EntityPathBase<T> implements Path<T> {
+public abstract class EntityPathBase<T> implements EntityPath<T> {
 
     @Getter
     private final Class<? extends T> type;
@@ -41,31 +41,31 @@ public abstract class EntityPathBase<T> implements Path<T> {
         return new EnumPath<A>((Class)type, this, property);
     }
 
-    protected SqlDatePath createSqlDatePath(String property) {
+    protected SqlDatePath createSqlDate(String property) {
         return new SqlDatePath(this, property);
     }
 
-    protected SqlTimePath createSqlTimePath(String property) {
+    protected SqlTimePath createSqlTime(String property) {
         return new SqlTimePath(this, property);
     }
 
-    protected SqlTimestampPath createSqlTimestampPath(String property) {
+    protected SqlTimestampPath createSqlTimestamp(String property) {
         return new SqlTimestampPath(this, property);
     }
 
-    protected UtilDatePath createUtilDatePath(String property) {
+    protected UtilDatePath createUtilDate(String property) {
         return new UtilDatePath(this, property);
     }
 
-    protected LocalDatePath createLocalDatePath(String property) {
+    protected LocalDatePath createLocalDate(String property) {
         return new LocalDatePath(this, property);
     }
 
-    protected LocalTimePath createLocalTimePath(String property) {
+    protected LocalTimePath createLocalTime(String property) {
         return new LocalTimePath(this, property);
     }
 
-    protected LocalDateTimePath createLocalDateTimePath(String property) {
+    protected LocalDateTimePath createLocalDateTime(String property) {
         return new LocalDateTimePath(this, property);
     }
 

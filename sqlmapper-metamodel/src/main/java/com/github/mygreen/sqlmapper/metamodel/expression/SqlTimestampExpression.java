@@ -14,4 +14,8 @@ public abstract class SqlTimestampExpression extends DateExpressionBase<Timestam
     public static SqlTimestampExpression currentTimestamp() {
         return new SqlTimestampOperation(FuncOp.CURRENT_TIMESTAMP);
     }
+
+    public static SqlTimestampExpression currentTimestamp(int precision ) {
+        return new SqlTimestampOperation(FuncOp.CURRENT_TIMESTAMP, Constant.create(precision));
+    }
 }

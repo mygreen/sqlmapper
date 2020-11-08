@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import com.github.mygreen.sqlmapper.metamodel.operation.BooleanOperation;
-import com.github.mygreen.sqlmapper.metamodel.operator.BinaryOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
 
 /**
@@ -33,7 +33,7 @@ public abstract class GeneralExpression<T> extends DslExpression<T> {
         if(right == null) {
             return isNull();
         }
-        return new BooleanOperation(BinaryOp.EQ, mixin, right);
+        return new BooleanOperation(ComparisionOp.EQ, mixin, right);
     }
 
     public BooleanExpression ne(T right) {
@@ -47,7 +47,7 @@ public abstract class GeneralExpression<T> extends DslExpression<T> {
         if(right == null) {
             return isNotNull();
         }
-        return new BooleanOperation(BinaryOp.NE, mixin, right);
+        return new BooleanOperation(ComparisionOp.NE, mixin, right);
     }
 
     public BooleanExpression isNull() {
@@ -71,11 +71,12 @@ public abstract class GeneralExpression<T> extends DslExpression<T> {
             return eq(right.iterator().next());
         }
 
-        return new BooleanOperation(BinaryOp.IN, mixin, Constant.create(Collections.unmodifiableCollection(right)));
+        return new BooleanOperation(ComparisionOp.IN, mixin,
+                Constant.create(Collections.unmodifiableCollection(right), true));
     }
 
     public BooleanExpression in(SubQueryExpression<T> right) {
-        return new BooleanOperation(BinaryOp.IN, mixin, right);
+        return new BooleanOperation(ComparisionOp.IN, mixin, right);
     }
 
     @SuppressWarnings("unchecked")
@@ -91,11 +92,12 @@ public abstract class GeneralExpression<T> extends DslExpression<T> {
             return ne(right.iterator().next());
         }
 
-        return new BooleanOperation(BinaryOp.NOT_IN, mixin, Constant.create(Collections.unmodifiableCollection(right)));
+        return new BooleanOperation(ComparisionOp.NOT_IN, mixin,
+                Constant.create(Collections.unmodifiableCollection(right), true));
     }
 
     public BooleanExpression notIn(SubQueryExpression<T> right) {
-        return new BooleanOperation(BinaryOp.NOT_IN, mixin, right);
+        return new BooleanOperation(ComparisionOp.NOT_IN, mixin, right);
     }
 
  }

@@ -183,4 +183,54 @@ public class QueryUtils {
 
     }
 
+    /**
+     * 指定した回数文字を繰り返す。
+     * @param str 繰り返す文字。(nullや空文字の場合は空文字を返す)
+     * @param separator 区切り文字 (nullや空文字の場合は区切り文字は追加しない)
+     * @param repeat 繰り返し数。(0以下の場合は空文字を返す)
+     * @return 指定した文字を繰り返した結果。
+     */
+    public static String repeat(final String str, final String separator, final int repeat) {
+
+        if(StringUtils.isEmpty(str)) {
+            return "";
+        }
+
+        if(repeat <= 0) {
+            return "";
+        }
+
+        StringBuilder result = new StringBuilder();
+
+        for(int i=0; i < repeat; i++) {
+            if(result.length() > 0 && StringUtils.isEmpty(separator)) {
+                result.append(separator);
+            }
+
+            result.append(str);
+        }
+
+        return result.toString();
+
+    }
+
+    /**
+     * LIKE演算子の値に対するエスケープを行う。
+     * <ul>
+     *  <li>{@literal %}->{@literal \%}</li>
+     *  <li>{@literal _}->{@literal \_}</li>
+     * </ul>
+     * @param str
+     * @return
+     */
+    public static String escapeLike(final String str) {
+
+        if(StringUtils.isEmpty(str)) {
+            return "";
+        }
+
+        return str.replaceAll("%", "\\%")
+                .replaceAll("_", "\\_");
+    }
+
 }

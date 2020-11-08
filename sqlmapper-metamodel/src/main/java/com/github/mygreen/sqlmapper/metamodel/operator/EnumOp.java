@@ -3,19 +3,17 @@ package com.github.mygreen.sqlmapper.metamodel.operator;
 import lombok.Getter;
 
 /**
- * 単項演算子
- *
+ * 列挙型の演算子
  *
  * @author T.TSUCHIE
  *
  */
-public enum UnaryOp implements Operator {
+public enum EnumOp implements Operator {
 
-    NOT(Boolean.class, 70),
+    // 列挙型
+    ENUM_ORDINAL(Integer.class, -1),
+    ENUM_NAME(String.class, -1),
 
-    // NULL比較
-    IS_NULL(Boolean.class, 50),
-    IS_NOT_NULL(Boolean.class, 50),
     ;
 
     /**
@@ -30,7 +28,7 @@ public enum UnaryOp implements Operator {
     @Getter
     private final int priority;
 
-    private UnaryOp(Class<?> resultType, int priority) {
+    private EnumOp(Class<?> resultType, int priority) {
         this.resultType = resultType;
         this.priority = priority;
     }

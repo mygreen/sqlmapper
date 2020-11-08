@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.github.mygreen.sqlmapper.core.where.Where;
+import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
 
 /**
  * 入力された項目をANDやORでつなげていくような検索条件を組み立てるクラスです。
@@ -47,7 +48,7 @@ public class SimpleWhereBuilder extends AbstractWhere<SimpleWhereBuilder> {
     }
 
     @Override
-    public void accept(SimpleWhereVisitor visitor) {
+    public void accept(WhereVisitor visitor) {
         visitor.visit(this);
     }
 

@@ -14,6 +14,9 @@ import lombok.NonNull;
  */
 public class PathMeta {
 
+    /**
+     * 親情報
+     */
     private Optional<Path<?>> parent = Optional.empty();
 
     /**
@@ -39,10 +42,18 @@ public class PathMeta {
         this.type = type;
     }
 
+    /**
+     * 親情報を取得します。
+     * @return 親を持たない場合は{@literal null} を返します。
+     */
     public Path<?> getParent() {
         return parent.orElseGet(null);
     }
 
+    /**
+     * 親情報を取得します。
+     * @return 親情報。
+     */
     public Optional<Path<?>> getParentAsOptional() {
         return parent;
     }

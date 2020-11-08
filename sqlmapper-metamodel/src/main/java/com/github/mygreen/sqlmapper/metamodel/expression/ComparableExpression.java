@@ -1,8 +1,7 @@
 package com.github.mygreen.sqlmapper.metamodel.expression;
 
 import com.github.mygreen.sqlmapper.metamodel.operation.BooleanOperation;
-import com.github.mygreen.sqlmapper.metamodel.operator.AnyOp;
-import com.github.mygreen.sqlmapper.metamodel.operator.BinaryOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
 
 /**
  * 比較可能な型に対する式
@@ -30,7 +29,7 @@ public abstract class ComparableExpression<T extends Comparable> extends General
             return goe(from);
 
         } else {
-            return new BooleanOperation(AnyOp.BETWEEN, mixin, Constant.create(from), Constant.create(to));
+            return new BooleanOperation(ComparisionOp.BETWEEN, mixin, Constant.create(from), Constant.create(to));
         }
     }
 
@@ -45,7 +44,7 @@ public abstract class ComparableExpression<T extends Comparable> extends General
             return goe(from);
 
         } else {
-            return new BooleanOperation(AnyOp.BETWEEN, mixin, Constant.create(from), Constant.create(to));
+            return new BooleanOperation(ComparisionOp.BETWEEN, mixin, Constant.create(from), Constant.create(to));
         }
     }
 
@@ -65,7 +64,7 @@ public abstract class ComparableExpression<T extends Comparable> extends General
      * @return
      */
     public BooleanExpression goe(Expression<T> right) {
-        return new BooleanOperation(BinaryOp.GOE, mixin, right);
+        return new BooleanOperation(ComparisionOp.GOE, mixin, right);
     }
 
     /**
@@ -85,7 +84,7 @@ public abstract class ComparableExpression<T extends Comparable> extends General
      * @return
      */
     public BooleanExpression gt(Expression<T> right) {
-        return new BooleanOperation(BinaryOp.GT, mixin, right);
+        return new BooleanOperation(ComparisionOp.GT, mixin, right);
     }
 
     /**
@@ -105,7 +104,7 @@ public abstract class ComparableExpression<T extends Comparable> extends General
      * @return
      */
     public BooleanExpression loe(Expression<T> right) {
-        return new BooleanOperation(BinaryOp.LOE, mixin, right);
+        return new BooleanOperation(ComparisionOp.LOE, mixin, right);
     }
 
     /**
@@ -125,7 +124,7 @@ public abstract class ComparableExpression<T extends Comparable> extends General
      * @return
      */
     public BooleanExpression lt(Expression<T> right) {
-        return new BooleanOperation(BinaryOp.LT, mixin, right);
+        return new BooleanOperation(ComparisionOp.LT, mixin, right);
     }
 
 }

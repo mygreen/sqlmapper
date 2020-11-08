@@ -2,7 +2,7 @@ package com.github.mygreen.sqlmapper.metamodel.expression;
 
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.operation.BooleanOperation;
-import com.github.mygreen.sqlmapper.metamodel.operator.BinaryOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.BooleanOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
 
 public abstract class BooleanExpression extends ComparableExpression<Boolean> implements Predicate {
@@ -36,7 +36,7 @@ public abstract class BooleanExpression extends ComparableExpression<Boolean> im
             // 右辺がnullの場合何もしない
             return this;
         }
-        return new BooleanOperation(BinaryOp.AND, mixin, right);
+        return new BooleanOperation(BooleanOp.AND, mixin, right);
     }
 
     /**
@@ -49,7 +49,7 @@ public abstract class BooleanExpression extends ComparableExpression<Boolean> im
             // 右辺がnullの場合何もしない
             return this;
         }
-        return new BooleanOperation(BinaryOp.OR, mixin, right);
+        return new BooleanOperation(BooleanOp.OR, mixin, right);
     }
 
     /**
@@ -69,7 +69,7 @@ public abstract class BooleanExpression extends ComparableExpression<Boolean> im
         Predicate right = null;
         for(Predicate b : predicates) {
             if(b != null) {
-                right = (right == null) ? b : new BooleanOperation(BinaryOp.OR, right, b);
+                right = (right == null) ? b : new BooleanOperation(BooleanOp.OR, right, b);
             }
         }
 
@@ -92,7 +92,7 @@ public abstract class BooleanExpression extends ComparableExpression<Boolean> im
         Predicate right = null;
         for(Predicate b : predicates) {
             if(b != null) {
-                right = (right == null) ? b : new BooleanOperation(BinaryOp.AND, right, b);
+                right = (right == null) ? b : new BooleanOperation(BooleanOp.AND, right, b);
             }
         }
 

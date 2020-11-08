@@ -12,6 +12,11 @@ public abstract class LocalDateTimeExpression extends TemporalExpressionBase<Loc
     }
 
     public static LocalDateTimeExpression currentDateTime() {
-        return new LocalDateTimeOperation(FuncOp.CURRENT_DATE_TIME);
+        return new LocalDateTimeOperation(FuncOp.CURRENT_TIMESTAMP);
     }
+
+    public static LocalDateTimeExpression currentTimestamp(int precision ) {
+        return new LocalDateTimeOperation(FuncOp.CURRENT_TIMESTAMP, Constant.create(precision));
+    }
+
 }

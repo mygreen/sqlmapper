@@ -11,7 +11,11 @@ public abstract class UtilDateExpression extends DateExpressionBase<Date> {
         super(mixin);
     }
 
-    public static UtilDateExpression currentDateTime() {
-        return new UtilDateOperation(FuncOp.CURRENT_DATE_TIME);
+    public static UtilDateExpression currentTimestamp() {
+        return new UtilDateOperation(FuncOp.CURRENT_TIMESTAMP);
+    }
+
+    public static UtilDateExpression currentTimestamp(int precision ) {
+        return new UtilDateOperation(FuncOp.CURRENT_TIMESTAMP, Constant.create(precision));
     }
 }

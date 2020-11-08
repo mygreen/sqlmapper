@@ -4,7 +4,7 @@ import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.operation.BooleanOperation;
 import com.github.mygreen.sqlmapper.metamodel.operation.PredicateOperation;
-import com.github.mygreen.sqlmapper.metamodel.operator.BinaryOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.BooleanOp;
 
 import lombok.Getter;
 
@@ -83,7 +83,7 @@ public class BooleanBuilder implements Predicate {
             if(predicate == null) {
                 this.predicate = right;
             } else {
-                predicate = new PredicateOperation(BinaryOp.AND, predicate, right);
+                predicate = new PredicateOperation(BooleanOp.AND, predicate, right);
             }
         }
 
@@ -103,7 +103,7 @@ public class BooleanBuilder implements Predicate {
             if(predicate == null) {
                 this.predicate = right;
             } else {
-                predicate = new PredicateOperation(BinaryOp.OR, predicate, right);
+                predicate = new PredicateOperation(BooleanOp.OR, predicate, right);
             }
         }
 
@@ -129,7 +129,7 @@ public class BooleanBuilder implements Predicate {
         Predicate right = null;
         for(Predicate b : predicates) {
             if(b != null) {
-                right = (right == null) ? b : new BooleanOperation(BinaryOp.OR, right, b);
+                right = (right == null) ? b : new BooleanOperation(BooleanOp.OR, right, b);
             }
         }
 
@@ -154,7 +154,7 @@ public class BooleanBuilder implements Predicate {
         Predicate right = null;
         for(Predicate b : predicates) {
             if(b != null) {
-                right = (right == null) ? b : new BooleanOperation(BinaryOp.AND, right, b);
+                right = (right == null) ? b : new BooleanOperation(BooleanOp.AND, right, b);
             }
         }
 

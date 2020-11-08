@@ -15,4 +15,8 @@ public abstract class SqlTimeExpression extends DateExpressionBase<Time> {
         return new SqlTimeOperation(FuncOp.CURRENT_TIME);
     }
 
+    public static SqlTimeExpression currentTime(int precision ) {
+        return new SqlTimeOperation(FuncOp.CURRENT_TIME, Constant.create(precision));
+    }
+
 }

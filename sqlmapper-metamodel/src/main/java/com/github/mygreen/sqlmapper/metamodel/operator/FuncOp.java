@@ -1,5 +1,6 @@
 package com.github.mygreen.sqlmapper.metamodel.operator;
 
+import lombok.Getter;
 
 /**
  * 関数を表現する演算子
@@ -10,28 +11,30 @@ package com.github.mygreen.sqlmapper.metamodel.operator;
 public enum FuncOp implements Operator {
 
     // String
-    LOWER(String.class),
-    UPPER(String.class),
+    LOWER(String.class, -1),
+    UPPER(String.class, -1),
 
     // Date/Time
-    CURRENT_DATE(Comparable.class),
-    CURRENT_TIME(Comparable.class),
-    CURRENT_DATE_TIME(Comparable.class),
-    CURRENT_TIMESTAMP(Comparable.class),
+    CURRENT_DATE(Comparable.class, -1),
+    CURRENT_TIME(Comparable.class, -1),
+    CURRENT_TIMESTAMP(Comparable.class, -1)
 
     ;
 
     /**
      * 演算子の結果のタイプ
      */
+    @Getter
     private final Class<?> resultType;
 
-    private FuncOp( Class<?> resultType) {
-        this.resultType = resultType;
-    }
+    /**
+     * 演算子の優先度
+     */
+    @Getter
+    private final int priority;
 
-    @Override
-    public Class<?> getResultType() {
-        return resultType;
+    private FuncOp(Class<?> resultType, int priority) {
+        this.resultType = resultType;
+        this.priority = priority;
     }
 }

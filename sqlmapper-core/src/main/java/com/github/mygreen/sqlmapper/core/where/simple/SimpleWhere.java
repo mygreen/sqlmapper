@@ -1,5 +1,7 @@
 package com.github.mygreen.sqlmapper.core.where.simple;
 
+import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
+
 /**
  * 入力された項目をandでつなげていく条件を組み立てるクラスです。
  *
@@ -9,7 +11,7 @@ package com.github.mygreen.sqlmapper.core.where.simple;
 public class SimpleWhere extends AbstractWhere<SimpleWhere> {
 
     @Override
-    public void accept(SimpleWhereVisitor visitor) {
+    public void accept(WhereVisitor visitor) {
         visitor.visit(this);
     }
 

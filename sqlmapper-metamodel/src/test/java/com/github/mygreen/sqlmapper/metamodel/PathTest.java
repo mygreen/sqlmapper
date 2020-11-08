@@ -5,21 +5,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.mygreen.sqlmapper.metamodel.BooleanPath;
-import com.github.mygreen.sqlmapper.metamodel.EntityPathBase;
-import com.github.mygreen.sqlmapper.metamodel.EnumPath;
-import com.github.mygreen.sqlmapper.metamodel.NumberPath;
-import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
-import com.github.mygreen.sqlmapper.metamodel.Path;
-import com.github.mygreen.sqlmapper.metamodel.Predicate;
-import com.github.mygreen.sqlmapper.metamodel.SqlTimestampPath;
-import com.github.mygreen.sqlmapper.metamodel.StringPath;
-import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 import com.github.mygreen.sqlmapper.metamodel.expression.SqlTimestampExpression;
 import com.github.mygreen.sqlmapper.metamodel.expression.SubQueryExpression;
 import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
-import com.github.mygreen.sqlmapper.metamodel.operator.BinaryOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 
 import lombok.Data;
@@ -35,9 +25,10 @@ class PathTest {
         MSampleEntity entity = MSampleEntity.sampleEntity;
         Predicate exp = entity.name.lower().contains("yamada")
                 .and(entity.age.add(10).gt(20))
-                .and(entity.role.eq(Role.Admin))
+                .and(entity.role.in(Role.Admin, Role.Normal))
                 .and(entity.updateAt.after(SqlTimestampExpression.currentTimestamp()))
-                .and(entity.deleted.isFalse());
+                .and(entity.deleted.isFalse())
+                ;
 
         Visitor<Void> visitor = new SampleVisitor();
         exp.accept(visitor, null);
@@ -95,7 +86,7 @@ class PathTest {
 
         public final BooleanPath deleted = createBoolean("deleted");
 
-        public final SqlTimestampPath updateAt = createSqlTimestampPath("updateAt");
+        public final SqlTimestampPath updateAt = createSqlTimestamp("updateAt");
 
 
     }
@@ -110,10 +101,10 @@ class PathTest {
 
         @Override
         public void visit(Operation<?> expr, Void context) {
-            log.info("visit - Operation={}", expr.getOperator());
+            log.info("visit - Operation={}#{}", expr.getOperator().getClass(), expr.getOperator());
 
             Operator op = expr.getOperator();
-            if(op instanceof BinaryOp) {
+            if(op instanceof ComparisionOp) {
                 // 2項演算子の場合、プロパティとの比較かどうか判定する
 
             }
@@ -124,7 +115,12 @@ class PathTest {
 
         @Override
         public void visit(Path<?> expr, Void context) {
-            log.info("visit - Path={}", expr.getPathMeta().getElement());
+            EntityPath<?> parent =(EntityPath<?>) expr.getPathMeta().getParent();
+            if(parent == null) {
+                log.info("visit - Path={}", expr.getPathMeta().getElement());
+            } else {
+                log.info("visit - Path={}#{}", parent.getType(), expr.getPathMeta().getElement());
+            }
 
         }
 
