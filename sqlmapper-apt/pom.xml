@@ -9,7 +9,7 @@
 		<version>${project.version}</version>
 	</parent>
 
-	<artifactId>sqlmapper-codegen</artifactId>
+	<artifactId>sqlmapper-apt</artifactId>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -82,15 +82,62 @@
 				</dependencies>
 			</plugin>
 
+
+			<!-- テスト用のメタクラス生成 -->
+			<plugin>
+				<groupId>com.mysema.maven</groupId>
+				<artifactId>apt-maven-plugin</artifactId>
+				<version>1.1.3</version>
+				<executions>
+					<execution>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>test-process</goal>
+							<!--
+							<goal>add-test-sources</goal>
+							 -->
+						</goals>
+						<configuration>
+							<outputDirectory>target/generated-test-sources/java</outputDirectory>
+							<logOnlyOnError>false</logOnlyOnError>
+							<processors>
+								<processor>com.github.mygreen.sqlmapper.apt.EntityMetamodelProcessor</processor>
+							</processors>
+							<sourceEncoding>UTF-8</sourceEncoding>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>com.github.mygreen.sqlmapper</groupId>
+			<artifactId>sqlmapper-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.github.mygreen.sqlmapper</groupId>
 			<artifactId>sqlmapper-metamodel</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.squareup</groupId>
+			<artifactId>javapoet</artifactId>
+			<version>1.13.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.8.0</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 </project>

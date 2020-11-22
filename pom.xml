@@ -12,7 +12,7 @@
 	<modules>
 		<module>sqlmapper-core</module>
 		<module>sqlmapper-metamodel</module>
-		<module>sqlmapper-codegen</module>
+		<module>sqlmapper-apt</module>
 	</modules>
 
 	<properties>
