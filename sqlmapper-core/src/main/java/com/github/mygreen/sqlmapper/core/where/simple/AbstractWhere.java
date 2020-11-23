@@ -76,7 +76,7 @@ public abstract class AbstractWhere<T extends AbstractWhere<T>> implements Where
      */
     private Object normalize(final Object value) {
         if (excludesWhitespace && value instanceof String) {
-            if (StringUtils.isEmpty(String.class.cast(value).trim())) {
+            if (!StringUtils.hasLength(String.class.cast(value).trim())) {
                 return null;
             }
         }
@@ -89,7 +89,7 @@ public abstract class AbstractWhere<T extends AbstractWhere<T>> implements Where
                 return null;
             }
 
-            if (StringUtils.isEmpty(value.trim())) {
+            if (!StringUtils.hasLength(value.trim())) {
                 return null;
             }
         }

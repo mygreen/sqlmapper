@@ -202,7 +202,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
      */
     private void prepareOrderBy() {
 
-        if (StringUtils.isEmpty(query.getOrderBy())) {
+        if (!StringUtils.hasLength(query.getOrderBy())) {
             return;
         }
 
@@ -239,7 +239,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
         final Dialect dialect = context.getDialect();
 
         final String hintComment;
-        if(!StringUtils.isEmpty(query.getHint())) {
+        if(StringUtils.hasLength(query.getHint())) {
             hintComment = dialect.getHintComment(query.getHint());
         } else {
             hintComment = "";

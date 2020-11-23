@@ -107,7 +107,7 @@ public class QueryUtils {
      * @return カラム名で記述されたクライテリア
      */
     public static String convertCriteria(String str, EntityMeta entityMeta) {
-        if (StringUtils.isEmpty(str)) {
+        if (!StringUtils.hasLength(str)) {
             return str;
         }
         StringBuilder sb = new StringBuilder(20 + str.length());
@@ -116,7 +116,7 @@ public class QueryUtils {
             String token = tokenizer.getToken();
             if (type == QueryTokenizer.TT_WORD) {
                 String[] names = splitBaseAndProperty(token);
-                EntityMeta targetEntityMeta = StringUtils.isEmpty(names[0]) ? entityMeta : null;
+                EntityMeta targetEntityMeta = !StringUtils.hasLength(names[0]) ? entityMeta : null;
                 if (targetEntityMeta == null || !targetEntityMeta.hasPropertyMeta(names[1])) {
                     sb.append(token);
                 } else {
@@ -192,7 +192,7 @@ public class QueryUtils {
      */
     public static String repeat(final String str, final String separator, final int repeat) {
 
-        if(StringUtils.isEmpty(str)) {
+        if(!StringUtils.hasLength(str)) {
             return "";
         }
 
@@ -203,7 +203,7 @@ public class QueryUtils {
         StringBuilder result = new StringBuilder();
 
         for(int i=0; i < repeat; i++) {
-            if(result.length() > 0 && StringUtils.isEmpty(separator)) {
+            if(result.length() > 0 && !StringUtils.hasLength(separator)) {
                 result.append(separator);
             }
 
@@ -225,7 +225,7 @@ public class QueryUtils {
      */
     public static String escapeLike(final String str) {
 
-        if(StringUtils.isEmpty(str)) {
+        if(!StringUtils.hasLength(str)) {
             return "";
         }
 

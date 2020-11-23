@@ -107,7 +107,7 @@ public class NumberConvertUtils {
     }
 
     public static Integer toInteger(String value) {
-        if(StringUtils.isEmpty(value)) {
+        if(!StringUtils.hasLength(value)) {
             return null;
         }
 
@@ -135,7 +135,7 @@ public class NumberConvertUtils {
     }
 
     public static int toPrimitiveInteger(String value) {
-        if(StringUtils.isEmpty(value)) {
+        if(!StringUtils.hasLength(value)) {
             return 0;
         }
 
@@ -165,7 +165,7 @@ public class NumberConvertUtils {
     }
 
     public static Long toLong(String value) {
-        if(StringUtils.isEmpty(value)) {
+        if(!StringUtils.hasLength(value)) {
             return null;
         }
 
@@ -193,7 +193,7 @@ public class NumberConvertUtils {
     }
 
     public static long toPrimitiveLong(String value) {
-        if(StringUtils.isEmpty(value)) {
+        if(!StringUtils.hasLength(value)) {
             return 0L;
         }
 
@@ -223,7 +223,7 @@ public class NumberConvertUtils {
     }
 
     public static Short toShort(String value) {
-        if(StringUtils.isEmpty(value)) {
+        if(!StringUtils.hasLength(value)) {
             return null;
         }
 
@@ -251,7 +251,7 @@ public class NumberConvertUtils {
     }
 
     public static short toPrimitiveShort(String value) {
-        if(StringUtils.isEmpty(value)) {
+        if(!StringUtils.hasLength(value)) {
             return 0;
         }
 

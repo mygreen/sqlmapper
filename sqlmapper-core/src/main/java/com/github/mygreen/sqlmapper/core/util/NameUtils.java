@@ -62,11 +62,11 @@ public class NameUtils {
 
         StringBuilder sb = new StringBuilder();
 
-        if(!StringUtils.isEmpty(catalog)) {
+        if(StringUtils.hasLength(catalog)) {
             sb.append(catalog).append(".");
         }
 
-        if(!StringUtils.isEmpty(schema)) {
+        if(StringUtils.hasLength(schema)) {
             sb.append(schema).append(".");
         }
 

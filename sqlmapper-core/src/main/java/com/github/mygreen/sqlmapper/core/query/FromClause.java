@@ -75,7 +75,7 @@ public class FromClause {
     public void addSql(String tableName, String tableAlias) {
         sql.append(" from ").append(tableName);
 
-        if(!StringUtils.isEmpty(tableAlias)) {
+        if(StringUtils.hasLength(tableAlias)) {
             sql.append(" ").append(tableAlias);
         }
     }
@@ -91,7 +91,7 @@ public class FromClause {
         sql.append(" from ")
             .append(tableName);
 
-        if(!StringUtils.isEmpty(tableAlias)) {
+        if(StringUtils.hasLength(tableAlias)) {
             sql.append(" ")
                 .append(tableAlias);
         }
