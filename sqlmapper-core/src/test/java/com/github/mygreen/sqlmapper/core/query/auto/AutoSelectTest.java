@@ -12,8 +12,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.SqlMapper;
-import com.github.mygreen.sqlmapper.core.query.IterationCallback;
-import com.github.mygreen.sqlmapper.core.query.IterationContext;
 import com.github.mygreen.sqlmapper.core.testdata.Customer;
 import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
 
@@ -49,24 +47,6 @@ public class AutoSelectTest {
 
         assertThat(entity).hasSize(1);
         assertThat(entity.get(0)).hasFieldOrPropertyWithValue("id", "001");
-    }
-
-    @Test
-    void testIterationResult() {
-
-        sqlMapper.selectFrom(Customer.class)
-            .id("001")
-            .iterate(new IterationCallback<Customer, Void>() {
-
-                @Override
-                public Void iterate(Customer entity, IterationContext context) {
-
-                    assertThat(entity).hasFieldOrPropertyWithValue("id", "001");
-
-                    return null;
-                }
-            });
-
     }
 
     @Test

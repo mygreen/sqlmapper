@@ -4,13 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.springframework.jdbc.core.ResultSetExtractor;
-
 import com.github.mygreen.splate.ProcessResult;
-import com.github.mygreen.sqlmapper.core.mapper.EntityIterationResultSetExtractor;
 import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
 import com.github.mygreen.sqlmapper.core.mapper.EntityRowMapper;
-import com.github.mygreen.sqlmapper.core.query.IterationCallback;
 import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 
 public class SqlSelectExecutor<T> extends QueryExecutorSupport<SqlSelect<T>> {
@@ -70,17 +66,6 @@ public class SqlSelectExecutor<T> extends QueryExecutorSupport<SqlSelect<T>> {
 
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().query(executedSql, rowMapper, paramValues);
-    }
-
-    public <R> R iterate(IterationCallback<T, R> callback, EntityMappingCallback<T> rowCallback) {
-
-        assertNotCompleted("iterate");
-
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(rowCallback));
-        ResultSetExtractor<R> extractor = new EntityIterationResultSetExtractor<T,R>(rowMapper, callback);
-
-        return context.getJdbcTemplate().query(executedSql, extractor, paramValues);
-
     }
 
     public Stream<T> getResultStream(EntityMappingCallback<T> callback) {

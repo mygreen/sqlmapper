@@ -14,7 +14,6 @@ import com.github.mygreen.sqlmapper.core.event.PostSelectEvent;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.core.query.IterationCallback;
 import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.core.where.Where;
@@ -372,24 +371,6 @@ public class AutoSelect<T> extends QuerySupport<T> {
         executor.prepare();
 
         return executor.getResultList(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelect.this, entityMeta, entity));
-        });
-
-    }
-
-    /**
-     * 問い合わせ結果を一件ごとにコールバックに通知します。
-     * 問い合わせ結果全体のリストを作成しないため、問い合わせ結果が膨大になる場合でもメモリ消費量を抑えることが出来ます。
-     *
-     * @param <R> 戻り値の型
-     * @param callback コールバック
-     * @return コールバックが最後に返した結果
-     */
-    public <R> R iterate(IterationCallback<T, R> callback) {
-
-        AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        executor.prepare();
-        return executor.iterate(callback, entity -> {
             context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelect.this, entityMeta, entity));
         });
 

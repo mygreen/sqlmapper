@@ -11,7 +11,6 @@ import com.github.mygreen.splate.SqlTemplateContext;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.event.PostSelectEvent;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.core.query.IterationCallback;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -79,25 +78,6 @@ public class SqlSelect<T> extends SqlTemplateQuerySupport<T> {
         executor.prepare();
 
         return executor.getResultList(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelect.this, entityMeta, entity));
-        });
-
-    }
-
-    /**
-     * 問い合わせ結果を一件ごとにコールバックに通知します。
-     * 問い合わせ結果全体のリストを作成しないため、問い合わせ結果が膨大になる場合でもメモリ消費量を抑えることが出来ます。
-     *
-     * @param <R> 戻り値の型
-     * @param callback コールバック
-     * @return コールバックが最後に返した結果
-     */
-    public <R> R iterate(IterationCallback<T, R> callback) {
-
-        final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
-        executor.prepare();
-
-        return executor.iterate(callback, entity -> {
             context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelect.this, entityMeta, entity));
         });
 

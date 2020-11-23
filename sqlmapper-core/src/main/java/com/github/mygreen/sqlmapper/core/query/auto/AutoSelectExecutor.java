@@ -5,17 +5,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.util.StringUtils;
 
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
-import com.github.mygreen.sqlmapper.core.mapper.EntityIterationResultSetExtractor;
 import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
 import com.github.mygreen.sqlmapper.core.mapper.EntityRowMapper;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.FromClause;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.core.query.IterationCallback;
 import com.github.mygreen.sqlmapper.core.query.OrderByClause;
 import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.SelectClause;
@@ -297,18 +294,6 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList,
                 Optional.ofNullable(callback));
         return context.getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
-    }
-
-    public <R> R iterate(IterationCallback<T, R> callback, EntityMappingCallback<T> rowCallback) {
-
-        assertNotCompleted("iterate");
-
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList,
-                Optional.ofNullable(rowCallback));
-        ResultSetExtractor<R> extractor = new EntityIterationResultSetExtractor<T,R>(rowMapper, callback);
-
-        return context.getJdbcTemplate().query(executedSql, extractor, paramValues.toArray());
-
     }
 
     public Stream<T> getResultStream(EntityMappingCallback<T> callback) {
