@@ -37,24 +37,33 @@ public class EntityRowMapper<T> implements RowMapper<T> {
     private EntityMeta entityMeta;
 
     /**
+     * エンティティマッピング後のコールバック処理
+     */
+    private final Optional<EntityMappingCallback<T>> callback;
+
+    /**
      * 取得するカラムが確定している場合は、プロパティ情報を指定する。
      * @param entityClass エンティティクラス
      * @param propertyMetaList 取得対象のプロパティ情報
+     * @param callback エンティティマッピング後のコールバック処理
      */
-    public EntityRowMapper(Class<T> entityClass, PropertyMeta[] propertyMetaList) {
+    public EntityRowMapper(Class<T> entityClass, PropertyMeta[] propertyMetaList, Optional<EntityMappingCallback<T>> callback) {
         this.entityClass = entityClass;
         this.propertyMetaList = propertyMetaList;
+        this.callback = callback;
     }
 
     /**
      * 任意のSQL実行時のように、取得するカラムが未定のときエンティティ情報を指定する。
      * <p>抽出したカラムに一致するプロパティがあればマッピングする。
      * @param entityMeta エンティティのメタ情報
+     * @param callback エンティティマッピング後のコールバック処理
      */
     @SuppressWarnings("unchecked")
-    public EntityRowMapper(EntityMeta entityMeta) {
+    public EntityRowMapper(EntityMeta entityMeta, Optional<EntityMappingCallback<T>> callback) {
         this.entityClass = (Class<T>)entityMeta.getEntityType();
         this.entityMeta = entityMeta;
+        this.callback = callback;
     }
 
     @Override
@@ -75,6 +84,9 @@ public class EntityRowMapper<T> implements RowMapper<T> {
             Object propertyValue = propertyMeta.getValueType().getValue(rs, i + 1);
             PropertyValueInvoker.setPropertyValue(propertyMeta, entity, propertyValue);
         }
+
+        // コールバック処理の実行
+        callback.ifPresent(c -> c.call(entity));
 
         return entity;
     }

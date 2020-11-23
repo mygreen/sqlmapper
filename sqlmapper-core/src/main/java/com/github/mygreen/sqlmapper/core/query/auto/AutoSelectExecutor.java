@@ -3,12 +3,14 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.util.StringUtils;
 
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.mapper.EntityIterationResultSetExtractor;
+import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
 import com.github.mygreen.sqlmapper.core.mapper.EntityRowMapper;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.FromClause;
@@ -70,6 +72,12 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
      */
     private PropertyMeta[] targetPropertyMetaList;
 
+    /**
+     * インスタンスの作成
+     *
+     * @param query クエリ情報
+     * @param counting カウント用のクエリかどうか
+     */
     public AutoSelectExecutor(AutoSelect<T> query, boolean counting) {
         super(query);
         this.counting = counting;
@@ -262,18 +270,20 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
 
     }
 
-    public T getSingleResult() {
+    public T getSingleResult(EntityMappingCallback<T> callback) {
         assertNotCompleted("getSingleResult");
 
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
-        return context.getJdbcTemplate().queryForObject(executedSql, paramValues.toArray(), rowMapper);
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList,
+                Optional.ofNullable(callback));
+        return context.getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues.toArray());
     }
 
-    public Optional<T> getOptionalResult() {
+    public Optional<T> getOptionalResult(EntityMappingCallback<T> callback) {
         assertNotCompleted("getOptionalResult");
 
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
-        final List<T> ret = context.getJdbcTemplate().query(executedSql, paramValues.toArray(), rowMapper);
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList,
+                Optional.ofNullable(callback));
+        final List<T> ret = context.getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
         if(ret.isEmpty()) {
             return Optional.empty();
         } else {
@@ -281,21 +291,32 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
         }
     }
 
-    public List<T> getResultList() {
+    public List<T> getResultList(EntityMappingCallback<T> callback) {
         assertNotCompleted("getResultList");
 
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
-        return context.getJdbcTemplate().query(executedSql, paramValues.toArray(), rowMapper);
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList,
+                Optional.ofNullable(callback));
+        return context.getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
     }
 
-    public <R> R iterate(IterationCallback<T, R> callback) {
+    public <R> R iterate(IterationCallback<T, R> callback, EntityMappingCallback<T> rowCallback) {
 
         assertNotCompleted("iterate");
 
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList);
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList,
+                Optional.ofNullable(rowCallback));
         ResultSetExtractor<R> extractor = new EntityIterationResultSetExtractor<T,R>(rowMapper, callback);
 
-        return context.getJdbcTemplate().query(executedSql, paramValues.toArray(), extractor);
+        return context.getJdbcTemplate().query(executedSql, extractor, paramValues.toArray());
+
+    }
+
+    public Stream<T> getResultStream(EntityMappingCallback<T> callback) {
+        assertNotCompleted("getResultStream");
+
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList,
+                Optional.ofNullable(callback));
+        return context.getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues.toArray());
 
     }
 

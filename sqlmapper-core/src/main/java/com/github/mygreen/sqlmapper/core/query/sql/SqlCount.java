@@ -24,7 +24,7 @@ public class SqlCount extends SqlTemplateQuerySupport<Void> {
      */
     public long getCount() {
         ProcessResult result = template.process(parameter);
-        return context.getJdbcTemplate().queryForObject(result.getSql(), result.getParameters().toArray(), Long.class);
+        return context.getJdbcTemplate().queryForObject(result.getSql(), Long.class, result.getParameters().toArray());
 
     }
 }

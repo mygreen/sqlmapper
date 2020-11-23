@@ -2,13 +2,13 @@ package com.github.mygreen.sqlmapper.core.query.sql;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.github.mygreen.splate.SqlTemplate;
 import com.github.mygreen.splate.SqlTemplateContext;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
-import com.github.mygreen.sqlmapper.core.event.PostListSelectEvent;
 import com.github.mygreen.sqlmapper.core.event.PostSelectEvent;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.query.IterationCallback;
@@ -48,10 +48,10 @@ public class SqlSelect<T> extends SqlTemplateQuerySupport<T> {
     public T getSingleResult() {
         final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
         executor.prepare();
-        final T result = executor.getSingleResult();
 
-        context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(this, entityMeta, result));
-        return result;
+        return executor.getSingleResult(entity -> {
+            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelect.this, entityMeta, entity));
+        });
     }
 
     /**
@@ -62,13 +62,10 @@ public class SqlSelect<T> extends SqlTemplateQuerySupport<T> {
     public Optional<T> getOptionalResult() {
         final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
         executor.prepare();
-        final Optional<T> result = executor.getOptionalResult();
 
-        // 値が存在する場合のみイベントを実行する。
-        result.ifPresent(e ->
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(this, entityMeta, e)));
-
-        return result;
+        return executor.getOptionalResult(entity -> {
+            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelect.this, entityMeta, entity));
+        });
 
     }
 
@@ -80,10 +77,10 @@ public class SqlSelect<T> extends SqlTemplateQuerySupport<T> {
     public List<T> getResultList() {
         final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
         executor.prepare();
-        final List<T> result = executor.getResultList();
 
-        context.getApplicationEventPublisher().publishEvent(new PostListSelectEvent(this, entityMeta, result));
-        return result;
+        return executor.getResultList(entity -> {
+            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelect.this, entityMeta, entity));
+        });
 
     }
 
@@ -99,7 +96,26 @@ public class SqlSelect<T> extends SqlTemplateQuerySupport<T> {
 
         final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
         executor.prepare();
-        return executor.iterate(callback);
+
+        return executor.iterate(callback, entity -> {
+            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelect.this, entityMeta, entity));
+        });
+
+    }
+
+    /**
+     * 問い合わせ結果を{@link Stream} で取得します。
+     * 問い合わせ結果全体のリストを作成しないため、問い合わせ結果が膨大になる場合でもメモリ消費量を抑えることが出来ます。
+     *
+     * @return 問い合わせの結果。
+     */
+    public Stream<T> getResultStream() {
+        final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
+        executor.prepare();
+
+        return executor.getResultStream(entity -> {
+            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelect.this, entityMeta, entity));
+        });
 
     }
 
