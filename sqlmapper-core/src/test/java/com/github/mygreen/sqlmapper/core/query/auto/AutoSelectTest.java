@@ -3,6 +3,7 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,6 +67,17 @@ public class AutoSelectTest {
                 }
             });
 
+    }
+
+    @Test
+    void testResultStream() {
+        List<Customer> entity = sqlMapper.selectFrom(Customer.class)
+            .id("001")
+            .getResultStream()
+            .collect(Collectors.toList());
+
+        assertThat(entity).hasSize(1);
+        assertThat(entity.get(0)).hasFieldOrPropertyWithValue("id", "001");
     }
 
 }
