@@ -18,7 +18,7 @@ import com.github.mygreen.sqlmapper.core.audit.AuditorProvider;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.FIELD})
 @Documented
 public @interface CreatedBy {
 }

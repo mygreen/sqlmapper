@@ -15,7 +15,7 @@ import java.text.DecimalFormat;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.FIELD})
 @Documented
 public @interface GeneratedValue {
 

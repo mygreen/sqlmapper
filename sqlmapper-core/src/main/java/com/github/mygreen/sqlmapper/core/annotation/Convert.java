@@ -15,7 +15,7 @@ import com.github.mygreen.sqlmapper.core.type.ValueType;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.METHOD})
+@Target({ElementType.FIELD})
 @Documented
 public @interface Convert {
 
