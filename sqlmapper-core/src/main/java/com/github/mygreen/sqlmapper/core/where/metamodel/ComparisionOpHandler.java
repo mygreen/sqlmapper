@@ -63,7 +63,7 @@ public class ComparisionOpHandler extends OperationHandler<ComparisionOp> {
 
         Expression<?> left = expr.getArg(0);
         Expression<?> right1 = expr.getArg(1);
-        Expression<?> right2 = expr.getArg(1);
+        Expression<?> right2 = expr.getArg(2);
 
         VisitorContext leftContext = new VisitorContext(context);
         VisitorContext rightContext1 = new VisitorContext(context);
