@@ -12,6 +12,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.testdata.Customer;
+import com.github.mygreen.sqlmapper.core.testdata.MCustomer;
 import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
 
 @ExtendWith(SpringExtension.class)
@@ -41,7 +42,7 @@ public class AutoUpdateTest {
 
         {
             // 対象のレコードの取得
-            Customer entity = sqlMapper.selectFrom(Customer.class)
+            Customer entity = sqlMapper.selectFrom(MCustomer.customer)
                     .id("00001")
                     .getSingleResult();
 
@@ -54,7 +55,7 @@ public class AutoUpdateTest {
 
         {
             // 対象のレコードの取得
-            Customer result = sqlMapper.selectFrom(Customer.class)
+            Customer result = sqlMapper.selectFrom(MCustomer.customer)
                     .id("00001")
                     .getSingleResult();
 

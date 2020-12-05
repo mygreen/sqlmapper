@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.testdata.Customer;
+import com.github.mygreen.sqlmapper.core.testdata.MCustomer;
 import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
 
 @ExtendWith(SpringExtension.class)
@@ -24,7 +25,7 @@ public class AutoSelectTest {
 
     @Test
     void testSelectCount() {
-        long count = sqlMapper.selectFrom(Customer.class)
+        long count = sqlMapper.selectFrom(MCustomer.customer)
             .id("001")
             .getCount();
         assertThat(count).isEqualTo(1);
@@ -32,7 +33,7 @@ public class AutoSelectTest {
 
     @Test
     void testSingleResult() {
-        Customer entity = sqlMapper.selectFrom(Customer.class)
+        Customer entity = sqlMapper.selectFrom(MCustomer.customer)
             .id("001")
             .getSingleResult();
 
@@ -41,7 +42,7 @@ public class AutoSelectTest {
 
     @Test
     void testResultList_1() {
-        List<Customer> entity = sqlMapper.selectFrom(Customer.class)
+        List<Customer> entity = sqlMapper.selectFrom(MCustomer.customer)
             .id("001")
             .getResultList();
 
@@ -51,7 +52,7 @@ public class AutoSelectTest {
 
     @Test
     void testResultStream() {
-        List<Customer> entity = sqlMapper.selectFrom(Customer.class)
+        List<Customer> entity = sqlMapper.selectFrom(MCustomer.customer)
             .id("001")
             .getResultStream()
             .collect(Collectors.toList());

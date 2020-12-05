@@ -13,6 +13,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.testdata.Customer;
 import com.github.mygreen.sqlmapper.core.testdata.Employee;
+import com.github.mygreen.sqlmapper.core.testdata.MCustomer;
+import com.github.mygreen.sqlmapper.core.testdata.MEmployee;
 import com.github.mygreen.sqlmapper.core.testdata.Role;
 import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
 
@@ -37,7 +39,7 @@ public class AutoInsertTest {
 
         assertThat(count).isEqualTo(1);
 
-        Customer result = sqlMapper.selectFrom(Customer.class)
+        Customer result = sqlMapper.selectFrom(MCustomer.customer)
                 .id(entity.getId())
                 .getSingleResult();
 
@@ -59,7 +61,7 @@ public class AutoInsertTest {
 
         assertThat(count).isEqualTo(1);
 
-        Employee result = sqlMapper.selectFrom(Employee.class)
+        Employee result = sqlMapper.selectFrom(MEmployee.employee)
                 .id(entity.getId())
                 .getSingleResult();
 

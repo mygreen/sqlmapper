@@ -1,5 +1,7 @@
 package com.github.mygreen.sqlmapper.core.where.metamodel;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -13,12 +15,9 @@ import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.testdata.Customer;
+import com.github.mygreen.sqlmapper.core.testdata.MCustomer;
 import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
-import com.github.mygreen.sqlmapper.metamodel.EntityPathBase;
-import com.github.mygreen.sqlmapper.metamodel.LocalDatePath;
-import com.github.mygreen.sqlmapper.metamodel.NumberPath;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
-import com.github.mygreen.sqlmapper.metamodel.StringPath;
 
 
 @ExtendWith(SpringExtension.class)
@@ -45,40 +44,12 @@ public class MetamodelWhereBuilderTest {
         visitor.visit(new MetamodelWhere(condition));
 
         String sql = visitor.getCriteria();
-        System.out.println(sql);
+        assertThat(sql).isEqualTo("(LOWER(FIRST_NAME) LIKE ? AND LAST_NAME = ?) OR (BIRTHDAY > ? AND (VERSION BETWEEN ? AND ?))");
+//        System.out.println(sql);
 
         List<Object> params = visitor.getParamValues();
-
-
-    }
-
-    /**
-     * エンティティのメタモデル
-     *
-     */
-    static class MCustomer extends EntityPathBase<Customer> {
-
-        public static final MCustomer customer = new MCustomer("customer");
-
-        public MCustomer(Class<? extends Customer> type, String name) {
-            super(type, name);
-        }
-
-        public MCustomer(String name) {
-            super(Customer.class, name);
-        }
-
-        public final StringPath id = createString("id");
-
-        public final StringPath firstName = createString("firstName");
-
-        public final StringPath lastName = createString("lastName");
-
-        public final LocalDatePath birthday = createLocalDate("birthday");
-
-        public final NumberPath<Long> version = createNumber("version", Long.class);
-
-
+        assertThat(params).containsExactly("%taro%", "Yamada", LocalDate.of(2000, 1, 1), 0L, 100L);
 
     }
+
 }
