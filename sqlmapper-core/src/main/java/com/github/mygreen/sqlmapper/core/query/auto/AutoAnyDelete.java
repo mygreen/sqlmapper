@@ -3,7 +3,8 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.query.QuerySupport;
-import com.github.mygreen.sqlmapper.core.where.Where;
+import com.github.mygreen.sqlmapper.metamodel.EntityPath;
+import com.github.mygreen.sqlmapper.metamodel.Predicate;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,18 +23,23 @@ public class AutoAnyDelete<T> extends QuerySupport<T> {
     private final Class<T> baseClass;
 
     @Getter(AccessLevel.PACKAGE)
+    private final EntityPath<T> entityPath;
+
+    @Getter(AccessLevel.PACKAGE)
     private final EntityMeta entityMeta;
 
     /**
      * クライテリアです。
      */
     @Getter(AccessLevel.PACKAGE)
-    private Where criteria;
+    private Predicate where;
 
-    public AutoAnyDelete(@NonNull SqlMapperContext context, @NonNull Class<T> baseClass) {
+    @SuppressWarnings("unchecked")
+    public AutoAnyDelete(@NonNull SqlMapperContext context, @NonNull EntityPath<T> entityPath) {
         super(context);
-        this.baseClass = baseClass;
-        this.entityMeta = context.getEntityMetaFactory().create(baseClass);
+        this.entityPath = entityPath;
+        this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());
+        this.baseClass = (Class<T>)entityMeta.getEntityType();
     }
 
     /**
@@ -41,8 +47,8 @@ public class AutoAnyDelete<T> extends QuerySupport<T> {
      * @param where 検索条件。
      * @return 自身のインスタンス。
      */
-    public AutoAnyDelete<T> where(@NonNull Where where) {
-        this.criteria = where;
+    public AutoAnyDelete<T> where(@NonNull Predicate where) {
+        this.where = where;
         return this;
     }
 
