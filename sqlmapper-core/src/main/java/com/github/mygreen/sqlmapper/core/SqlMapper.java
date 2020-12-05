@@ -76,11 +76,11 @@ public class SqlMapper {
     /**
      * 任意の条件に対してテーブルのレコードを削除します。
      * @param <T> 処理対象となるエンティティの型
-     * @param baseClass エンティティのクラス
+     * @param entityPath エンティティの情報
      * @return 削除用のクエリ
      */
-    public <T> AutoAnyDelete<T> deleteFrom(@NonNull Class<T> baseClass) {
-        return new AutoAnyDelete<T>(context, baseClass);
+    public <T> AutoAnyDelete<T> deleteFrom(@NonNull EntityPath<T> entityPath) {
+        return new AutoAnyDelete<T>(context, entityPath);
     }
 
     /**
