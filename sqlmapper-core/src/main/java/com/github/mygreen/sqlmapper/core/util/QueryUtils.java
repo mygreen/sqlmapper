@@ -1,6 +1,7 @@
 package com.github.mygreen.sqlmapper.core.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -9,6 +10,7 @@ import org.springframework.util.StringUtils;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.QueryTokenizer;
+import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
 /**
  * クエリ組み立て自のヘルパークラス
@@ -231,6 +233,25 @@ public class QueryUtils {
 
         return str.replaceAll("%", "\\%")
                 .replaceAll("_", "\\_");
+    }
+
+    /**
+     * 指定したプロパティ名がプロパティ情報に含まれているか判定します。
+     * @param target 検証対象のプロパティ情報
+     * @param propertyName プロパティ名
+     * @return {@literal true}のとき、引数で指定した検証対象のプロパティ情報が含まれる。
+     */
+    public static boolean containsByPropertyName(Collection<PropertyPath<?>> target, String propertyName) {
+
+        for(PropertyPath<?> propertyPath : target) {
+            String targetPathName = propertyPath.getPathMeta().getElement();
+            if(targetPathName.equals(propertyName)) {
+                return true;
+            }
+        }
+
+        return false;
+
     }
 
 }

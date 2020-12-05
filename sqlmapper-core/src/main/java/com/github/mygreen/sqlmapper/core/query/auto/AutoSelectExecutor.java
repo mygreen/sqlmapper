@@ -18,8 +18,11 @@ import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.SelectClause;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.util.QueryUtils;
+import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhere;
+import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhereVisitor;
 import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
 import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
+import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
 
 
 public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
@@ -117,11 +120,13 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
                     continue;
                 }
 
-                if(query.getExcludesProperties().contains(propertyName)) {
+                //TODO: 他のテーブルのプロパティの可能性があるのでエンティティの比較も行うべき
+                if(QueryUtils.containsByPropertyName(query.getExcludesProperties(), propertyName)) {
                     continue;
                 }
 
-                if(!query.getIncludesProperties().isEmpty() && !query.getIncludesProperties().contains(propertyName)) {
+                if(!query.getIncludesProperties().isEmpty()
+                        && !QueryUtils.containsByPropertyName(query.getIncludesProperties(), propertyName)) {
                     continue;
                 }
 
@@ -182,12 +187,12 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
      */
     private void prepareCondition() {
 
-        if(query.getCriteria() == null) {
+        if(query.getWhere() == null) {
             return;
         }
 
-        SimpleWhereVisitor visitor = new SimpleWhereVisitor(query.getEntityMeta());
-        query.getCriteria().accept(visitor);
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMeta(), context.getDialect());
+        visitor.visit(new MetamodelWhere(query.getWhere()));
 
         this.whereClause.addSql(visitor.getCriteria());
         this.paramValues.addAll(visitor.getParamValues());
@@ -199,11 +204,18 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
      */
     private void prepareOrderBy() {
 
-        if (!StringUtils.hasLength(query.getOrderBy())) {
+        if (query.getOrders().isEmpty()) {
             return;
         }
 
-        orderByClause.addSql(QueryUtils.convertCriteria(query.getOrderBy(), query.getEntityMeta()));
+        for(OrderSpecifier order : query.getOrders()) {
+            String propertyName = order.getPath().getPathMeta().getElement();
+            Optional<PropertyMeta> propertyMeta = query.getEntityMeta().getPropertyMeta(propertyName);
+            propertyMeta.ifPresent(p -> {
+                String orderBy = String.format("%s %s", p.getColumnMeta().getName(), order.getOrder().name());
+                orderByClause.addSql(orderBy);
+            });
+        }
 
     }
 

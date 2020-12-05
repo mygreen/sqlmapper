@@ -15,6 +15,7 @@ import com.github.mygreen.sqlmapper.core.query.auto.AutoUpdate;
 import com.github.mygreen.sqlmapper.core.query.sql.SqlCount;
 import com.github.mygreen.sqlmapper.core.query.sql.SqlSelect;
 import com.github.mygreen.sqlmapper.core.query.sql.SqlUpdate;
+import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -35,11 +36,11 @@ public class SqlMapper {
     /**
      * テーブルを参照します。
      * @param <T> 処理対象となるエンティティの型
-     * @param baseClass エンティティのクラス
+     * @param entityPath エンティティの情報
      * @return 参照用のクエリ
      */
-    public <T> AutoSelect<T> selectFrom(@NonNull Class<T> baseClass) {
-        return new AutoSelect<T>(context, baseClass);
+    public <T> AutoSelect<T> selectFrom(@NonNull EntityPath<T> entityPath) {
+        return new AutoSelect<T>(context, entityPath);
     }
 
     /**

@@ -1,6 +1,8 @@
 package com.github.mygreen.sqlmapper.core.query.auto;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -16,7 +18,10 @@ import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
-import com.github.mygreen.sqlmapper.core.where.Where;
+import com.github.mygreen.sqlmapper.metamodel.EntityPath;
+import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
+import com.github.mygreen.sqlmapper.metamodel.Predicate;
+import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,49 +41,54 @@ public class AutoSelect<T> extends QuerySupport<T> {
     private final Class<T> baseClass;
 
     @Getter(AccessLevel.PACKAGE)
+    private final EntityPath<T> entityPath;
+
+    @Getter(AccessLevel.PACKAGE)
     private final EntityMeta entityMeta;
 
     /**
-     * ヒントです。
+     * SQLのヒントです。
      */
     @Getter(AccessLevel.PACKAGE)
     private String hint;
 
     /**
-     * リミットです。
+     * 取得するレコード数の上限値です。
+     * <p>負の値の時は無視します。
      */
     @Getter(AccessLevel.PACKAGE)
     private int limit = -1;
 
     /**
-     * オフセットです。
+     * 取得するレコード数の開始位置です。
+     * <p>負の値の時は無視します。
      */
     @Getter(AccessLevel.PACKAGE)
     private int offset = -1;
 
     /**
-     * select句へ追加するプロパティ
+     * select句へ追加するプロパティです。
      */
     @Getter(AccessLevel.PACKAGE)
-    private final Set<String> includesProperties = new HashSet<>();
+    private final Set<PropertyPath<?>> includesProperties = new LinkedHashSet<>();
 
     /**
-     * select句から除外するプロパティ
+     * select句から除外するプロパティです。
      */
     @Getter(AccessLevel.PACKAGE)
-    private final Set<String> excludesProperties = new HashSet<>();
+    private final Set<PropertyPath<?>> excludesProperties = new LinkedHashSet<>();
 
     /**
-     * クライテリアです。
+     * 検索条件です。
      */
     @Getter(AccessLevel.PACKAGE)
-    private Where criteria;
+    private Predicate where;
 
     /**
      * ソート順です。
      */
     @Getter(AccessLevel.PACKAGE)
-    private String orderBy = "";
+    private List<OrderSpecifier> orders = new ArrayList<>();
 
     /**
      * 検索条件で指定したIDプロパティの値の配列です。
@@ -106,13 +116,15 @@ public class AutoSelect<T> extends QuerySupport<T> {
 
     /**
      * {@link AutoSelect}を作成します。
-     * @param context SQLのマッピングに必要な情報。
-     * @param baseClass 抽出対象のテーブルにマッピングするエンティティのベースクラス。
+     * @param context SqlMapperの設定情報。
+     * @param entityPath マッピングするエンティティのメタモデル。
      */
-    public AutoSelect(@NonNull SqlMapperContext context, @NonNull Class<T> baseClass) {
+    @SuppressWarnings("unchecked")
+    public AutoSelect(@NonNull SqlMapperContext context, @NonNull EntityPath<T> entityPath) {
         super(context);
-        this.baseClass = baseClass;
-        this.entityMeta = context.getEntityMetaFactory().create(baseClass);
+        this.entityPath = entityPath;
+        this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());
+        this.baseClass = (Class<T>)entityMeta.getEntityType();
     }
 
     /**
@@ -149,24 +161,25 @@ public class AutoSelect<T> extends QuerySupport<T> {
      * 指定のプロパティのみを挿入対象とします。
      * <p>アノテーション {@literal @Column(insertable = false)} が設定されているプロパティは対象外となります。</p>
      *
-     * @param propertyNames 挿入対象のプロパティ名。
+     * @param properties 挿入対象のプロパティ情報。
      * @return 自身のインスタンス。
      * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
      */
-    public AutoSelect<T> includes(final CharSequence... propertyNames) {
+    public AutoSelect<T> includes(final PropertyPath<?>... properties) {
 
-        for(CharSequence name : propertyNames) {
-            final String nameStr = name.toString();
-            if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
+        for(PropertyPath<?> prop : properties) {
+            final String propName = prop.getPathMeta().getElement();
+            if(entityMeta.getPropertyMeta(propName).isEmpty()) {
                 throw new IllegalOperateException(context.getMessageFormatter().create("query.noIncludeProperty")
                         .paramWithClass("classType", entityMeta.getEntityType())
-                        .param("properyName", nameStr)
+                        .param("properyName", propName)
                         .format());
             }
 
-
-            this.includesProperties.add(nameStr);
+            //TODO: 追加ではなく、上書き（直接変数に代入）する
+            this.includesProperties.add(prop);
         }
+
 
         return this;
 
@@ -175,23 +188,24 @@ public class AutoSelect<T> extends QuerySupport<T> {
     /**
      * 指定のプロパティを挿入対象から除外します。
      *
-     * @param propertyNames 除外対象のプロパティ名。
+     * @param properties 除外対象のプロパティ情報。
      * @return 自身のインスタンス。
      * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
      */
-    public AutoSelect<T> excludes(final CharSequence... propertyNames) {
+    public AutoSelect<T> excludes(final PropertyPath<?>... properties) {
 
-        for(CharSequence name : propertyNames) {
-            final String nameStr = name.toString();
-            if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
+        for(PropertyPath<?> prop : properties) {
+            final String propName = prop.toString();
+            if(entityMeta.getPropertyMeta(propName).isEmpty()) {
                 throw new IllegalOperateException(context.getMessageFormatter().create("entity.prop.noInclude")
                         .paramWithClass("classType", entityMeta.getEntityType())
-                        .param("properyName", nameStr)
+                        .param("properyName", propName)
                         .format());
             }
 
 
-            this.excludesProperties.add(nameStr);
+            //TODO: 追加ではなく、上書き（直接変数に代入）する
+            this.excludesProperties.add(prop);
         }
 
         return this;
@@ -203,18 +217,19 @@ public class AutoSelect<T> extends QuerySupport<T> {
      * @param where 検索条件。
      * @return 自身のインスタンス。
      */
-    public AutoSelect<T> where(@NonNull Where where) {
-        this.criteria = where;
+    public AutoSelect<T> where(@NonNull Predicate where) {
+        this.where = where;
         return this;
     }
 
     /**
      * ソート順を指定します。
-     * @param orderBy ソートするカラム
+     * @param orderBy ソートするロパティの並び順情報
      * @return 自身のインスタンス。
      */
-    public AutoSelect<T> orderBy(@NonNull CharSequence orderBy) {
-        this.orderBy = orderBy.toString();
+    public AutoSelect<T> orderBy(OrderSpecifier... orders) {
+        //TODO: 追加ではなく、上書き（直接変数に代入）する
+        this.orders.addAll(Arrays.asList(orders));
         return this;
     }
 
@@ -230,7 +245,7 @@ public class AutoSelect<T> extends QuerySupport<T> {
         List<PropertyMeta> idPropertyMetaList = entityMeta.getIdPropertyMetaList();
         if(idPropertyMetaList.size() != idPropertyValues.length) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.noMatchIdPropertySize")
-                    .paramWithClass("entityType", baseClass)
+                    .paramWithClass("entityType", entityPath.getType())
                     .param("actualSize", idPropertyValues.length)
                     .param("expectedSize", idPropertyMetaList.size())
                     .format());
@@ -252,7 +267,7 @@ public class AutoSelect<T> extends QuerySupport<T> {
 
         if(!entityMeta.hasVersionPropertyMeta()) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.noVersionProperty")
-                    .paramWithClass("entityType", baseClass)
+                    .paramWithClass("entityType", entityPath.getType())
                     .format());
         }
 
@@ -270,7 +285,7 @@ public class AutoSelect<T> extends QuerySupport<T> {
         final Dialect dialect = context.getDialect();
         if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NORMAL)) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdate")
-                    .paramWithClass("entityType", baseClass)
+                    .paramWithClass("entityType", entityPath.getType())
                     .param("dialectName", dialect.getName())
                     .format());
         }
@@ -289,7 +304,7 @@ public class AutoSelect<T> extends QuerySupport<T> {
         final Dialect dialect = context.getDialect();
         if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NOWAIT)) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdateNowait")
-                    .paramWithClass("entityType", baseClass)
+                    .paramWithClass("entityType", entityPath.getType())
                     .param("dialectName", dialect.getName())
                     .format());
         }
@@ -309,7 +324,7 @@ public class AutoSelect<T> extends QuerySupport<T> {
         final Dialect dialect = context.getDialect();
         if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.WAIT)) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdateWait")
-                    .paramWithClass("entityType", baseClass)
+                    .paramWithClass("entityType", entityPath.getType())
                     .param("dialectName", dialect.getName())
                     .format());
         }
