@@ -4,9 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.mygreen.sqlmapper.core.naming.DefaultNamingRule;
-
-
 class DefaultNamingRuleTest extends DefaultNamingRule {
 
     @Test

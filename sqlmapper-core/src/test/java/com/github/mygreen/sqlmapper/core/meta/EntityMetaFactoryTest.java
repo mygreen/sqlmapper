@@ -13,10 +13,6 @@ import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
 import com.github.mygreen.sqlmapper.core.annotation.Transient;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
-import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
-import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
-import com.github.mygreen.sqlmapper.core.meta.TableMeta;
 import com.github.mygreen.sqlmapper.core.testdata.NoDbTestConfig;
 
 import lombok.Data;
