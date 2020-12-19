@@ -47,7 +47,7 @@ public class PathMeta {
      * @return 親を持たない場合は{@literal null} を返します。
      */
     public Path<?> getParent() {
-        return parent.orElseGet(null);
+        return parent.orElse(null);
     }
 
     /**
