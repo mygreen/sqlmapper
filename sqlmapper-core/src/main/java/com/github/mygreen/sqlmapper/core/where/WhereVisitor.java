@@ -14,6 +14,6 @@ public interface WhereVisitor {
      * @param where 条件式
      * @throws IllegalArgumentException 不明な{@link Where}な場合にスローします。
      */
-    void visit(final Where where);
+    void visit(Where where);
 
 }

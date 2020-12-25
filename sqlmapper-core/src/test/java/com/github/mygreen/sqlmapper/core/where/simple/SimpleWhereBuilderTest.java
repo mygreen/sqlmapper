@@ -1,61 +1,100 @@
 package com.github.mygreen.sqlmapper.core.where.simple;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 
-import java.time.LocalDate;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
-import com.github.mygreen.sqlmapper.core.testdata.Customer;
-import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
+import com.github.mygreen.sqlmapper.core.where.Where;
 
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes=TestConfig.class)
-public class SimpleWhereBuilderTest {
+/**
+ * {@link SimpleWhereBuilder}のテスタ。
+ *
+ * @author T.TSUCHIE
+ *
+ */
+class SimpleWhereBuilderTest extends SimpleWhereBuilder {
 
-    @Autowired
-    private EntityMetaFactory entityMetaFactory;
-
-    @DisplayName("SimpleWhere - 単純なAND")
+    @DisplayName("単純なAND")
     @Test
-    void testSimpleWhere_and() {
+    void testSimpleWhere_And() {
 
-        SimpleWhere where = new SimpleWhere();
-        where.eq("firstName", "Taro").eq("lastName", "Yamada");
+        Where where = new SimpleWhereBuilder()
+                .exp("first_name = ?", "Taro")
+                .exp("age >= ?", 20)
+                ;
 
-        EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
+        SimpleWhereVisitor visitor = new SimpleWhereVisitor();
+        where.accept(visitor);
 
-        SimpleWhereVisitor whereVisitor = new SimpleWhereVisitor(entityMeta);
-        where.accept(whereVisitor);
+        String sql = visitor.getCriteria();
+        List<Object> params = visitor.getParamValues();
 
-        String sql = whereVisitor.getCriteria();
-        assertEquals("FIRST_NAME = ? AND LAST_NAME = ?", sql);
+        assertThat(sql).isEqualTo("first_name = ? AND age >= ?");
+        assertThat(params).containsExactly("Taro", 20);
 
     }
 
-    @DisplayName("WhereBuilder - OR演算")
+    @DisplayName("単純なOR")
     @Test
-    public void testWhereBuilder_or() {
+    void testSimpleWhere_Or() {
 
-        EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
 
-        SimpleWhereBuilder where = new SimpleWhereBuilder();
-        where.eq("lastName", "Yamada").ge("birthday", LocalDate.of(2000, 8, 1)).or().starts("firstName", "T");
+        Where where = new SimpleWhereBuilder()
+                .exp("first_name = ?", "Taro")
+                .exp("age >= ?", 20)
+                .or().exp("last_name like ?", "%Yama%")
+                ;
 
-        SimpleWhereVisitor whereVisitor = new SimpleWhereVisitor(entityMeta);
-        where.accept(whereVisitor);
+        SimpleWhereVisitor visitor = new SimpleWhereVisitor();
+        where.accept(visitor);
 
-        String sql = whereVisitor.getCriteria();
-        assertEquals("(LAST_NAME = ? AND BIRTHDAY >= ?) OR (FIRST_NAME LIKE ?)", sql);
+        String sql = visitor.getCriteria();
+        List<Object> params = visitor.getParamValues();
 
+        assertThat(sql).isEqualTo("(first_name = ? AND age >= ?) OR (last_name like ?)");
+        assertThat(params).containsExactly("Taro", 20, "%Yama%");
+
+    }
+
+    @DisplayName("ネストしたANDとORの組み合わせ")
+    @Test
+    void testSimpleWhere_Complex() {
+
+        Where where = new SimpleWhereBuilder()
+                .exp("first_name = ?", "Taro")
+                .exp("age >= ?", 20)
+                .or().exp("last_name like ?", "%Yama%")
+                .and(new SimpleWhere().exp("role = ?", "ADMIN"))
+                ;
+
+        SimpleWhereVisitor visitor = new SimpleWhereVisitor();
+        where.accept(visitor);
+
+        String sql = visitor.getCriteria();
+        List<Object> params = visitor.getParamValues();
+
+        assertThat(sql).isEqualTo("(first_name = ? AND age >= ?) OR (last_name like ? AND (role = ?))");
+        assertThat(params).containsExactly("Taro", 20, "%Yama%", "ADMIN");
+
+    }
+
+    @DisplayName("プレースホルダーの個数が一致しない場合")
+    @Test
+    void testExp_notMatchPlaceHolder() {
+
+        assertThatThrownBy(() -> new SimpleWhereBuilder().exp("first_name = ?"))
+            .isInstanceOf(IllegalArgumentException.class);
+
+
+        assertThatThrownBy(() -> new SimpleWhereBuilder().exp("first_name =", "Yamada"))
+        .isInstanceOf(IllegalArgumentException.class);
+
+        assertThatThrownBy(() -> new SimpleWhereBuilder().exp("first_name = ? AND age >= ?", "Yamada"))
+        .isInstanceOf(IllegalArgumentException.class);
 
     }
 }

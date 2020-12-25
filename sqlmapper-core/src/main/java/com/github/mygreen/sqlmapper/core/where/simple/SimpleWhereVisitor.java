@@ -3,31 +3,18 @@ package com.github.mygreen.sqlmapper.core.where.simple;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
-import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
-import com.github.mygreen.sqlmapper.core.query.IllegalQueryException;
-import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.where.Where;
 import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
 
-import lombok.RequiredArgsConstructor;
-
 /**
- * {@link SimpleWhere} で構築した条件分を走査しSQLを組み立てるVisitor。
+ *
  *
  *
  * @author T.TSUCHIE
  *
  */
-@RequiredArgsConstructor
 public class SimpleWhereVisitor implements WhereVisitor {
-
-    /**
-     * 検索対象となるテーブルのエンティティ情報
-     */
-    private final EntityMeta entityMeta;
 
     /**
      * SQL中のパラメータ変数。
@@ -57,8 +44,13 @@ public class SimpleWhereVisitor implements WhereVisitor {
         return Collections.unmodifiableList(paramValues);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException サポート対象外の引数を指定したときスローされます。
+     */
     @Override
-    public void visit(final Where where) {
+    public void visit(Where where) {
         if(where instanceof SimpleWhere) {
             visit((SimpleWhere) where);
         } else if(where instanceof SimpleWhereBuilder) {
@@ -75,12 +67,12 @@ public class SimpleWhereVisitor implements WhereVisitor {
      */
     public void visit(final SimpleWhere where) {
 
-        for(ValueOperator operator : where.getOperators()) {
+        for(Term term : where.getTerms()) {
             if(criteria.length() > 0) {
                 criteria.append(" AND ");
             }
 
-            operator.accept(this);
+            term.accept(this);
         }
 
     }
@@ -94,13 +86,13 @@ public class SimpleWhereVisitor implements WhereVisitor {
 
         List<String> result = new ArrayList<>();
 
-        // 演算子の式がまだ持っているときは、子要素に追加する。
+        // 式の項がまだ持っているときは、子要素に追加する。
         where.or();
 
         // 子要素の式を組み立てる。
         if(!where.getChildrenWhere().isEmpty()) {
             for(Where subWhere : where.getChildrenWhere()) {
-                SimpleWhereVisitor subVisitor = new SimpleWhereVisitor(entityMeta);
+                SimpleWhereVisitor subVisitor = new SimpleWhereVisitor();
                 subVisitor.visit(subWhere);
 
                 String sql = subVisitor.getCriteria();
@@ -126,15 +118,29 @@ public class SimpleWhereVisitor implements WhereVisitor {
     }
 
     /**
-     * {@link WhereValueOperator} を処理します。
-     * <p>条件式を括弧で囲みます。{@literal (A AND B)} </p>
-     * @param valueOperator 条件式
+     * 式({@link Exp})を処理します。
+     * @param exp 処理対象の式。
      */
-    public void visit(WhereValueOperator valueOperator) {
+    public void visit(Exp exp) {
 
-        Where subWhere = valueOperator.getWhere();
+        criteria.append(exp.getExp());
 
-        SimpleWhereVisitor subVisitor = new SimpleWhereVisitor(entityMeta);
+        for(int i=0; i < exp.valuesSize(); i++) {
+            paramValues.add(exp.getValueAt(i));
+        }
+
+    }
+
+    /**
+     * {@link WhereTerm}を処理します。
+     * SQL式は括弧{@literal (...)}で囲みます。
+     * @param whereTerm 処理対象のwhere句
+     */
+    public void visit(WhereTerm whereTerm) {
+
+        Where subWhere = whereTerm.getWhere();
+
+        SimpleWhereVisitor subVisitor = new SimpleWhereVisitor();
         subVisitor.visit(subWhere);
 
         criteria.append("(")
@@ -143,74 +149,6 @@ public class SimpleWhereVisitor implements WhereVisitor {
 
         paramValues.addAll(subVisitor.getParamValues());
 
-    }
-
-    /**
-     * {@link SingleValueOperator} を処理します。
-     * @param valueOperator 演算式
-     * @throws IllegalQueryException エンティティ情報の中に含まれないプロパティ名を指定した場合にスローされます。
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public void visit(final SingleValueOperator valueOperator) {
-
-        String propertyName = valueOperator.getPropertyName();
-        Optional<PropertyMeta> propertyMeta = entityMeta.getPropertyMeta(propertyName);
-        if(propertyMeta.isEmpty()) {
-            throw new IllegalQueryException("unknwon property : " + propertyName);
-        }
-
-        ValueType valueType = propertyMeta.get().getValueType();
-        paramValues.add(valueType.getSqlParameterValue(valueOperator.getValue()));
-
-        String columnName = propertyMeta.get().getColumnMeta().getName();
-        String sql = valueOperator.getSql(columnName, "?");
-        criteria.append(sql);
-
-    }
-
-    /**
-     * {@link EmptyValueOperator} を処理します。
-     * @param valueOperator 演算式
-     * @throws IllegalQueryException エンティティ情報の中に含まれないプロパティ名を指定した場合にスローされます。
-     */
-    public void visit(final EmptyValueOperator valueOperator) {
-
-        String propertyName = valueOperator.getPropertyName();
-        Optional<PropertyMeta> propertyMeta = entityMeta.getPropertyMeta(propertyName);
-        if(propertyMeta.isEmpty()) {
-            throw new IllegalQueryException("unknwon property : " + propertyName);
-        }
-
-        String columnName = propertyMeta.get().getColumnMeta().getName();
-        String sql = valueOperator.getSql(columnName);
-        criteria.append(sql);
-
-    }
-
-    /**
-     * {@link MultiValueOperator} を処理します。
-     * @param valueOperator 演算式
-     * @throws IllegalQueryException エンティティ情報の中に含まれないプロパティ名を指定した場合にスローされます。
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public void visit(final MultiValueOperator valueOperator) {
-
-        String propertyName = valueOperator.getPropertyName();
-        Optional<PropertyMeta> propertyMeta = entityMeta.getPropertyMeta(propertyName);
-        if(propertyMeta.isEmpty()) {
-            throw new IllegalQueryException("unknwon property : " + propertyName);
-        }
-
-        String[] varName = new String[valueOperator.getValueSize()];
-        ValueType valueType = propertyMeta.get().getValueType();
-        for(int i=0; i < valueOperator.getValueSize(); i++) {
-            varName[i] = "?";
-            paramValues.add(valueType.getSqlParameterValue(valueOperator.getValue(i)));
-        }
-
-        String columnName = propertyMeta.get().getColumnMeta().getName();
-        String sql = valueOperator.getSql(columnName, varName);
-        criteria.append(sql);
 
     }
 }

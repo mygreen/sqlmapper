@@ -1,55 +1,51 @@
 package com.github.mygreen.sqlmapper.core.where.simple;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.github.mygreen.sqlmapper.core.where.Where;
 import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+
 /**
- * 入力された項目をANDやORでつなげていくような検索条件を組み立てるクラスです。
+ * SQLのWhere句の条件をANDやORでつなげていく組み立てるためのクラスです。
  *
  * @author T.TSUCHIE
  *
  */
-public class SimpleWhereBuilder extends AbstractWhere<SimpleWhereBuilder> {
+public class SimpleWhereBuilder extends AbstractWhere<SimpleWhereBuilder> implements Where {
 
     /**
      * ORで区切られた塊
      */
-    private List<Where> children = new ArrayList<>();
-
-    /**
-     * これまでに追加された条件とこれから追加される条件をORで結合します。
-     * @return このインスタンス自身
-     */
-    public SimpleWhereBuilder or() {
-        this.children.add(putAsSimplexWhere());
-        return this;
-    }
-
-    /**
-     * これまでに追加された条件と、引数で渡された条件全体をANDで結合します。
-     * @param where  ANDで結合される条件
-     * @return このインスタンス自身
-     */
-    public SimpleWhereBuilder and(final Where where) {
-        super.operators.add(new WhereValueOperator(where));
-        return this;
-    }
-
-    /**
-     * ORで区切られた条件の塊を取得します。
-     * @return OR条件の塊。
-     */
-    protected List<Where> getChildrenWhere() {
-        return Collections.unmodifiableList(children);
-    }
+    @Getter(AccessLevel.PROTECTED)
+    private List<Where> childrenWhere = new ArrayList<>();
 
     @Override
-    public void accept(WhereVisitor visitor) {
+    public void accept(final WhereVisitor visitor) {
         visitor.visit(this);
     }
 
+    /**
+     * これまでに追加された条件とこれから追加される条件を {@litera OR} で結合します。
+     * @return このインスタンス自身
+     */
+    public SimpleWhereBuilder or() {
+        if(!terms.isEmpty()) {
+            this.childrenWhere.add(putAsSimpleWhere());
+        }
+        return this;
+    }
+
+    /**
+     * これまでに追加された条件と、引数で渡された条件全体を {@litera AND} で結合します。
+     * @param where  {@litera AND}で結合される条件
+     * @return このインスタンス自身
+     */
+    public SimpleWhereBuilder and(final AbstractWhere<?> where) {
+        addTerm(new WhereTerm(where));
+        return this;
+    }
 }
