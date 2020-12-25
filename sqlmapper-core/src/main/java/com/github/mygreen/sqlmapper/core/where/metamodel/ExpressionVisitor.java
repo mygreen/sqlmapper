@@ -81,8 +81,16 @@ public class ExpressionVisitor implements Visitor<VisitorContext> {
                 throw new IllegalQueryException("unknwon property : " + propertyName);
             }
 
+            // TODO: Embeddedのネストした場合を考慮する
+            final String tableName = context.getTableNameResolver().getTableAlias(expr.getPathMeta().getParent());
+            final String columnName;
             // SQL - カラム名を追加
-            context.appendSql(propertyMeta.get().getColumnMeta().getName());
+            if(tableName != null) {
+                columnName = tableName + "." + propertyMeta.get().getColumnMeta().getName();
+            } else {
+                columnName = propertyMeta.get().getColumnMeta().getName();;
+            }
+            context.appendSql(columnName);
 
         } else {
             throw new IllegalArgumentException("not support pathType=" + pathMeta.getType());

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,12 @@ public class VisitorContext {
      */
     @Getter
     private final Dialect dialect;
+
+    /**
+     * テーブル名のエイリアス管理
+     */
+    @Getter
+    private final TableNameResolver tableNameResolver;
 
     /**
      * SQL中のパラメータ変数。
@@ -49,6 +56,7 @@ public class VisitorContext {
     public VisitorContext(VisitorContext parent) {
         this.entityMeta = parent.entityMeta;
         this.dialect = parent.dialect;
+        this.tableNameResolver = parent.tableNameResolver;
     }
 
     public void addParamValue(Object value) {

@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
+import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.testdata.Customer;
 import com.github.mygreen.sqlmapper.core.testdata.MCustomer;
 import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
@@ -40,7 +41,11 @@ public class MetamodelWhereBuilderTest {
                 ;
 
         EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
-        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(entityMeta, dialect);
+
+        TableNameResolver tableNameResolver = new TableNameResolver();
+//        tableNameResolver.prepareTableAlias(entity);
+
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(entityMeta, dialect, tableNameResolver);
         visitor.visit(new MetamodelWhere(condition));
 
         String sql = visitor.getCriteria();

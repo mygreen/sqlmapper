@@ -87,10 +87,11 @@ public class SelectClause {
         if (sql.length() > 0) {
             sql.append(", ");
         }
-        String qname = tableAlias + '.' + columnName;
-        String columnAlias = "C" + (++aliasIndex) + "_";
-        columnAliases.put(qname, columnAlias);
-        sql.append(qname).append(" as ").append(columnAlias);
+//        String qname = tableAlias + '.' + columnName;
+//        String columnAlias = "C" + (++aliasIndex) + "_";
+//        columnAliases.put(qname, columnAlias);
+//        sql.append(qname).append(" as ").append(columnAlias);
+        sql.append(tableAlias + "." + columnName);
     }
 
     /**

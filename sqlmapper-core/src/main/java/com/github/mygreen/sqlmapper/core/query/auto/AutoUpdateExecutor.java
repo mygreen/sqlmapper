@@ -115,25 +115,35 @@ public class AutoUpdateExecutor extends QueryExecutorSupport<AutoUpdate<?>> {
         }
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void prepareWhereClause() {
 
         final SimpleWhereBuilder where = new SimpleWhereBuilder();
 
         // WHERE句の準備 - 主キー
         for(PropertyMeta propertyMeta : query.getEntityMeta().getIdPropertyMetaList()) {
-            final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
-            where.eq(propertyMeta.getName(), propertyValue);
+            String exp = String.format("%s = ?", propertyMeta.getColumnMeta().getName());
+
+            Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
+            ValueType valueType = propertyMeta.getValueType();
+            Object value = valueType.getSqlParameterValue(propertyValue);
+
+            where.exp(exp, value);
         }
 
         // WHERE句の準備 - バージョンキー
         if(!query.isIncludeVersion() && query.getEntityMeta().hasVersionPropertyMeta()) {
             final PropertyMeta propertyMeta = query.getEntityMeta().getVersionPropertyMeta().get();
+            String exp = String.format("%s = ?", propertyMeta.getColumnMeta().getName());
 
-            final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
-            where.eq(propertyMeta.getName(), propertyValue);
+            Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
+            ValueType valueType = propertyMeta.getValueType();
+            Object value = valueType.getSqlParameterValue(propertyValue);
+
+            where.exp(exp, value);
         }
 
-        SimpleWhereVisitor visitor = new SimpleWhereVisitor(query.getEntityMeta());
+        SimpleWhereVisitor visitor = new SimpleWhereVisitor();
         where.accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());

@@ -9,6 +9,7 @@ import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
 import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
 import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
 
@@ -52,6 +53,7 @@ public class AutoBatchDeleteExecutor extends QueryExecutorSupport<AutoBatchDelet
     /**
      * 条件文の組み立てを行います
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void prepareWhereClause() {
 
         final SimpleWhereBuilder where = new SimpleWhereBuilder();
@@ -64,22 +66,32 @@ public class AutoBatchDeleteExecutor extends QueryExecutorSupport<AutoBatchDelet
 
             // 主キーを条件分として組み立てます
             for(PropertyMeta propertyMeta : query.getEntityMeta().getIdPropertyMetaList()) {
+                String exp = String.format("%s = ?", propertyMeta.getColumnMeta().getName());
+
                 Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, entity);
-                where.eq(propertyMeta.getName(), propertyValue);
+                ValueType valueType = propertyMeta.getValueType();
+                Object value = valueType.getSqlParameterValue(propertyValue);
+
+                where.exp(exp, value);
             }
 
             // 楽観的排他チェックを行うときは、バージョンキーも条件に加えます。
             if(isOptimisticLock()) {
                 final PropertyMeta propertyMeta = query.getEntityMeta().getVersionPropertyMeta().get();
+                String exp = String.format("%s = ?", propertyMeta.getColumnMeta().getName());
+
                 Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, entity);
-                where.eq(propertyMeta.getName(), propertyValue);
+                ValueType valueType = propertyMeta.getValueType();
+                Object value = valueType.getSqlParameterValue(propertyValue);
+
+                where.exp(exp, value);
             }
 
             where.or();
 
         }
 
-        SimpleWhereVisitor visitor = new SimpleWhereVisitor(query.getEntityMeta());
+        SimpleWhereVisitor visitor = new SimpleWhereVisitor();
         where.accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());

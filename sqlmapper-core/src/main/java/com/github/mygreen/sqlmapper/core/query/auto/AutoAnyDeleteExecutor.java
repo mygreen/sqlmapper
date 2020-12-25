@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
+import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhere;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhereVisitor;
@@ -14,6 +15,11 @@ public class AutoAnyDeleteExecutor extends QueryExecutorSupport<AutoAnyDelete<?>
      * where句
      */
     private final WhereClause whereClause = new WhereClause();
+
+    /**
+     * テーブルの別名を管理します。
+     */
+    private final TableNameResolver tableNameResolver = new TableNameResolver();
 
     /**
      * 実行するSQLです
@@ -48,7 +54,7 @@ public class AutoAnyDeleteExecutor extends QueryExecutorSupport<AutoAnyDelete<?>
             return;
         }
 
-        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMeta(), context.getDialect());
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMeta(), context.getDialect(), tableNameResolver);
         visitor.visit(new MetamodelWhere(query.getWhere()));
 
         this.whereClause.addSql(visitor.getCriteria());

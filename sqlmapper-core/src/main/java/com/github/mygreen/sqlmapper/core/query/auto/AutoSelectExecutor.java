@@ -16,7 +16,9 @@ import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.core.query.OrderByClause;
 import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.SelectClause;
+import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhere;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhereVisitor;
@@ -53,6 +55,11 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
     private final OrderByClause orderByClause = new OrderByClause();
 
     /**
+     * テーブルの別名を管理します。
+     */
+    private final TableNameResolver tableNameResolver = new TableNameResolver();
+
+    /**
      * for update句です。
      */
     private String forUpdateClause;
@@ -85,6 +92,8 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
 
     @Override
     public void prepare() {
+
+        prepareTableAlias();
         prepareTarget();
         prepareIdVersion();
         prepareCondition();
@@ -94,6 +103,17 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
         prepareSql();
 
         completed();
+    }
+
+    /**
+     * テーブルの別名を準備します。
+     */
+    private void prepareTableAlias() {
+
+        // FROM句指定のテーブル
+        tableNameResolver.prepareTableAlias(query.getEntityPath());
+
+        //TODO: JOINテーブルのエイリアス
     }
 
     /**
@@ -130,7 +150,9 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
                     continue;
                 }
 
-                selectClause.addSql(propertyMeta.getColumnMeta().getName());
+                //TODO: JOINしているときは、他のテーブルのカラムの可能性がある。
+                String tableAlias = tableNameResolver.getTableAlias(query.getEntityPath());
+                selectClause.addSql(tableAlias, propertyMeta.getColumnMeta().getName());
                 selectedPropertyMetaList.add(propertyMeta);
 
                 if(propertyMeta.isId()) {
@@ -145,13 +167,14 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
         }
 
         // from句の指定
-        fromClause.addSql(query.getEntityMeta().getTableMeta().getFullName(), null);
+        fromClause.addSql(query.getEntityMeta().getTableMeta().getFullName(), tableNameResolver.getTableAlias(query.getEntityPath()));
 
     }
 
     /**
      * IDプロパティ及びバージョンを準備します。
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void prepareIdVersion() {
 
         if(query.getIdPropertyValues() == null && query.getVersionPropertyValue() != null) {
@@ -161,19 +184,32 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
         }
 
         final SimpleWhereBuilder where = new SimpleWhereBuilder();
+        final String tableAliasName = tableNameResolver.getTableAlias(query.getEntityPath());
 
         // IDの条件指定
         for(int i=0; i < query.getIdPropertyValues().length; i++) {
             PropertyMeta propertyMeta = query.getEntityMeta().getIdPropertyMetaList().get(i);
-            where.eq(propertyMeta.getName(), query.getIdPropertyValues()[i]);
+            String exp = String.format("%s.%s = ?", tableAliasName, propertyMeta.getColumnMeta().getName());
+
+            ValueType valueType = propertyMeta.getValueType();
+            Object value = valueType.getSqlParameterValue(query.getIdPropertyValues()[i]);
+
+            where.exp(exp, value);
         }
 
         // バージョンの指定
         if(query.getVersionPropertyValue() != null) {
-            where.eq(query.getEntityMeta().getVersionPropertyMeta().get().getName(), query.getVersionPropertyValue());
+
+            PropertyMeta propertyMeta = query.getEntityMeta().getVersionPropertyMeta().get();
+            String exp = String.format("%s.%s = ?", tableAliasName, propertyMeta.getColumnMeta().getName());
+
+            ValueType valueType = propertyMeta.getValueType();
+            Object value = valueType.getSqlParameterValue(query.getVersionPropertyValue());
+
+            where.exp(exp, value);
         }
 
-        SimpleWhereVisitor visitor = new SimpleWhereVisitor(query.getEntityMeta());
+        SimpleWhereVisitor visitor = new SimpleWhereVisitor();
         where.accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());
@@ -191,7 +227,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
             return;
         }
 
-        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMeta(), context.getDialect());
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMeta(), context.getDialect(), tableNameResolver);
         visitor.visit(new MetamodelWhere(query.getWhere()));
 
         this.whereClause.addSql(visitor.getCriteria());
@@ -211,8 +247,15 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
         for(OrderSpecifier order : query.getOrders()) {
             String propertyName = order.getPath().getPathMeta().getElement();
             Optional<PropertyMeta> propertyMeta = query.getEntityMeta().getPropertyMeta(propertyName);
+
+            String tableAlias = tableNameResolver.getTableAlias(order.getPath().getPathMeta().getParent());
+            if(!StringUtils.hasLength(tableAlias)) {
+                //TODO: 例外処理
+
+            }
+
             propertyMeta.ifPresent(p -> {
-                String orderBy = String.format("%s %s", p.getColumnMeta().getName(), order.getOrder().name());
+                String orderBy = String.format("%s.%s %s", tableAlias, p.getColumnMeta().getName(), order.getOrder().name());
                 orderByClause.addSql(orderBy);
             });
         }
