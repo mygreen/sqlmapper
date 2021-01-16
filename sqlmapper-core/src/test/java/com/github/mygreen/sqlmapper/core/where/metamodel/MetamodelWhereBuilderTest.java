@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,14 +44,13 @@ public class MetamodelWhereBuilderTest {
         EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
 
         TableNameResolver tableNameResolver = new TableNameResolver();
-//        tableNameResolver.prepareTableAlias(entity);
+        tableNameResolver.prepareTableAlias(entity);
 
-        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(entityMeta, dialect, tableNameResolver);
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta), dialect, tableNameResolver);
         visitor.visit(new MetamodelWhere(condition));
 
         String sql = visitor.getCriteria();
-        assertThat(sql).isEqualTo("(LOWER(FIRST_NAME) LIKE ? AND LAST_NAME = ?) OR (BIRTHDAY > ? AND (VERSION BETWEEN ? AND ?))");
-//        System.out.println(sql);
+        assertThat(sql).isEqualTo("(LOWER(T1_.FIRST_NAME) LIKE ? AND T1_.LAST_NAME = ?) OR (T1_.BIRTHDAY > ? AND (T1_.VERSION BETWEEN ? AND ?))");
 
         List<Object> params = visitor.getParamValues();
         assertThat(params).containsExactly("%taro%", "Yamada", LocalDate.of(2000, 1, 1), 0L, 100L);

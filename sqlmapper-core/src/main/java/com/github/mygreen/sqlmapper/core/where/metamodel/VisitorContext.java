@@ -3,6 +3,7 @@ package com.github.mygreen.sqlmapper.core.where.metamodel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
@@ -15,10 +16,10 @@ import lombok.RequiredArgsConstructor;
 public class VisitorContext {
 
     /**
-     * 検索対象となるテーブルのエンティティ情報
+     * 検索対象となるテーブルのエンティティ情報のマップ
      */
     @Getter
-    private final EntityMeta entityMeta;
+    private final Map<Class<?>, EntityMeta> entityMetaMap;
 
     /**
      * SQLの方言情報
@@ -48,13 +49,14 @@ public class VisitorContext {
      * 親の情報を引き継いでインスタンスを作成します。
      * <p>引き継ぐ情報。
      * <ul>
-     *  <li>{@link #entityMeta}</li>
+     *  <li>{@link #entityMetaMap}</li>
      *  <li>{@link #dialect}</li>
+     *  <li>{@link #tableNameResolver}</li>
      * </ul>
      * @param parent 親のコンテキスト
      */
     public VisitorContext(VisitorContext parent) {
-        this.entityMeta = parent.entityMeta;
+        this.entityMetaMap = parent.entityMetaMap;
         this.dialect = parent.dialect;
         this.tableNameResolver = parent.tableNameResolver;
     }

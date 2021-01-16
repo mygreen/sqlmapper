@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.core.where.metamodel;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ public class MetamodelWhereVisitor implements WhereVisitor {
     /**
      * 検索対象となるテーブルのエンティティ情報
      */
-    private final EntityMeta entityMeta;
+    private final Map<Class<?>, EntityMeta> entityMetaMap;
 
     /**
      * SQLの方言
@@ -67,7 +68,7 @@ public class MetamodelWhereVisitor implements WhereVisitor {
             visitorContext = Optional.empty();
 
             // Metamodel用のVisitorに委譲する
-            VisitorContext context = new VisitorContext(entityMeta, dialect, tableNameResolver);
+            VisitorContext context = new VisitorContext(entityMetaMap, dialect, tableNameResolver);
             ExpressionVisitor visitor = new ExpressionVisitor();
             where.getPredicate().accept(visitor, context);
 

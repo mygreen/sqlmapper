@@ -79,9 +79,9 @@ public abstract class OperationHandler<T extends Operator> {
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void visitConstantWithPropertyPath(PropertyPath<?> propertyPath, Constant<?> expr, VisitorContext context) {
 
-//        EntityPath<?> entityPath = (EntityPath<?>) propertyPath.getPathMeta().getParent();
+        Class<?> parentClassType = propertyPath.getPathMeta().getParent().getType();
         String propertyName = propertyPath.getPathMeta().getElement();
-        Optional<PropertyMeta> propertyMeta = context.getEntityMeta().getPropertyMeta(propertyName);
+        Optional<PropertyMeta> propertyMeta = context.getEntityMetaMap().get(parentClassType).getPropertyMeta(propertyName);
         if(propertyMeta.isEmpty()) {
             throw new IllegalQueryException("unknwon property : " + propertyName);
         }

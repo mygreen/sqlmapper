@@ -1,8 +1,11 @@
 package com.github.mygreen.sqlmapper.metamodel;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
@@ -18,6 +21,30 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 class PathTest {
+
+    @DisplayName("chek meta info.")
+    @Test
+    void testPathMeta() {
+
+        // エンティティのチェック
+        MSampleEntity entity = MSampleEntity.sampleEntity;
+
+        assertThat(entity.getType()).isEqualTo(SampleEntity.class);
+        assertThat(entity.getPathMeta().getParent()).isNull();
+        assertThat(entity.getPathMeta().getElement()).isEqualTo("sampleEntity");
+        assertThat(entity.getPathMeta().getType()).isEqualTo(PathType.ROOT);
+
+        // プロパティのチェック
+        {
+            PropertyPath<String> prop = entity.name;
+            assertThat(prop.getType()).isEqualTo(String.class);
+            assertThat(prop.getPathMeta().getParent()).isEqualTo(entity);
+            assertThat(prop.getPathMeta().getElement()).isEqualTo("name");
+            assertThat(prop.getPathMeta().getType()).isEqualTo(PathType.PROPERTY);
+
+        }
+
+    }
 
     @Test
     void testBuildCondition() {

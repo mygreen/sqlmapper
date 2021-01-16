@@ -75,8 +75,9 @@ public class ExpressionVisitor implements Visitor<VisitorContext> {
 
         PathMeta pathMeta = expr.getPathMeta();
         if(pathMeta.getType() == PathType.PROPERTY) {
+            Class<?> parentClassType = pathMeta.getParent().getType();
             String propertyName = pathMeta.getElement();
-            Optional<PropertyMeta> propertyMeta = context.getEntityMeta().getPropertyMeta(propertyName);
+            Optional<PropertyMeta> propertyMeta = context.getEntityMetaMap().get(parentClassType).getPropertyMeta(propertyName);
             if(propertyMeta.isEmpty()) {
                 throw new IllegalQueryException("unknwon property : " + propertyName);
             }
