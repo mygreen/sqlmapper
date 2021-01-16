@@ -52,20 +52,25 @@ public class AutoInsertTest {
     void testInsertWithGenerateIdentity() {
 
         Employee entity = new Employee();
-        entity.setName("Yamada Taro");
+        entity.setName("Suzuki Hanako");
         entity.setAge(20);
-        entity.setRole(Role.ENGINEER);
+        entity.setRole(Role.MANAGER);
+        entity.setHireDate(LocalDate.of(2021, 1, 1));
+        entity.setSectionCode("021");
+        entity.setBusinessEstablishmentCode(1);
 
-        int count = sqlMapper.insert(entity)
+        int execCount = sqlMapper.insert(entity)
             .execute();
 
-        assertThat(count).isEqualTo(1);
+        assertThat(execCount).isEqualTo(1);
+
+        long recordCount = sqlMapper.selectFrom(MEmployee.employee).getCount();
 
         Employee result = sqlMapper.selectFrom(MEmployee.employee)
                 .id(entity.getId())
                 .getSingleResult();
 
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getId()).isEqualTo(recordCount);
         assertThat(result.getVersion()).isEqualTo(0L);
 
     }

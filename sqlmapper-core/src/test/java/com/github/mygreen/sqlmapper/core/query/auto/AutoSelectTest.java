@@ -13,7 +13,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.testdata.Customer;
+import com.github.mygreen.sqlmapper.core.testdata.Employee;
+import com.github.mygreen.sqlmapper.core.testdata.MBusinessEstablishment;
 import com.github.mygreen.sqlmapper.core.testdata.MCustomer;
+import com.github.mygreen.sqlmapper.core.testdata.MEmployee;
+import com.github.mygreen.sqlmapper.core.testdata.MSection;
 import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
 
 @ExtendWith(SpringExtension.class)
@@ -41,7 +45,7 @@ public class AutoSelectTest {
     }
 
     @Test
-    void testResultList_1() {
+    void testResultList() {
         List<Customer> entity = sqlMapper.selectFrom(MCustomer.customer)
             .id("001")
             .getResultList();
@@ -59,6 +63,29 @@ public class AutoSelectTest {
 
         assertThat(entity).hasSize(1);
         assertThat(entity.get(0)).hasFieldOrPropertyWithValue("id", "001");
+    }
+
+    @Test
+    void testResultList_join() {
+
+        final MEmployee employee = MEmployee.employee;
+        final MSection section = MSection.section;
+        final MBusinessEstablishment businessEstablishment = MBusinessEstablishment.businessEstablishment;
+
+        List<Employee> entity = sqlMapper.selectFrom(employee)
+                .innerJoin(section, (to) -> to.code.eq(employee.sectionCode))
+                .innerJoin(businessEstablishment, (to) -> to.code.eq(section.businessEstablishmentCode))
+                .associate(employee, section, (e1, e2) -> e1.setSection(e2))
+                .associate(section, businessEstablishment, (e1, e2) -> e1.setBusinessEstablishment(e2))
+                .where(employee.name.eq("山田太郎"))
+                .getResultList();
+
+        assertThat(entity).hasSize(1);
+
+        assertThat(entity.get(0)).hasFieldOrPropertyWithValue("name", "山田太郎");
+        assertThat(entity.get(0).getSection()).hasFieldOrPropertyWithValue("name", "人事本部");
+        assertThat(entity.get(0).getSection().getBusinessEstablishment()).hasFieldOrPropertyWithValue("name", "東京本社");
+
     }
 
 }

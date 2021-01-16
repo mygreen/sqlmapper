@@ -1,10 +1,30 @@
+-- 社員
 CREATE TABLE IF NOT EXISTS employee (
 	id bigint auto_increment,
 	name varchar NOT NULL,
 	age int,
 	role varchar,
+	hire_date date,
+	section_code varchar,
+	business_establishment_code int,
 	version bigint NOT NULL
 
+);
+
+-- 部門
+CREATE TABLE IF NOT EXISTS section (
+	code varchar NOT NULL,
+	business_establishment_code int NOT NULL,
+	name varchar,
+	primary key(code, business_establishment_code)
+);
+
+-- 事業所
+CREATE TABLE IF NOT EXISTS business_establishment (
+	code int primary key,
+	name varchar,
+	address varchar,
+	tel varchar
 );
 
 CREATE TABLE IF NOT EXISTS customer (

@@ -30,7 +30,7 @@ public class TestConfig extends SqlMapperConfigureSupport {
                 .setType(EmbeddedDatabaseType.H2)
                 .setScriptEncoding("UTF-8")
                 .addScript("script/test_schema.sql")
-                .addScripts("script/test_data_customer.sql")
+                .addScripts("script/test_data_customer.sql", "script/test_data_business.sql")
                 .build();
     }
 
