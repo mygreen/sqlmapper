@@ -7,6 +7,7 @@ package com.github.mygreen.sqlmapper.core.mapper;
  * @author T.TSUCHIE
  *
  */
+@FunctionalInterface
 public interface EntityMappingCallback<T> {
 
     /**
