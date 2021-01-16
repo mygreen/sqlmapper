@@ -15,9 +15,6 @@
  */
 package com.github.mygreen.sqlmapper.core.query;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * select句を組み立てるクラスです。
  *
@@ -30,16 +27,6 @@ public class SelectClause {
      * SQLです。
      */
     private StringBuilder sql;
-
-    /**
-     * カラム名のエイリアスに使う序数です。
-     */
-    private int aliasIndex;
-
-    /**
-     * 修飾されたカラム名とSELECT句のエイリアス名とのマッピングです。
-     */
-    private Map<String, String> columnAliases = new HashMap<>(64);
 
     /**
      * {@link SelectClause}を作成します。
@@ -87,10 +74,7 @@ public class SelectClause {
         if (sql.length() > 0) {
             sql.append(", ");
         }
-//        String qname = tableAlias + '.' + columnName;
-//        String columnAlias = "C" + (++aliasIndex) + "_";
-//        columnAliases.put(qname, columnAlias);
-//        sql.append(qname).append(" as ").append(columnAlias);
+
         sql.append(tableAlias + "." + columnName);
     }
 
@@ -105,27 +89,6 @@ public class SelectClause {
             sql.append(", ");
         }
         sql.append(selectItem);
-    }
-
-    /**
-     * カラム名に対応するエイリアス名を返します。
-     *
-     * @param tableAlias テーブル別名
-     * @param columnName カラム名
-     * @return カラム名に対応するエイリアス名
-     */
-    public String getColumnAlias(String tableAlias, String columnName) {
-        return getColumnAlias(tableAlias + '.' + columnName);
-    }
-
-    /**
-     * カラム名に対応するエイリアス名を返します。
-     *
-     * @param qname テーブル別名で修飾されたカラム名
-     * @return カラム名に対応するエイリアス名
-     */
-    public String getColumnAlias(String qname) {
-        return columnAliases.get(qname);
     }
 
 }
