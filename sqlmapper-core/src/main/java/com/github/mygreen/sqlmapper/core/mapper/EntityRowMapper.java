@@ -51,7 +51,8 @@ public class EntityRowMapper<T> implements RowMapper<T> {
     /**
      * 取得するカラムが確定している場合は、プロパティ情報を指定する。
      * @param baseEntityClass ベースとなるエンティティクラス
-     * @param propertyMetaList 取得対象のプロパティ情報
+     * @param propertyMetaEntityTypeMap 取得対象のプロパティ情報
+     * @param joinAssociations 結合テーブルのエンティティの構成情報
      * @param callback エンティティマッピング後のコールバック処理
      */
     @SuppressWarnings("rawtypes")
