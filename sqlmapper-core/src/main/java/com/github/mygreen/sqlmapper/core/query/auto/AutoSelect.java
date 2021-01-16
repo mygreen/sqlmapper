@@ -2,10 +2,14 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -16,6 +20,9 @@ import com.github.mygreen.sqlmapper.core.event.PostSelectEvent;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.JoinAssociation;
+import com.github.mygreen.sqlmapper.core.query.JoinCondition;
+import com.github.mygreen.sqlmapper.core.query.JoinType;
 import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
@@ -45,6 +52,12 @@ public class AutoSelect<T> extends QuerySupport<T> {
 
     @Getter(AccessLevel.PACKAGE)
     private final EntityMeta entityMeta;
+
+    /**
+     * エンティティタイプとメタ情報のマップ
+     */
+    @Getter(AccessLevel.PACKAGE)
+    private final Map<Class<?>, EntityMeta> entityMetaMap = new HashMap<>();
 
     /**
      * SQLのヒントです。
@@ -77,6 +90,20 @@ public class AutoSelect<T> extends QuerySupport<T> {
      */
     @Getter(AccessLevel.PACKAGE)
     private final Set<PropertyPath<?>> excludesProperties = new LinkedHashSet<>();
+
+    /**
+     * テーブルの結合条件の一覧です。
+     */
+    @SuppressWarnings("rawtypes")
+    @Getter(AccessLevel.PACKAGE)
+    private final List<JoinCondition> joinConditions = new ArrayList<>();
+
+    /**
+     * エンティティの構成定義の一覧です
+     */
+    @SuppressWarnings("rawtypes")
+    @Getter(AccessLevel.PACKAGE)
+    private final List<JoinAssociation> joinAssociations = new ArrayList<>();
 
     /**
      * 検索条件です。
@@ -125,6 +152,8 @@ public class AutoSelect<T> extends QuerySupport<T> {
         this.entityPath = entityPath;
         this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());
         this.baseClass = (Class<T>)entityMeta.getEntityType();
+
+        this.entityMetaMap.put(entityPath.getType(), context.getEntityMetaFactory().create(entityPath.getType()));
     }
 
     /**
@@ -168,6 +197,7 @@ public class AutoSelect<T> extends QuerySupport<T> {
     public AutoSelect<T> includes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
+            //TODO: 結合条件とかあるので、チェックは後からにする
             final String propName = prop.getPathMeta().getElement();
             if(entityMeta.getPropertyMeta(propName).isEmpty()) {
                 throw new IllegalOperateException(context.getMessageFormatter().create("query.noIncludeProperty")
@@ -175,7 +205,6 @@ public class AutoSelect<T> extends QuerySupport<T> {
                         .param("properyName", propName)
                         .format());
             }
-
             //TODO: 追加ではなく、上書き（直接変数に代入）する
             this.includesProperties.add(prop);
         }
@@ -195,6 +224,7 @@ public class AutoSelect<T> extends QuerySupport<T> {
     public AutoSelect<T> excludes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
+            //TODO: 結合条件とかあるので、チェックは後からにする
             final String propName = prop.toString();
             if(entityMeta.getPropertyMeta(propName).isEmpty()) {
                 throw new IllegalOperateException(context.getMessageFormatter().create("entity.prop.noInclude")
@@ -209,6 +239,117 @@ public class AutoSelect<T> extends QuerySupport<T> {
         }
 
         return this;
+
+    }
+
+    /**
+     * FROM句で指定したテーブルと内部結合（{@literal INNERT JOIN}）する条件を指定します。
+     *
+     * @param <ENTITY> 結合先のテーブルのエンティティタイプ
+     * @param toEntityPath 結合先テーブルのエンティティ情報
+     * @param conditioner 結合条件の組み立て
+     * @return 自身のインスタンス
+     * @throws IllegalOperateException 既に同じ組み合わせのエンティティ（テーブル）を指定しているときにスローされます。
+     */
+    public <ENTITY extends EntityPath<?>> AutoSelect<T> innerJoin(@NonNull ENTITY toEntityPath, @NonNull Function<ENTITY, Predicate> conditioner) {
+
+        JoinCondition<ENTITY> condition = new JoinCondition<>(JoinType.INNER, toEntityPath, conditioner);
+        validateJoinCondition(condition);
+
+        this.entityMetaMap.put(toEntityPath.getType(), context.getEntityMetaFactory().create(toEntityPath.getType()));
+        this.joinConditions.add(condition);
+        return this;
+    }
+
+    /**
+     * FROM句で指定したテーブルと左外部結合（{@literal LEFT OUTER JOIN}）する条件を指定します。
+     *
+     * @param <ENTITY> 結合先のテーブルのエンティティタイプ
+     * @param toEntityPath 結合先テーブルのエンティティ情報
+     * @param conditioner 結合条件の組み立て
+     * @return 自身のインスタンス
+     * @throws IllegalOperateException 既に同じ組み合わせのエンティティ（テーブル）を指定しているときにスローされます。
+     */
+    public <ENTITY extends EntityPath<?>> AutoSelect<T> leftJoin(@NonNull ENTITY toEntityPath, @NonNull Function<ENTITY, Predicate> conditioner) {
+
+        JoinCondition<ENTITY> condition = new JoinCondition<>(JoinType.LEFT_OUTER, toEntityPath, conditioner);
+        validateJoinCondition(condition);
+
+        this.entityMetaMap.put(toEntityPath.getType(), context.getEntityMetaFactory().create(toEntityPath.getType()));
+        this.joinConditions.add(condition);
+
+        return this;
+    }
+
+    /**
+     * 結合条件の一覧に既に同じテーブルのエンティティ情報が含まれいえるか検査します。
+     * <ul>
+     *   <li>比較は、結合先のエンティティ情報({@link EntityPath})既に存在するかどうか。</li>
+     *   <li>結合種別({@link JoinType}) は無視します。</li>
+     * </ul>
+     *
+     * @param condition 結合条件
+     * @return 同じエンティティの組み合わせが含まれているとき {@literal true} を返します
+     * @throws IllegalOperateException 既に同じ組み合わせのエンティティ（テーブル）を指定しているときにスローされます。
+     */
+    @SuppressWarnings("rawtypes")
+    private void validateJoinCondition(JoinCondition condition) {
+
+        // 同じ組み合わせのエンティティが存在しかいかチェックします。
+        for(JoinCondition target : joinConditions) {
+            if(target.getToEntity().equals(condition.getToEntity())) {
+
+                // 同じ組み合わせの場合
+                throw new IllegalOperateException(context.getMessageFormatter().create("query.existsSameJoinEntity")
+                        .param("toEntity", condition.getToEntity().getPathMeta().getElement())
+                        .format());
+            }
+        }
+
+        // TODO: 結合元のエンティティが結合条件として存在するかチェックします。
+        // 順番に依存するのであとからチェック？
+
+    }
+
+    /**
+     * テーブル結合の際に複数のテーブルのエンティティの構成定義を指定します。
+     *
+     * @param <E1> エンティティタイプ1
+     * @param <E2> エンティティタイプ2
+     * @param entityPath1 エンティティ情報1
+     * @param entityPath2 エンティティ情報2
+     * @param associator エンティティの構成定義
+     * @return 自身のインスタンス
+     * @throws IllegalOperateException 既に同じ組み合わせのエンティティの構成定義を指定しているときにスローされます。
+     */
+    public <E1, E2> AutoSelect<T> associate(@NonNull EntityPath<E1> entityPath1, @NonNull EntityPath<E2> entityPath2,
+            @NonNull BiConsumer<E1, E2> associator) {
+
+        JoinAssociation<E1, E2> association = new JoinAssociation<>(entityPath1, entityPath2, associator);
+        validateJoinAssociation(association);
+
+        this.joinAssociations.add(association);
+        return this;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private void validateJoinAssociation(JoinAssociation association) {
+
+        // 同じ組み合わせのエンティティが存在しないかチェックします
+        for(JoinAssociation target : joinAssociations) {
+            if((target.getEntity1().equals(association.getEntity1()) && target.getEntity2().equals(association.getEntity2()))
+                    || (target.getEntity1().equals(association.getEntity2()) && target.getEntity2().equals(association.getEntity1()))
+                    ) {
+                // 同じ組み合わせの場合 - エンティティ1、エンティティ2の順番は考慮しません。
+                throw new IllegalOperateException(context.getMessageFormatter().create("query.existsSameAssociateEntity")
+                        .param("entity1", association.getEntity1().getPathMeta().getElement())
+                        .param("entity2", association.getEntity2().getPathMeta().getElement())
+                        .format());
+            }
+        }
+
+        //TODO: 結合情報で定義されいるエンティティかチェックします。
+        //順番に依存するので後からチェック？
 
     }
 

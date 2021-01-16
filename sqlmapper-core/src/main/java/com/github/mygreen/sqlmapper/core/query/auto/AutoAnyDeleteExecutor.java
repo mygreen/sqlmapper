@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
@@ -54,7 +55,10 @@ public class AutoAnyDeleteExecutor extends QueryExecutorSupport<AutoAnyDelete<?>
             return;
         }
 
-        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMeta(), context.getDialect(), tableNameResolver);
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(
+                Map.of(query.getBaseClass(), query.getEntityMeta()),
+                context.getDialect(),
+                tableNameResolver);
         visitor.visit(new MetamodelWhere(query.getWhere()));
 
         this.whereClause.addSql(visitor.getCriteria());

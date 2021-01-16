@@ -99,4 +99,34 @@ public class FromClause {
         sql.append(" ").append(lockHint);
     }
 
+    /**
+     * 結合用のSQLを追加します。
+     *
+     * @param joinType 結合タイプ
+     * @param tableName 結合先のテーブル名
+     * @param tableAlias 結合先のテーブルの別名
+     * @param condition 結合条件
+     * @throws IllegalArgumentException 引数 {@literal joinType} で指定した結合タイプがサポート対象外のときにスローされます。
+     */
+    public void addSql(JoinType joinType, String tableName, String tableAlias, String condition) {
+
+        switch(joinType) {
+            case INNER:
+                sql.append(" inner join ");
+                break;
+            case LEFT_OUTER:
+                sql.append(" left outer join ");
+                break;
+            default:
+                throw new IllegalArgumentException("Not support joinType : " + joinType.toString());
+        }
+
+        sql.append(tableName)
+            .append(" ").append(tableAlias)
+            .append(" on ")
+            .append(condition);
+
+
+    }
+
 }

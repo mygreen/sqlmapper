@@ -1,8 +1,12 @@
 package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.springframework.util.StringUtils;
@@ -10,21 +14,25 @@ import org.springframework.util.StringUtils;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
 import com.github.mygreen.sqlmapper.core.mapper.EntityRowMapper;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.FromClause;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.JoinCondition;
 import com.github.mygreen.sqlmapper.core.query.OrderByClause;
 import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.SelectClause;
 import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
-import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhere;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhereVisitor;
 import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
 import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
+import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
+import com.github.mygreen.sqlmapper.metamodel.Predicate;
+import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
 
 public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
@@ -75,9 +83,9 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
     private final List<Object> paramValues = new ArrayList<>();
 
     /**
-     * 抽出対象のプロパティ情報
+     * 抽出対象のプロパティ情報とプロパティのマッピング先のエンティティのタイプ情報
      */
-    private PropertyMeta[] targetPropertyMetaList;
+    private Map<PropertyMeta, Class<?>> targetPropertyMetaEntityTypeMap;
 
     /**
      * インスタンスの作成
@@ -94,7 +102,8 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
     public void prepare() {
 
         prepareTableAlias();
-        prepareTarget();
+        prepareTargetColumn();
+        prepareTargetTable();
         prepareIdVersion();
         prepareCondition();
         prepareOrderBy();
@@ -113,14 +122,17 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
         // FROM句指定のテーブル
         tableNameResolver.prepareTableAlias(query.getEntityPath());
 
-        //TODO: JOINテーブルのエイリアス
+        // JOINテーブルのエイリアス
+        for(JoinCondition<?> condition : query.getJoinConditions()) {
+            tableNameResolver.prepareTableAlias(condition.getToEntity());
+        }
     }
 
     /**
      * 抽出対象のエンティティやカラム情報を準備します。
      * {@link SelectClause}を準備します。
      */
-    private void prepareTarget() {
+    private void prepareTargetColumn() {
 
         if(counting) {
             // 件数取得の場合
@@ -129,47 +141,104 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
 
         } else {
 
-            List<PropertyMeta> selectedPropertyMetaList = new ArrayList<>();
-            List<Integer> idIndexList = new ArrayList<Integer>();
+            Map<PropertyMeta, Class<?>> selectedPropertyMetaMap = new LinkedHashMap<>();
 
-            // 通常のカラム指定の場合
+            // ベースとなるエンティティのカラム指定の場合
             for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
                 final String propertyName = propertyMeta.getName();
+                final PropertyPath<?> propertyPath = query.getEntityPath().getPropertyPath(propertyName);
 
                 if(propertyMeta.isTransient()) {
                     continue;
                 }
 
-                //TODO: 他のテーブルのプロパティの可能性があるのでエンティティの比較も行うべき
-                if(QueryUtils.containsByPropertyName(query.getExcludesProperties(), propertyName)) {
+                if(query.getExcludesProperties().contains(propertyPath)) {
                     continue;
                 }
 
                 if(!query.getIncludesProperties().isEmpty()
-                        && !QueryUtils.containsByPropertyName(query.getIncludesProperties(), propertyName)) {
+                        && !query.getIncludesProperties().contains(propertyPath)) {
                     continue;
                 }
 
-                //TODO: JOINしているときは、他のテーブルのカラムの可能性がある。
                 String tableAlias = tableNameResolver.getTableAlias(query.getEntityPath());
                 selectClause.addSql(tableAlias, propertyMeta.getColumnMeta().getName());
-                selectedPropertyMetaList.add(propertyMeta);
-
-                if(propertyMeta.isId()) {
-                    // 主キーのインデックスの位置を保存
-                    idIndexList.add(selectedPropertyMetaList.size()-1);
-                }
+                selectedPropertyMetaMap.put(propertyMeta, query.getBaseClass());
 
             }
 
-            targetPropertyMetaList = selectedPropertyMetaList.toArray(new PropertyMeta[selectedPropertyMetaList.size()]);
+            // 結合しているエンティティの場合
+            for(JoinCondition<?> jc : query.getJoinConditions()) {
+                EntityPath<?> joinEntity = jc.getToEntity();
+                EntityMeta joinEntityMeta = query.getEntityMetaMap().get(joinEntity.getType());
+
+                for(PropertyMeta propertyMeta : joinEntityMeta.getAllColumnPropertyMeta()) {
+                    final String propertyName = propertyMeta.getName();
+                    final PropertyPath<?> propertyPath = joinEntity.getPropertyPath(propertyName);
+
+                    if(propertyMeta.isTransient()) {
+                        continue;
+                    }
+
+                    if(query.getExcludesProperties().contains(propertyPath)) {
+                        continue;
+                    }
+
+                    if(!query.getIncludesProperties().isEmpty()
+                            && !query.getIncludesProperties().contains(propertyPath)) {
+                        continue;
+                    }
+
+                    String tableAlias = tableNameResolver.getTableAlias(joinEntity);
+                    selectClause.addSql(tableAlias, propertyMeta.getColumnMeta().getName());
+                    selectedPropertyMetaMap.put(propertyMeta, joinEntity.getType());
+
+                }
+            }
+
+            this.targetPropertyMetaEntityTypeMap = Collections.unmodifiableMap(selectedPropertyMetaMap);
 
         }
+
+    }
+
+    /**
+     * 抽出対象のテーブルや結合対象のテーブルの準備を行います。
+     * {@link FromClause}の準備を行います。
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void prepareTargetTable() {
 
         // from句の指定
         fromClause.addSql(query.getEntityMeta().getTableMeta().getFullName(), tableNameResolver.getTableAlias(query.getEntityPath()));
 
+        for(JoinCondition jc : query.getJoinConditions()) {
+
+            // 結合対象のテーブル情報の取得
+            EntityPath<?> joinEntity = jc.getToEntity();
+            EntityMeta joinEntityMeta = query.getEntityMetaMap().get(joinEntity.getType());
+            String tableName = joinEntityMeta.getTableMeta().getFullName();
+            String tableAlias = tableNameResolver.getTableAlias(joinEntity);
+
+            Function<EntityPath, Predicate> conditoner = jc.getConditioner();
+            Predicate where = conditoner.apply(joinEntity);
+
+            // テーブルの結合条件の評価
+            MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMetaMap(), context.getDialect(), tableNameResolver);
+            visitor.visit(new MetamodelWhere(where));
+            String condition = visitor.getCriteria();
+
+            // JOIN句の追加
+            fromClause.addSql(jc.getType(), tableName, tableAlias, condition);
+
+            // 結合条件にプレースホルダーがあるとき、パラメータの値を追加する
+            paramValues.addAll(visitor.getParamValues());
+
+        }
+
     }
+
+
 
     /**
      * IDプロパティ及びバージョンを準備します。
@@ -177,7 +246,11 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void prepareIdVersion() {
 
-        if(query.getIdPropertyValues() == null && query.getVersionPropertyValue() != null) {
+        if(query.getIdPropertyValues() == null && query.getVersionPropertyValue() == null) {
+            // 主キーとバージョンキーの両方の指定がない場合はスキップする。
+            return;
+
+        } else if(query.getIdPropertyValues() == null && query.getVersionPropertyValue() != null) {
             // 主キーが指定されず、バージョンだけ指定されている場合
             throw new IllegalOperateException(context.getMessageFormatter().create("query.emptyIdWithVersion")
                     .format());
@@ -215,7 +288,6 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
         this.whereClause.addSql(visitor.getCriteria());
         this.paramValues.addAll(visitor.getParamValues());
 
-
     }
 
     /**
@@ -227,7 +299,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
             return;
         }
 
-        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMeta(), context.getDialect(), tableNameResolver);
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMetaMap(), context.getDialect(), tableNameResolver);
         visitor.visit(new MetamodelWhere(query.getWhere()));
 
         this.whereClause.addSql(visitor.getCriteria());
@@ -325,16 +397,16 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
     public T getSingleResult(EntityMappingCallback<T> callback) {
         assertNotCompleted("getSingleResult");
 
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList,
-                Optional.ofNullable(callback));
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
+                query.getJoinAssociations(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues.toArray());
     }
 
     public Optional<T> getOptionalResult(EntityMappingCallback<T> callback) {
         assertNotCompleted("getOptionalResult");
 
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList,
-                Optional.ofNullable(callback));
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
+                query.getJoinAssociations(), Optional.ofNullable(callback));
         final List<T> ret = context.getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
         if(ret.isEmpty()) {
             return Optional.empty();
@@ -346,16 +418,16 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
     public List<T> getResultList(EntityMappingCallback<T> callback) {
         assertNotCompleted("getResultList");
 
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList,
-                Optional.ofNullable(callback));
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
+                query.getJoinAssociations(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
     }
 
     public Stream<T> getResultStream(EntityMappingCallback<T> callback) {
         assertNotCompleted("getResultStream");
 
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaList,
-                Optional.ofNullable(callback));
+        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
+                query.getJoinAssociations(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues.toArray());
 
     }
