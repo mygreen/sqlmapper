@@ -59,14 +59,16 @@ public class TableNameResolver {
 
     /**
      * テーブルの別名を新たに準備します。
+     * 既に登録済みのキーとなる名前の場合、登録されている別名を返します。
+     *
      * @param name キーとなる名前。
      * @param entityMeta
      * @return 別名。
      */
     public String prepareTableAlias(String name) {
-        String alias = createTableAlias();
-        tableAliasMap.put(name, alias);
-        return alias;
+
+        return tableAliasMap.computeIfAbsent(name, key -> createTableAlias());
+
     }
 
     public String prepareTableAlias(Path<?> entityPath) {
