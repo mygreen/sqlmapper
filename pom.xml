@@ -13,6 +13,7 @@
 		<module>sqlmapper-core</module>
 		<module>sqlmapper-metamodel</module>
 		<module>sqlmapper-apt</module>
+		<module>sqlmapper-examples</module>
 	</modules>
 
 	<properties>
@@ -83,7 +84,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.12</version>
+			<version>1.18.18</version>
 			<scope>provided</scope>
 		</dependency>
 
