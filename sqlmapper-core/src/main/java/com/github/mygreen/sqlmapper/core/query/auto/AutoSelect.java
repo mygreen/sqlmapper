@@ -195,18 +195,8 @@ public class AutoSelect<T> extends QuerySupport<T> {
     public AutoSelect<T> includes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
-            //TODO: 結合条件とかあるので、チェックは後からにする
-            final String propName = prop.getPathMeta().getElement();
-            if(entityMeta.getPropertyMeta(propName).isEmpty()) {
-                throw new IllegalOperateException(context.getMessageFormatter().create("query.noIncludeProperty")
-                        .paramWithClass("classType", entityMeta.getEntityType())
-                        .param("properyName", propName)
-                        .format());
-            }
-            //TODO: 追加ではなく、上書き（直接変数に代入）する
             this.includesProperties.add(prop);
         }
-
 
         return this;
 
@@ -217,22 +207,10 @@ public class AutoSelect<T> extends QuerySupport<T> {
      *
      * @param properties 除外対象のプロパティ情報。
      * @return 自身のインスタンス。
-     * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
      */
     public AutoSelect<T> excludes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
-            //TODO: 結合条件とかあるので、チェックは後からにする
-            final String propName = prop.toString();
-            if(entityMeta.getPropertyMeta(propName).isEmpty()) {
-                throw new IllegalOperateException(context.getMessageFormatter().create("entity.prop.noInclude")
-                        .paramWithClass("classType", entityMeta.getEntityType())
-                        .param("properyName", propName)
-                        .format());
-            }
-
-
-            //TODO: 追加ではなく、上書き（直接変数に代入）する
             this.excludesProperties.add(prop);
         }
 
@@ -247,7 +225,6 @@ public class AutoSelect<T> extends QuerySupport<T> {
      * @param toEntityPath 結合先テーブルのエンティティ情報
      * @param conditioner 結合条件の組み立て
      * @return 自身のインスタンス
-     * @throws IllegalOperateException 既に同じ組み合わせのエンティティ（テーブル）を指定しているときにスローされます。
      */
     public <ENTITY extends EntityPath<?>> AutoSelect<T> innerJoin(@NonNull ENTITY toEntityPath,
             @NonNull JoinCondition.Conditioner<ENTITY> conditioner) {
@@ -292,11 +269,10 @@ public class AutoSelect<T> extends QuerySupport<T> {
      * @return 同じエンティティの組み合わせが含まれているとき {@literal true} を返します
      * @throws IllegalOperateException 既に同じ組み合わせのエンティティ（テーブル）を指定しているときにスローされます。
      */
-    @SuppressWarnings("rawtypes")
-    private void validateJoinCondition(JoinCondition condition) {
+    private void validateJoinCondition(JoinCondition<?> condition) {
 
-        // 同じ組み合わせのエンティティが存在しかいかチェックします。
-        for(JoinCondition target : joinConditions) {
+        // 同じ組み合わせのエンティティが存在しかチェックします。
+        for(JoinCondition<?> target : joinConditions) {
             if(target.getToEntity().equals(condition.getToEntity())) {
 
                 // 同じ組み合わせの場合
@@ -305,9 +281,6 @@ public class AutoSelect<T> extends QuerySupport<T> {
                         .format());
             }
         }
-
-        // TODO: 結合元のエンティティが結合条件として存在するかチェックします。
-        // 順番に依存するのであとからチェック？
 
     }
 
@@ -326,17 +299,9 @@ public class AutoSelect<T> extends QuerySupport<T> {
             @NonNull JoinAssociation.Associator<E1, E2> associator) {
 
         JoinAssociation<E1, E2> association = new JoinAssociation<>(entityPath1, entityPath2, associator);
-        validateJoinAssociation(association);
-
-        this.joinAssociations.add(association);
-        return this;
-    }
-
-    @SuppressWarnings("rawtypes")
-    private void validateJoinAssociation(JoinAssociation association) {
 
         // 同じ組み合わせのエンティティが存在しないかチェックします
-        for(JoinAssociation target : joinAssociations) {
+        for(JoinAssociation<?, ?> target : joinAssociations) {
             if((target.getEntity1().equals(association.getEntity1()) && target.getEntity2().equals(association.getEntity2()))
                     || (target.getEntity1().equals(association.getEntity2()) && target.getEntity2().equals(association.getEntity1()))
                     ) {
@@ -348,9 +313,8 @@ public class AutoSelect<T> extends QuerySupport<T> {
             }
         }
 
-        //TODO: 結合情報で定義されいるエンティティかチェックします。
-        //順番に依存するので後からチェック？
-
+        this.joinAssociations.add(association);
+        return this;
     }
 
     /**

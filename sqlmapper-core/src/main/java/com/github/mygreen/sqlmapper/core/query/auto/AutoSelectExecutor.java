@@ -1,11 +1,14 @@
 package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.springframework.util.StringUtils;
@@ -17,6 +20,7 @@ import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.FromClause;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.JoinAssociation;
 import com.github.mygreen.sqlmapper.core.query.JoinCondition;
 import com.github.mygreen.sqlmapper.core.query.OrderByClause;
 import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
@@ -125,7 +129,56 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
         for(JoinCondition<?> condition : query.getJoinConditions()) {
             tableNameResolver.prepareTableAlias(condition.getToEntity());
         }
+
+        // 構成定義のバリデーション
+        for(JoinAssociation<?, ?> association : query.getJoinAssociations()) {
+            validateJoinAssociation(association);
+        }
     }
+
+    /**
+     * 構成定義が抽出対象のテーブルのエンティティかどうか
+     *
+     * @param association 構成定義情報
+     */
+    private void validateJoinAssociation(JoinAssociation<?, ?> association) {
+
+        // 参照対象のエンティティかチェックする
+        boolean foundEntity1 = false;
+        boolean foundEntity2 = false;
+
+        if(association.getEntity1().getType().equals(query.getEntityMeta().getEntityType())) {
+            foundEntity1 = true;
+        }
+
+        if(association.getEntity2().getType().equals(query.getEntityMeta().getEntityType())) {
+            foundEntity2 = true;
+        }
+
+        // 結合情報で定義されいるエンティティかチェックします。
+        for(JoinCondition<?> condition : query.getJoinConditions()) {
+            if(association.getEntity1().getType().equals(condition.getToEntity().getType())) {
+                foundEntity1 = true;
+            }
+
+            if(association.getEntity2().getType().equals(condition.getToEntity().getType())) {
+                foundEntity2 = true;
+            }
+
+            if(foundEntity1 && foundEntity2) {
+                continue;
+            }
+
+        }
+
+        if(!foundEntity1 || !foundEntity2) {
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.noExistsTargetAssociateEntity")
+                    .param("entity1", association.getEntity1().getType())
+                    .param("entity2", association.getEntity2().getType())
+                    .format());
+            }
+        }
+
 
     /**
      * 抽出対象のエンティティやカラム情報を準備します。
@@ -139,6 +192,8 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
             selectClause.addSql(sql);
 
         } else {
+            validateTargetProperty(query.getIncludesProperties());
+            validateTargetProperty(query.getExcludesProperties());
 
             Map<PropertyMeta, Class<?>> selectedPropertyMetaMap = new LinkedHashMap<>();
 
@@ -196,6 +251,50 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
             }
 
             this.targetPropertyMetaEntityTypeMap = Collections.unmodifiableMap(selectedPropertyMetaMap);
+
+        }
+
+    }
+
+    /**
+     * 対象のプロパティが参照対象のテーブルのエンティティに所属するかチェックします。
+     *
+     * @param properties チェック対象のプロパティ一覧
+     * @throws IllegalOperateException 既に同じ組み合わせのエンティティ（テーブル）を指定しているときにスローされます。
+     */
+    private void validateTargetProperty(final Collection<PropertyPath<?>> properties) {
+
+        for(PropertyPath<?> prop : properties) {
+
+            // チェックしたエンティのクラスタイプ
+            Set<Class<?>> checkedClassTypes = new LinkedHashSet<>();
+
+            // 参照元のエンティティのチェック
+            EntityPath<?> parentPath = (EntityPath<?>)prop.getPathMeta().getParent();
+            if(query.getEntityPath().equals(parentPath)) {
+                continue;
+            }
+            checkedClassTypes.add(query.getEntityPath().getType());
+
+            // 結合先のエンティティかチェック
+            boolean foundInJoinedEntity = false;
+            for(JoinCondition<?> condition : query.getJoinConditions()) {
+                EntityPath<?> joinEntityPath = condition.getToEntity();
+                if(joinEntityPath.equals(parentPath)) {
+                    foundInJoinedEntity = true;
+                    continue;
+                }
+                checkedClassTypes.add(joinEntityPath.getType());
+            }
+
+            if(foundInJoinedEntity) {
+                Class<?>[] classTypes = checkedClassTypes.toArray(new Class[checkedClassTypes.size()]);
+                throw new IllegalOperateException(context.getMessageFormatter().create("noAnyIncludeProperty")
+                        .paramWithClass("classTypes", classTypes)
+                        .param("entityClass", parentPath.getPathMeta().getType())
+                        .param("properyName", prop.getPathMeta().getElement())
+                        .format());
+            }
 
         }
 
