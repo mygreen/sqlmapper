@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.springframework.util.StringUtils;
@@ -220,8 +219,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
             String tableName = joinEntityMeta.getTableMeta().getFullName();
             String tableAlias = tableNameResolver.getTableAlias(joinEntity);
 
-            Function<EntityPath, Predicate> conditoner = jc.getConditioner();
-            Predicate where = conditoner.apply(joinEntity);
+            Predicate where = jc.getConditioner().build(joinEntity);
 
             // テーブルの結合条件の評価
             MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMetaMap(), context.getDialect(), tableNameResolver);

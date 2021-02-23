@@ -94,7 +94,7 @@ public class EntityRowMapper<T> implements RowMapper<T> {
         for(JoinAssociation association : joinAssociations) {
             Object entityObject1 = entityInstanceMap.get(association.getEntity1().getType());
             Object entityObject2 = entityInstanceMap.get(association.getEntity2().getType());
-            association.getAssociator().accept(entityObject1, entityObject2);
+            association.getAssociator().associate(entityObject1, entityObject2);
         }
 
         final T baseEntity = (T)entityInstanceMap.get(baseEntityClass);

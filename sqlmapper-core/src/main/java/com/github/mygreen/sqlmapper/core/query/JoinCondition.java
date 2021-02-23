@@ -1,7 +1,5 @@
 package com.github.mygreen.sqlmapper.core.query;
 
-import java.util.function.Function;
-
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 
@@ -35,7 +33,24 @@ public class JoinCondition<ENTITY extends EntityPath<?>> {
      * 結合条件の組み立て
      */
     @Getter
-    private final Function<ENTITY, Predicate> conditioner;
+    private final Conditioner<ENTITY> conditioner;
 
+    /**
+     * テーブルの結合条件を組み立てます。
+     *
+     *
+     * @author T.TSUCHIE
+     * @param <ENTITY> 結合対象のエンティティのタイプ。
+     *
+     */
+    public interface Conditioner<ENTITY> {
+
+        /**
+         * 結合条件を組み立てます。
+         * @param entity 結合対象のエンティティ。
+         * @return 結合条件。
+         */
+        Predicate build(ENTITY entity);
+    }
 
 }

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -251,7 +249,8 @@ public class AutoSelect<T> extends QuerySupport<T> {
      * @return 自身のインスタンス
      * @throws IllegalOperateException 既に同じ組み合わせのエンティティ（テーブル）を指定しているときにスローされます。
      */
-    public <ENTITY extends EntityPath<?>> AutoSelect<T> innerJoin(@NonNull ENTITY toEntityPath, @NonNull Function<ENTITY, Predicate> conditioner) {
+    public <ENTITY extends EntityPath<?>> AutoSelect<T> innerJoin(@NonNull ENTITY toEntityPath,
+            @NonNull JoinCondition.Conditioner<ENTITY> conditioner) {
 
         JoinCondition<ENTITY> condition = new JoinCondition<>(JoinType.INNER, toEntityPath, conditioner);
         validateJoinCondition(condition);
@@ -270,7 +269,8 @@ public class AutoSelect<T> extends QuerySupport<T> {
      * @return 自身のインスタンス
      * @throws IllegalOperateException 既に同じ組み合わせのエンティティ（テーブル）を指定しているときにスローされます。
      */
-    public <ENTITY extends EntityPath<?>> AutoSelect<T> leftJoin(@NonNull ENTITY toEntityPath, @NonNull Function<ENTITY, Predicate> conditioner) {
+    public <ENTITY extends EntityPath<?>> AutoSelect<T> leftJoin(@NonNull ENTITY toEntityPath,
+            @NonNull JoinCondition.Conditioner<ENTITY> conditioner) {
 
         JoinCondition<ENTITY> condition = new JoinCondition<>(JoinType.LEFT_OUTER, toEntityPath, conditioner);
         validateJoinCondition(condition);
@@ -323,7 +323,7 @@ public class AutoSelect<T> extends QuerySupport<T> {
      * @throws IllegalOperateException 既に同じ組み合わせのエンティティの構成定義を指定しているときにスローされます。
      */
     public <E1, E2> AutoSelect<T> associate(@NonNull EntityPath<E1> entityPath1, @NonNull EntityPath<E2> entityPath2,
-            @NonNull BiConsumer<E1, E2> associator) {
+            @NonNull JoinAssociation.Associator<E1, E2> associator) {
 
         JoinAssociation<E1, E2> association = new JoinAssociation<>(entityPath1, entityPath2, associator);
         validateJoinAssociation(association);
