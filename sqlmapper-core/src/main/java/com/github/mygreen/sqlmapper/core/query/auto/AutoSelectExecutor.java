@@ -155,7 +155,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
             foundEntity2 = true;
         }
 
-        // 結合情報で定義されいるエンティティかチェックします。
+        // 結合情報で定義されているエンティティかチェックします。
         for(JoinCondition<?> condition : query.getJoinConditions()) {
             if(association.getEntity1().getType().equals(condition.getToEntity().getType())) {
                 foundEntity1 = true;
@@ -192,10 +192,13 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
             selectClause.addSql(sql);
 
         } else {
+
+            // 抽出対象のプロパティが参照対象のテーブルに存在するかチェックする
             validateTargetProperty(query.getIncludesProperties());
             validateTargetProperty(query.getExcludesProperties());
 
-            Map<PropertyMeta, Class<?>> selectedPropertyMetaMap = new LinkedHashMap<>();
+            // 参照対象のプロパティと所属するエンティティのマップ
+            final Map<PropertyMeta, Class<?>> selectedPropertyMetaMap = new LinkedHashMap<>();
 
             // ベースとなるエンティティのカラム指定の場合
             for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
