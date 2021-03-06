@@ -160,7 +160,7 @@ public class AutoBatchUpdate<T> extends QuerySupport<T> {
         for(CharSequence name : propertyNames) {
             final String nameStr = name.toString();
             if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
-                throw new IllegalOperateException(context.getMessageFormatter().create("entity.prop.noInclude")
+                throw new IllegalOperateException(context.getMessageFormatter().create("query.noIncludeProperty")
                         .paramWithClass("classType", entityMeta.getEntityType())
                         .param("properyName", nameStr)
                         .format());
