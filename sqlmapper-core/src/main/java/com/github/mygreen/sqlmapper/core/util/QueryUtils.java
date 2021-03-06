@@ -13,7 +13,7 @@ import com.github.mygreen.sqlmapper.core.query.QueryTokenizer;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
 /**
- * クエリ組み立て自のヘルパークラス
+ * クエリ組み立て時のヘルパークラス
  *
  *
  * @author T.TSUCHIE
