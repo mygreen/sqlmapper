@@ -1,7 +1,7 @@
 package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
@@ -10,6 +10,8 @@ import com.github.mygreen.sqlmapper.core.event.PreBatchInsertEvent;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.core.query.QuerySupport;
+import com.github.mygreen.sqlmapper.metamodel.EntityPath;
+import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,13 +38,13 @@ public class AutoBatchInsert<T> extends QuerySupport<T> {
      * 挿入対象とするプロパティ一覧
      */
     @Getter(AccessLevel.PACKAGE)
-    private final Set<String> includesProperties = new HashSet<>();
+    private final Set<String> includesProperties = new LinkedHashSet<>();
 
     /**
      * 挿入対象から除外するプロパティ一覧
      */
     @Getter(AccessLevel.PACKAGE)
-    private final Set<String> excludesProperties = new HashSet<>();
+    private final Set<String> excludesProperties = new LinkedHashSet<>();
 
     public AutoBatchInsert(@NonNull SqlMapperContext context, @NonNull T[] entities) {
         super(context);
@@ -82,23 +84,25 @@ public class AutoBatchInsert<T> extends QuerySupport<T> {
      * 指定のプロパティのみを挿入対象とします。
      * <p>アノテーション {@literal @Column(insertable = false)} が設定されているプロパティは対象外となります。</p>
      *
-     * @param propertyNames 挿入対象のプロパティ名。
+     * @param properties 挿入対象のプロパティ情報。
      * @return 自身のインスタンス。
      * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
      */
-    public AutoBatchInsert<T> includes(final CharSequence... propertyNames) {
+    public AutoBatchInsert<T> includes(final PropertyPath<?>... properties) {
 
-        for(CharSequence name : propertyNames) {
-            final String nameStr = name.toString();
-            if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
+        for(PropertyPath<?> prop : properties) {
+            String propertyName = prop.getPathMeta().getElement();
+
+            // 挿入対象のプロパティの親のチェック
+            EntityPath<?> parentPath = (EntityPath<?>)prop.getPathMeta().getParent();
+            if(!entityMeta.getEntityType().equals(parentPath.getType())) {
                 throw new IllegalOperateException(context.getMessageFormatter().create("query.noIncludeProperty")
                         .paramWithClass("classType", entityMeta.getEntityType())
-                        .param("propertyName", nameStr)
+                        .param("properyName", propertyName)
                         .format());
             }
 
-
-            this.includesProperties.add(nameStr);
+            this.includesProperties.add(propertyName);
         }
 
         return this;
@@ -108,23 +112,25 @@ public class AutoBatchInsert<T> extends QuerySupport<T> {
     /**
      * 指定のプロパティを挿入対象から除外します。
      *
-     * @param propertyNames 除外対象のプロパティ名。
+     * @param properties 除外対象のプロパティ情報。
      * @return 自身のインスタンス。
-     * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
      */
-    public AutoBatchInsert<T> excludes(final CharSequence... propertyNames) {
+    public AutoBatchInsert<T> excludes(final PropertyPath<?>... properties) {
 
-        for(CharSequence name : propertyNames) {
-            final String nameStr = name.toString();
-            if(entityMeta.getPropertyMeta(nameStr).isEmpty()) {
-                throw new IllegalOperateException(context.getMessageFormatter().create("entity.noIncludeProperty")
+        for(PropertyPath<?> prop : properties) {
+            String propertyName = prop.getPathMeta().getElement();
+
+            // 除外対象のプロパティの親のチェック
+            EntityPath<?> parentPath = (EntityPath<?>)prop.getPathMeta().getParent();
+            if(!entityMeta.getEntityType().equals(parentPath.getType())) {
+                throw new IllegalOperateException(context.getMessageFormatter().create("query.noIncludeProperty")
                         .paramWithClass("classType", entityMeta.getEntityType())
-                        .param("propertyName", nameStr)
+                        .param("properyName", propertyName)
                         .format());
+
             }
 
-
-            this.excludesProperties.add(nameStr);
+            this.excludesProperties.add(propertyName);
         }
 
         return this;

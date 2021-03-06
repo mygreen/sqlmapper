@@ -56,7 +56,7 @@ public class AutoInsert<T> extends QuerySupport<T> {
         this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());
     }
 
-        /**
+    /**
      * 指定のプロパティのみを挿入対象とします。
      * <p>アノテーション {@literal @Column(insertable = false)} が設定されているプロパティは対象外となります。</p>
      *
