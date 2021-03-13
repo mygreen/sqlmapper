@@ -2,6 +2,9 @@ package com.github.mygreen.sqlmapper.core.meta;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Date;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +12,20 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.annotation.Column;
+import com.github.mygreen.sqlmapper.core.annotation.CreatedAt;
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
+import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
+import com.github.mygreen.sqlmapper.core.annotation.ModifiedAt;
+import com.github.mygreen.sqlmapper.core.annotation.Temporal;
+import com.github.mygreen.sqlmapper.core.annotation.Temporal.TemporalType;
 import com.github.mygreen.sqlmapper.core.annotation.Transient;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
 import com.github.mygreen.sqlmapper.core.testdata.NoDbTestConfig;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 
 @ExtendWith(SpringExtension.class)
@@ -53,37 +63,120 @@ public class EntityMetaFactoryTest {
         }
 
         assertThat(entityMeta.getAllColumnPropertyMeta()).hasSize(5);
+        int assertCount = 0;
         for(PropertyMeta propertyMeta : entityMeta.getAllColumnPropertyMeta()) {
 
             if(propertyMeta.getName().equals("id")) {
                 assertThat(propertyMeta.isId()).isTrue();
                 assertThat(propertyMeta.getColumnMeta().getName()).isEqualTo("ID");
+                assertCount++;
 
             } else if(propertyMeta.getName().equals("firstName")) {
                 assertThat(propertyMeta.isId()).isFalse();
                 assertThat(propertyMeta.getColumnMeta().getName()).isEqualTo("name1");
+                assertCount++;
 
             } else if(propertyMeta.getName().equals("lastName")) {
                 assertThat(propertyMeta.isId()).isFalse();
                 assertThat(propertyMeta.getColumnMeta().getName()).isEqualTo("NAME2");
+                assertCount++;
 
             } else if(propertyMeta.getName().equals("age")) {
                 assertThat(propertyMeta.isId()).isFalse();
                 assertThat(propertyMeta.getColumnMeta().getName()).isEqualTo("AGE");
+                assertCount++;
 
             } else if(propertyMeta.getName().equals("version")) {
                 assertThat(propertyMeta.isId()).isFalse();
                 assertThat(propertyMeta.getColumnMeta().getName()).isEqualTo("VERSION");
                 assertThat(propertyMeta.isVersion()).isTrue();
+                assertCount++;
             }
+
+        }
+
+        assertThat(assertCount).isEqualTo(5);
+
+    }
+
+    @Test
+    void testInheritance() {
+
+        EntityMeta entityMeta = entityMetaFactory.create(InheritanceEntity.class);
+
+        // プロパティの属性のチェック
+        assertThat(entityMeta.getAllColumnPropertyMeta()).hasSize(5);
+
+        int assertCount = 0;
+        for(PropertyMeta propertyMeta : entityMeta.getAllColumnPropertyMeta()) {
+
+            if(propertyMeta.getName().equals("id")) {
+                assertThat(propertyMeta.isId()).isTrue();
+                assertThat(propertyMeta.getDeclaringClass()).isEqualTo(InheritanceBaseEntity.class);
+
+                assertCount++;
+
+            } else if(propertyMeta.getName().equals("code")) {
+                assertThat(propertyMeta.getDeclaringClass()).isEqualTo(InheritanceBaseEntity.class);
+
+                assertCount++;
+
+            } else if(propertyMeta.getName().equals("createAt")) {
+                assertThat(propertyMeta.isCreatedAt()).isTrue();
+
+                assertThat(propertyMeta.getDeclaringClass()).isEqualTo(RootEntity.class);
+
+                assertCount++;
+
+
+            } else if(propertyMeta.getName().equals("updateAt")) {
+                assertThat(propertyMeta.isModifiedAt()).isTrue();
+                assertThat(propertyMeta.getDeclaringClass()).isEqualTo(RootEntity.class);
+
+                assertCount++;
+
+
+            } else if(propertyMeta.getName().equals("version")) {
+                assertThat(propertyMeta.isVersion()).isTrue();
+                assertThat(propertyMeta.getDeclaringClass()).isEqualTo(RootEntity.class);
+
+                assertCount++;
+            }
+
+        }
+
+        assertThat(assertCount).isEqualTo(5);
+
+
+        // プロパティの参照／更新のチェック
+        PropertyMeta codePropertyMeta = entityMeta.getColumnPropertyMeta("code").get();
+        {
+
+            InheritanceEntity entity = new InheritanceEntity();
+            entity.setCode("abc");
+
+            Object value = PropertyValueInvoker.getPropertyValue(codePropertyMeta, entity);
+            assertThat(value).isEqualTo("abc");
+
+        }
+
+        {
+            InheritanceEntity entity = new InheritanceEntity();
+            PropertyValueInvoker.setPropertyValue(codePropertyMeta, entity, "abc");
+
+            assertThat(entity.getCode()).isEqualTo("abc");
 
         }
 
     }
 
+    /**
+     * 継承なしの通常のエンティティ
+     *
+     */
     @Entity
     @Data
-    public static class StandardEntity {
+    static class StandardEntity {
 
         @Id
         private long id;
@@ -101,6 +194,66 @@ public class EntityMetaFactoryTest {
 
         @Transient
         private String fullName;
+
+    }
+
+    /**
+     * 最上位のエンティティ
+     *
+     *
+     */
+    @Data
+    @MappedSuperclass
+    static abstract class RootEntity {
+
+        @Getter
+        @Setter
+        @CreatedAt
+        @Temporal(TemporalType.TIMESTAMP)
+        private Date createAt;
+
+        @Getter
+        @Setter
+        @ModifiedAt
+        @Temporal(TemporalType.TIMESTAMP)
+        private Date updateAt;
+
+        @Getter
+        @Setter
+        @Version
+        private long version;
+
+    }
+
+    /**
+     * 継承したエンティティ
+     * GAPパターン用のベースクラス。
+     *
+     */
+    @MappedSuperclass
+    static abstract class InheritanceBaseEntity extends RootEntity {
+
+        @Getter
+        @Setter
+        @Id
+        private long id;
+
+        @Getter
+        @Setter
+        private String code;
+
+    }
+
+    /**
+     * 継承したエンティティ
+     * 最終的な実装用のエンティティ
+     *
+     */
+    @Entity
+    static class InheritanceEntity extends InheritanceBaseEntity {
+
+        @Transient
+        private Map<String, Integer> map;
 
     }
 }
