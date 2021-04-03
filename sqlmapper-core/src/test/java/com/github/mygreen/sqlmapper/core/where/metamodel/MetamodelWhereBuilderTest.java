@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.core.where.metamodel;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,9 @@ import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.testdata.Customer;
+import com.github.mygreen.sqlmapper.core.testdata.EntityChild;
 import com.github.mygreen.sqlmapper.core.testdata.MCustomer;
+import com.github.mygreen.sqlmapper.core.testdata.MEntityChild;
 import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 
@@ -54,6 +57,29 @@ public class MetamodelWhereBuilderTest {
 
         List<Object> params = visitor.getParamValues();
         assertThat(params).containsExactly("%taro%", "Yamada", LocalDate.of(2000, 1, 1), 0L, 100L);
+
+    }
+
+    @Test
+    void testInheritance() {
+
+        MEntityChild entity = MEntityChild.entityChild;
+        Predicate condition = entity.name.contains("Yamada")
+                .and(entity.createAt.goe(Timestamp.valueOf("2021-01-01 12:13:14.123")));
+
+        EntityMeta entityMeta = entityMetaFactory.create(EntityChild.class);
+
+        TableNameResolver tableNameResolver = new TableNameResolver();
+        tableNameResolver.prepareTableAlias(entity);
+
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta), dialect, tableNameResolver);
+        visitor.visit(new MetamodelWhere(condition));
+
+        String sql = visitor.getCriteria();
+        assertThat(sql).isEqualTo("T1_.NAME LIKE ? AND T1_.CREATE_AT >= ?");
+
+        List<Object> params = visitor.getParamValues();
+        assertThat(params).containsExactly("%Yamada%", Timestamp.valueOf("2021-01-01 12:13:14.123"));
 
     }
 

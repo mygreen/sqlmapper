@@ -2,7 +2,6 @@ package com.github.mygreen.sqlmapper.core.meta;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.Date;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -12,15 +11,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.annotation.Column;
-import com.github.mygreen.sqlmapper.core.annotation.CreatedAt;
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
-import com.github.mygreen.sqlmapper.core.annotation.ModifiedAt;
-import com.github.mygreen.sqlmapper.core.annotation.Temporal;
-import com.github.mygreen.sqlmapper.core.annotation.Temporal.TemporalType;
 import com.github.mygreen.sqlmapper.core.annotation.Transient;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
+import com.github.mygreen.sqlmapper.core.testdata.EntityBase;
 import com.github.mygreen.sqlmapper.core.testdata.NoDbTestConfig;
 
 import lombok.Data;
@@ -124,21 +120,21 @@ public class EntityMetaFactoryTest {
             } else if(propertyMeta.getName().equals("createAt")) {
                 assertThat(propertyMeta.isCreatedAt()).isTrue();
 
-                assertThat(propertyMeta.getDeclaringClass()).isEqualTo(RootEntity.class);
+                assertThat(propertyMeta.getDeclaringClass()).isEqualTo(EntityBase.class);
 
                 assertCount++;
 
 
             } else if(propertyMeta.getName().equals("updateAt")) {
                 assertThat(propertyMeta.isModifiedAt()).isTrue();
-                assertThat(propertyMeta.getDeclaringClass()).isEqualTo(RootEntity.class);
+                assertThat(propertyMeta.getDeclaringClass()).isEqualTo(EntityBase.class);
 
                 assertCount++;
 
 
             } else if(propertyMeta.getName().equals("version")) {
                 assertThat(propertyMeta.isVersion()).isTrue();
-                assertThat(propertyMeta.getDeclaringClass()).isEqualTo(RootEntity.class);
+                assertThat(propertyMeta.getDeclaringClass()).isEqualTo(EntityBase.class);
 
                 assertCount++;
             }
@@ -198,40 +194,12 @@ public class EntityMetaFactoryTest {
     }
 
     /**
-     * 最上位のエンティティ
-     *
-     *
-     */
-    @Data
-    @MappedSuperclass
-    static abstract class RootEntity {
-
-        @Getter
-        @Setter
-        @CreatedAt
-        @Temporal(TemporalType.TIMESTAMP)
-        private Date createAt;
-
-        @Getter
-        @Setter
-        @ModifiedAt
-        @Temporal(TemporalType.TIMESTAMP)
-        private Date updateAt;
-
-        @Getter
-        @Setter
-        @Version
-        private long version;
-
-    }
-
-    /**
      * 継承したエンティティ
      * GAPパターン用のベースクラス。
      *
      */
     @MappedSuperclass
-    static abstract class InheritanceBaseEntity extends RootEntity {
+    static abstract class InheritanceBaseEntity extends EntityBase {
 
         @Getter
         @Setter
