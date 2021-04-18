@@ -14,7 +14,7 @@ import lombok.Data;
  *
  */
 @Data
-public class PropertyModel {
+public class PropertyMetamodel {
 
     /**
      * プロパティ名
@@ -22,9 +22,11 @@ public class PropertyModel {
     private String propertyName;
 
     /**
-     * クラスタイプ
+     * プロパティのクラスタイプ
      */
-    private String propertyType;
+    private Class<?> propertyType;
+
+
 
     /**
      * アノテーション{@link Column}の情報

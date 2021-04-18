@@ -4,6 +4,9 @@ import java.sql.Timestamp;
 
 import com.github.mygreen.sqlmapper.core.annotation.Column;
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
+import com.github.mygreen.sqlmapper.core.annotation.Id;
+import com.github.mygreen.sqlmapper.core.annotation.ModifiedAt;
+import com.github.mygreen.sqlmapper.core.annotation.Version;
 
 import lombok.Data;
 
@@ -17,10 +20,11 @@ import lombok.Data;
 @Entity
 public class Customer {
 
-    @Column
+    @Id
+    private Long id;
+
     private String name;
 
-    @Column
     private Integer age;
 
     @Column
@@ -29,7 +33,10 @@ public class Customer {
     @Column
     private boolean deleted;
 
-    @Column
+    @ModifiedAt
     private Timestamp updateAt;
+
+    @Version
+    private long version;
 
 }

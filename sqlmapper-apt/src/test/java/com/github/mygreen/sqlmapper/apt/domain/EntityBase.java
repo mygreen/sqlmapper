@@ -1,5 +1,6 @@
-package com.github.mygreen.sqlmapper.core.testdata;
+package com.github.mygreen.sqlmapper.apt.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.github.mygreen.sqlmapper.core.annotation.CreatedAt;
@@ -13,13 +14,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * エンティティのベースクラス。
- * バージョンキーなどの共通のカラムを定義する。
+ * エンティティのベースとなる親クラス
  *
+ * @author T.TSUCHIE
  *
  */
 @MappedSuperclass
-public abstract class EntityBase {
+public abstract class EntityBase implements Serializable {
 
     @Getter
     @Setter
@@ -37,4 +38,5 @@ public abstract class EntityBase {
     @Setter
     @Version
     protected long version;
+
 }
