@@ -70,6 +70,7 @@ public class EntityMetamodelFactory {
 
         final Class<?> superClass = entityClass.getSuperclass();
         if(superClass.equals(Object.class)) {
+            // 継承していない場合
             return;
         }
 
@@ -79,6 +80,11 @@ public class EntityMetamodelFactory {
 
     }
 
+    /**
+     * エンティティタイプを元にエンティティのメタ情報を作成する。
+     * @param entityModel エンティティのメタ情報
+     * @param entityClass エンティティタイプ
+     */
     private void doPropety(final EntityMetamodel entityModel, final Class<?> entityClass) {
 
         for(Field field : entityClass.getDeclaredFields()) {
@@ -100,6 +106,11 @@ public class EntityMetamodelFactory {
 
     }
 
+    /**
+     * フィールド情報を元にプロパティのメタ情報を作成する。
+     * @param field フィールド
+     * @return プロパティのメタ情報
+     */
     private PropertyMetamodel createPropertyModel(final Field field) {
 
         PropertyMetamodel propertyModel = new PropertyMetamodel();
