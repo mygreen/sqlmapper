@@ -114,7 +114,7 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
 
         } catch (IOException e) {
             messager.printMessage(Kind.ERROR, e.toString());
-            e.printStackTrace();
+            log.error("fail write Metamodel class.", e);
         }
     }
 
