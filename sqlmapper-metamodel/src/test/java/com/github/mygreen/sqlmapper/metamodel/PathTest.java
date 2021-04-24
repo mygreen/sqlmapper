@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.metamodel;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -55,6 +56,7 @@ class PathTest {
                 .and(entity.role.in(Role.Admin, Role.Normal))
                 .and(entity.updateAt.after(SqlTimestampExpression.currentTimestamp()))
                 .and(entity.deleted.isFalse())
+                .and(entity.salary.goe(new BigDecimal("1000000")))
                 ;
 
         Visitor<Void> visitor = new SampleVisitor();
@@ -91,6 +93,8 @@ class PathTest {
 
         private Timestamp updateAt;
 
+        private BigDecimal salary;
+
     }
 
     static class MSampleEntity extends EntityPathBase<SampleEntity> {
@@ -115,6 +119,7 @@ class PathTest {
 
         public final SqlTimestampPath updateAt = createSqlTimestamp("updateAt");
 
+        public final NumberPath<BigDecimal> salary = createNumber("salary", BigDecimal.class);
 
     }
 
