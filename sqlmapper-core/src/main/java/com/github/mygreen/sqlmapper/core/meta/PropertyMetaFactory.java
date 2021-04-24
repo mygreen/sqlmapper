@@ -19,12 +19,12 @@ import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.sqlmapper.core.annotation.Column;
 import com.github.mygreen.sqlmapper.core.annotation.Enumerated;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
+import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
 import com.github.mygreen.sqlmapper.core.annotation.SequenceGenerator;
 import com.github.mygreen.sqlmapper.core.annotation.TableGenerator;
 import com.github.mygreen.sqlmapper.core.annotation.Temporal;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
-import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.id.IdentityIdGenerator;
@@ -41,7 +41,6 @@ import com.github.mygreen.sqlmapper.core.util.NameUtils;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * プロパティのメタ情報を作成します。
@@ -50,7 +49,6 @@ import lombok.extern.slf4j.Slf4j;
  * @author T.TSUCHIE
  *
  */
-@Slf4j
 public class PropertyMetaFactory {
 
     @Getter
@@ -155,17 +153,6 @@ public class PropertyMetaFactory {
             }
 
             final Class<? extends Annotation> annoClass = anno.annotationType();
-
-            if(propertyMeta.hasAnnotation(annoClass)) {
-                final String message = messageFormatter.create("property.anno.duplicated")
-                        .paramWithClass("classType", field.getDeclaringClass())
-                        .param("property", field.getName())
-                        .paramWithAnno("anno", annoClass)
-                        .format();
-                log.warn(message);
-                continue;
-            }
-
             propertyMeta.addAnnotation(annoClass, anno);
         }
     }
@@ -204,27 +191,6 @@ public class PropertyMetaFactory {
 
         propertyMeta.setWriteMethod(method);
 
-        final Annotation[] annos = method.getAnnotations();
-        for(Annotation anno : annos) {
-            if(!isSupportedAnnotation(anno)) {
-                continue;
-            }
-
-            final Class<? extends Annotation> annoClass = anno.annotationType();
-
-            if(propertyMeta.hasAnnotation(annoClass)) {
-                final String message = messageFormatter.create("property.anno.duplicated")
-                        .paramWithClass("classType", method.getDeclaringClass())
-                        .param("property", method.getName())
-                        .paramWithAnno("anno", annoClass)
-                        .format();
-                log.warn(message);
-                continue;
-            }
-
-            propertyMeta.addAnnotation(annoClass, anno);
-        }
-
     }
 
     /**
@@ -249,27 +215,6 @@ public class PropertyMetaFactory {
         }
 
         propertyMeta.setReadMethod(method);
-
-        final Annotation[] annos = method.getAnnotations();
-        for(Annotation anno : annos) {
-            if(!isSupportedAnnotation(anno)) {
-                continue;
-            }
-
-            final Class<? extends Annotation> annoClass = anno.annotationType();
-
-            if(propertyMeta.hasAnnotation(annoClass)) {
-                final String message = messageFormatter.create("property.anno.duplicated")
-                        .paramWithClass("classType", method.getDeclaringClass())
-                        .param("property", method.getName())
-                        .paramWithAnno("anno", annoClass)
-                        .format();
-                log.warn(message);
-                continue;
-            }
-
-            propertyMeta.addAnnotation(annoClass, anno);
-        }
 
     }
 
