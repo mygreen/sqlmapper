@@ -119,9 +119,6 @@
 						<phase>generate-test-sources</phase>
 						<goals>
 							<goal>test-process</goal>
-							<!--
-							<goal>add-test-sources</goal>
-							 -->
 						</goals>
 						<configuration>
 							<outputDirectory>target/generated-test-sources/java</outputDirectory>
@@ -130,6 +127,10 @@
 								<processor>com.github.mygreen.sqlmapper.apt.EntityMetamodelProcessor</processor>
 							</processors>
 							<sourceEncoding>UTF-8</sourceEncoding>
+							<options>
+								<sqlmapper.prefix>M</sqlmapper.prefix>
+								<sqlmapper.indent>	</sqlmapper.indent>
+							</options>
 						</configuration>
 					</execution>
 				</executions>

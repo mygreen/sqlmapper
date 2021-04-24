@@ -37,23 +37,32 @@ import lombok.extern.slf4j.Slf4j;
 @SupportedSourceVersion(SourceVersion.RELEASE_11)
 public class EntityMetamodelProcessor extends AbstractProcessor {
 
+    /**
+     * APT用のファイラー - 文字コード設定などはAPTの定義を採用
+     */
     private Filer filer;
 
+    /**
+     * APT用のメッセージ出力
+     */
     private Messager messager;
 
-//    private Elements elementUtils;
+    /**
+     * APTのオプション設定を扱うクラス。
+     */
+    private MetamodelConfig metamodelConfig;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
 
-        filer = processingEnv.getFiler();
-        messager = processingEnv.getMessager();
-//        elementUtils = processingEnv.getElementUtils();
+        this.filer = processingEnv.getFiler();
+        this.messager = processingEnv.getMessager();
+        this.metamodelConfig = new MetamodelConfig(processingEnv.getOptions());
     }
 
     @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+    public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
 
         messager.printMessage(Kind.NOTE, "Running ");
         log.info("Running {}", getClass().getSimpleName());
@@ -72,7 +81,7 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
         processEntityAnno(roundEnv, entityModeles);
 
         // ソースの生成
-        EntitySpecFactory specFactory = new EntitySpecFactory(messager);
+        EntitySpecFactory specFactory = new EntitySpecFactory(messager, metamodelConfig);
         for(EntityMetamodel entityModel : entityModeles) {
             TypeSpec typeSpec = specFactory.create(entityModel);
             generateEntityMetaModel(typeSpec, entityModel);
@@ -105,7 +114,7 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
 
     private void generateEntityMetaModel(final TypeSpec typeSpec, final EntityMetamodel entityModel) {
         JavaFile javaFile = JavaFile.builder(entityModel.getPackageName(), typeSpec)
-                .indent("    ")
+                .indent(metamodelConfig.getIndent())
                 .build();
 
         try {

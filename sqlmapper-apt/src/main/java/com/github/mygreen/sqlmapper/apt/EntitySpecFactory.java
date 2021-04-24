@@ -56,6 +56,11 @@ public class EntitySpecFactory {
      */
     private final Messager messager;
 
+    /**
+     * メタモデルの生成オプション
+     */
+    private final MetamodelConfig metamodelConfig;
+
     public TypeSpec create(final EntityMetamodel entityModel) {
 
         // フィールド情報の作成
@@ -167,7 +172,7 @@ public class EntitySpecFactory {
             String superClassName =
                     entityModel.getSuperClass().getPackageName()
                     + "."
-                    + "M" + entityModel.getSuperClass().getSimpleName();
+                    + getEntityMetamodelName(entityModel.getSuperClass().getSimpleName());
 
             superClass = ParameterizedTypeName.get(ClassName.bestGuess(superClassName), TypeVariableName.get(entityType));
         } else {
@@ -254,7 +259,7 @@ public class EntitySpecFactory {
             String superClassName =
                     entityModel.getSuperClass().getPackageName()
                     + "."
-                    + "M" + entityModel.getSuperClass().getSimpleName();
+                    + getEntityMetamodelName(entityModel.getSuperClass().getSimpleName());
 
            superClass = ParameterizedTypeName.get(ClassName.bestGuess(superClassName), TypeVariableName.get("E"));
            classTypeVariable = TypeVariableName.get("E", ClassName.get(entityType));
@@ -301,11 +306,12 @@ public class EntitySpecFactory {
      * エンティティのメタモデル名を取得する。
      *
      * @param simpleClassName パッケージ名のついていない単純なクラス名。
-     * @return 接尾語 + クラス名。
+     * @return 接頭語 + クラス名 + 接尾語。
      */
     private String getEntityMetamodelName(String simpleClassName) {
-        //TODO: 接頭語を設定値から取得できるようにする。
-        return "M" + simpleClassName;
+        return metamodelConfig.getPrefix()
+                + simpleClassName
+                + metamodelConfig.getSuffix();
     }
 
     /**
