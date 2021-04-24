@@ -13,7 +13,6 @@ import java.util.List;
 import javax.annotation.processing.Generated;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Modifier;
-import javax.tools.Diagnostic.Kind;
 
 import com.github.mygreen.sqlmapper.apt.model.EntityMetamodel;
 import com.github.mygreen.sqlmapper.apt.model.PropertyMetamodel;
@@ -21,6 +20,7 @@ import com.github.mygreen.sqlmapper.core.util.NameUtils;
 import com.github.mygreen.sqlmapper.metamodel.BooleanPath;
 import com.github.mygreen.sqlmapper.metamodel.EntityPathBase;
 import com.github.mygreen.sqlmapper.metamodel.EnumPath;
+import com.github.mygreen.sqlmapper.metamodel.GeneralPath;
 import com.github.mygreen.sqlmapper.metamodel.LocalDatePath;
 import com.github.mygreen.sqlmapper.metamodel.LocalDateTimePath;
 import com.github.mygreen.sqlmapper.metamodel.LocalTimePath;
@@ -141,8 +141,11 @@ public class EntitySpecFactory {
                     .build();
 
         } else {
-            messager.printMessage(Kind.ERROR, "サポート対象外のクラスタイプです", propertyModel.getColumnAnnoElemenet());
-            throw new RuntimeException("サポート対象外のクラスタイプです。" + propertyType);
+            // 汎用的なGeneralPathにする
+            TypeName filedTypeName = ParameterizedTypeName.get(GeneralPath.class, propertyType);
+            filedSpec = FieldSpec.builder(filedTypeName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
+                    .initializer("createGeneral($S, $T.class)", propertyModel.getPropertyName(), propertyType)
+                    .build();
         }
 
         return filedSpec;

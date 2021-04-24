@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
+import com.github.mygreen.sqlmapper.core.annotation.Lob;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -35,5 +36,10 @@ public class Order extends EntityBase {
     @Getter
     @Setter
     private BigDecimal price;
+
+    @Lob
+    @Setter
+    @Getter
+    private byte[] blob;
 
 }

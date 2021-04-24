@@ -129,7 +129,6 @@
 							<sourceEncoding>UTF-8</sourceEncoding>
 							<options>
 								<sqlmapper.prefix>M</sqlmapper.prefix>
-								<sqlmapper.indent>	</sqlmapper.indent>
 							</options>
 						</configuration>
 					</execution>
