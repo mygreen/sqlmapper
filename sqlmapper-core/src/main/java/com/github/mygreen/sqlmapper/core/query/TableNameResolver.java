@@ -62,7 +62,6 @@ public class TableNameResolver {
      * 既に登録済みのキーとなる名前の場合、登録されている別名を返します。
      *
      * @param name キーとなる名前。
-     * @param entityMeta
      * @return 別名。
      */
     public String prepareTableAlias(String name) {
@@ -71,6 +70,13 @@ public class TableNameResolver {
 
     }
 
+    /**
+     * テーブルの別名を新たに準備します。
+     * 既に登録済みのキーとなる名前の場合、登録されている別名を返します。
+     *
+     * @param entityPath エンティティのパス情報。
+     * @return テーブル名の別名。
+     */
     public String prepareTableAlias(Path<?> entityPath) {
         return prepareTableAlias(getEntityPathName(entityPath));
     }

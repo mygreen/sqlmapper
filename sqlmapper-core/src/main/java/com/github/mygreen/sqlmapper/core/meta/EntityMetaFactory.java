@@ -62,6 +62,8 @@ public class EntityMetaFactory {
 
     /**
      * エンティティ情報を元にメタ情報を組み立てます。
+     * 組み立ててたメタ情報はキャッシュしており、組み立て済みの場合はキャッシュを返します。
+     *
      * @param entityClass エンティティクラス
      * @return エンティティのメタ情報
      */
