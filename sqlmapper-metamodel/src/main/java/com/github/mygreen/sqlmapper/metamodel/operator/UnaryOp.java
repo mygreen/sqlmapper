@@ -16,6 +16,9 @@ public enum UnaryOp implements Operator {
     // NULL比較
     IS_NULL(Boolean.class, 50),
     IS_NOT_NULL(Boolean.class, 50),
+
+    EXISTS(Boolean.class, 60),
+    NOT_EXISTS(Boolean.class, 60)
     ;
 
     /**

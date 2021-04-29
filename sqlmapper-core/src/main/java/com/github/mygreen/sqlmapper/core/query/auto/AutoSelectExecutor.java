@@ -324,7 +324,8 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
             Predicate where = jc.getConditioner().build(joinEntity);
 
             // テーブルの結合条件の評価
-            MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMetaMap(), context.getDialect(), tableNameResolver);
+            MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMetaMap(), context.getDialect(), context.getEntityMetaFactory()
+                    ,tableNameResolver);
             visitor.visit(new MetamodelWhere(where));
             String condition = visitor.getCriteria();
 
@@ -399,7 +400,8 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
             return;
         }
 
-        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMetaMap(), context.getDialect(), tableNameResolver);
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(query.getEntityMetaMap(), context.getDialect(), context.getEntityMetaFactory(),
+                tableNameResolver);
         visitor.visit(new MetamodelWhere(query.getWhere()));
 
         this.whereClause.addSql(visitor.getCriteria());

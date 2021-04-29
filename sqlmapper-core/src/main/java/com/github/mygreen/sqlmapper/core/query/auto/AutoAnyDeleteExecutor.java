@@ -58,6 +58,7 @@ public class AutoAnyDeleteExecutor extends QueryExecutorSupport<AutoAnyDelete<?>
         MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(
                 Map.of(query.getBaseClass(), query.getEntityMeta()),
                 context.getDialect(),
+                context.getEntityMetaFactory(),
                 tableNameResolver);
         visitor.visit(new MetamodelWhere(query.getWhere()));
 

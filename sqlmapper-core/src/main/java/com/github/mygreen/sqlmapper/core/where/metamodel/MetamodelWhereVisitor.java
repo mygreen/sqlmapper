@@ -10,6 +10,7 @@ import org.springframework.util.Assert;
 
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.where.Where;
 import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
@@ -37,6 +38,11 @@ public class MetamodelWhereVisitor implements WhereVisitor {
      * SQLの方言
      */
     private final Dialect dialect;
+
+    /**
+     * エンティティメタファクトリ
+     */
+    private final EntityMetaFactory entityMetaFactory;
 
     /**
      * テーブル名のエイリアス管理
@@ -68,7 +74,7 @@ public class MetamodelWhereVisitor implements WhereVisitor {
             visitorContext = Optional.empty();
 
             // Metamodel用のVisitorに委譲する
-            VisitorContext context = new VisitorContext(entityMetaMap, dialect, tableNameResolver);
+            VisitorContext context = new VisitorContext(entityMetaMap, dialect, entityMetaFactory, tableNameResolver);
             ExpressionVisitor visitor = new ExpressionVisitor();
             where.getPredicate().accept(visitor, context);
 

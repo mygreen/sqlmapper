@@ -23,6 +23,7 @@ import com.github.mygreen.sqlmapper.core.testdata.MCustomer;
 import com.github.mygreen.sqlmapper.core.testdata.MEntityChild;
 import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
+import com.github.mygreen.sqlmapper.metamodel.support.SubQueryHelper;
 
 
 @ExtendWith(SpringExtension.class)
@@ -49,7 +50,8 @@ public class MetamodelWhereBuilderTest {
         TableNameResolver tableNameResolver = new TableNameResolver();
         tableNameResolver.prepareTableAlias(entity);
 
-        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta), dialect, tableNameResolver);
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta),
+                 dialect, entityMetaFactory, tableNameResolver);
         visitor.visit(new MetamodelWhere(condition));
 
         String sql = visitor.getCriteria();
@@ -72,7 +74,8 @@ public class MetamodelWhereBuilderTest {
         TableNameResolver tableNameResolver = new TableNameResolver();
         tableNameResolver.prepareTableAlias(entity);
 
-        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta), dialect, tableNameResolver);
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta),
+                dialect, entityMetaFactory, tableNameResolver);
         visitor.visit(new MetamodelWhere(condition));
 
         String sql = visitor.getCriteria();
@@ -80,6 +83,31 @@ public class MetamodelWhereBuilderTest {
 
         List<Object> params = visitor.getParamValues();
         assertThat(params).containsExactly("%Yamada%", Timestamp.valueOf("2021-01-01 12:13:14.123"));
+
+    }
+
+    @Test
+    void testSubQuery() {
+
+        MCustomer entity = MCustomer.customer;
+        Predicate condition = entity.firstName.contains("taro")
+                .and(SubQueryHelper.from(entity).where(entity.birthday.after(LocalDate.of(2000, 1, 1))).exists());
+
+        EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
+
+        TableNameResolver tableNameResolver = new TableNameResolver();
+        tableNameResolver.prepareTableAlias(entity);
+
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta),
+                 dialect, entityMetaFactory, tableNameResolver);
+        visitor.visit(new MetamodelWhere(condition));
+
+        String sql = visitor.getCriteria();
+        assertThat(sql).isEqualTo("T1_.FIRST_NAME LIKE ? AND EXISTS (SELECT T1_.customer_id, T1_.FIRST_NAME, T1_.LAST_NAME, T1_.BIRTHDAY, T1_.VERSION from CUSTOMER T1_ WHERE T1_.BIRTHDAY > ?)");
+
+        List<Object> params = visitor.getParamValues();
+        assertThat(params).containsExactly("%taro%", LocalDate.of(2000, 1, 1));
+
 
     }
 

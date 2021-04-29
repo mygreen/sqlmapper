@@ -12,6 +12,8 @@ public class UnaryOpHandler extends OperationHandler<UnaryOp> {
         addTemplate(UnaryOp.NOT, "NOT {0}");
         addTemplate(UnaryOp.IS_NULL, "{0} IS NULL");
         addTemplate(UnaryOp.IS_NOT_NULL, "{0} IS NOT NULL");
+        addTemplate(UnaryOp.EXISTS, "EXISTS {0}");
+        addTemplate(UnaryOp.NOT_EXISTS, "NOT EXISTS {0}");
     }
 
     @Override

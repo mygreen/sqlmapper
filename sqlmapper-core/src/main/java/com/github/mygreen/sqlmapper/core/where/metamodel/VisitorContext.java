@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 
 import lombok.Getter;
@@ -26,6 +27,12 @@ public class VisitorContext {
      */
     @Getter
     private final Dialect dialect;
+
+    /**
+     * エンティティのメタ情報を作成する。
+     */
+    @Getter
+    private final EntityMetaFactory entityMetaFactory;
 
     /**
      * テーブル名のエイリアス管理
@@ -58,6 +65,7 @@ public class VisitorContext {
     public VisitorContext(VisitorContext parent) {
         this.entityMetaMap = parent.entityMetaMap;
         this.dialect = parent.dialect;
+        this.entityMetaFactory = parent.entityMetaFactory;
         this.tableNameResolver = parent.tableNameResolver;
     }
 
