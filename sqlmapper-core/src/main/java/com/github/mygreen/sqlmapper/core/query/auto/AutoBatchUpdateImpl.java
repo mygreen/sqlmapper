@@ -15,7 +15,6 @@ import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -27,39 +26,39 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoBatchUpdate<T> extends QuerySupport<T> {
+public class AutoBatchUpdateImpl<T> extends QuerySupport<T> implements AutoBatchUpdate<T> {
 
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final T[] entities;
 
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final EntityMeta entityMeta;
 
     /**
      * バージョンプロパティを更新対象に含めるかどうか。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private boolean includeVersion;
 
     /**
      * バージョンチェックを行った場合に、更新行数が0行でも{@link OptimisticLockingFailureException}スローしないなら<code>true</code>
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private boolean suppresOptimisticLockException = false;
 
     /**
      * 挿入対象とするプロパティ一覧
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Set<String> includesProperties = new LinkedHashSet<>();
 
     /**
      * 挿入対象から除外するプロパティ一覧
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Set<String> excludesProperties = new LinkedHashSet<>();
 
-    public AutoBatchUpdate(@NonNull SqlMapperContext context, @NonNull T[] entities) {
+    public AutoBatchUpdateImpl(@NonNull SqlMapperContext context, @NonNull T[] entities) {
         super(context);
 
         if(entities.length == 0) {
@@ -74,7 +73,7 @@ public class AutoBatchUpdate<T> extends QuerySupport<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public AutoBatchUpdate(@NonNull SqlMapperContext context, @NonNull Collection<T> entities) {
+    public AutoBatchUpdateImpl(@NonNull SqlMapperContext context, @NonNull Collection<T> entities) {
         this(context, (T[])entities.toArray());
     }
 
@@ -104,38 +103,20 @@ public class AutoBatchUpdate<T> extends QuerySupport<T> {
         return entities.length;
     }
 
-    /**
-     * バージョンプロパティを通常の更新対象に含め、バージョンチェックの対象外とします。
-     * <p>
-     * このメソッドが呼び出されると、<code>update</code>文の<code>where</code>句にはバージョンのチェックが含まれなくなり、
-     * バージョンプロパティは通常のプロパティと同じように更新対象に含められます ({@link #excludesNull()}や{@link #changedFrom(Object)}等も同じように適用されます)。
-     * </p>
-     *
-     * @return このインスタンス自身
-     */
-    public AutoBatchUpdate<T> includesVersion() {
+    @Override
+    public AutoBatchUpdateImpl<T> includesVersion() {
         this.includeVersion = true;
         return this;
     }
 
-    /**
-     * バージョンチェックを行った場合に、更新行数が0行でも {@link OptimisticLockingFailureException} をスローしないようにします。
-     * @return このインスタンス自身
-     */
-    public AutoBatchUpdate<T> suppresOptimisticLockException() {
+    @Override
+    public AutoBatchUpdateImpl<T> suppresOptimisticLockException() {
         this.suppresOptimisticLockException = true;
         return this;
     }
 
-    /**
-     * 指定のプロパティのみを挿入対象とします。
-     * <p>アノテーション {@literal @Column(updatable = false)} が設定されているプロパティは対象外となります。</p>
-     *
-     * @param properties 更新対象のプロパティ情報。
-     * @return 自身のインスタンス。
-     * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
-     */
-    public AutoBatchUpdate<T> includes(final PropertyPath<?>... properties) {
+    @Override
+    public AutoBatchUpdateImpl<T> includes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
             String propertyName = prop.getPathMeta().getElement();
@@ -155,14 +136,8 @@ public class AutoBatchUpdate<T> extends QuerySupport<T> {
         return this;
     }
 
-    /**
-     * 指定のプロパティを更新対象から除外します。
-     *
-     * @param properties 除外対象のプロパティ名。
-     * @return 自身のインスタンス。
-     * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
-     */
-    public AutoBatchUpdate<T> excludes(final PropertyPath<?>... properties) {
+    @Override
+    public AutoBatchUpdateImpl<T> excludes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
             String propertyName = prop.getPathMeta().getElement();
@@ -183,10 +158,7 @@ public class AutoBatchUpdate<T> extends QuerySupport<T> {
         return this;
     }
 
-    /**
-     * 更新クエリを実行します。
-     * @return 更新したレコード件数を返します。
-     */
+    @Override
     public int[] execute() {
 
         context.getApplicationEventPublisher().publishEvent(new PreBatchUpdateEvent(this, entityMeta, entities));

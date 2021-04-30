@@ -10,8 +10,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.event.PostSelectEvent;
@@ -28,7 +26,6 @@ import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -40,112 +37,112 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoSelect<T> extends QuerySupport<T> {
+public class AutoSelectImpl<T> extends QuerySupport<T> implements AutoSelect<T> {
 
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Class<T> baseClass;
 
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final EntityPath<T> entityPath;
 
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final EntityMeta entityMeta;
 
     /**
      * エンティティタイプとメタ情報のマップ
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Map<Class<?>, EntityMeta> entityMetaMap = new HashMap<>();
 
     /**
      * SQLのヒントです。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private String hint;
 
     /**
      * 取得するレコード数の上限値です。
      * <p>負の値の時は無視します。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private int limit = -1;
 
     /**
      * 取得するレコード数の開始位置です。
      * <p>負の値の時は無視します。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private int offset = -1;
 
     /**
      * select句へ追加するプロパティです。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Set<PropertyPath<?>> includesProperties = new LinkedHashSet<>();
 
     /**
      * select句から除外するプロパティです。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Set<PropertyPath<?>> excludesProperties = new LinkedHashSet<>();
 
     /**
      * テーブルの結合条件の一覧です。
      */
     @SuppressWarnings("rawtypes")
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final List<JoinCondition> joinConditions = new ArrayList<>();
 
     /**
      * エンティティの構成定義の一覧です
      */
     @SuppressWarnings("rawtypes")
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final List<JoinAssociation> joinAssociations = new ArrayList<>();
 
     /**
      * 検索条件です。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private Predicate where;
 
     /**
      * ソート順です。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private List<OrderSpecifier> orders = new ArrayList<>();
 
     /**
      * 検索条件で指定したIDプロパティの値の配列です。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private Object[] idPropertyValues;
 
     /**
      * バージョンプロパティの値です。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private Object versionPropertyValue;
 
     /**
      * SELECT ～ FOR UPDATEのタイプです。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private SelectForUpdateType forUpdateType;
 
     /**
      * SELECT ～ FOR UPDATEでの待機時間 (秒単位) です。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private int forUpdateWaitSeconds = 0;
 
     /**
-     * {@link AutoSelect}を作成します。
+     * {@link AutoSelectImpl}を作成します。
      * @param context SqlMapperの設定情報。
      * @param entityPath マッピングするエンティティのメタモデル。
      */
     @SuppressWarnings("unchecked")
-    public AutoSelect(@NonNull SqlMapperContext context, @NonNull EntityPath<T> entityPath) {
+    public AutoSelectImpl(@NonNull SqlMapperContext context, @NonNull EntityPath<T> entityPath) {
         super(context);
         this.entityPath = entityPath;
         this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());
@@ -154,45 +151,26 @@ public class AutoSelect<T> extends QuerySupport<T> {
         this.entityMetaMap.put(entityPath.getType(), context.getEntityMetaFactory().create(entityPath.getType()));
     }
 
-    /**
-     * ヒントを設定します。
-     * @param hint ヒント
-     * @return このインスタンス自身
-     */
-    public AutoSelect<T> hint(String hint) {
+    @Override
+    public AutoSelectImpl<T> hint(String hint) {
         this.hint = hint;
         return this;
     }
 
-    /**
-     * 抽出する行数を指定します。
-     * @param limit 行数
-     * @return このインスタンス自身
-     */
-    public AutoSelect<T> limit(int limit) {
+    @Override
+    public AutoSelectImpl<T> limit(int limit) {
         this.limit = limit;
         return this;
     }
 
-    /**
-     * 抽出するデータの開始位置を指定します。
-     * @param offset 開始位置。
-     * @return このインスタンス自身
-     */
-    public AutoSelect<T> offset(int offset) {
+    @Override
+    public AutoSelectImpl<T> offset(int offset) {
         this.offset = offset;
         return this;
     }
 
-    /**
-     * 指定のプロパティのみを挿入対象とします。
-     * <p>アノテーション {@literal @Column(insertable = false)} が設定されているプロパティは対象外となります。</p>
-     *
-     * @param properties 挿入対象のプロパティ情報。
-     * @return 自身のインスタンス。
-     * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
-     */
-    public AutoSelect<T> includes(final PropertyPath<?>... properties) {
+    @Override
+    public AutoSelectImpl<T> includes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
             this.includesProperties.add(prop);
@@ -202,13 +180,8 @@ public class AutoSelect<T> extends QuerySupport<T> {
 
     }
 
-    /**
-     * 指定のプロパティを挿入対象から除外します。
-     *
-     * @param properties 除外対象のプロパティ情報。
-     * @return 自身のインスタンス。
-     */
-    public AutoSelect<T> excludes(final PropertyPath<?>... properties) {
+    @Override
+    public AutoSelectImpl<T> excludes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
             this.excludesProperties.add(prop);
@@ -218,15 +191,8 @@ public class AutoSelect<T> extends QuerySupport<T> {
 
     }
 
-    /**
-     * FROM句で指定したテーブルと内部結合（{@literal INNERT JOIN}）する条件を指定します。
-     *
-     * @param <ENTITY> 結合先のテーブルのエンティティタイプ
-     * @param toEntityPath 結合先テーブルのエンティティ情報
-     * @param conditioner 結合条件の組み立て
-     * @return 自身のインスタンス
-     */
-    public <ENTITY extends EntityPath<?>> AutoSelect<T> innerJoin(@NonNull ENTITY toEntityPath,
+    @Override
+    public <ENTITY extends EntityPath<?>> AutoSelectImpl<T> innerJoin(@NonNull ENTITY toEntityPath,
             @NonNull JoinCondition.Conditioner<ENTITY> conditioner) {
 
         JoinCondition<ENTITY> condition = new JoinCondition<>(JoinType.INNER, toEntityPath, conditioner);
@@ -237,16 +203,8 @@ public class AutoSelect<T> extends QuerySupport<T> {
         return this;
     }
 
-    /**
-     * FROM句で指定したテーブルと左外部結合（{@literal LEFT OUTER JOIN}）する条件を指定します。
-     *
-     * @param <ENTITY> 結合先のテーブルのエンティティタイプ
-     * @param toEntityPath 結合先テーブルのエンティティ情報
-     * @param conditioner 結合条件の組み立て
-     * @return 自身のインスタンス
-     * @throws IllegalOperateException 既に同じ組み合わせのエンティティ（テーブル）を指定しているときにスローされます。
-     */
-    public <ENTITY extends EntityPath<?>> AutoSelect<T> leftJoin(@NonNull ENTITY toEntityPath,
+    @Override
+    public <ENTITY extends EntityPath<?>> AutoSelectImpl<T> leftJoin(@NonNull ENTITY toEntityPath,
             @NonNull JoinCondition.Conditioner<ENTITY> conditioner) {
 
         JoinCondition<ENTITY> condition = new JoinCondition<>(JoinType.LEFT_OUTER, toEntityPath, conditioner);
@@ -284,18 +242,8 @@ public class AutoSelect<T> extends QuerySupport<T> {
 
     }
 
-    /**
-     * テーブル結合の際に複数のテーブルのエンティティの構成定義を指定します。
-     *
-     * @param <E1> エンティティタイプ1
-     * @param <E2> エンティティタイプ2
-     * @param entityPath1 エンティティ情報1
-     * @param entityPath2 エンティティ情報2
-     * @param associator エンティティの構成定義
-     * @return 自身のインスタンス
-     * @throws IllegalOperateException 既に同じ組み合わせのエンティティの構成定義を指定しているときにスローされます。
-     */
-    public <E1, E2> AutoSelect<T> associate(@NonNull EntityPath<E1> entityPath1, @NonNull EntityPath<E2> entityPath2,
+    @Override
+    public <E1, E2> AutoSelectImpl<T> associate(@NonNull EntityPath<E1> entityPath1, @NonNull EntityPath<E2> entityPath2,
             @NonNull JoinAssociation.Associator<E1, E2> associator) {
 
         JoinAssociation<E1, E2> association = new JoinAssociation<>(entityPath1, entityPath2, associator);
@@ -317,35 +265,21 @@ public class AutoSelect<T> extends QuerySupport<T> {
         return this;
     }
 
-    /**
-     * 検索条件を指定します。
-     * @param where 検索条件。
-     * @return 自身のインスタンス。
-     */
-    public AutoSelect<T> where(@NonNull Predicate where) {
+    @Override
+    public AutoSelectImpl<T> where(@NonNull Predicate where) {
         this.where = where;
         return this;
     }
 
-    /**
-     * ソート順を指定します。
-     * @param orderBy ソートするロパティの並び順情報
-     * @return 自身のインスタンス。
-     */
-    public AutoSelect<T> orderBy(OrderSpecifier... orders) {
+    @Override
+    public AutoSelectImpl<T> orderBy(OrderSpecifier... orders) {
         //TODO: 追加ではなく、上書き（直接変数に代入）する
         this.orders.addAll(Arrays.asList(orders));
         return this;
     }
 
-    /**
-     * WHERE句の条件にIdプロパティ(主キー)を指定します。
-     *
-     * @param idPropertyValues IDプロパティの値。エンティティに定義している順で指定する必要があります。
-     * @return 自身のインスタンス。
-     * @throws IllegalOperateException 指定したIDの個数とエンティティの個数と一致しないときにスローされます。
-     */
-    public AutoSelect<T> id(@NonNull final Object... idPropertyValues) {
+    @Override
+    public AutoSelectImpl<T> id(@NonNull final Object... idPropertyValues) {
 
         List<PropertyMeta> idPropertyMetaList = entityMeta.getIdPropertyMetaList();
         if(idPropertyMetaList.size() != idPropertyValues.length) {
@@ -361,14 +295,8 @@ public class AutoSelect<T> extends QuerySupport<T> {
         return this;
     }
 
-    /**
-     * WHERE句の条件にバージョンプロパティを指定します。
-     *
-     * @param versionPropertyValue バージョンプロパティの値。
-     * @return 自身のインスタンス
-     * @throws IllegalOperateException エンティティにバージョンキーが定義されていないときにスローされます。
-     */
-    public AutoSelect<T> version(@NonNull final Object versionPropertyValue) {
+    @Override
+    public AutoSelectImpl<T> version(@NonNull final Object versionPropertyValue) {
 
         if(!entityMeta.hasVersionPropertyMeta()) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.noVersionProperty")
@@ -381,12 +309,8 @@ public class AutoSelect<T> extends QuerySupport<T> {
         return this;
     }
 
-    /**
-     * {@literal FOR UPDATE} を追加します。
-     * @return このインスタンス自身。
-     * @throws IllegalOperateException DBMSがこの操作をサポートしていない場合にスローされます。
-     */
-    public AutoSelect<T> forUpdate() {
+    @Override
+    public AutoSelectImpl<T> forUpdate() {
         final Dialect dialect = context.getDialect();
         if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NORMAL)) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdate")
@@ -399,12 +323,8 @@ public class AutoSelect<T> extends QuerySupport<T> {
         return this;
     }
 
-    /**
-     * {@literal FOR UPDATE NOWAIT} を追加します。
-     * @return このインスタンス自身。
-     * @throws IllegalOperateException DBMSがこの操作をサポートしていない場合にスローされます。
-     */
-    public AutoSelect<T> forUpdateNoWait() {
+    @Override
+    public AutoSelectImpl<T> forUpdateNoWait() {
 
         final Dialect dialect = context.getDialect();
         if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NOWAIT)) {
@@ -424,7 +344,7 @@ public class AutoSelect<T> extends QuerySupport<T> {
      * @return このインスタンス自身。
      * @throws IllegalOperateException DBMSがこの操作をサポートしていない場合にスローされます。
      */
-    public AutoSelect<T> forUpdateWait(final int seconds) {
+    public AutoSelectImpl<T> forUpdateWait(final int seconds) {
 
         final Dialect dialect = context.getDialect();
         if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.WAIT)) {
@@ -439,10 +359,7 @@ public class AutoSelect<T> extends QuerySupport<T> {
         return this;
     }
 
-    /**
-     * SQLが返す結果セットの行数を返します。
-     * @return SQLが返す結果セットの行数
-     */
+    @Override
     public long getCount() {
         AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, true);
         executor.prepare();
@@ -450,63 +367,45 @@ public class AutoSelect<T> extends QuerySupport<T> {
 
     }
 
-    /**
-     * 検索してベースオブジェクトを返します。
-     *
-     * @return ベースオブジェクト。
-     * @throws IncorrectResultSizeDataAccessException 1件も見つからない場合、2件以上見つかった場合にスローされます。
-     */
+    @Override
     public T getSingleResult() {
         final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
         executor.prepare();
 
         return executor.getSingleResult(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelect.this, entityMeta, entity));
+            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
         });
 
     }
 
-    /**
-     * 検索してベースオブジェクトを返します。
-     *
-     * @return ベースオブジェクト。1件も対象がないときは空を返します。
-     */
+    @Override
     public Optional<T> getOptionalResult() {
         final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
         executor.prepare();
 
         return executor.getOptionalResult(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelect.this, entityMeta, entity));
+            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
         });
 
     }
 
-    /**
-     * 検索してベースオブジェクトを返します。
-     *
-     * @return 1件も対象がないときは空のリストを返します。
-     */
+    @Override
     public List<T> getResultList() {
         final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
         executor.prepare();
 
         return executor.getResultList(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelect.this, entityMeta, entity));
+            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
         });
 
     }
 
-    /**
-     * 問い合わせ結果を{@link Stream} で取得します。
-     * 問い合わせ結果全体のリストを作成しないため、問い合わせ結果が膨大になる場合でもメモリ消費量を抑えることが出来ます。
-     *
-     * @return 問い合わせの結果。
-     */
+    @Override
     public Stream<T> getResultStream() {
         final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
         executor.prepare();
         return executor.getResultStream(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelect.this, entityMeta, entity));
+            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
         });
 
     }

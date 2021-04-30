@@ -19,7 +19,7 @@ import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
  * @author T.TSUCHIE
  *
  */
-public class AutoDeleteExecutor extends QueryExecutorSupport<AutoDelete<?>> {
+public class AutoDeleteExecutor extends QueryExecutorSupport<AutoDeleteImpl<?>> {
 
     /**
      * where句
@@ -36,7 +36,7 @@ public class AutoDeleteExecutor extends QueryExecutorSupport<AutoDelete<?>> {
      */
     private final List<Object> paramValues = new ArrayList<>();
 
-    public AutoDeleteExecutor(AutoDelete<?> query) {
+    public AutoDeleteExecutor(AutoDeleteImpl<?> query) {
         super(query);
     }
 

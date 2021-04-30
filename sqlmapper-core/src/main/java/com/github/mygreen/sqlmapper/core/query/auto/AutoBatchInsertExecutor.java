@@ -21,7 +21,7 @@ import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
 import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 
 
-public class AutoBatchInsertExecutor extends QueryExecutorSupport<AutoBatchInsert<?>> {
+public class AutoBatchInsertExecutor extends QueryExecutorSupport<AutoBatchInsertImpl<?>> {
 
     /**
      * バージョンプロパティの初期値
@@ -54,7 +54,7 @@ public class AutoBatchInsertExecutor extends QueryExecutorSupport<AutoBatchInser
      */
     private Map<String, Object[]> generatedKeysMap = new HashMap<String, Object[]>();
 
-    public AutoBatchInsertExecutor(AutoBatchInsert<?> query) {
+    public AutoBatchInsertExecutor(AutoBatchInsertImpl<?> query) {
         super(query);
     }
 

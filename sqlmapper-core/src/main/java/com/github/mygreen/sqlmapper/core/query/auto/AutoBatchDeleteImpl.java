@@ -11,7 +11,6 @@ import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -24,30 +23,30 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoBatchDelete<T> extends QuerySupport<T> {
+public class AutoBatchDeleteImpl<T> extends QuerySupport<T> implements AutoBatchDelete<T> {
 
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final T[] entities;
 
     /**
      * エンティティ情報
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final EntityMeta entityMeta;
 
     /**
      * バージョンプロパティを無視して削除するかどうか。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private boolean ignoreVersion = false;
 
     /**
      * バージョンチェックを行った場合に、更新行数が0行でも{@link OptimisticLockingFailureException}スローしないなら<code>true</code>
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private boolean suppresOptimisticLockException = false;
 
-    public AutoBatchDelete(@NonNull SqlMapperContext context, @NonNull T[] entities) {
+    public AutoBatchDeleteImpl(@NonNull SqlMapperContext context, @NonNull T[] entities) {
         super(context);
 
         if(entities.length == 0) {
@@ -62,7 +61,7 @@ public class AutoBatchDelete<T> extends QuerySupport<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public AutoBatchDelete(@NonNull SqlMapperContext context, @NonNull Collection<T> entities) {
+    public AutoBatchDeleteImpl(@NonNull SqlMapperContext context, @NonNull Collection<T> entities) {
         this(context, (T[])entities.toArray());
     }
 
@@ -92,29 +91,19 @@ public class AutoBatchDelete<T> extends QuerySupport<T> {
         return entities.length;
     }
 
-    /**
-     * バージョンプロパティを無視して削除します。
-     *
-     * @return このインスタンス自身
-     */
-    public AutoBatchDelete<T> ignoreVersion() {
+    @Override
+    public AutoBatchDeleteImpl<T> ignoreVersion() {
         this.ignoreVersion = true;
         return this;
     }
 
-    /**
-     * バージョンチェックを行った場合に、更新行数が0行でも {@link OptimisticLockingFailureException} をスローしないようにします。
-     * @return このインスタンス自身
-     */
-    public AutoBatchDelete<T> suppresOptimisticLockException() {
+    @Override
+    public AutoBatchDeleteImpl<T> suppresOptimisticLockException() {
         this.suppresOptimisticLockException = true;
         return this;
     }
 
-    /**
-     * クエリを実行します。
-     * @return 削除したレコード件数を返します。
-     */
+    @Override
     public int execute() {
 
         context.getApplicationEventPublisher().publishEvent(new PreBatchDeleteEvent(this, entityMeta, entities));

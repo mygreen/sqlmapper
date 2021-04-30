@@ -12,7 +12,6 @@ import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -24,47 +23,40 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoInsert<T> extends QuerySupport<T> {
+public class AutoInsertImpl<T> extends QuerySupport<T> implements AutoInsert<T> {
 
     /**
      * 挿入対象のエンティティのインスタンス
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final T entity;
 
     /**
      * エンティティのメタ情報
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final EntityMeta entityMeta;
 
     /**
      * 挿入対象とするプロパティ一覧
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Set<String> includesProperties = new LinkedHashSet<>();
 
     /**
      * 挿入対象から除外するプロパティ一覧
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Set<String> excludesProperties = new LinkedHashSet<>();
 
-    public AutoInsert(@NonNull SqlMapperContext context, @NonNull T entity) {
+    public AutoInsertImpl(@NonNull SqlMapperContext context, @NonNull T entity) {
         super(context);
         this.entity = entity;
         this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());
     }
 
-    /**
-     * 指定のプロパティのみを挿入対象とします。
-     * <p>アノテーション {@literal @Column(insertable = false)} が設定されているプロパティは対象外となります。</p>
-     *
-     * @param properties 挿入対象のプロパティ情報。
-     * @return 自身のインスタンス。
-     * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
-     */
-    public AutoInsert<T> includes(final PropertyPath<?>... properties) {
+    @Override
+    public AutoInsertImpl<T> includes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
             String propertyName = prop.getPathMeta().getElement();
@@ -85,13 +77,8 @@ public class AutoInsert<T> extends QuerySupport<T> {
 
     }
 
-    /**
-     * 指定のプロパティを挿入対象から除外します。
-     *
-     * @param properties 除外対象のプロパティ情報。
-     * @return 自身のインスタンス。
-     */
-    public AutoInsert<T> excludes(final PropertyPath<?>... properties) {
+    @Override
+    public AutoInsertImpl<T> excludes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
             String propertyName = prop.getPathMeta().getElement();
@@ -113,10 +100,7 @@ public class AutoInsert<T> extends QuerySupport<T> {
 
     }
 
-    /**
-     * クエリを実行します。
-     * @return 更新した行数。
-     */
+    @Override
     public int execute() {
 
         context.getApplicationEventPublisher().publishEvent(new PreInsertEvent(this, entityMeta, entity));

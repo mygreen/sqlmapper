@@ -10,7 +10,7 @@ import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhere;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhereVisitor;
 
-public class AutoAnyDeleteExecutor extends QueryExecutorSupport<AutoAnyDelete<?>> {
+public class AutoAnyDeleteExecutor extends QueryExecutorSupport<AutoAnyDeleteImpl<?>> {
 
     /**
      * where句
@@ -32,7 +32,7 @@ public class AutoAnyDeleteExecutor extends QueryExecutorSupport<AutoAnyDelete<?>
      */
     private final List<Object> paramValues = new ArrayList<>();
 
-    public AutoAnyDeleteExecutor(AutoAnyDelete<?> query) {
+    public AutoAnyDeleteExecutor(AutoAnyDeleteImpl<?> query) {
         super(query);
     }
 

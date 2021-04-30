@@ -38,7 +38,7 @@ import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
 
-public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
+public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelectImpl<T>> {
 
     /**
      * SELECT COUNT(*)～で行数を取得する場合に<code>true</code>
@@ -96,7 +96,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelect<T>> {
      * @param query クエリ情報
      * @param counting カウント用のクエリかどうか
      */
-    public AutoSelectExecutor(AutoSelect<T> query, boolean counting) {
+    public AutoSelectExecutor(AutoSelectImpl<T> query, boolean counting) {
         super(query);
         this.counting = counting;
     }

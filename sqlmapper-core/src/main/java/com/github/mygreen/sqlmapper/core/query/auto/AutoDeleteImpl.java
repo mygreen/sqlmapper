@@ -9,7 +9,6 @@ import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -20,33 +19,33 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoDelete<T> extends QuerySupport<T> {
+public class AutoDeleteImpl<T> extends QuerySupport<T> implements AutoDelete<T> {
 
     /**
      * 削除対象のエンティティ
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final T entity;
 
     /**
      * エンティティ情報
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final EntityMeta entityMeta;
 
     /**
      * バージョンプロパティを無視して削除するかどうか。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private boolean ignoreVersion = false;
 
     /**
      * バージョンチェックを行った場合に、更新行数が0行でも{@link OptimisticLockingFailureException}スローしないなら<code>true</code>
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private boolean suppresOptimisticLockException = false;
 
-    public AutoDelete(@NonNull SqlMapperContext context, @NonNull T entity) {
+    public AutoDeleteImpl(@NonNull SqlMapperContext context, @NonNull T entity) {
         super(context);
         this.entity = entity;
         this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());
@@ -64,29 +63,19 @@ public class AutoDelete<T> extends QuerySupport<T> {
         }
     }
 
-    /**
-     * バージョンプロパティを無視して削除します。
-     *
-     * @return このインスタンス自身
-     */
-    public AutoDelete<T> ignoreVersion() {
+    @Override
+    public AutoDeleteImpl<T> ignoreVersion() {
         this.ignoreVersion = true;
         return this;
     }
 
-    /**
-     * バージョンチェックを行った場合に、更新行数が0行でも {@link OptimisticLockingFailureException} をスローしないようにします。
-     * @return このインスタンス自身
-     */
-    public AutoDelete<T> suppresOptimisticLockException() {
+    @Override
+    public AutoDeleteImpl<T> suppresOptimisticLockException() {
         this.suppresOptimisticLockException = true;
         return this;
     }
 
-    /**
-     * クエリを実行します。
-     * @return 削除したレコード件数を返します。
-     */
+    @Override
     public int execute() {
 
         context.getApplicationEventPublisher().publishEvent(new PreDeleteEvent(this, entityMeta, entity));

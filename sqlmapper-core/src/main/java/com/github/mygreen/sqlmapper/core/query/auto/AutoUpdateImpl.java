@@ -19,7 +19,6 @@ import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -31,48 +30,48 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoUpdate<T> extends QuerySupport<T> {
+public class AutoUpdateImpl<T> extends QuerySupport<T> implements AutoUpdate<T> {
 
     /**
      * 削除対象のエンティティ
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final T entity;
 
     /**
      * エンティティ情報
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final EntityMeta entityMeta;
 
     /**
      * バージョンプロパティを更新対象に含めるかどうか。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private boolean includeVersion;
 
     /**
      * null値のプロパティを更新から除外する
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private boolean excludesNull;
 
     /**
      * バージョンチェックを行った場合に、更新行数が0行でも{@link OptimisticLockingFailureException}スローしないなら<code>true</code>
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private boolean suppresOptimisticLockException = false;
 
     /**
      * 更新対象とするプロパティ
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Set<String> includesProperties = new LinkedHashSet<>();
 
     /**
      * 更新対象から除外するプロパティ
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Set<String> excludesProperties = new LinkedHashSet<>();
 
     /**
@@ -81,10 +80,10 @@ public class AutoUpdate<T> extends QuerySupport<T> {
      * key=プロパティ名、value=プロパティの値。
      * </p>
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private Map<String, Object> beforeStates = Collections.emptyMap();
 
-    public AutoUpdate(SqlMapperContext context, T entity) {
+    public AutoUpdateImpl(SqlMapperContext context, T entity) {
         super(context);
         this.entity = entity;
         this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());
@@ -102,47 +101,26 @@ public class AutoUpdate<T> extends QuerySupport<T> {
         }
     }
 
-    /**
-     * バージョンプロパティを通常の更新対象に含め、バージョンチェックの対象外とします。
-     * <p>
-     * このメソッドが呼び出されると、<code>update</code>文の<code>where</code>句にはバージョンのチェックが含まれなくなり、
-     * バージョンプロパティは通常のプロパティと同じように更新対象に含められます ({@link #excludesNull()}や{@link #changedFrom(Object)}等も同じように適用されます)。
-     * </p>
-     *
-     * @return このインスタンス自身
-     */
-    public AutoUpdate<T> includesVersion() {
+    @Override
+    public AutoUpdateImpl<T> includesVersion() {
         this.includeVersion = true;
         return this;
     }
 
-    /**
-     * <code>null</code>値のプロパティを更新対象から除外します。
-     * @return このインスタンス自身
-     */
-    public AutoUpdate<T> excludesNull() {
+    @Override
+    public AutoUpdateImpl<T> excludesNull() {
         this.excludesNull = true;
         return this;
     }
 
-    /**
-     * バージョンチェックを行った場合に、更新行数が0行でも {@link OptimisticLockingFailureException} をスローしないようにします。
-     * @return このインスタンス自身
-     */
-    public AutoUpdate<T> suppresOptimisticLockException() {
+    @Override
+    public AutoUpdateImpl<T> suppresOptimisticLockException() {
         this.suppresOptimisticLockException = true;
         return this;
     }
 
-    /**
-     * 指定のプロパティのみを挿入対象とします。
-     * <p>アノテーション {@literal @Column(updatable = false)} が設定されているプロパティは対象外となります。</p>
-     *
-     * @param properties 更新対象のプロパティ情報。
-     * @return 自身のインスタンス。
-     * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
-     */
-    public AutoUpdate<T> includes(final PropertyPath<?>... properties) {
+    @Override
+    public AutoUpdateImpl<T> includes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
             String propertyName = prop.getPathMeta().getElement();
@@ -162,14 +140,8 @@ public class AutoUpdate<T> extends QuerySupport<T> {
         return this;
     }
 
-    /**
-     * 指定のプロパティを更新対象から除外します。
-     *
-     * @param properties 除外対象のプロパティ名。
-     * @return 自身のインスタンス。
-     * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
-     */
-    public AutoUpdate<T> excludes(final PropertyPath<?>... properties) {
+    @Override
+    public AutoUpdateImpl<T> excludes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
             String propertyName = prop.getPathMeta().getElement();
@@ -190,12 +162,8 @@ public class AutoUpdate<T> extends QuerySupport<T> {
         return this;
     }
 
-    /**
-     * beforeから変更のあったプロパティだけを更新対象とします
-     * @param beforeEntity 変更前の状態を持つエンティティ
-     * @return このインスタンス自身
-     */
-    public AutoUpdate<T> changedFrom(@NonNull final T beforeEntity) {
+    @Override
+    public AutoUpdateImpl<T> changedFrom(@NonNull final T beforeEntity) {
         this.beforeStates = new HashMap<String, Object>(entityMeta.getPropertyMetaSize());
 
         for(PropertyMeta propertyMeta : entityMeta.getAllColumnPropertyMeta()) {
@@ -208,13 +176,8 @@ public class AutoUpdate<T> extends QuerySupport<T> {
         return this;
     }
 
-    /**
-     * beforeから変更のあったプロパティだけを更新対象とします。
-     * <p>引数 {@literal beforeStates} のサイズが {@literal 0} のときは何もしません。
-     * @param beforeStates 変更前の状態を持つマップ。（key=プロパティ名、value=プロパティ値）
-     * @return このインスタンス自身。
-     */
-    public AutoUpdate<T> changedFrom(final Map<String, Object> beforeStates) {
+    @Override
+    public AutoUpdateImpl<T> changedFrom(final Map<String, Object> beforeStates) {
         if(!beforeStates.isEmpty()) {
             this.beforeStates = Map.copyOf(beforeStates);
         }
@@ -222,10 +185,7 @@ public class AutoUpdate<T> extends QuerySupport<T> {
         return this;
     }
 
-    /**
-     * 更新クエリを実行します。
-     * @return 更新したレコード件数を返します。
-     */
+    @Override
     public int execute() {
 
         context.getApplicationEventPublisher().publishEvent(new PreUpdateEvent(this, entityMeta, entity));

@@ -6,12 +6,19 @@ import com.github.mygreen.splate.EmptyValueSqlTemplateContext;
 import com.github.mygreen.splate.SqlTemplateContext;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoAnyDelete;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoAnyDeleteImpl;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchInsert;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchInsertImpl;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchUpdate;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchUpdateImpl;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoDelete;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoDeleteImpl;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoInsert;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoInsertImpl;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoSelect;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoSelectImpl;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoUpdate;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoUpdateImpl;
 import com.github.mygreen.sqlmapper.core.query.sql.SqlCount;
 import com.github.mygreen.sqlmapper.core.query.sql.SqlSelect;
 import com.github.mygreen.sqlmapper.core.query.sql.SqlUpdate;
@@ -40,7 +47,7 @@ public class SqlMapper {
      * @return 参照用のクエリ
      */
     public <T> AutoSelect<T> selectFrom(@NonNull EntityPath<T> entityPath) {
-        return new AutoSelect<T>(context, entityPath);
+        return new AutoSelectImpl<T>(context, entityPath);
     }
 
     /**
@@ -50,7 +57,7 @@ public class SqlMapper {
      * @return 挿入用のクエリ
      */
     public <T> AutoInsert<T> insert(@NonNull T entity) {
-        return new AutoInsert<T>(context, entity);
+        return new AutoInsertImpl<T>(context, entity);
     }
 
     /**
@@ -60,7 +67,7 @@ public class SqlMapper {
      * @return 削除用のクエリ
      */
     public <T> AutoDelete<T> delete(@NonNull T entity){
-        return new AutoDelete<T>(context, entity);
+        return new AutoDeleteImpl<T>(context, entity);
     }
 
     /**
@@ -70,7 +77,7 @@ public class SqlMapper {
      * @return 更新用のクエリ
      */
     public <T> AutoUpdate<T> update(@NonNull T entity) {
-        return new AutoUpdate<T>(context, entity);
+        return new AutoUpdateImpl<T>(context, entity);
     }
 
     /**
@@ -80,7 +87,7 @@ public class SqlMapper {
      * @return 削除用のクエリ
      */
     public <T> AutoAnyDelete<T> deleteFrom(@NonNull EntityPath<T> entityPath) {
-        return new AutoAnyDelete<T>(context, entityPath);
+        return new AutoAnyDeleteImpl<T>(context, entityPath);
     }
 
     /**
@@ -94,7 +101,7 @@ public class SqlMapper {
      */
     @SuppressWarnings("unchecked")
     public <T> AutoBatchInsert<T> insertBatch(T... entities) {
-        return new AutoBatchInsert<T>(context, entities);
+        return new AutoBatchInsertImpl<T>(context, entities);
     }
 
     /**
@@ -107,7 +114,7 @@ public class SqlMapper {
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
     public <T> AutoBatchInsert<T> insertBatch(List<T> entities) {
-        return new AutoBatchInsert<T>(context, entities);
+        return new AutoBatchInsertImpl<T>(context, entities);
     }
 
     /**
@@ -119,7 +126,7 @@ public class SqlMapper {
      */
     @SuppressWarnings("unchecked")
     public <T> AutoBatchUpdate<T> updateBatch(T... entities) {
-        return new AutoBatchUpdate<T>(context, entities);
+        return new AutoBatchUpdateImpl<T>(context, entities);
     }
 
     /**
@@ -130,7 +137,7 @@ public class SqlMapper {
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
     public <T> AutoBatchUpdate<T> updateBatch(List<T> entities) {
-        return new AutoBatchUpdate<T>(context, entities);
+        return new AutoBatchUpdateImpl<T>(context, entities);
     }
 
     /**
@@ -142,7 +149,7 @@ public class SqlMapper {
      */
     @SuppressWarnings("unchecked")
     public <T> AutoBatchUpdate<T> deleteBatch(T... entities) {
-        return new AutoBatchUpdate<T>(context, entities);
+        return new AutoBatchUpdateImpl<T>(context, entities);
     }
 
     /**
@@ -153,7 +160,7 @@ public class SqlMapper {
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
     public <T> AutoBatchUpdate<T> deleteBatch(List<T> entities) {
-        return new AutoBatchUpdate<T>(context, entities);
+        return new AutoBatchUpdateImpl<T>(context, entities);
     }
 
     /**

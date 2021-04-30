@@ -6,7 +6,6 @@ import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -17,45 +16,38 @@ import lombok.NonNull;
  * @param <T> 処理対象となるエンティティの型
  *
  */
-public class AutoAnyDelete<T> extends QuerySupport<T> {
+public class AutoAnyDeleteImpl<T> extends QuerySupport<T> implements AutoAnyDelete<T> {
 
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Class<T> baseClass;
 
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final EntityPath<T> entityPath;
 
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final EntityMeta entityMeta;
 
     /**
      * クライテリアです。
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private Predicate where;
 
     @SuppressWarnings("unchecked")
-    public AutoAnyDelete(@NonNull SqlMapperContext context, @NonNull EntityPath<T> entityPath) {
+    public AutoAnyDeleteImpl(@NonNull SqlMapperContext context, @NonNull EntityPath<T> entityPath) {
         super(context);
         this.entityPath = entityPath;
         this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());
         this.baseClass = (Class<T>)entityMeta.getEntityType();
     }
 
-    /**
-     * 検索条件を指定します。
-     * @param where 検索条件。
-     * @return 自身のインスタンス。
-     */
-    public AutoAnyDelete<T> where(@NonNull Predicate where) {
+    @Override
+    public AutoAnyDeleteImpl<T> where(@NonNull Predicate where) {
         this.where = where;
         return this;
     }
 
-    /**
-     * クエリを実行します。
-     * @return 削除したレコード件数を返します。
-     */
+    @Override
     public int execute() {
 
         AutoAnyDeleteExecutor executor = new AutoAnyDeleteExecutor(this);

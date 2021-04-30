@@ -13,7 +13,6 @@ import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -26,27 +25,27 @@ import lombok.NonNull;
  *
  * @param <T> エンティティタイプ
  */
-public class AutoBatchInsert<T> extends QuerySupport<T> {
+public class AutoBatchInsertImpl<T> extends QuerySupport<T> implements AutoBatchInsert<T> {
 
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final T[] entities;
 
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final EntityMeta entityMeta;
 
     /**
      * 挿入対象とするプロパティ一覧
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Set<String> includesProperties = new LinkedHashSet<>();
 
     /**
      * 挿入対象から除外するプロパティ一覧
      */
-    @Getter(AccessLevel.PACKAGE)
+    @Getter
     private final Set<String> excludesProperties = new LinkedHashSet<>();
 
-    public AutoBatchInsert(@NonNull SqlMapperContext context, @NonNull T[] entities) {
+    public AutoBatchInsertImpl(@NonNull SqlMapperContext context, @NonNull T[] entities) {
         super(context);
 
         if(entities.length == 0) {
@@ -59,7 +58,7 @@ public class AutoBatchInsert<T> extends QuerySupport<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public AutoBatchInsert(@NonNull SqlMapperContext context, @NonNull Collection<T> entities) {
+    public AutoBatchInsertImpl(@NonNull SqlMapperContext context, @NonNull Collection<T> entities) {
         this(context, (T[])entities.toArray());
     }
 
@@ -80,15 +79,8 @@ public class AutoBatchInsert<T> extends QuerySupport<T> {
         return entities.length;
     }
 
-    /**
-     * 指定のプロパティのみを挿入対象とします。
-     * <p>アノテーション {@literal @Column(insertable = false)} が設定されているプロパティは対象外となります。</p>
-     *
-     * @param properties 挿入対象のプロパティ情報。
-     * @return 自身のインスタンス。
-     * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
-     */
-    public AutoBatchInsert<T> includes(final PropertyPath<?>... properties) {
+    @Override
+    public AutoBatchInsertImpl<T> includes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
             String propertyName = prop.getPathMeta().getElement();
@@ -109,13 +101,8 @@ public class AutoBatchInsert<T> extends QuerySupport<T> {
 
     }
 
-    /**
-     * 指定のプロパティを挿入対象から除外します。
-     *
-     * @param properties 除外対象のプロパティ情報。
-     * @return 自身のインスタンス。
-     */
-    public AutoBatchInsert<T> excludes(final PropertyPath<?>... properties) {
+    @Override
+    public AutoBatchInsertImpl<T> excludes(final PropertyPath<?>... properties) {
 
         for(PropertyPath<?> prop : properties) {
             String propertyName = prop.getPathMeta().getElement();
@@ -137,10 +124,7 @@ public class AutoBatchInsert<T> extends QuerySupport<T> {
 
     }
 
-    /**
-     * クエリを実行します。
-     * @return 更新した行数。
-     */
+    @Override
     public int[] execute() {
 
         context.getApplicationEventPublisher().publishEvent(new PreBatchInsertEvent(this, entityMeta, entities));
