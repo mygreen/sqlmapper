@@ -3,6 +3,14 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
+/**
+ * バッチ挿入を行うSQLを自動生成するクエリです。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T>
+ */
 public interface AutoBatchInsert<T> {
 
     /**

@@ -23,8 +23,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * SQLを自動生成する更新です。
- *
+ * 更新を行うSQLを自動生成するクエリの実装です。
  *
  * @author T.TSUCHIE
  *

@@ -6,6 +6,14 @@ import java.util.stream.Stream;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
+/**
+ * SQLテンプレートによる抽出を行うクエリです。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> 処理対象のエンティティの型
+ */
 public interface SqlSelect<T> {
 
     /**

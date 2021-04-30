@@ -16,7 +16,7 @@ import lombok.NonNull;
 
 
 /**
- * SQLを自動生成するバッチ削除です。
+ * バッチ削除を行うSQLを自動生成するクエリの実装です。
  *
  *
  * @author T.TSUCHIE

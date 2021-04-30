@@ -7,7 +7,7 @@ import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 
 
 /**
- * SQLテンプレートによる更新（INSERT / UPDATE/ DELETE）です。
+ * SQLテンプレートによる更新（INSERT / UPDATE/ DELETE）を行うクエリの実装です。
  *
  *
  * @author T.TSUCHIE

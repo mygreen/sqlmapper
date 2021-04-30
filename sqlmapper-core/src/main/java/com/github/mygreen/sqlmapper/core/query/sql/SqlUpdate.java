@@ -1,6 +1,12 @@
 package com.github.mygreen.sqlmapper.core.query.sql;
 
-
+/**
+ * SQLテンプレートによる更新（INSERT / UPDATE/ DELETE）を行うクエリです。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public interface SqlUpdate {
 
     /**

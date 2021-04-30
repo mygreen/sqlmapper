@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * SQLで自動で作成する挿入です。
+ * 挿入を行うSQLを自動生成するクエリの実装です。
  *
  *
  * @author T.TSUCHIE

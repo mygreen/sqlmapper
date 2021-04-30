@@ -2,6 +2,14 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 
+/**
+ * バッチ削除を行うSQLを自動生成するクエリです。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T>
+ */
 public interface AutoBatchDelete<T> {
 
     /**

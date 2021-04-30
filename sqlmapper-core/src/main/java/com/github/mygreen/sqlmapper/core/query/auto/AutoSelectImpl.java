@@ -30,8 +30,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * SQLを自動で生成する検索です。
- *
+ * 抽出を行うSQLを自動生成するクエリの実装です。
  *
  * @author T.TSUCHIE
  *

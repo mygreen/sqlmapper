@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 import org.springframework.dao.OptimisticLockingFailureException;
 
 /**
- * SQLを自動生成する削除です。
+ * 削除を行うSQLを自動生成するクエリです。
  *
  * @author T.TSUCHIE
  *

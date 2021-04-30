@@ -4,7 +4,7 @@ import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
 /**
- * SQLで自動で作成する挿入です。
+ * 挿入を行うSQLを自動生成するクエリです。
  *
  *
  * @author T.TSUCHIE

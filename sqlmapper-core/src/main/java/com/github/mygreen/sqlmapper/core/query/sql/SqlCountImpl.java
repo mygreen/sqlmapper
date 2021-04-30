@@ -6,7 +6,7 @@ import com.github.mygreen.splate.SqlTemplateContext;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 
 /**
- * SQLテンプレートによる件数カウントです。
+ * SQLテンプレートによる件数のカウントを行うクエリの実装です。
  *
  *
  * @author T.TSUCHIE

@@ -8,7 +8,7 @@ import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
 /**
- * SQLを自動生成する更新です。
+ * 更新を行うSQLを自動生成するクエリです。
  *
  *
  * @author T.TSUCHIE
@@ -78,7 +78,6 @@ public interface AutoUpdate<T> {
      * 更新クエリを実行します。
      * @return 更新したレコード件数を返します。
      */
-    public int execute();
-
+    int execute();
 
 }

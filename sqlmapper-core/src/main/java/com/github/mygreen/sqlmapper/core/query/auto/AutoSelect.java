@@ -14,6 +14,13 @@ import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
+/**
+ * 抽出を行うSQLを自動生成するクエリです。
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> 処理対象となるエンティティの型
+ */
 public interface AutoSelect<T> {
 
     /**

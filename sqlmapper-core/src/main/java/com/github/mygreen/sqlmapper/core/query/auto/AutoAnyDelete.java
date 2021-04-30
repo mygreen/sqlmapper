@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 
 /**
- * 任意の条件で削除を行うSQLを自動生成するクエリ。
+ * 任意の条件を指定して削除を行うSQLを自動生成するクエリです。
  *
  * @author T.TSUCHIE
  * @param <T> 処理対象となるエンティティの型

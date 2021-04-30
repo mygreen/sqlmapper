@@ -43,62 +43,62 @@ public class SqlMapper {
     private final SqlMapperContext context;
 
     /**
-     * テーブルを参照します。
+     * SQLを自動生成して抽出します。
      * @param <T> 処理対象となるエンティティの型
-     * @param entityPath エンティティの情報
-     * @return 参照用のクエリ
+     * @param entityPath 抽出対象のテーブルのエンティティ情報
+     * @return 抽出を行うSQLを自動生成するクエリ
      */
     public <T> AutoSelect<T> selectFrom(@NonNull EntityPath<T> entityPath) {
         return new AutoSelectImpl<T>(context, entityPath);
     }
 
     /**
-     * エンティティを挿入します
+     * SQLを自動生成して挿入します。
      * @param <T> 処理対象となるエンティティの型
-     * @param entity エンティティのインスタンス
-     * @return 挿入用のクエリ
+     * @param entity 挿入対象のテーブルのエンティティのインスタンス
+     * @return 挿入を行うSQLを自動生成するクエリ
      */
     public <T> AutoInsert<T> insert(@NonNull T entity) {
         return new AutoInsertImpl<T>(context, entity);
     }
 
     /**
-     * エンティティを削除します。
+     * SQLを自動生成して削除します。
      * @param <T> 処理対象となるエンティティの型
-     * @param entity エンティティのインスタンス
-     * @return 削除用のクエリ
+     * @param entity 削除対象のテーブルのエンティティのインスタンス
+     * @return 削除を行うSQLを自動生成するクエリ
      */
     public <T> AutoDelete<T> delete(@NonNull T entity){
         return new AutoDeleteImpl<T>(context, entity);
     }
 
     /**
-     * エンティティを更新します。
+     * SQLを自動生成して更新します。
      * @param <T> 処理対象となるエンティティの型
      * @param entity エンティティのインスタンス
-     * @return 更新用のクエリ
+     * @return 更新を行うSQLを自動生成するクエリ
      */
     public <T> AutoUpdate<T> update(@NonNull T entity) {
         return new AutoUpdateImpl<T>(context, entity);
     }
 
     /**
-     * 任意の条件に対してテーブルのレコードを削除します。
+     * 任意の条件を指定して、SQLを自動生成して削除します。
      * @param <T> 処理対象となるエンティティの型
-     * @param entityPath エンティティの情報
-     * @return 削除用のクエリ
+     * @param entityPath 削除対象のテーブルのエンティティ情報
+     * @return 任意の条件をして削除を行うSQLを自動生成するクエリ
      */
     public <T> AutoAnyDelete<T> deleteFrom(@NonNull EntityPath<T> entityPath) {
         return new AutoAnyDeleteImpl<T>(context, entityPath);
     }
 
     /**
-     * 複数のエンティティを挿入します。
+     * SQLを自動生成してバッチ挿入します。
      * <p>主キーが識別子（IDENTITY）による自動生成の場合は、バッチ実行ではなく1件ずつ処理されるので注意してください。</p>
      *
      * @param <T> 処理対象となるエンティティの型
-     * @param entities エンティティの並び
-     * @return 挿入用のクエリ
+     * @param entities バッチ挿入対象のテーブルのエンティティのインスタンス
+     * @return バッチ挿入を行うSQLを自動生成するクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
     @SuppressWarnings("unchecked")
@@ -107,12 +107,12 @@ public class SqlMapper {
     }
 
     /**
-     * 複数のエンティティを挿入します。
+     * SQLを自動生成してバッチ挿入します。
      * <p>主キーが識別子（IDENTITY）による自動生成の場合は、バッチ実行ではなく1件ずつ処理されるので注意してください。</p>
      *
      * @param <T> 処理対象となるエンティティの型
-     * @param entities エンティティの並び
-     * @return 挿入用のクエリ
+     * @param entities バッチ挿入対象のテーブルのエンティティのインスタンス
+     * @return バッチ挿入を行うSQLを自動生成するクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
     public <T> AutoBatchInsert<T> insertBatch(List<T> entities) {
@@ -120,10 +120,10 @@ public class SqlMapper {
     }
 
     /**
-     * 複数のエンティティを更新します。
+     * SQLを自動生成してバッチ更新します。
      * @param <T> 処理対象となるエンティティの型
-     * @param entities エンティティの並び
-     * @return 更新用のクエリ
+     * @param entities バッチ更新対象のテーブルのエンティティのインスタンス
+     * @return バッチ更新を行うSQLを自動生成するクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
     @SuppressWarnings("unchecked")
@@ -132,10 +132,10 @@ public class SqlMapper {
     }
 
     /**
-     * 複数のエンティティを更新します。
+     * SQLを自動生成してバッチ更新します。
      * @param <T> 処理対象となるエンティティの型
-     * @param entities エンティティの並び
-     * @return 更新用のクエリ
+     * @param entities バッチ更新対象のテーブルのエンティティのインスタンス
+     * @return バッチ更新を行うSQLを自動生成するクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
     public <T> AutoBatchUpdate<T> updateBatch(List<T> entities) {
@@ -143,10 +143,10 @@ public class SqlMapper {
     }
 
     /**
-     * 複数のエンティティを削除します。
+     * SQLを自動生成してバッチ削除します。
      * @param <T> 処理対象となるエンティティの型
-     * @param entities エンティティの並び
-     * @return 削除用のクエリ
+     * @param entities バッチ削除対象のテーブルのエンティティのインスタンス
+     * @return バッチ削除を行うSQLを自動生成するクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
     @SuppressWarnings("unchecked")
@@ -155,10 +155,10 @@ public class SqlMapper {
     }
 
     /**
-     * 複数のエンティティを削除します。
+     * SQLを自動生成してバッチ削除します。
      * @param <T> 処理対象となるエンティティの型
-     * @param entities エンティティの並び
-     * @return 削除用のクエリ
+     * @param entities バッチ削除対象のテーブルのエンティティのインスタンス
+     * @return バッチ削除を行うSQLを自動生成するクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
     public <T> AutoBatchUpdate<T> deleteBatch(List<T> entities) {
@@ -166,31 +166,31 @@ public class SqlMapper {
     }
 
     /**
-     * SQLファイルを元にテーブルを参照します。
+     * SQLテンプレートファイルを指定して抽出します。
      * @param <T> 処理対象となるエンティティの型
      * @param baseClass エンティティのクラス
-     * @param path SQLファイルのパス。
-     * @return SQLファイル参照用のクエリ
+     * @param path SQLテンプレートのファイルパス。
+     * @return SQLテンプレートによる抽出を行うクエリ
      */
     public <T> SqlSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path) {
         return new SqlSelectImpl<T>(context, baseClass, context.getSqlTemplateEngine().getTemplate(path), new EmptyValueSqlTemplateContext());
     }
 
     /**
-     * SQLファイルを元にテーブルを参照します。
+     * SQLテンプレートファイルを指定して抽出します。
      * @param <T> 処理対象となるエンティティの型
      * @param baseClass エンティティのクラス
-     * @param path SQLファイルのパス
+     * @param path SQLテンプレートのファイルパス。
      * @param parameter SQLテンプレートのパラメータ
-     * @return SQLファイル参照用のクエリ
+     * @return SQLテンプレートによる抽出を行うクエリ
      */
     public <T> SqlSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path, @NonNull SqlTemplateContext parameter) {
         return new SqlSelectImpl<T>(context, baseClass, context.getSqlTemplateEngine().getTemplate(path), parameter);
     }
 
     /**
-     * カウント用のSQLファイルを実行します。
-     * @param path SQLファイルのパス
+     * SQLテンプレートファイルを指定して件数のカウント用を行います。
+     * @param path SQLテンプレートのファイルパス。
      * @return カウント結果
      */
     public long getCountBySqlFile(@NonNull String path) {
@@ -199,9 +199,9 @@ public class SqlMapper {
     }
 
     /**
-     * カウント用のSQLファイルを実行します。
-     * @param path SQLファイルのパス
-     * @param parameter パラメータ
+     * SQLテンプレートファイルを指定して件数のカウント用を行います。
+     * @param path SQLテンプレートのファイルパス。
+     * @param parameter SQLテンプレートのパラメータ
      * @return カウント結果
      */
     public long getCountBySqlFile(@NonNull String path, @NonNull SqlTemplateContext parameter) {
@@ -210,50 +210,50 @@ public class SqlMapper {
     }
 
     /**
-     * SQLファイルを元にテーブルを更新（INSERT / UPDATE/ DELETE）をします。
-     * @param path SQLファイルのパス
-     * @return SQLファイル更新用のクエリ
+     * SQLテンプレートファイルを指定して更新（INSERT / UPDATE/ DELETE）を行います。
+     * @param path SQLテンプレートのファイルパス。
+     * @return SQLテンプレートによる更新を行うクエリ
      */
     public SqlUpdate updateBySqlFile(@NonNull String path) {
         return new SqlUpdateImpl(context, context.getSqlTemplateEngine().getTemplate(path), new EmptyValueSqlTemplateContext());
     }
 
     /**
-     * SQLファイルを元にテーブルを更新（INSERT / UPDATE/ DELETE）をします。
-     * @param path SQLファイルのパス
-     * @param parameter パラメータ
-     * @return SQLファイル更新用のクエリ
+     * SQLテンプレートファイルを指定して更新（INSERT / UPDATE/ DELETE）を行います。
+     * @param path SQLテンプレートのファイルパス。
+     * @param parameter SQLテンプレートのパラメータ
+     * @return SQLテンプレートによる更新を行うクエリ
      */
     public SqlUpdate updateBySqlFile(@NonNull String path, @NonNull SqlTemplateContext parameter) {
         return new SqlUpdateImpl(context, context.getSqlTemplateEngine().getTemplate(path), parameter);
     }
 
     /**
-     * SQLを元にテーブルを検索します。
+     * SQLテンプレートを指定して抽出します。
      * @param <T> 処理対象となるエンティティの型
      * @param baseClass エンティティのクラス
-     * @param sql SQL
-     * @return SQL参照用のクエリ
+     * @param sql SQLテンプレート
+     * @return SQLテンプレートによる抽出を行うクエリ
      */
     public <T> SqlSelect<T> selectBySql(@NonNull Class<T> baseClass, @NonNull String sql) {
         return new SqlSelectImpl<T>(context, baseClass, context.getSqlTemplateEngine().getTemplateByText(sql), new EmptyValueSqlTemplateContext());
     }
 
     /**
-     * SQLを元にテーブルを検索します。
+     * SQLテンプレートを指定して抽出します。
      * @param <T> 処理対象となるエンティティの型
      * @param baseClass エンティティのクラス
-     * @param sql SQL
-     * @param parameter パラメータ
-     * @return SQL参照用のクエリ
+     * @param sql SQLテンプレート
+     * @param parameter SQLテンプレートのパラメータ
+     * @return SQLテンプレートによる抽出を行うクエリ
      */
     public <T> SqlSelect<T> selectBySql(@NonNull Class<T> baseClass, @NonNull String sql, @NonNull SqlTemplateContext parameter) {
         return new SqlSelectImpl<T>(context, baseClass, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);
     }
 
     /**
-     * カウント用のSQLを実行します。
-     * @param sql SQL
+     * SQLテンプレートを指定して件数のカウント用を行います。
+     * @param sql SQLテンプレート
      * @return カウント結果
      */
     public long getCountBySql(@NonNull String sql) {
@@ -262,9 +262,9 @@ public class SqlMapper {
     }
 
     /**
-     * カウント用のSQLを実行します。
-     * @param sql SQL
-     * @param parameter パラメータ
+     * SQLテンプレートを指定して件数のカウント用を行います。
+     * @param sql SQLテンプレート
+     * @param parameter SQLテンプレートのパラメータ
      * @return カウント結果
      */
     public long getCountBySql(@NonNull String sql, @NonNull SqlTemplateContext parameter) {
@@ -273,19 +273,19 @@ public class SqlMapper {
     }
 
     /**
-     * SQLを元にテーブルを更新（INSERT / UPDATE/ DELETE）をします。
-     * @param sql SQL
-     * @return SQL更新用のクエリ
+     * SQLテンプレートを指定して更新（INSERT / UPDATE/ DELETE）を行います。
+     * @param sql SQLテンプレート
+     * @return SQLテンプレートによる更新を行うクエリ
      */
     public SqlUpdate updateBySql(@NonNull String sql) {
         return new SqlUpdateImpl(context, context.getSqlTemplateEngine().getTemplateByText(sql), new EmptyValueSqlTemplateContext());
     }
 
     /**
-     * SQLを元にテーブルを更新（INSERT / UPDATE/ DELETE）をします。
-     * @param sql SQL
-     * @param parameter パラメータ
-     * @return SQL更新用のクエリ
+     * SQLテンプレートを指定して更新（INSERT / UPDATE/ DELETE）を行います。
+     * @param sql SQLテンプレート
+     * @param parameter SQLテンプレートのパラメータ
+     * @return SQLテンプレートによる更新を行うクエリ
      */
     public SqlUpdate updateBySql(@NonNull String sql, @NonNull SqlTemplateContext parameter) {
         return new SqlUpdateImpl(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);

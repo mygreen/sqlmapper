@@ -5,6 +5,14 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
+/**
+ * バッチ更新を行うSQLを自動生成するクエリです。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T>
+ */
 public interface AutoBatchUpdate<T> {
 
     /**

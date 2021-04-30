@@ -14,7 +14,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * SQLテンプレートによる検索です。
+ * SSQLテンプレートによる抽出を行うクエリの実装です。
  *
  * @author T.TSUCHIE
  *
