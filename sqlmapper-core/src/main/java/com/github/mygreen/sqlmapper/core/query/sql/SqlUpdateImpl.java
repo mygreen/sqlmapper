@@ -13,16 +13,13 @@ import com.github.mygreen.sqlmapper.core.SqlMapperContext;
  * @author T.TSUCHIE
  *
  */
-public class SqlUpdate extends SqlTemplateQuerySupport<Void> {
+public class SqlUpdateImpl extends SqlTemplateQuerySupport<Void> implements SqlUpdate {
 
-    public SqlUpdate(SqlMapperContext context, SqlTemplate template, SqlTemplateContext parameter) {
+    public SqlUpdateImpl(SqlMapperContext context, SqlTemplate template, SqlTemplateContext parameter) {
         super(context, template, parameter);
     }
 
-    /**
-     * 更新クエリを実行します。
-     * @return 更新したレコード件数を返します。
-     */
+    @Override
     public int execute() {
         ProcessResult result = template.process(parameter);
         return context.getJdbcTemplate().update(result.getSql(), result.getParameters().toArray());

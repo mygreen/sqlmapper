@@ -12,16 +12,13 @@ import com.github.mygreen.sqlmapper.core.SqlMapperContext;
  * @author T.TSUCHIE
  *
  */
-public class SqlCount extends SqlTemplateQuerySupport<Void> {
+public class SqlCountImpl extends SqlTemplateQuerySupport<Void> implements SqlCount {
 
-    public SqlCount(SqlMapperContext context, SqlTemplate template, SqlTemplateContext parameter) {
+    public SqlCountImpl(SqlMapperContext context, SqlTemplate template, SqlTemplateContext parameter) {
         super(context, template, parameter);
     }
 
-    /**
-     * カウント用のクエリを実行します。
-     * @return カウント結果
-     */
+    @Override
     public long getCount() {
         ProcessResult result = template.process(parameter);
         return context.getJdbcTemplate().queryForObject(result.getSql(), Long.class, result.getParameters().toArray());
