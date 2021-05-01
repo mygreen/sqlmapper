@@ -20,7 +20,25 @@ import lombok.NonNull;
  *
  * @param <T> エンティティ情報
  */
-public class SqlSelectImpl<T> extends SqlTemplateQuerySupport<T> implements SqlSelect<T> {
+public class SqlSelectImpl<T> implements SqlSelect<T> {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
+
+    /**
+     * SQLテンプレートです。
+     */
+    @Getter
+    private final SqlTemplate template;
+
+    /**
+     * SQLテンプレートのパラメータです。
+     */
+    @Getter
+    private final SqlTemplateContext parameter;
 
     @Getter
     private final Class<T> baseClass;
@@ -30,7 +48,11 @@ public class SqlSelectImpl<T> extends SqlTemplateQuerySupport<T> implements SqlS
 
     public SqlSelectImpl(@NonNull SqlMapperContext context, @NonNull Class<T> baseClass,
             @NonNull SqlTemplate template, @NonNull SqlTemplateContext parameter) {
-        super(context, template, parameter);
+
+        this.context = context;
+        this.template = template;
+        this.parameter = parameter;
+
         this.baseClass = baseClass;
         this.entityMeta = context.getEntityMetaFactory().create(baseClass);
     }

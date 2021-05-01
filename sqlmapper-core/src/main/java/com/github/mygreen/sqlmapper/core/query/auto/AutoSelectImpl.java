@@ -19,7 +19,6 @@ import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.core.query.JoinAssociation;
 import com.github.mygreen.sqlmapper.core.query.JoinCondition;
 import com.github.mygreen.sqlmapper.core.query.JoinType;
-import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
@@ -36,7 +35,13 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoSelectImpl<T> extends QuerySupport<T> implements AutoSelect<T> {
+public class AutoSelectImpl<T> implements AutoSelect<T> {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
 
     @Getter
     private final Class<T> baseClass;
@@ -142,7 +147,7 @@ public class AutoSelectImpl<T> extends QuerySupport<T> implements AutoSelect<T> 
      */
     @SuppressWarnings("unchecked")
     public AutoSelectImpl(@NonNull SqlMapperContext context, @NonNull EntityPath<T> entityPath) {
-        super(context);
+        this.context = context;
         this.entityPath = entityPath;
         this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());
         this.baseClass = (Class<T>)entityMeta.getEntityType();
@@ -403,6 +408,7 @@ public class AutoSelectImpl<T> extends QuerySupport<T> implements AutoSelect<T> 
     public Stream<T> getResultStream() {
         final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
         executor.prepare();
+
         return executor.getResultStream(entity -> {
             context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
         });

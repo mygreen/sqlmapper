@@ -8,7 +8,6 @@ import com.github.mygreen.sqlmapper.core.event.PostInsertEvent;
 import com.github.mygreen.sqlmapper.core.event.PreInsertEvent;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
@@ -23,7 +22,13 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoInsertImpl<T> extends QuerySupport<T> implements AutoInsert<T> {
+public class AutoInsertImpl<T> implements AutoInsert<T> {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
 
     /**
      * 挿入対象のエンティティのインスタンス
@@ -50,7 +55,7 @@ public class AutoInsertImpl<T> extends QuerySupport<T> implements AutoInsert<T> 
     private final Set<String> excludesProperties = new LinkedHashSet<>();
 
     public AutoInsertImpl(@NonNull SqlMapperContext context, @NonNull T entity) {
-        super(context);
+        this.context = context;
         this.entity = entity;
         this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());
     }

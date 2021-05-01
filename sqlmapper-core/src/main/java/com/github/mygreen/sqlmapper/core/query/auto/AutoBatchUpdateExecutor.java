@@ -16,7 +16,9 @@ import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AutoBatchUpdateExecutor extends QueryExecutorSupport<AutoBatchUpdateImpl<?>> {
+public class AutoBatchUpdateExecutor extends QueryExecutorSupport {
+
+    private final AutoBatchUpdateImpl<?> query;
 
     /**
      * 実行するSQLです
@@ -44,7 +46,8 @@ public class AutoBatchUpdateExecutor extends QueryExecutorSupport<AutoBatchUpdat
     private int targetPropertyCount = 0;
 
     public AutoBatchUpdateExecutor(AutoBatchUpdateImpl<?> query) {
-        super(query);
+        super(query.getContext());
+        this.query = query;
     }
 
     @SuppressWarnings("unchecked")

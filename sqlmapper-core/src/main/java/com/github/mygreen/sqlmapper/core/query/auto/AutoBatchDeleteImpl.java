@@ -9,7 +9,6 @@ import com.github.mygreen.sqlmapper.core.event.PostBatchDeleteEvent;
 import com.github.mygreen.sqlmapper.core.event.PreBatchDeleteEvent;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -23,7 +22,13 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoBatchDeleteImpl<T> extends QuerySupport<T> implements AutoBatchDelete<T> {
+public class AutoBatchDeleteImpl<T> implements AutoBatchDelete<T> {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
 
     @Getter
     private final T[] entities;
@@ -47,7 +52,7 @@ public class AutoBatchDeleteImpl<T> extends QuerySupport<T> implements AutoBatch
     private boolean suppresOptimisticLockException = false;
 
     public AutoBatchDeleteImpl(@NonNull SqlMapperContext context, @NonNull T[] entities) {
-        super(context);
+        this.context = context;
 
         if(entities.length == 0) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notEmptyEntity")
@@ -79,7 +84,7 @@ public class AutoBatchDeleteImpl<T> extends QuerySupport<T> implements AutoBatch
      * @param index インデックス
      * @return エンティティ
      */
-    T getEntity(final int index) {
+    public T getEntity(final int index) {
         return entities[index];
     }
 
@@ -87,7 +92,7 @@ public class AutoBatchDeleteImpl<T> extends QuerySupport<T> implements AutoBatch
      * 処理対象のエンティティの個数を取得します。
      * @return エンティティの個数
      */
-    int getEntitySize() {
+    public int getEntitySize() {
         return entities.length;
     }
 

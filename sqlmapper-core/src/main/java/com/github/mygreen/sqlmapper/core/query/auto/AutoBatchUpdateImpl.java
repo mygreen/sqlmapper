@@ -11,7 +11,6 @@ import com.github.mygreen.sqlmapper.core.event.PostBatchUpdateEvent;
 import com.github.mygreen.sqlmapper.core.event.PreBatchUpdateEvent;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
@@ -26,8 +25,13 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoBatchUpdateImpl<T> extends QuerySupport<T> implements AutoBatchUpdate<T> {
+public class AutoBatchUpdateImpl<T> implements AutoBatchUpdate<T> {
 
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
     @Getter
     private final T[] entities;
 
@@ -59,7 +63,7 @@ public class AutoBatchUpdateImpl<T> extends QuerySupport<T> implements AutoBatch
     private final Set<String> excludesProperties = new LinkedHashSet<>();
 
     public AutoBatchUpdateImpl(@NonNull SqlMapperContext context, @NonNull T[] entities) {
-        super(context);
+        this.context = context;
 
         if(entities.length == 0) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notEmptyEntity")
@@ -91,7 +95,7 @@ public class AutoBatchUpdateImpl<T> extends QuerySupport<T> implements AutoBatch
      * @param index インデックス
      * @return エンティティ
      */
-    T getEntity(final int index) {
+    public T getEntity(final int index) {
         return entities[index];
     }
 
@@ -99,7 +103,7 @@ public class AutoBatchUpdateImpl<T> extends QuerySupport<T> implements AutoBatch
      * 処理対象のエンティティの個数を取得します。
      * @return エンティティの個数
      */
-    int getEntitySize() {
+    public int getEntitySize() {
         return entities.length;
     }
 

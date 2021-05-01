@@ -5,6 +5,8 @@ import com.github.mygreen.splate.SqlTemplate;
 import com.github.mygreen.splate.SqlTemplateContext;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 
+import lombok.Getter;
+
 /**
  * SQLテンプレートによる件数のカウントを行うクエリの実装です。
  *
@@ -12,10 +14,30 @@ import com.github.mygreen.sqlmapper.core.SqlMapperContext;
  * @author T.TSUCHIE
  *
  */
-public class SqlCountImpl extends SqlTemplateQuerySupport<Void> implements SqlCount {
+public class SqlCountImpl implements SqlCount {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
+
+    /**
+     * SQLテンプレートです。
+     */
+    @Getter
+    private final SqlTemplate template;
+
+    /**
+     * SQLテンプレートのパラメータです。
+     */
+    @Getter
+    private final SqlTemplateContext parameter;
 
     public SqlCountImpl(SqlMapperContext context, SqlTemplate template, SqlTemplateContext parameter) {
-        super(context, template, parameter);
+        this.context = context;
+        this.template = template;
+        this.parameter = parameter;
     }
 
     @Override

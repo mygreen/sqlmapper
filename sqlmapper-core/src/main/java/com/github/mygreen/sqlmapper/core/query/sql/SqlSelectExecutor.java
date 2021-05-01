@@ -9,7 +9,9 @@ import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
 import com.github.mygreen.sqlmapper.core.mapper.SimpleEntityRowMapper;
 import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 
-public class SqlSelectExecutor<T> extends QueryExecutorSupport<SqlSelectImpl<T>> {
+public class SqlSelectExecutor<T> extends QueryExecutorSupport {
+
+    private final SqlSelectImpl<T> query;
 
     /**
      * 実行するSQLです
@@ -22,7 +24,8 @@ public class SqlSelectExecutor<T> extends QueryExecutorSupport<SqlSelectImpl<T>>
     private Object[] paramValues;
 
     public SqlSelectExecutor(SqlSelectImpl<T> query) {
-        super(query);
+        super(query.getContext());
+        this.query = query;
     }
 
     @Override

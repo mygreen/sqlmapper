@@ -2,7 +2,6 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 
@@ -16,7 +15,13 @@ import lombok.NonNull;
  * @param <T> 処理対象となるエンティティの型
  *
  */
-public class AutoAnyDeleteImpl<T> extends QuerySupport<T> implements AutoAnyDelete<T> {
+public class AutoAnyDeleteImpl<T> implements AutoAnyDelete<T> {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
 
     @Getter
     private final Class<T> baseClass;
@@ -35,7 +40,7 @@ public class AutoAnyDeleteImpl<T> extends QuerySupport<T> implements AutoAnyDele
 
     @SuppressWarnings("unchecked")
     public AutoAnyDeleteImpl(@NonNull SqlMapperContext context, @NonNull EntityPath<T> entityPath) {
-        super(context);
+        this.context = context;
         this.entityPath = entityPath;
         this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());
         this.baseClass = (Class<T>)entityMeta.getEntityType();

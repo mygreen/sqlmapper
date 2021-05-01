@@ -18,7 +18,9 @@ import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AutoUpdateExecutor extends QueryExecutorSupport<AutoUpdateImpl<?>> {
+public class AutoUpdateExecutor extends QueryExecutorSupport {
+
+    private final AutoUpdateImpl<?> query;
 
     /**
      * SET句
@@ -46,7 +48,8 @@ public class AutoUpdateExecutor extends QueryExecutorSupport<AutoUpdateImpl<?>> 
     private int targetPropertyCount = 0;
 
     public AutoUpdateExecutor(AutoUpdateImpl<?> query) {
-        super(query);
+        super(query.getContext());
+        this.query = query;
     }
 
     @Override

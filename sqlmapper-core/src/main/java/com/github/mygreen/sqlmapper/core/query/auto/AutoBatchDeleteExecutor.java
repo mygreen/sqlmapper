@@ -19,7 +19,9 @@ import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
  * @author T.TSUCHIE
  *
  */
-public class AutoBatchDeleteExecutor extends QueryExecutorSupport<AutoBatchDeleteImpl<?>> {
+public class AutoBatchDeleteExecutor extends QueryExecutorSupport {
+
+    private final AutoBatchDeleteImpl<?> query;
 
     /**
      * where句
@@ -37,7 +39,8 @@ public class AutoBatchDeleteExecutor extends QueryExecutorSupport<AutoBatchDelet
     private final List<Object> paramValues = new ArrayList<>();
 
     public AutoBatchDeleteExecutor(AutoBatchDeleteImpl<?> query) {
-        super(query);
+        super(query.getContext());
+        this.query = query;
     }
 
     @Override

@@ -19,12 +19,14 @@ import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
 import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 
-public class AutoInsertExecutor extends QueryExecutorSupport<AutoInsertImpl<?>> {
+public class AutoInsertExecutor extends QueryExecutorSupport {
 
     /**
      * バージョンプロパティの初期値
      */
     public static final long INITIAL_VERSION = 1L;
+
+    private final AutoInsertImpl<?> query;
 
     /**
      * クエリのパラメータです。
@@ -47,7 +49,8 @@ public class AutoInsertExecutor extends QueryExecutorSupport<AutoInsertImpl<?>> 
     private SimpleJdbcInsert insertOperation;
 
     public AutoInsertExecutor(AutoInsertImpl<?> query) {
-        super(query);
+        super(query.getContext());
+        this.query = query;
     }
 
     @Override

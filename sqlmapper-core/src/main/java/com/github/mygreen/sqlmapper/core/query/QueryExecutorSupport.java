@@ -4,7 +4,6 @@ import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 /**
  * クエリ実行のサポートクラス。
@@ -15,14 +14,7 @@ import lombok.RequiredArgsConstructor;
  * @param <Q> クエリの実行条件。
  *
  */
-@RequiredArgsConstructor
-public abstract class QueryExecutorSupport<Q extends QuerySupport<?>> {
-
-    /**
-     * クエリの実行条件
-     */
-    @Getter
-    protected final Q query;
+public abstract class QueryExecutorSupport {
 
     /**
      * 設定情報
@@ -30,9 +22,8 @@ public abstract class QueryExecutorSupport<Q extends QuerySupport<?>> {
     @Getter
     protected final SqlMapperContext context;
 
-    public QueryExecutorSupport(@NonNull Q query) {
-        this.query = query;
-        this.context = query.getContext();
+    public QueryExecutorSupport(@NonNull SqlMapperContext context) {
+        this.context = context;
     }
 
     /**
