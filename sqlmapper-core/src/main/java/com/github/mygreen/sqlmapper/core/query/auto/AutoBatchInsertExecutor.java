@@ -10,23 +10,33 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.KeyHolder;
 
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
 import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 
 
-public class AutoBatchInsertExecutor extends QueryExecutorSupport<AutoBatchInsertImpl<?>> {
+public class AutoBatchInsertExecutor {
 
     /**
      * バージョンプロパティの初期値
      */
     public static final long INITIAL_VERSION = AutoInsertExecutor.INITIAL_VERSION;
+
+    /**
+     * クエリ情報
+     */
+    private final AutoBatchInsertImpl<?> query;
+
+    /**
+     * 設定情報
+     */
+    private final SqlMapperContext context;
 
     /**
      * クエリのパラメータ - エンティティごとの設定
@@ -55,19 +65,19 @@ public class AutoBatchInsertExecutor extends QueryExecutorSupport<AutoBatchInser
     private Map<String, Object[]> generatedKeysMap = new HashMap<String, Object[]>();
 
     public AutoBatchInsertExecutor(AutoBatchInsertImpl<?> query) {
-        super(query);
+        this.query = query;
+        this.context = query.getContext();
     }
 
-    @Override
-    public void prepare() {
+    /**
+     * クエリ実行の準備を行います。
+     */
+    private void prepare() {
 
         this.batchParams = new MapSqlParameterSource[query.getEntitySize()];
 
         prepareSqlParam();
         prepareInsertOperation();
-
-        completed();
-
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -166,7 +176,7 @@ public class AutoBatchInsertExecutor extends QueryExecutorSupport<AutoBatchInser
 
     public int[] execute() {
 
-        assertNotCompleted("executeBatchInsert");
+        prepare();
 
         if(this.usingIdentityKeyColumnNames.isEmpty()) {
             // 主キーがIDENTITYによる生成でない場合

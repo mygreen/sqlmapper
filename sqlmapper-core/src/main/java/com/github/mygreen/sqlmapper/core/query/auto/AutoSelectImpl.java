@@ -19,7 +19,6 @@ import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.core.query.JoinAssociation;
 import com.github.mygreen.sqlmapper.core.query.JoinCondition;
 import com.github.mygreen.sqlmapper.core.query.JoinType;
-import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
@@ -36,7 +35,13 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoSelectImpl<T> extends QuerySupport<T> implements AutoSelect<T> {
+public class AutoSelectImpl<T> implements AutoSelect<T> {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
 
     @Getter
     private final Class<T> baseClass;
@@ -142,7 +147,7 @@ public class AutoSelectImpl<T> extends QuerySupport<T> implements AutoSelect<T> 
      */
     @SuppressWarnings("unchecked")
     public AutoSelectImpl(@NonNull SqlMapperContext context, @NonNull EntityPath<T> entityPath) {
-        super(context);
+        this.context = context;
         this.entityPath = entityPath;
         this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());
         this.baseClass = (Class<T>)entityMeta.getEntityType();
@@ -360,52 +365,39 @@ public class AutoSelectImpl<T> extends QuerySupport<T> implements AutoSelect<T> 
 
     @Override
     public long getCount() {
-        AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, true);
-        executor.prepare();
-        return executor.getCount();
-
+        return new AutoSelectExecutor<>(this, true)
+                .getCount();
     }
 
     @Override
     public T getSingleResult() {
-        final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        executor.prepare();
-
-        return executor.getSingleResult(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
-        });
-
+        return  new AutoSelectExecutor<>(this, false)
+                .getSingleResult(entity -> {
+                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
+                });
     }
 
     @Override
     public Optional<T> getOptionalResult() {
-        final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        executor.prepare();
-
-        return executor.getOptionalResult(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
-        });
-
+        return new AutoSelectExecutor<>(this, false)
+                .getOptionalResult(entity -> {
+                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
+                });
     }
 
     @Override
     public List<T> getResultList() {
-        final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        executor.prepare();
-
-        return executor.getResultList(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
-        });
-
+        return new AutoSelectExecutor<>(this, false)
+                .getResultList(entity -> {
+                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
+                });
     }
 
     @Override
     public Stream<T> getResultStream() {
-        final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        executor.prepare();
-        return executor.getResultStream(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
-        });
-
+        return new AutoSelectExecutor<>(this, false)
+                .getResultStream(entity -> {
+                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
+                });
     }
 }

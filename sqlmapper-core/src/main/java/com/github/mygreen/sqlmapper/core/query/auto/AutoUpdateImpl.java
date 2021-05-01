@@ -15,7 +15,6 @@ import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
@@ -29,7 +28,13 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoUpdateImpl<T> extends QuerySupport<T> implements AutoUpdate<T> {
+public class AutoUpdateImpl<T> implements AutoUpdate<T> {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
 
     /**
      * 削除対象のエンティティ
@@ -83,7 +88,7 @@ public class AutoUpdateImpl<T> extends QuerySupport<T> implements AutoUpdate<T> 
     private Map<String, Object> beforeStates = Collections.emptyMap();
 
     public AutoUpdateImpl(SqlMapperContext context, T entity) {
-        super(context);
+        this.context = context;
         this.entity = entity;
         this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());
 
@@ -189,10 +194,8 @@ public class AutoUpdateImpl<T> extends QuerySupport<T> implements AutoUpdate<T> 
 
         context.getApplicationEventPublisher().publishEvent(new PreUpdateEvent(this, entityMeta, entity));
 
-        final AutoUpdateExecutor executor = new AutoUpdateExecutor(this);
-
-        executor.prepare();
-        final int result = executor.execute();
+        final int result = new AutoUpdateExecutor(this)
+                .execute();
 
         context.getApplicationEventPublisher().publishEvent(new PostUpdateEvent(this, entityMeta, entity));
         return result;

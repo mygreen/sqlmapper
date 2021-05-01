@@ -9,22 +9,32 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.KeyHolder;
 
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
 import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 
-public class AutoInsertExecutor extends QueryExecutorSupport<AutoInsertImpl<?>> {
+public class AutoInsertExecutor {
 
     /**
      * バージョンプロパティの初期値
      */
     public static final long INITIAL_VERSION = 1L;
+
+    /**
+     * クエリ情報
+     */
+    private final AutoInsertImpl<?> query;
+
+    /**
+     * 設定情報
+     */
+    private final SqlMapperContext context;
 
     /**
      * クエリのパラメータです。
@@ -47,17 +57,17 @@ public class AutoInsertExecutor extends QueryExecutorSupport<AutoInsertImpl<?>> 
     private SimpleJdbcInsert insertOperation;
 
     public AutoInsertExecutor(AutoInsertImpl<?> query) {
-        super(query);
+        this.query = query;
+        this.context = query.getContext();
     }
 
-    @Override
-    public void prepare() {
+    /**
+     * クエリ実行の準備を行います。
+     */
+    private void prepare() {
 
         prepareSqlParam();
         prepareInsertOperation();
-
-        completed();
-
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -146,7 +156,7 @@ public class AutoInsertExecutor extends QueryExecutorSupport<AutoInsertImpl<?>> 
      * @return 更新した行数
      */
     public int execute() {
-        assertNotCompleted("executeInsert");
+        prepare();
 
         if(this.usingIdentityKeyColumnNames.isEmpty()) {
             // 主キーがIDENTITYによる生成しない場合

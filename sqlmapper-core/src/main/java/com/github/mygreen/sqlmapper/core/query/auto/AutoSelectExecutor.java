@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import org.springframework.util.StringUtils;
 
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
 import com.github.mygreen.sqlmapper.core.mapper.EntityRowMapper;
@@ -23,7 +24,6 @@ import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.core.query.JoinAssociation;
 import com.github.mygreen.sqlmapper.core.query.JoinCondition;
 import com.github.mygreen.sqlmapper.core.query.OrderByClause;
-import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.SelectClause;
 import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
@@ -38,7 +38,17 @@ import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
 
-public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelectImpl<T>> {
+public class AutoSelectExecutor<T> {
+
+    /**
+     * クエリ情報
+     */
+    private final AutoSelectImpl<T> query;
+
+    /**
+     * 設定情報
+     */
+    private final SqlMapperContext context;
 
     /**
      * SELECT COUNT(*)～で行数を取得する場合に<code>true</code>
@@ -97,12 +107,15 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelectImpl<T
      * @param counting カウント用のクエリかどうか
      */
     public AutoSelectExecutor(AutoSelectImpl<T> query, boolean counting) {
-        super(query);
+        this.query = query;
         this.counting = counting;
+        this.context = query.getContext();
     }
 
-    @Override
-    public void prepare() {
+    /**
+     * クエリ実行の準備を行います。
+     */
+    private void prepare() {
 
         prepareTableAlias();
         prepareTargetColumn();
@@ -113,8 +126,6 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelectImpl<T
         prepareForUpdate();
 
         prepareSql();
-
-        completed();
     }
 
     /**
@@ -489,15 +500,13 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelectImpl<T
 
 
     public long getCount() {
-        assertNotCompleted("getCount");
+        prepare();
 
         return context.getJdbcTemplate().queryForObject(executedSql, Long.class, paramValues.toArray());
-
-
     }
 
     public T getSingleResult(EntityMappingCallback<T> callback) {
-        assertNotCompleted("getSingleResult");
+        prepare();
 
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
@@ -505,7 +514,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelectImpl<T
     }
 
     public Optional<T> getOptionalResult(EntityMappingCallback<T> callback) {
-        assertNotCompleted("getOptionalResult");
+        prepare();
 
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
@@ -518,7 +527,7 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelectImpl<T
     }
 
     public List<T> getResultList(EntityMappingCallback<T> callback) {
-        assertNotCompleted("getResultList");
+        prepare();
 
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
@@ -526,12 +535,11 @@ public class AutoSelectExecutor<T> extends QueryExecutorSupport<AutoSelectImpl<T
     }
 
     public Stream<T> getResultStream(EntityMappingCallback<T> callback) {
-        assertNotCompleted("getResultStream");
+        prepare();
 
         EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues.toArray());
-
     }
 
 }

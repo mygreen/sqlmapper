@@ -7,7 +7,6 @@ import com.github.mygreen.sqlmapper.core.event.PostDeleteEvent;
 import com.github.mygreen.sqlmapper.core.event.PreDeleteEvent;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
-import com.github.mygreen.sqlmapper.core.query.QuerySupport;
 
 import lombok.Getter;
 import lombok.NonNull;
@@ -19,7 +18,13 @@ import lombok.NonNull;
  *
  * @param <T> 処理対象となるエンティティの型
  */
-public class AutoDeleteImpl<T> extends QuerySupport<T> implements AutoDelete<T> {
+public class AutoDeleteImpl<T> implements AutoDelete<T> {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
 
     /**
      * 削除対象のエンティティ
@@ -46,7 +51,7 @@ public class AutoDeleteImpl<T> extends QuerySupport<T> implements AutoDelete<T> 
     private boolean suppresOptimisticLockException = false;
 
     public AutoDeleteImpl(@NonNull SqlMapperContext context, @NonNull T entity) {
-        super(context);
+        this.context = context;
         this.entity = entity;
         this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());
 
@@ -80,9 +85,8 @@ public class AutoDeleteImpl<T> extends QuerySupport<T> implements AutoDelete<T> 
 
         context.getApplicationEventPublisher().publishEvent(new PreDeleteEvent(this, entityMeta, entity));
 
-        final AutoDeleteExecutor executor = new AutoDeleteExecutor(this);
-        executor.prepare();
-        final int result = executor.execute();
+        final int result = new AutoDeleteExecutor(this)
+                .execute();
 
         context.getApplicationEventPublisher().publishEvent(new PostDeleteEvent(this, entityMeta, entity));
         return result;
