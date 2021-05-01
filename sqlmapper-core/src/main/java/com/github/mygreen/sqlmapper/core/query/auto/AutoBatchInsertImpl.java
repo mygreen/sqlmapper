@@ -134,9 +134,8 @@ public class AutoBatchInsertImpl<T> implements AutoBatchInsert<T> {
 
         context.getApplicationEventPublisher().publishEvent(new PreBatchInsertEvent(this, entityMeta, entities));
 
-        final AutoBatchInsertExecutor executor = new AutoBatchInsertExecutor(this);
-        executor.prepare();
-        final int[] result = executor.execute();
+        final int[] result = new AutoBatchInsertExecutor(this)
+                .execute();
 
         context.getApplicationEventPublisher().publishEvent(new PostBatchInsertEvent(this, entityMeta, entities));
         return result;

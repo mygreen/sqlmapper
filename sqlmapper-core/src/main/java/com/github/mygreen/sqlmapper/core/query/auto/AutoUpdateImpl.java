@@ -194,10 +194,8 @@ public class AutoUpdateImpl<T> implements AutoUpdate<T> {
 
         context.getApplicationEventPublisher().publishEvent(new PreUpdateEvent(this, entityMeta, entity));
 
-        final AutoUpdateExecutor executor = new AutoUpdateExecutor(this);
-
-        executor.prepare();
-        final int result = executor.execute();
+        final int result = new AutoUpdateExecutor(this)
+                .execute();
 
         context.getApplicationEventPublisher().publishEvent(new PostUpdateEvent(this, entityMeta, entity));
         return result;

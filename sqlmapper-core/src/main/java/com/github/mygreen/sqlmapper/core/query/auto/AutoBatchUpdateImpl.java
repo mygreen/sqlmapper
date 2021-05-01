@@ -32,6 +32,7 @@ public class AutoBatchUpdateImpl<T> implements AutoBatchUpdate<T> {
      */
     @Getter
     private final SqlMapperContext context;
+
     @Getter
     private final T[] entities;
 
@@ -167,10 +168,8 @@ public class AutoBatchUpdateImpl<T> implements AutoBatchUpdate<T> {
 
         context.getApplicationEventPublisher().publishEvent(new PreBatchUpdateEvent(this, entityMeta, entities));
 
-        final AutoBatchUpdateExecutor executor = new AutoBatchUpdateExecutor(this);
-
-        executor.prepare();
-        final int[] result= executor.execute();
+        final int[] result= new AutoBatchUpdateExecutor(this)
+                .execute();
 
         context.getApplicationEventPublisher().publishEvent(new PostBatchUpdateEvent(this, entityMeta, entities));
         return result;

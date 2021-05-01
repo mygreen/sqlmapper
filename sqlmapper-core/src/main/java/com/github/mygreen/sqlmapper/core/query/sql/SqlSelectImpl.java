@@ -59,45 +59,34 @@ public class SqlSelectImpl<T> implements SqlSelect<T> {
 
     @Override
     public T getSingleResult() {
-        final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
-        executor.prepare();
-
-        return executor.getSingleResult(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelectImpl.this, entityMeta, entity));
-        });
+        return new SqlSelectExecutor<>(this)
+                .getSingleResult(entity -> {
+                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelectImpl.this, entityMeta, entity));
+                });
     }
 
     @Override
     public Optional<T> getOptionalResult() {
-        final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
-        executor.prepare();
-
-        return executor.getOptionalResult(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelectImpl.this, entityMeta, entity));
-        });
-
+        return new SqlSelectExecutor<>(this)
+                .getOptionalResult(entity -> {
+                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelectImpl.this, entityMeta, entity));
+                });
     }
 
     @Override
     public List<T> getResultList() {
-        final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
-        executor.prepare();
-
-        return executor.getResultList(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelectImpl.this, entityMeta, entity));
-        });
-
+        return new SqlSelectExecutor<>(this)
+                .getResultList(entity -> {
+                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelectImpl.this, entityMeta, entity));
+                });
     }
 
     @Override
     public Stream<T> getResultStream() {
-        final SqlSelectExecutor<T> executor = new SqlSelectExecutor<>(this);
-        executor.prepare();
-
-        return executor.getResultStream(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelectImpl.this, entityMeta, entity));
-        });
-
+        return new SqlSelectExecutor<>(this)
+                .getResultStream(entity -> {
+                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelectImpl.this, entityMeta, entity));
+                });
     }
 
 }

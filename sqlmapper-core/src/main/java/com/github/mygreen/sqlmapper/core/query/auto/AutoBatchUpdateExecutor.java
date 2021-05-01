@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.SetClause;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
@@ -16,9 +16,17 @@ import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AutoBatchUpdateExecutor extends QueryExecutorSupport {
+public class AutoBatchUpdateExecutor {
 
+    /**
+     * クエリ情報
+     */
     private final AutoBatchUpdateImpl<?> query;
+
+    /**
+     * 設定情報
+     */
+    private final SqlMapperContext context;
 
     /**
      * 実行するSQLです
@@ -46,21 +54,21 @@ public class AutoBatchUpdateExecutor extends QueryExecutorSupport {
     private int targetPropertyCount = 0;
 
     public AutoBatchUpdateExecutor(AutoBatchUpdateImpl<?> query) {
-        super(query.getContext());
         this.query = query;
+        this.context = query.getContext();
     }
 
+    /**
+     * クエリ実行の準備を行います。
+     */
     @SuppressWarnings("unchecked")
-    @Override
-    public void prepare() {
+    private void prepare() {
         this.batchParams = new List[query.getEntitySize()];
 
         prepareSetClause();
         prepareWhereClause();
 
         prepareSql();
-
-        completed();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -170,7 +178,7 @@ public class AutoBatchUpdateExecutor extends QueryExecutorSupport {
      * @return 更新したレコード件数です。
      */
     public int[] execute() {
-        assertNotCompleted("executeBatchUpdate");
+        prepare();
 
         if(targetPropertyCount == 0) {
             log.warn(context.getMessageFormatter().create("query.skipUpdateWithNoProperty").format());

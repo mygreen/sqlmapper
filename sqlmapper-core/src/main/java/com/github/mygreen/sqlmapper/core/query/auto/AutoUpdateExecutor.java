@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.SetClause;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
@@ -18,9 +18,17 @@ import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AutoUpdateExecutor extends QueryExecutorSupport {
+public class AutoUpdateExecutor {
 
+    /**
+     * クエリ情報
+     */
     private final AutoUpdateImpl<?> query;
+
+    /**
+     * 設定情報
+     */
+    private final SqlMapperContext context;
 
     /**
      * SET句
@@ -48,18 +56,19 @@ public class AutoUpdateExecutor extends QueryExecutorSupport {
     private int targetPropertyCount = 0;
 
     public AutoUpdateExecutor(AutoUpdateImpl<?> query) {
-        super(query.getContext());
         this.query = query;
+        this.context = query.getContext();
     }
 
-    @Override
-    public void prepare() {
+    /**
+     * クエリ実行の準備を行います。
+     */
+    private void prepare() {
         prepareSetClause();
         prepareWhereClause();
 
         prepareSql();
 
-        completed();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -171,7 +180,7 @@ public class AutoUpdateExecutor extends QueryExecutorSupport {
      * @return 更新したレコード件数です。
      */
     public int execute() {
-        assertNotCompleted("executeUpdate");
+        prepare();
 
         if(targetPropertyCount == 0) {
             log.warn(context.getMessageFormatter().create("query.skipUpdateWithNoProperty").format());

@@ -85,9 +85,8 @@ public class AutoDeleteImpl<T> implements AutoDelete<T> {
 
         context.getApplicationEventPublisher().publishEvent(new PreDeleteEvent(this, entityMeta, entity));
 
-        final AutoDeleteExecutor executor = new AutoDeleteExecutor(this);
-        executor.prepare();
-        final int result = executor.execute();
+        final int result = new AutoDeleteExecutor(this)
+                .execute();
 
         context.getApplicationEventPublisher().publishEvent(new PostDeleteEvent(this, entityMeta, entity));
         return result;

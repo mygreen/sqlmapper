@@ -365,53 +365,39 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
 
     @Override
     public long getCount() {
-        AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, true);
-        executor.prepare();
-        return executor.getCount();
-
+        return new AutoSelectExecutor<>(this, true)
+                .getCount();
     }
 
     @Override
     public T getSingleResult() {
-        final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        executor.prepare();
-
-        return executor.getSingleResult(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
-        });
-
+        return  new AutoSelectExecutor<>(this, false)
+                .getSingleResult(entity -> {
+                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
+                });
     }
 
     @Override
     public Optional<T> getOptionalResult() {
-        final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        executor.prepare();
-
-        return executor.getOptionalResult(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
-        });
-
+        return new AutoSelectExecutor<>(this, false)
+                .getOptionalResult(entity -> {
+                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
+                });
     }
 
     @Override
     public List<T> getResultList() {
-        final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        executor.prepare();
-
-        return executor.getResultList(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
-        });
-
+        return new AutoSelectExecutor<>(this, false)
+                .getResultList(entity -> {
+                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
+                });
     }
 
     @Override
     public Stream<T> getResultStream() {
-        final AutoSelectExecutor<T> executor = new AutoSelectExecutor<>(this, false);
-        executor.prepare();
-
-        return executor.getResultStream(entity -> {
-            context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
-        });
-
+        return new AutoSelectExecutor<>(this, false)
+                .getResultStream(entity -> {
+                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));
+                });
     }
 }

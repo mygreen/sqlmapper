@@ -5,13 +5,21 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.github.mygreen.splate.ProcessResult;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
 import com.github.mygreen.sqlmapper.core.mapper.SimpleEntityRowMapper;
-import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 
-public class SqlSelectExecutor<T> extends QueryExecutorSupport {
+public class SqlSelectExecutor<T> {
 
+    /**
+     * クエリ情報
+     */
     private final SqlSelectImpl<T> query;
+
+    /**
+     * 設定情報
+     */
+    private final SqlMapperContext context;
 
     /**
      * 実行するSQLです
@@ -24,17 +32,15 @@ public class SqlSelectExecutor<T> extends QueryExecutorSupport {
     private Object[] paramValues;
 
     public SqlSelectExecutor(SqlSelectImpl<T> query) {
-        super(query.getContext());
         this.query = query;
+        this.context = query.getContext();
     }
 
-    @Override
-    public void prepare() {
-
+    /**
+     * クエリ実行の準備を行います。
+     */
+    private void prepare() {
         prepareSql();
-
-        completed();
-
     }
 
     private void prepareSql() {
@@ -46,14 +52,14 @@ public class SqlSelectExecutor<T> extends QueryExecutorSupport {
     }
 
     public T getSingleResult(EntityMappingCallback<T> callback) {
-        assertNotCompleted("getSingleResult");
+        prepare();
 
         SimpleEntityRowMapper<T> rowMapper = new SimpleEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues);
     }
 
     public Optional<T> getOptionalResult(EntityMappingCallback<T> callback) {
-        assertNotCompleted("getOptionalResult");
+        prepare();
 
         SimpleEntityRowMapper<T> rowMapper = new SimpleEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         final List<T> ret = context.getJdbcTemplate().query(executedSql, rowMapper, paramValues);
@@ -65,14 +71,14 @@ public class SqlSelectExecutor<T> extends QueryExecutorSupport {
     }
 
     public List<T> getResultList(EntityMappingCallback<T> callback) {
-        assertNotCompleted("getResultList");
+        prepare();
 
         SimpleEntityRowMapper<T> rowMapper = new SimpleEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().query(executedSql, rowMapper, paramValues);
     }
 
     public Stream<T> getResultStream(EntityMappingCallback<T> callback) {
-        assertNotCompleted("getResultStream");
+        prepare();
 
         SimpleEntityRowMapper<T> rowMapper = new SimpleEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues);

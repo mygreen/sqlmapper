@@ -113,9 +113,8 @@ public class AutoBatchDeleteImpl<T> implements AutoBatchDelete<T> {
 
         context.getApplicationEventPublisher().publishEvent(new PreBatchDeleteEvent(this, entityMeta, entities));
 
-        final AutoBatchDeleteExecutor executor = new AutoBatchDeleteExecutor(this);
-        executor.prepare();
-        final int result = executor.execute();
+        final int result = new AutoBatchDeleteExecutor(this)
+                .execute();
 
         context.getApplicationEventPublisher().publishEvent(new PostBatchDeleteEvent(this, entityMeta, entities));
         return result;

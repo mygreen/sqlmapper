@@ -4,18 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhere;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhereVisitor;
 
-public class AutoAnyDeleteExecutor extends QueryExecutorSupport {
+public class AutoAnyDeleteExecutor {
 
     /**
      * クエリ情報
      */
     private final AutoAnyDeleteImpl<?> query;
+
+    /**
+     * 設定情報
+     */
+    private final SqlMapperContext context;
 
     /**
      * where句
@@ -38,18 +43,17 @@ public class AutoAnyDeleteExecutor extends QueryExecutorSupport {
     private final List<Object> paramValues = new ArrayList<>();
 
     public AutoAnyDeleteExecutor(AutoAnyDeleteImpl<?> query) {
-        super(query.getContext());
         this.query = query;
+        this.context = query.getContext();
     }
 
-    @Override
-    public void prepare() {
+    /**
+     * クエリ実行の準備を行います。
+     */
+    private void prepare() {
 
         prepareCondition();
         prepareSql();
-
-        completed();
-
     }
 
     /**
@@ -75,7 +79,7 @@ public class AutoAnyDeleteExecutor extends QueryExecutorSupport {
     /**
      * 実行するSQLを組み立てます。
      */
-    public void prepareSql() {
+    private void prepareSql() {
 
         final String sql = "DELETE FROM "
                 + query.getEntityMeta().getTableMeta().getFullName()
@@ -89,17 +93,8 @@ public class AutoAnyDeleteExecutor extends QueryExecutorSupport {
      * @return 削除したレコード件数を返します。
      */
     public int execute() {
-
-        assertNotCompleted("executeAnyDelete");
-
-        try {
-            return context.getJdbcTemplate().update(executedSql, paramValues.toArray());
-
-        } finally {
-            completed();
-        }
-
-
+        prepare();
+        return context.getJdbcTemplate().update(executedSql, paramValues.toArray());
     }
 
 }

@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.springframework.dao.OptimisticLockingFailureException;
 
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
-import com.github.mygreen.sqlmapper.core.query.QueryExecutorSupport;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
@@ -19,9 +19,17 @@ import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
  * @author T.TSUCHIE
  *
  */
-public class AutoDeleteExecutor extends QueryExecutorSupport {
+public class AutoDeleteExecutor {
 
+    /**
+     * クエリ情報
+     */
     private final AutoDeleteImpl<?> query;
+
+    /**
+     * 設定情報
+     */
+    private final SqlMapperContext context;
 
     /**
      * where句
@@ -39,18 +47,17 @@ public class AutoDeleteExecutor extends QueryExecutorSupport {
     private final List<Object> paramValues = new ArrayList<>();
 
     public AutoDeleteExecutor(AutoDeleteImpl<?> query) {
-        super(query.getContext());
         this.query = query;
+        this.context = query.getContext();
     }
 
-    @Override
-    public void prepare() {
+    /**
+     * クエリ実行の準備を行います。
+     */
+    private void prepare() {
 
         prepareWhereClause();
         prepareSql();
-
-        completed();
-
     }
 
     /**
@@ -95,7 +102,7 @@ public class AutoDeleteExecutor extends QueryExecutorSupport {
     /**
      * 実行するSQLを組み立てます。
      */
-    public void prepareSql() {
+    private void prepareSql() {
 
         final String sql = "DELETE FROM "
                 + query.getEntityMeta().getTableMeta().getFullName()
@@ -118,7 +125,7 @@ public class AutoDeleteExecutor extends QueryExecutorSupport {
      */
     public int execute() {
 
-        assertNotCompleted("executeDelete");
+        prepare();
 
         final int rows = context.getJdbcTemplate().update(executedSql, paramValues.toArray());
         if(isOptimisticLock()) {

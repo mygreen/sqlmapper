@@ -110,9 +110,8 @@ public class AutoInsertImpl<T> implements AutoInsert<T> {
 
         context.getApplicationEventPublisher().publishEvent(new PreInsertEvent(this, entityMeta, entity));
 
-        final AutoInsertExecutor executor = new AutoInsertExecutor(this);
-        executor.prepare();
-        final int result = executor.execute();
+        final int result = new AutoInsertExecutor(this)
+                .execute();
 
         context.getApplicationEventPublisher().publishEvent(new PostInsertEvent(this, entityMeta, entity));
         return result;

@@ -54,10 +54,8 @@ public class AutoAnyDeleteImpl<T> implements AutoAnyDelete<T> {
 
     @Override
     public int execute() {
-
-        AutoAnyDeleteExecutor executor = new AutoAnyDeleteExecutor(this);
-        executor.prepare();
-        return executor.execute();
+        return new AutoAnyDeleteExecutor(this)
+                .execute();
     }
 
 }
