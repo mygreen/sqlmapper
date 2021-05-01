@@ -14,7 +14,8 @@ import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
 import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
 
 /**
- *
+ * 削除を行うSQLを自動生成するクエリを実行します。
+ * {@link AutoDeleteImpl}のクエリ実行処理の移譲先です。
  *
  * @author T.TSUCHIE
  *
@@ -46,6 +47,10 @@ public class AutoDeleteExecutor {
      */
     private final List<Object> paramValues = new ArrayList<>();
 
+    /**
+     * 組み立てたクエリ情報を指定するコンストラクタ。
+     * @param query クエリ情報
+     */
     public AutoDeleteExecutor(AutoDeleteImpl<?> query) {
         this.query = query;
         this.context = query.getContext();

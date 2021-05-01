@@ -17,6 +17,13 @@ import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 更新を行うSQLを自動生成するクエリを実行します。
+ * {@link AutoUpdateImpl}のクエリ実行処理の移譲先です。
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @Slf4j
 public class AutoUpdateExecutor {
 
@@ -55,6 +62,10 @@ public class AutoUpdateExecutor {
      */
     private int targetPropertyCount = 0;
 
+    /**
+     * 組み立てたクエリ情報を指定するコンストラクタ。
+     * @param query クエリ情報
+     */
     public AutoUpdateExecutor(AutoUpdateImpl<?> query) {
         this.query = query;
         this.context = query.getContext();
@@ -71,6 +82,9 @@ public class AutoUpdateExecutor {
 
     }
 
+    /**
+     * UPDATE文のSET句を準備します。
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void prepareSetClause() {
 
@@ -127,6 +141,9 @@ public class AutoUpdateExecutor {
         }
     }
 
+    /**
+     * UPDATE文のWHERE句を準備します。
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void prepareWhereClause() {
 

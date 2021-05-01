@@ -10,6 +10,13 @@ import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhere;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhereVisitor;
 
+/**
+ * 任意の条件を指定して削除を行うSQLを自動生成するクエリを実行します。
+ * {@link AutoAnyDeleteImpl}のクエリ実行処理の移譲先です。
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class AutoAnyDeleteExecutor {
 
     /**
@@ -42,6 +49,10 @@ public class AutoAnyDeleteExecutor {
      */
     private final List<Object> paramValues = new ArrayList<>();
 
+    /**
+     * 組み立てたクエリ情報を指定するコンストラクタ。
+     * @param query クエリ情報
+     */
     public AutoAnyDeleteExecutor(AutoAnyDeleteImpl<?> query) {
         this.query = query;
         this.context = query.getContext();

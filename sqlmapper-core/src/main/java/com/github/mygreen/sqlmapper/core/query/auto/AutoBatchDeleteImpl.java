@@ -17,7 +17,6 @@ import lombok.NonNull;
 /**
  * バッチ削除を行うSQLを自動生成するクエリの実装です。
  *
- *
  * @author T.TSUCHIE
  *
  * @param <T> 処理対象となるエンティティの型

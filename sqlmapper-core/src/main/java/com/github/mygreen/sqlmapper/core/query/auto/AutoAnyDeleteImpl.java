@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * 任意の条件を指定して削除を行うSQLを自動生成するクエリですの実装です。
+ * 任意の条件を指定して削除を行うSQLを自動生成するクエリの実装です。
  *
  * @author T.TSUCHIE
  * @param <T> 処理対象となるエンティティの型

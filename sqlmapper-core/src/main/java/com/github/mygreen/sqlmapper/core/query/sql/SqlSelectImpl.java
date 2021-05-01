@@ -14,11 +14,11 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * SSQLテンプレートによる抽出を行うクエリの実装です。
+ * SQLテンプレートによる抽出を行うクエリの実装です。
  *
  * @author T.TSUCHIE
  *
- * @param <T> エンティティ情報
+ * @param <T> 処理対象のエンティティの型
  */
 public class SqlSelectImpl<T> implements SqlSelect<T> {
 

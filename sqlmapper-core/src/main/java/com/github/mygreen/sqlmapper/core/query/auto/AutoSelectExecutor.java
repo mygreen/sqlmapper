@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.util.StringUtils;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
@@ -38,6 +39,15 @@ import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
 
+/**
+ * 抽出を行うSQLを自動生成するクエリを実行します。
+ * {@link AutoSelectImpl}のクエリ実行処理の移譲先です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> 処理対象となるエンティティの型
+ */
 public class AutoSelectExecutor<T> {
 
     /**
@@ -498,13 +508,24 @@ public class AutoSelectExecutor<T> {
 
     }
 
-
+    /**
+     * 件数カウントするクエリを実行します。
+     *
+     * @return 件数カウント
+     */
     public long getCount() {
         prepare();
 
         return context.getJdbcTemplate().queryForObject(executedSql, Long.class, paramValues.toArray());
     }
 
+    /**
+     * 1件だけヒットすることを前提として検索クエリを実行します。
+     *
+     * @param callback エンティティマッピング後のコールバック処理
+     * @return エンティティのベースオブジェクト。
+     * @throws IncorrectResultSizeDataAccessException 1件も見つからない場合、2件以上見つかった場合にスローされます。
+     */
     public T getSingleResult(EntityMappingCallback<T> callback) {
         prepare();
 
@@ -513,6 +534,12 @@ public class AutoSelectExecutor<T> {
         return context.getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues.toArray());
     }
 
+    /**
+     * 1件だけヒットすることを前提として検索クエリを実行します。
+     *
+     * @param callback エンティティマッピング後のコールバック処理。
+     * @return エンティティのベースオブジェクト。1件も対象がないときは空を返します。
+     */
     public Optional<T> getOptionalResult(EntityMappingCallback<T> callback) {
         prepare();
 
@@ -526,6 +553,12 @@ public class AutoSelectExecutor<T> {
         }
     }
 
+    /**
+     * 検索クエリを実行します。
+     *
+     * @param callback エンティティマッピング後のコールバック処理。
+     * @return 検索してヒットした複数のベースオブジェクト。1件も対象がないときは空のリストを返します。
+     */
     public List<T> getResultList(EntityMappingCallback<T> callback) {
         prepare();
 
@@ -534,6 +567,11 @@ public class AutoSelectExecutor<T> {
         return context.getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
     }
 
+    /**
+     * 結果を {@link Stream} で返す検索クエリを実行します。
+     * @param callback エンティティマッピング後のコールバック処理。
+     * @return 問い合わせの結果
+     */
     public Stream<T> getResultStream(EntityMappingCallback<T> callback) {
         prepare();
 

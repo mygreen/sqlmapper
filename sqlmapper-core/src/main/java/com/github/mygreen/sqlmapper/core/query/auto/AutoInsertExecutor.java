@@ -19,6 +19,14 @@ import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
 import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 
+
+/**
+ * 挿入を行うSQLを自動生成するクエリを実行します。
+ * {@link AutoInsertImpl}のクエリ実行処理の移譲先です。
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class AutoInsertExecutor {
 
     /**
@@ -56,6 +64,10 @@ public class AutoInsertExecutor {
      */
     private SimpleJdbcInsert insertOperation;
 
+    /**
+     * 組み立てたクエリ情報を指定するコンストラクタ。
+     * @param query クエリ情報
+     */
     public AutoInsertExecutor(AutoInsertImpl<?> query) {
         this.query = query;
         this.context = query.getContext();
@@ -70,6 +82,9 @@ public class AutoInsertExecutor {
         prepareInsertOperation();
     }
 
+    /**
+     * SQLのパラメータを準備します。
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void prepareSqlParam() {
 

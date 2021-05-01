@@ -15,6 +15,15 @@ import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
+
+/**
+ * バッチ更新を行うSQLを自動生成するクエリを実行します。
+ * {@link AutoBatchUpdateImpl}のクエリ実行処理の移譲先です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @Slf4j
 public class AutoBatchUpdateExecutor {
 
@@ -53,6 +62,10 @@ public class AutoBatchUpdateExecutor {
      */
     private int targetPropertyCount = 0;
 
+    /**
+     * 組み立てたクエリ情報を指定するコンストラクタ。
+     * @param query クエリ情報
+     */
     public AutoBatchUpdateExecutor(AutoBatchUpdateImpl<?> query) {
         this.query = query;
         this.context = query.getContext();
@@ -71,6 +84,9 @@ public class AutoBatchUpdateExecutor {
         prepareSql();
     }
 
+    /**
+     * SQLのUPDATE文のSET句を準備します。
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void prepareSetClause() {
 
@@ -122,6 +138,9 @@ public class AutoBatchUpdateExecutor {
         }
     }
 
+    /**
+     * SQLのUPDATE文のWHERE句を準備します。
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void prepareWhereClause() {
 

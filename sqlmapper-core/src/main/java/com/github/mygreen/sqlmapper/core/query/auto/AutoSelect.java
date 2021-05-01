@@ -178,7 +178,7 @@ public interface AutoSelect<T> {
     /**
      * 検索してベースオブジェクトを返します。
      *
-     * @return 1件も対象がないときは空のリストを返します。
+     * @return 検索してヒットした複数のベースオブジェクト。1件も対象がないときは空のリストを返します。
      */
     List<T> getResultList();
 

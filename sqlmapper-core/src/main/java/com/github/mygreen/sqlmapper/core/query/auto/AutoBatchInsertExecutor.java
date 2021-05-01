@@ -21,6 +21,14 @@ import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
 import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 
 
+/**
+ * バッチ挿入を行うSQLを自動生成するクエリを実行します。
+ * {@link AutoBatchInsertImpl}のクエリ実行処理の移譲先です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class AutoBatchInsertExecutor {
 
     /**
@@ -64,6 +72,10 @@ public class AutoBatchInsertExecutor {
      */
     private Map<String, Object[]> generatedKeysMap = new HashMap<String, Object[]>();
 
+    /**
+     * 組み立てたクエリ情報を指定するコンストラクタ。
+     * @param query クエリ情報
+     */
     public AutoBatchInsertExecutor(AutoBatchInsertImpl<?> query) {
         this.query = query;
         this.context = query.getContext();
@@ -80,6 +92,9 @@ public class AutoBatchInsertExecutor {
         prepareInsertOperation();
     }
 
+    /**
+     * クエリ実行時のパラメータを準備します。
+     */
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void prepareSqlParam() {
 
@@ -174,6 +189,10 @@ public class AutoBatchInsertExecutor {
         }
     }
 
+    /**
+     * 挿入処理を実行します。
+     * @return 挿入したレコード件数を返します。
+     */
     public int[] execute() {
 
         prepare();
