@@ -49,7 +49,7 @@ public class SqlMapperContext {
      */
     @Getter
     @Setter
-    private TransactionTemplate requiresNewTransactionTemplate;
+    private TransactionTemplate idGeneratorTransactionTemplate;
 
     /**
      * 各SQL実行時のイベントを配信する機能

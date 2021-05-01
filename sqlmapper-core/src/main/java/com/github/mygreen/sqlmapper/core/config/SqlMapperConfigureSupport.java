@@ -101,10 +101,7 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
         context.setApplicationEventPublisher(applicationEventPublisher);
         context.setSqlTemplateEngine(sqlTemplateEngine());
         context.setValueTypeRegistry(valueTypeRegistry());
-
-        TransactionTemplate requiresNewTransactionTemplate = new TransactionTemplate(transactionManager(dataSource()));
-        requiresNewTransactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        context.setRequiresNewTransactionTemplate(requiresNewTransactionTemplate);
+        context.setIdGeneratorTransactionTemplate(idGeneratorTransactionTemplate(transactionManager(dataSource())));
 
         return context;
 
@@ -234,6 +231,12 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
 
     @Bean
     public abstract PlatformTransactionManager transactionManager(DataSource dataSource);
+
+    protected TransactionTemplate idGeneratorTransactionTemplate(PlatformTransactionManager transactionManager) {
+        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        return transactionTemplate;
+    }
 
 
 }

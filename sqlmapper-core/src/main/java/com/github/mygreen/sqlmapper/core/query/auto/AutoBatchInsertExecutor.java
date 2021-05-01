@@ -168,7 +168,7 @@ public class AutoBatchInsertExecutor {
 
         // 1レコードの主キーをまとめてキーを生成しておき、キャッシュしておく。
         Object[] generatedKeys = generatedKeysMap.computeIfAbsent(columnName, v ->
-                context.getRequiresNewTransactionTemplate().execute(action -> {
+                context.getIdGeneratorTransactionTemplate().execute(action -> {
                     return generator.generateValues(query.getEntities().length);
                 }));
 

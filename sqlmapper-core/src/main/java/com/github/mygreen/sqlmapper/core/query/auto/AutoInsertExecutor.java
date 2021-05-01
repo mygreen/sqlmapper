@@ -147,7 +147,7 @@ public class AutoInsertExecutor {
     private Object getNextVal(final IdGenerator generator) {
 
         // トランザクションは別にする。
-        return context.getRequiresNewTransactionTemplate().execute(action -> {
+        return context.getIdGeneratorTransactionTemplate().execute(action -> {
             return generator.generateValue();
         });
     }
