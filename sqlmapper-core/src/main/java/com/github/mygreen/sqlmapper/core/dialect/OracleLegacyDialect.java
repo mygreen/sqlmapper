@@ -14,6 +14,7 @@ import com.github.mygreen.sqlmapper.core.type.standard.OracleBooleanType;
 
 /**
  * 古いOracleDBの方言です。
+ * <p>Oracle11以前が対象です。
  *
  *
  * @author T.TSUCHIE

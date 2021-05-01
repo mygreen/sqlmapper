@@ -39,6 +39,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SqlMapper {
 
+    /**
+     * SqlMapperの設定情報。
+     */
     @Getter
     private final SqlMapperContext context;
 

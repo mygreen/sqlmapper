@@ -10,7 +10,7 @@ import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 /**
- * SQLの方言を処理します。
+ * SQLの方言を定義します。
  *
  *
  * @author T.TSUCHIE
@@ -33,10 +33,9 @@ public interface Dialect {
     GenerationType getDefaultGenerationType();
 
     /**
-     * Returns true if a specific primary key generation type is supported.
-     * @param generationType the pk generation type
-     *
-     * @return true if generation type is supported, false otherwise
+     * サポートする主キーの生成戦略を判定します。
+     * @param generationType 主キーの生成戦略。
+     * @return {@literal true}のときサポートします。
      */
     boolean isSupportedGenerationType(GenerationType generationType);
 
