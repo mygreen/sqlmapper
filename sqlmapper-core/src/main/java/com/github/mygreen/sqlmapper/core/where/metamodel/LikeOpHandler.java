@@ -7,6 +7,13 @@ import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
 import com.github.mygreen.sqlmapper.metamodel.operator.LikeOp;
 
+/**
+ * LIKE演算子({@link LikeOp})に対する処理を定義します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class LikeOpHandler extends OperationHandler<LikeOp>{
 
     @Override

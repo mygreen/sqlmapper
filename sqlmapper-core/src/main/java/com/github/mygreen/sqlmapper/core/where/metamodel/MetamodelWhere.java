@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * メタモデルの条件式。
+ * メタモデルを扱う条件式。
  *
  *
  * @author T.TSUCHIE

@@ -21,6 +21,14 @@ import com.github.mygreen.sqlmapper.metamodel.operator.BooleanOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 
+/**
+ * 演算子に対する処理を行うためのテンプレートクラス。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> 処理対象の演算子
+ */
 public abstract class OperationHandler<T extends Operator> {
 
     /**
@@ -38,6 +46,13 @@ public abstract class OperationHandler<T extends Operator> {
      */
     protected abstract void init();
 
+    /**
+     * 演算子に対する処理を行います。
+     * @param operator 演算子
+     * @param expr 演算子と非演算子を含む処理対象の式の情報
+     * @param visitor Visitor
+     * @param context このンテキスト
+     */
     public abstract void handle(T operator, Operation<?> expr, Visitor<VisitorContext> visitor, VisitorContext context);
 
     /**

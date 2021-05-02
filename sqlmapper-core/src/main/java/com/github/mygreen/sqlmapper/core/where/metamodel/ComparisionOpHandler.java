@@ -7,6 +7,13 @@ import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
 import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
 
+/**
+ * 比較演算子({@link ComparisionOp})に対する処理を定義します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class ComparisionOpHandler extends OperationHandler<ComparisionOp> {
 
     @Override

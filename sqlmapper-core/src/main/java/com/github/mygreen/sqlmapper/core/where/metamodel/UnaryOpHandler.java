@@ -5,6 +5,13 @@ import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
 import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
 
+/**
+ * 単項演算子({@link UnaryOp})に対する処理を定義します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class UnaryOpHandler extends OperationHandler<UnaryOp> {
 
     @Override

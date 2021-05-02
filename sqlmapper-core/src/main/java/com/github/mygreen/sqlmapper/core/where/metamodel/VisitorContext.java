@@ -13,6 +13,14 @@ import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 式であるノードを巡回する際に持ち回るコンテキスト。
+ * <p>設定値や組み立て中のSQL/パラメータを保持します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @RequiredArgsConstructor
 public class VisitorContext {
 
@@ -69,19 +77,36 @@ public class VisitorContext {
         this.tableNameResolver = parent.tableNameResolver;
     }
 
+    /**
+     * SQLのプレースホルダーとして設定する値を追加します。
+     * @param value SQLに渡す値。
+     */
     public void addParamValue(Object value) {
         this.paramValues.add(value);
     }
 
+    /**
+     *  SQLのプレースホルダーとして設定する複数の値を追加します。
+     * @param values SQLに渡す値のコレクション。
+     */
     public void addParamValues(Collection<?> values) {
         this.paramValues.addAll(values);
     }
 
+    /**
+     * SQLを追加します。
+     * @param sql SQL
+     * @return 現在組み立て中のSQLのバッファー。
+     */
     public StringBuilder appendSql(String sql) {
         this.criteria.append(sql);
         return criteria;
     }
 
+    /**
+     * 組み立てたSQL(クライテリア)を文字列として取得します。
+     * @return 組み立てたSQL
+     */
     public String getCriteria() {
         return criteria.toString();
     }

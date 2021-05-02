@@ -5,6 +5,13 @@ import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
 import com.github.mygreen.sqlmapper.metamodel.operator.FuncOp;
 
+/**
+ * 関数({@link FuncOp})に対する処理を定義します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class FuncOpHandler extends OperationHandler<FuncOp>{
 
     @Override
