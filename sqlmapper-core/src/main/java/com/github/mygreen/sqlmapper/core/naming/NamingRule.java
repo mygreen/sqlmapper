@@ -17,7 +17,7 @@ public interface NamingRule {
      */
     String entityToTable(String entityName);
 
-    /**
+//    /**
 //     * テーブル名をエンティティ名に変換する。
 //     * @param tableName テーブル名
 //     * @return エンティティ名
