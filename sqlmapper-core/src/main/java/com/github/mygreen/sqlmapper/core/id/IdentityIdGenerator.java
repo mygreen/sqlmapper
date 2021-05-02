@@ -61,6 +61,7 @@ public class IdentityIdGenerator implements IdGenerator {
      * 生成したIDをプロパティのクラス型に変換する。
      * @param value 生成したID
      * @return プロパティのクラス型に変換したID。
+     * @throws DataIntegrityViolationException サポート対象外のクラスタイプの場合にスローされます。
      */
     public Object generateValue(final Number value) {
 

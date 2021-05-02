@@ -10,7 +10,7 @@ import com.github.mygreen.sqlmapper.core.util.NameUtils;
 import lombok.NonNull;
 
 /**
- * テーブルを使って採番を行います。
+ * テーブルを用いてIDの採番を行います。
  *
  *
  * @author T.TSUCHIE
@@ -20,12 +20,24 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
 
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * テーブル情報
+     */
     private final TableIdContext context;
 
+    /**
+     * 採番用レコードを抽出するためのSQL
+     */
     private String sqlSelect;
 
+    /**
+     * 採番用レコードを作成するためのSQL
+     */
     private String sqlInsert;
 
+    /**
+     * 採番用レコードを更新するためのSQL
+     */
     private String sqlUpdate;
 
     public TableIdIncrementer(@NonNull JdbcTemplate jdbcTemplate, @NonNull TableIdContext context) {
@@ -40,12 +52,12 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
      * {@link TableIdContext} を元にこのクラスの初期化を行います。
      * <p>実行するSQLの組み立てを行います。</p>
      */
-    protected void init() {
+    private void init() {
 
         Assert.notNull(context, "tableIdContext should not be null.");
 
         if(context.getAllocationSize() <= 0) {
-            throw new IllegalArgumentException("TableIdContext#allocationSie shoule be greater than 1.");
+            throw new IllegalArgumentException("TableIdContext#allocationSize shoule be greater than 1.");
         }
 
         final String tableName = NameUtils.tableFullName(context.getTable(), context.getCatalog(), context.getSchema());
@@ -103,6 +115,11 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
 
     }
 
+    /**
+     * 現在の採番値を取得します。
+     * @param name 採番名。
+     * @return 採番値。該当する採番名のレコードが存在しない場合は、{@literal null} を返します。
+     */
     private Long selectTable(final String name) {
 
         List<Long> result = jdbcTemplate.queryForList(sqlSelect, Long.class, name);
@@ -113,10 +130,20 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
         }
     }
 
+    /**
+     * 新たな採番情報を作成します。
+     * @param name 採番名
+     * @param value 採番値。
+     */
     private void insertTable(final String name, final long value) {
         jdbcTemplate.update(sqlInsert, name, value);
     }
 
+    /**
+     * 既存の採番値を更新します。
+     * @param name 採番名
+     * @param incrementValue 採番値に対する加算する値
+     */
     private void updateTable(final String name, final long incrementValue) {
         jdbcTemplate.update(sqlUpdate, name, incrementValue);
     }

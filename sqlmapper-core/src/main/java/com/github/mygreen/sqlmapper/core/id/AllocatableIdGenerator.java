@@ -6,6 +6,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 挿入前に予めIDを生成を行うID生成を行う抽象クラスです。
+ * <p>大量にレコードを導入するときは効率的に処理を行うことができます。
+ * <p>ただし、予めIDを生成してキャッシュしておくため、プロセスを再起動すると生成済みのキャッシュされたIDは使われず欠番となります。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @RequiredArgsConstructor
 public abstract class AllocatableIdGenerator {
 
@@ -36,8 +45,8 @@ public abstract class AllocatableIdGenerator {
     protected abstract long allocateValue(String key, long allocationSize);
 
     /**
-     * 次のID番号を取得する。
-     * @param sequenceName
+     * 新しいIDを取得します。
+     * @param sequenceName シーケンス名
      * @return
      */
     public long nextValue(final String key) {
@@ -46,7 +55,7 @@ public abstract class AllocatableIdGenerator {
     }
 
     /**
-     * 自動生成される識別子の情報を保持する。
+     * 自動生成されるIDの情報を保持する。
      *
      *
      * @author T.TSUCHIE
@@ -64,6 +73,13 @@ public abstract class AllocatableIdGenerator {
          */
         protected long allocated = -1L;
 
+        /**
+         * 新しいIDを払い出します。
+         * <p>未割当のキャッシュしているIDがあれば、そちらを払い出します。
+         *
+         * @param key キー名
+         * @return 新しいIDを返します。
+         */
         public synchronized long getNextValue(final String key) {
 
             if(currentValue < 0l) {

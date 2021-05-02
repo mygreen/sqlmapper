@@ -13,8 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
- * {@link GenerationType#SEQUENCE}方式で識別子の値を自動生成するIDジェネレータです。
- * <p>サポートする識別子のクラスタイプは、{@code long/Long/int/Integer/String}です。
+ * {@link GenerationType#SEQUENCE}方式でIDの値を自動生成するIDジェネレータです。
+ * <p>サポートするIDのクラスタイプは、{@code long/Long/int/Integer/String}です。
  *
  *
  * @author T.TSUCHIE
@@ -36,7 +36,7 @@ public class SequenceIdGenerator implements IdGenerator {
     private final DataFieldMaxValueIncrementer incrementer;
 
     /**
-     * 生成する識別子のタイプ
+     * 生成するIDのタイプ
      */
     @Getter
     private final Class<?> requiredType;

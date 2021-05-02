@@ -2,6 +2,13 @@ package com.github.mygreen.sqlmapper.core.id;
 
 import lombok.Data;
 
+/**
+ * テーブルによるIDを生成するための情報を保持します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @Data
 public class TableIdContext {
 

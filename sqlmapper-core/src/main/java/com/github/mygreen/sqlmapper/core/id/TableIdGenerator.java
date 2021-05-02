@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
- * {@link GenerationType#TABLE}方式で識別子の値を自動生成するIDジェネレータです。
- * <p>サポートする識別子のクラスタイプは、{@code long/Long/int/Integer/String}です。
+ * {@link GenerationType#TABLE}方式でIDの値を自動生成するIDジェネレータです。
+ * <p>サポートするIDのクラスタイプは、{@code long/Long/int/Integer/String}です。
  *
  *
  * @author T.TSUCHIE
@@ -25,7 +25,7 @@ public class TableIdGenerator implements IdGenerator {
     private final TableIdIncrementer incrementer;
 
     /**
-     * 生成する識別子のタイプ
+     * 生成するIDのタイプ
      */
     @Getter
     private final Class<?> requiredType;
