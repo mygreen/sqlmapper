@@ -26,6 +26,13 @@ public abstract class AbstractEntityBatchEvent extends ApplicationEvent {
     @Getter
     protected final Object[] entities;
 
+    /**
+     * コンストラクタです。
+     *
+     * @param source イベント発生個所のクラスのインスタンス
+     * @param entityMeta 処理対象のエンティティのメタ情報です。
+     * @param entities 処理対象のエンティティのインスタンスです。
+     */
     public AbstractEntityBatchEvent(Object source, EntityMeta entityMeta, Object[] entities) {
         super(source);
         this.entityMeta = entityMeta;
