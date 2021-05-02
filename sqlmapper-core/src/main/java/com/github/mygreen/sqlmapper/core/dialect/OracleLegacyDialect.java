@@ -28,13 +28,24 @@ public class OracleLegacyDialect extends DialectBase {
 
     /**
      * {@inheritDoc}
-     * {@literal oracle}を返します。
+     *
+     * @return {@literal oracle}を返します。
      */
     @Override
     public String getName() {
         return "oracle";
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <ul>
+     *  <li>{@link GenerationType#IDENTITY} : {@literal false}</li>
+     *  <li>{@link GenerationType#SEQUENCE} : {@literal true}</li>
+     *  <li>{@link GenerationType#TABLE} : {@literal true}</li>
+     *  <li>その他 : {@literal false}</li>
+     * </ul>
+     */
     @Override
     public boolean isSupportedGenerationType(GenerationType generationType) {
         switch(generationType) {
@@ -49,6 +60,11 @@ public class OracleLegacyDialect extends DialectBase {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link OracleSequenceMaxValueIncrementer} のインスタンスを返します。
+     */
     @Override
     public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
         return new OracleSequenceMaxValueIncrementer(dataSource, sequenceName);
@@ -56,6 +72,7 @@ public class OracleLegacyDialect extends DialectBase {
 
     /**
      * {@inheritDoc}
+     *
      * 与えられた値が {@literal boolean/Boolean}のとき、整数型に変換する {@link OracleBooleanType} に変換します。
      */
     @Override
@@ -74,6 +91,11 @@ public class OracleLegacyDialect extends DialectBase {
         return valueType;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return コメントの形式 /{@literal *}+ヒント{@literal *}/ の形式で返します。
+     */
     @Override
     public String getHintComment(final String hint) {
         return "/*+ " + hint + " */ ";
@@ -81,6 +103,7 @@ public class OracleLegacyDialect extends DialectBase {
 
     /**
      * {@inheritDoc}
+     *
      * {@literal ROWNUMBER}を使用し、疑似的にLIMIT句を表現します。
      */
     @Override
@@ -116,7 +139,8 @@ public class OracleLegacyDialect extends DialectBase {
 
     /**
      * {@inheritDoc}
-     * 必ず{@literal true} を返します。
+     *
+     * @return 必ず{@literal true} を返します。
      */
     @Override
     public boolean isSupportedSelectForUpdate(final SelectForUpdateType type) {

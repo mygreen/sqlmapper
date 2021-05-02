@@ -26,6 +26,16 @@ public class H2Dialect extends DialectBase {
         return "h2";
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <ul>
+     *  <li>{@link GenerationType#IDENTITY} : {@literal true}</li>
+     *  <li>{@link GenerationType#SEQUENCE} : {@literal true}</li>
+     *  <li>{@link GenerationType#TABLE} : {@literal true}</li>
+     *  <li>その他 : {@literal false}</li>
+     * </ul>
+     */
     @Override
     public boolean isSupportedGenerationType(GenerationType generationType) {
         switch(generationType) {
@@ -40,6 +50,11 @@ public class H2Dialect extends DialectBase {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link H2SequenceMaxValueIncrementer} のインスタンスを返します。
+     */
     @Override
     public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
         return new H2SequenceMaxValueIncrementer(dataSource, sequenceName);

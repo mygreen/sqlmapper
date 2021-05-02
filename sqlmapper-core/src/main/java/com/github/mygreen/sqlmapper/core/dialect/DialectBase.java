@@ -31,21 +31,41 @@ public abstract class DialectBase implements Dialect {
         return valueType;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@literal COUNT(*)} を返します。
+     */
     @Override
     public String getCountSql() {
         return "COUNT(*)";
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return 空文字({@literal ""})を返します。
+     */
     @Override
     public String getHintComment(final String hint) {
         return "";
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link SelectForUpdateType#NORMAL} を返します。
+     */
     @Override
     public boolean isSupportedSelectForUpdate(final SelectForUpdateType type) {
         return type == SelectForUpdateType.NORMAL;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@literal  FOR UPDATE} を返します。
+     */
     @Override
     public String getForUpdateSql(final SelectForUpdateType type, final int waitSeconds) {
         return " FOR UPDATE";

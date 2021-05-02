@@ -28,7 +28,7 @@ public interface Dialect {
 
     /**
      * {@link GenerationType#AUTO} が指定された場合の、 デフォルトの {@link GenerationType}を返します。
-     * @return デフォルトの {@link GenerationType}
+     * @return {@link GenerationType} を返します。
      */
     GenerationType getDefaultGenerationType();
 
@@ -43,7 +43,7 @@ public interface Dialect {
      * シーケンスをインクリメントする処理を取得します。
      * @param dataSource データソース
      * @param sequenceName シーケンス名
-     * @return
+     * @return DBに対応したインクリメントする処理の実装を返します。
      */
     DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName);
 

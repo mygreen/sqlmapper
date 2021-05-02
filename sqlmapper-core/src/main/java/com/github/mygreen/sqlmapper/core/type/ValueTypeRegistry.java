@@ -29,7 +29,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 /**
- * {@link ValueType} を管理するためのクラス。
+ * {@link ValueType} を管理します。
  *
  *
  * @author T.TSUCHIE

@@ -32,23 +32,35 @@ import lombok.Setter;
  */
 public class EntityMetaFactory {
 
+    /**
+     * 命名規則の定義です。
+     * Springのインジェクション対象です。
+     */
     @Getter
     @Setter
     @Autowired
     private NamingRule namingRule;
 
+    /**
+     * メッセージフォーマッタです。
+     * Springのインジェクション対象です。
+     */
     @Getter
     @Setter
     @Autowired
     private MessageFormatter messageFormatter;
 
+    /**
+     * プロパティのメタ情報を作成します。
+     * Springのインジェクション対象です。
+     */
     @Getter
     @Setter
     @Autowired
     private PropertyMetaFactory propertyMetaFactory;
 
     /**
-     * エンティティのメタ情報をマップです。
+     * エンティティのメタ情報のキャッシュ用マップです。
      * <p>key=エンティティのFQN, value=EntityMeta</p>
      */
     private ConcurrentHashMap<String, EntityMeta> entityMetaMap = new ConcurrentHashMap<>(200);

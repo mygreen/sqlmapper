@@ -59,7 +59,8 @@ import com.github.mygreen.sqlmapper.core.type.standard.StringType;
 import com.github.mygreen.sqlmapper.core.type.standard.UUIDType;
 
 /**
- *
+ * SQLMapperのSpringBeanの設定サポート用クラス。
+ * 環境ごとに、このクラスを実装してください。
  *
  * @author T.TSUCHIE
  *
@@ -67,10 +68,19 @@ import com.github.mygreen.sqlmapper.core.type.standard.UUIDType;
 @PropertySource("classpath:/com/github/mygreen/sqlmapper/core/sqlmapper.properties")
 public abstract class SqlMapperConfigureSupport implements ApplicationContextAware, ApplicationEventPublisherAware {
 
-    private ApplicationContext applicationContext;
+    /**
+     * Springのアプリケーションコンテキスト
+     */
+    protected ApplicationContext applicationContext;
 
-    private ApplicationEventPublisher applicationEventPublisher;
+    /**
+     * イベントを配信する機能
+     */
+    protected ApplicationEventPublisher applicationEventPublisher;
 
+    /**
+     * Springのコンテナの環境設定
+     */
     @Autowired
     protected Environment env;
 
@@ -85,14 +95,16 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     }
 
     @Bean
+    @Description("SQLMapperのクエリ実行用のBean。")
     public SqlMapper sqlMapper() {
         return new SqlMapper(sqlMapperContext());
     }
 
     @Bean
+    @Description("SQLMapperの各設定を保持するBean。")
     public SqlMapperContext sqlMapperContext() {
 
-        SqlMapperContext context = new SqlMapperContext();
+        final SqlMapperContext context = new SqlMapperContext();
         context.setJdbcTemplate(jdbcTemplate());
         context.setNamingRule(namingRule());
         context.setMessageFormatter(messageFormatter());
@@ -108,9 +120,10 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     }
 
     @Bean
+    @Description("エンティティの対応クラスからメタ情報を作成するBean。")
     public EntityMetaFactory entityMetaFactory() {
 
-        EntityMetaFactory entityMetaFactory = new EntityMetaFactory();
+        final EntityMetaFactory entityMetaFactory = new EntityMetaFactory();
         entityMetaFactory.setMessageFormatter(messageFormatter());
         entityMetaFactory.setNamingRule(namingRule());
         entityMetaFactory.setPropertyMetaFactory(propertyMetaFactory());
@@ -120,9 +133,10 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     }
 
     @Bean
+    @Description("エンティティのプロパティからメタ情報を作成するBean。")
     public PropertyMetaFactory propertyMetaFactory() {
 
-        PropertyMetaFactory propertyMetaFactory = new PropertyMetaFactory();
+        final PropertyMetaFactory propertyMetaFactory = new PropertyMetaFactory();
         propertyMetaFactory.setMessageFormatter(messageFormatter());
         propertyMetaFactory.setNamingRule(namingRule());
         propertyMetaFactory.setValueTypeRegistry(valueTypeRegistry());
@@ -136,40 +150,46 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     }
 
     @Bean
-    @Description("テーブルやカラム名の命名規則")
+    @Description("テーブルやカラム名の命名規則を定義するBean。")
     public NamingRule namingRule() {
         return new DefaultNamingRule();
     }
 
     @Bean
+    @Description("メッセージをフォーマットするBean。")
     public MessageFormatter messageFormatter() {
 
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
         messageSource.addBasenames("com/github/mygreen/sqlmapper/messages");
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setUseCodeAsDefaultMessage(true);
         messageSource.setFallbackToSystemLocale(false);
 
-        ExpressionEvaluator expressionEvaluator = new SpelExpressionEvaluator();
-        MessageInterpolator messageInterpolator = new MessageInterpolator(expressionEvaluator);
+        // SpELで処理する
+        final ExpressionEvaluator expressionEvaluator = new SpelExpressionEvaluator();
+        final MessageInterpolator messageInterpolator = new MessageInterpolator(expressionEvaluator);
 
         return new MessageFormatter(messageSource, messageInterpolator);
 
     }
 
     @Bean
+    @Description("ValueTypeを管理するBean")
     public ValueTypeRegistry valueTypeRegistry() {
 
-        ValueTypeRegistry registry = new ValueTypeRegistry();
+        final ValueTypeRegistry registry = new ValueTypeRegistry();
         registry.setApplicationContext(applicationContext);
         registry.setMessageFormatter(messageFormatter());
         registry.setLobHandler(lobHandler());
 
+        // 文字列用の設定
         registry.register(String.class, new StringType());
 
+        // ブール値用の設定
         registry.register(Boolean.class, new BooleanType(false));
         registry.register(boolean.class, new BooleanType(true));
 
+        // 数値用の設定
         registry.register(Short.class, new ShortType(false));
         registry.register(short.class, new ShortType(true));
         registry.register(Integer.class, new IntegerType(false));
@@ -180,23 +200,35 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
         registry.register(float.class, new FloatType(true));
         registry.register(Double.class, new DoubleType(false));
         registry.register(double.class, new DoubleType(true));
-
         registry.register(BigDecimal.class, new BigDecimalType());
 
+        // SQLの時制用の設定
+        // java.util.Date型は、ValueTypeRegistry 内で別途処理される。
         registry.register(Time.class, new SqlTimeType());
         registry.register(java.sql.Date.class, new SqlDateType());
         registry.register(Timestamp.class, new SqlTimestampType());
 
+        // JSR-310の時勢用の設定
+        // タイムゾーンを持たない時制のみサポート
         registry.register(LocalTime.class, new LocalTimeType());
         registry.register(LocalDate.class, new LocalDateType());
         registry.register(LocalDateTime.class, new LocalDateTimeType());
 
+        // その他の型の設定
         registry.register(UUID.class, new UUIDType());
 
         return registry;
     }
 
+    /**
+     * SQLテンプレートエンジンのBean定義。
+     * 外部ライブラリ splate({@link https://github.com/mygreen/splate/}) を使用します。
+     * <p>キャッシュモードや文字コードの設定はプロパティファイルから取得します。
+     *
+     * @return SQLテンプレートを処理するエンジン
+     */
     @Bean
+    @Description("SQLテンプレートを管理するBean")
     public SqlTemplateEngine sqlTemplateEngine() {
 
         final SqlTemplateEngine templateEngine = new SqlTemplateEngine();
@@ -209,34 +241,48 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
     }
 
     @Bean
+    @Description("LOBを処理するBean。")
     public LobHandler lobHandler() {
         return new DefaultLobHandler();
     }
 
     @Bean
+    @Description("SQLクエリを発行するJDBCテンプレート")
     public JdbcTemplate jdbcTemplate() {
         return new JdbcTemplate(dataSource());
     }
 
     @Bean
-    public AuditingEntityListener auditingEntityListener() {
-        return new AuditingEntityListener();
-    }
-
-    @Bean
-    public abstract Dialect dialect();
-
-    @Bean
+    @Description("DB接続するためのデータソース")
     public abstract DataSource dataSource();
 
     @Bean
+    @Description("トランザクションマネージャ")
     public abstract PlatformTransactionManager transactionManager(DataSource dataSource);
 
-    protected TransactionTemplate idGeneratorTransactionTemplate(PlatformTransactionManager transactionManager) {
+    /**
+     * ID生成用のトランザクションテンプレートのBean定義。
+     * <p>デフォルトでは、トランザクションを独立されるため {@link TransactionDefinition#PROPAGATION_REQUIRES_NEW} を使用します。
+     *
+     * @param transactionManager トランザクションマネージャ
+     * @return トランザクションテンプレート
+     */
+    @Bean
+    @Description("ID生成用のトランザクションテンプレート")
+    public TransactionTemplate idGeneratorTransactionTemplate(PlatformTransactionManager transactionManager) {
         TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
         transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         return transactionTemplate;
     }
 
+    @Bean
+    @Description("SQLの方言を表現するBean。")
+    public abstract Dialect dialect();
+
+    @Bean
+    @Description("クエリ実行時のイベントを処理するBean。")
+    public AuditingEntityListener auditingEntityListener() {
+        return new AuditingEntityListener();
+    }
 
 }

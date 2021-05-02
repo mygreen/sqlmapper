@@ -5,7 +5,7 @@ import com.github.mygreen.sqlmapper.core.SqlMapperException;
 import lombok.Getter;
 
 /**
- * SQL値の変換に失敗したときにスローされます。
+ * SQL値の変換に失敗したときにスローされる例外です。
  *
  *
  * @author T.TSUCHIE

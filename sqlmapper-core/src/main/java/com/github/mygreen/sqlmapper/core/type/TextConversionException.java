@@ -6,7 +6,7 @@ import lombok.Getter;
 
 
 /**
- * 値を文字列への変換に失敗したときにスローされます。
+ * 値を文字列への変換に失敗したときにスローされる例外です。
  *
  * @author T.TSUCHIE
  *
@@ -20,7 +20,7 @@ public class TextConversionException extends SqlMapperException {
     private final Object targetValue;
 
     /**
-     * メッセージを指定してインスタンスと作成します。
+     * メッセージを指定してインスタンスを作成します。
      * @param targetValue 変換対象の値
      * @param message メッセージ
      */
@@ -30,10 +30,10 @@ public class TextConversionException extends SqlMapperException {
     }
 
     /**
-     * メッセージと例外を指定してインスタンスを作成します。
+     * メッセージと原因となるエラーを指定してインスタンスを作成します。
      * @param targetValue 変換対象の値
      * @param message メッセージ
-     * @param cause 原因となる例外
+     * @param cause 原因となるエラー
      */
     public TextConversionException(Object targetValue, String message, Throwable cause) {
         super(message, cause);

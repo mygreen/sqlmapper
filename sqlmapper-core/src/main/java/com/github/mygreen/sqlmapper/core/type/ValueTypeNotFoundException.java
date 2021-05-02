@@ -6,7 +6,7 @@ import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import lombok.Getter;
 
 /**
- * 対応する{@link ValueType}が見つからない場合にストローされます。
+ * 対応する{@link ValueType}が見つからない場合にスローされる例外です。
  *
  *
  * @author T.TSUCHIE
@@ -14,6 +14,9 @@ import lombok.Getter;
  */
 public class ValueTypeNotFoundException extends SqlMapperException {
 
+    /**
+     * エラー対象のプロパティのメタ情報です。
+     */
     @Getter
     private final PropertyMeta propertyMeta;
 
