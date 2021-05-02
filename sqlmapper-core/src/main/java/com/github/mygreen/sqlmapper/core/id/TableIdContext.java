@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.core.id;
 import lombok.Data;
 
 /**
- * テーブルによるIDを生成するための情報を保持します。
+ * テーブルを用いたIDを生成するための情報を保持します。
  *
  *
  * @author T.TSUCHIE
