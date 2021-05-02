@@ -7,6 +7,13 @@ import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * double 型及びそのラッパー型のマッピングを処理します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @RequiredArgsConstructor
 public class DoubleType implements ValueType<Double> {
 
@@ -26,6 +33,10 @@ public class DoubleType implements ValueType<Double> {
         return value;
     }
 
+    /**
+     * {@inheritDoc}
+     * @return 引数で指定した値が{@literal null} かつ、プリミティブ型にマッピングする際は {@literal 0.0d} を返します。
+     */
     @Override
     public Object getSqlParameterValue(Double value) {
 

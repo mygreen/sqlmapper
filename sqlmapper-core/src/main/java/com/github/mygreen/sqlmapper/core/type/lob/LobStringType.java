@@ -1,5 +1,6 @@
 package com.github.mygreen.sqlmapper.core.type.lob;
 
+import java.sql.Clob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -12,6 +13,14 @@ import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * {@literal String} 型のマッピングを処理します。
+ * <p>JDBCの型としては、{@link Clob} 型として処理を行います。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @RequiredArgsConstructor
 public class LobStringType implements ValueType<String> {
 

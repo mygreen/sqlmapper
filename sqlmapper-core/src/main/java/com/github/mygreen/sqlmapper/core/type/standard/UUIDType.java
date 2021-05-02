@@ -9,6 +9,13 @@ import org.springframework.jdbc.core.SqlParameterValue;
 
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
+/**
+ * {@link UUID} 型のマッピングを処理します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class UUIDType implements ValueType<UUID> {
 
     @Override

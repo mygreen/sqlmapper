@@ -8,6 +8,13 @@ import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * {@link BigDecimal} 型のマッピングを処理します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @RequiredArgsConstructor
 public class BigDecimalType implements ValueType<BigDecimal> {
 

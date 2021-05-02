@@ -1,5 +1,6 @@
 package com.github.mygreen.sqlmapper.core.type.lob;
 
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -12,6 +13,14 @@ import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * {@literal byte[]} 型のマッピングを処理します。
+ * <p>JDBCの型としては、{@link Blob} 型として処理を行います。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @RequiredArgsConstructor
 public class LobByteArrayType implements ValueType<byte[]> {
 
@@ -27,6 +36,11 @@ public class LobByteArrayType implements ValueType<byte[]> {
         return new SqlParameterValue(Types.BLOB, new SqlLobValue(value, lobHandler));
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return byte配列の値を文字列に変換した値を結合した値を返します。
+     */
     @Override
     public String getEmbeddedValue(byte[] value) {
         if(value == null) {

@@ -8,8 +8,18 @@ import com.github.mygreen.sqlmapper.core.type.ValueType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 数値をブール値にマッピングして処理を行います。
+ * <ul>
+ *  <li>DB値 0 => false にマッピング</li>
+ *  <li>DB値 1 => true にマッピング</li>
+ * </ul>
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @RequiredArgsConstructor
-public class OracleBooleanType implements ValueType<Boolean> {
+public class NumerableBooleanType implements ValueType<Boolean> {
 
     /**
      * プリミティブ型かどうか
@@ -28,6 +38,10 @@ public class OracleBooleanType implements ValueType<Boolean> {
         return value > 0 ? true : false;
     }
 
+    /**
+     * {@inheritDoc}
+     * @return 引数で指定した値が{@literal null} かつ、プリミティブ型にマッピングする際は {@literal false} を返します。
+     */
     @Override
     public Object getSqlParameterValue(Boolean value) {
 

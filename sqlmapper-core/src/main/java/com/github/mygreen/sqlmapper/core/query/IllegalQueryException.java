@@ -11,6 +11,10 @@ import com.github.mygreen.sqlmapper.core.SqlMapperException;
  */
 public class IllegalQueryException extends SqlMapperException {
 
+    /**
+     * メッセージを指定してインスタンスを作成する。
+     * @param message メッセージ。
+     */
     public IllegalQueryException(String message) {
         super(message);
     }

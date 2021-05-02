@@ -8,6 +8,13 @@ import com.github.mygreen.sqlmapper.core.type.ValueType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * boolean 型及びそのラッパー型のマッピングを処理します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @RequiredArgsConstructor
 public class BooleanType implements ValueType<Boolean> {
 
@@ -28,6 +35,10 @@ public class BooleanType implements ValueType<Boolean> {
         return value;
     }
 
+    /**
+     * {@inheritDoc}
+     * @return 引数で指定した値が{@literal null} かつ、プリミティブ型にマッピングする際は {@literal false} を返します。
+     */
     @Override
     public Object getSqlParameterValue(Boolean value) {
 

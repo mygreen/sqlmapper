@@ -5,6 +5,13 @@ import java.sql.SQLException;
 
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
+/**
+ * {@link String} 型のマッピングを処理します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class StringType implements ValueType<String> {
 
     @Override

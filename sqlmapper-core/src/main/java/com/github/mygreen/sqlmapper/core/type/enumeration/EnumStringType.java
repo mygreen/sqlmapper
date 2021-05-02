@@ -11,12 +11,28 @@ import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.sqlmapper.core.type.SqlValueConversionException;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
+import lombok.Getter;
 import lombok.NonNull;
 
+/**
+ * 列挙型の名称とのマッピングを処理します。
+ * <p>JDBCの型としては、{@link String} 型として処理を行います。
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> 列挙型のタイプ
+ */
 public class EnumStringType<T extends Enum<T>> implements ValueType<T> {
 
+    /**
+     * マッピング対象の列挙型のクラス
+     */
+    @Getter
     private final Class<T> enumType;
 
+    /**
+     * メッセージフォーマッター
+     */
     private final MessageFormatter messageFormatter;
 
     /**
@@ -24,6 +40,11 @@ public class EnumStringType<T extends Enum<T>> implements ValueType<T> {
      */
     private final Map<String, Enum<?>> toObjectMap;
 
+    /**
+     * マッピング対象の列挙型を指定してインスタンスを作成します。
+     * @param enumClass 列挙型のクラス
+     * @param messageFormatter メッセージフォーマッター
+     */
     public EnumStringType(@NonNull Class<T> enumClass, MessageFormatter messageFormatter) {
         this.enumType = enumClass;
         this.messageFormatter = messageFormatter;
