@@ -29,6 +29,7 @@ public class SubQueryHelper {
 
     /**
      * 抽出対象のエンティティ（テーブル）とプロパティ（カラム）指定して、サブクエリのインスタンスを作成します。
+     *
      * @param <T> 抽出対象のプロパティ（カラム）の型
      * @param entityPath 抽出対象のテーブルのエンティティ
      * @param include 抽出対象のカラムのプロパティ

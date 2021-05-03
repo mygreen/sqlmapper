@@ -6,7 +6,7 @@ import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 import com.github.mygreen.sqlmapper.metamodel.operation.QueryMeta;
 
 /**
- * サブクエリの式を
+ * サブクエリの式を表現します。
  *
  * @author T.TSUCHIE
  * @param <T> サブクエリの返す型
@@ -59,14 +59,14 @@ public interface SubQueryExpression<T> extends Expression<T> {
     SubQueryExpression<T> includes(final PropertyPath<?>... properties);
 
     /**
-     * SQLの {@literal EXISTS} 条件として返します。
-     * @return
+     * {@literal EXISTS} 句を条件として比較する式を作成します。
+     * @return {@literal EXISTS(サブクエリ)}
      */
     BooleanExpression exists();
 
     /**
-     * SQLの {@literal NOT EXISTS} 条件として返します。
-     * @return
+     * {@literal NOT EXISTS} 句を条件として比較する式を作成します。
+     * @return {@literal EXISTS(サブクエリ)}
      */
     BooleanExpression notExists();
 }

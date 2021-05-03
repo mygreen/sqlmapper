@@ -13,7 +13,7 @@ import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
 import lombok.NonNull;
 
 /**
- * {@link Predicate} に対する {@link Operation}の実装。
+ * {@link Predicate} に対する 演算子処理の実装。
  *
  *
  * @author T.TSUCHIE

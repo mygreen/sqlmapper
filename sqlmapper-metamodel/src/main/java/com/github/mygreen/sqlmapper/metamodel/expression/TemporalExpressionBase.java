@@ -3,12 +3,12 @@ package com.github.mygreen.sqlmapper.metamodel.expression;
 import java.time.temporal.TemporalAccessor;
 
 /**
- * {@link TemporalAccessor} を日時型のベースクラス。
+ * {@link TemporalAccessor} を親に持つ日時型のベースクラス。
  *
  *
  * @author T.TSUCHIE
  *
- * @param <T>
+ * @param <T> 日時型のクラスタイプ
  */
 @SuppressWarnings("rawtypes")
 public abstract class TemporalExpressionBase<T extends TemporalAccessor & Comparable> extends ComparableExpression<T> {
@@ -18,36 +18,36 @@ public abstract class TemporalExpressionBase<T extends TemporalAccessor & Compar
     }
 
     /**
-     * {@literal this > right}
-     * @param right
-     * @return
+     * {@literal 左辺 > 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 > 右辺}
      */
     public BooleanExpression after(T right) {
         return gt(right);
     }
 
     /**
-     * {@literal this > right}
-     * @param right
-     * @return
+     * {@literal 左辺 > 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 > 右辺}
      */
     public BooleanExpression after(Expression<T> right) {
         return gt(right);
     }
 
     /**
-     * {@literal this < right}
-     * @param right
-     * @return
+     * {@literal 左辺 < 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 < 右辺}
      */
     public BooleanExpression before(T right) {
         return lt(right);
     }
 
     /**
-     * {@literal this < right}
-     * @param right
-     * @return
+     * {@literal 左辺 < 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 < 右辺}
      */
     public BooleanExpression before(Expression<T> right) {
         return lt(right);

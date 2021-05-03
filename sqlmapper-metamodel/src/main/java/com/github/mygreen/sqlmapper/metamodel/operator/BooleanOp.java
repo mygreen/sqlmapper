@@ -13,6 +13,7 @@ public enum BooleanOp implements Operator {
 
     AND(Boolean.class, 80),
     OR(Boolean.class, 90)
+
     ;
 
     /**

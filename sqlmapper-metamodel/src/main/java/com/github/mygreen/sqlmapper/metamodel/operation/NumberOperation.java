@@ -9,6 +9,14 @@ import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 
 import lombok.NonNull;
 
+
+/**
+ * 数値型を値に持つ式の演算操作を表現します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class NumberOperation<T extends Number & Comparable<T>> extends NumberExpression<T> implements Operation<T> {
 
     private final OperationMixin<T> opMixin;

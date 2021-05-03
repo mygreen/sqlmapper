@@ -10,6 +10,14 @@ import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 
 import lombok.NonNull;
 
+
+/**
+ * {@link LocalDateTime} を値に持つ式の演算操作を表現します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class LocalDateTimeOperation extends LocalDateTimeExpression implements Operation<LocalDateTime> {
 
     private final OperationMixin<LocalDateTime> opMixin;

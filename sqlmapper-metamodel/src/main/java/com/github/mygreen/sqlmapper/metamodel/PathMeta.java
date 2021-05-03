@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * エンティティのパス情報を表現するクラス。
+ * パス情報を表現するクラス。
  *
  *
  * @author T.TSUCHIE

@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.operator;
 import lombok.Getter;
 
 /**
- * 比較演算子
+ * 比較演算子。
  * <p>優先度は全て同じ。
  *
  * @author T.TSUCHIE
@@ -21,8 +21,7 @@ public enum ComparisionOp implements Operator {
     GOE(Boolean.class, 40),
     GT(Boolean.class, 40),
     LOE(Boolean.class, 40),
-    LT(Boolean.class, 40),
-
+    LT(Boolean.class, 40)
 
     ;
 

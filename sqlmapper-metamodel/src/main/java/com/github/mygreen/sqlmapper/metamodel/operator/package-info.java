@@ -1,4 +1,4 @@
 /**
- * 演算子のタイプ
+ * 演算子のタイプを提供します。
  */
 package com.github.mygreen.sqlmapper.metamodel.operator;

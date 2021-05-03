@@ -13,6 +13,7 @@ import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 public interface Path<T> extends Expression<T> {
 
     /**
+     * パスのメタ情報を取得します。
      * @return パスのメタ情報
      */
     PathMeta getPathMeta();

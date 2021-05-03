@@ -18,7 +18,7 @@ public abstract class StringExpression extends ComparableExpression<String> {
      * @return
      */
     public BooleanExpression like(String str) {
-        return like(Constant.create(str));
+        return like(Constant.createString(str));
     }
 
     protected BooleanExpression like(Expression<String> str) {
@@ -26,7 +26,7 @@ public abstract class StringExpression extends ComparableExpression<String> {
     }
 
     public BooleanExpression contains(String str) {
-        return contains(Constant.create(str));
+        return contains(Constant.createString(str));
     }
 
     protected BooleanExpression contains(Expression<String> str) {
@@ -34,7 +34,7 @@ public abstract class StringExpression extends ComparableExpression<String> {
     }
 
     public BooleanExpression starts(String str) {
-        return starts(Constant.create(str));
+        return starts(Constant.createString(str));
     }
 
     protected BooleanExpression starts(Expression<String> str) {
@@ -42,7 +42,7 @@ public abstract class StringExpression extends ComparableExpression<String> {
     }
 
     public BooleanExpression ends(String str) {
-        return ends(Constant.create(str));
+        return ends(Constant.createString(str));
     }
 
     protected BooleanExpression ends(Expression<String> str) {

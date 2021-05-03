@@ -9,6 +9,13 @@ import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 
 import lombok.NonNull;
 
+/**
+ * 文字列型を値に持つ式の演算操作を表現します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class StringOperation extends StringExpression implements Operation<String> {
 
     private final OperationMixin<String> opMixin;

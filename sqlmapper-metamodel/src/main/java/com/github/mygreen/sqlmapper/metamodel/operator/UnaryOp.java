@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.operator;
 import lombok.Getter;
 
 /**
- * 単項演算子
+ * 単項演算子。
  *
  *
  * @author T.TSUCHIE
@@ -19,6 +19,7 @@ public enum UnaryOp implements Operator {
 
     EXISTS(Boolean.class, 60),
     NOT_EXISTS(Boolean.class, 60)
+
     ;
 
     /**

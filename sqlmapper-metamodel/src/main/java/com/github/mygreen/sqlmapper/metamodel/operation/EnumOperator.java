@@ -9,6 +9,14 @@ import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 
 import lombok.NonNull;
 
+/**
+ * 列挙型を値に持つ式の演算操作を表現します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param <T> 列挙型のクラスタイプ
+ */
 public class EnumOperator<T extends Enum<T>> extends EnumExpression<T> implements Operation<T> {
 
     private final OperationMixin<T> opMixin;

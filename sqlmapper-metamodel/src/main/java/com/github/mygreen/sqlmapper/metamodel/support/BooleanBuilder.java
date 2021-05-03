@@ -27,15 +27,22 @@ import lombok.Getter;
 public class BooleanBuilder implements Predicate {
 
     /**
-     * 値
+     * 現在の式
      */
     @Getter
     private Predicate predicate;
 
+    /**
+     * {@link BooleanBuilder} のインスタンスを作成します。
+     */
     public BooleanBuilder() {
 
     }
 
+    /**
+     * 初期式を指定して、{@link BooleanBuilder} のインスタンスを作成します。
+     * @param initial 諸域式
+     */
     public BooleanBuilder(Predicate initial) {
         this.predicate = initial;
     }
@@ -45,6 +52,10 @@ public class BooleanBuilder implements Predicate {
         return Boolean.class;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>評価する式がない場合は何もしません。
+     */
     @Override
     public <C> void accept(Visitor<C> visitor, C context) {
         if(predicate != null) {
@@ -52,6 +63,11 @@ public class BooleanBuilder implements Predicate {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return 否定する式がない場合は {@literal null} を開けす。
+     */
     @Override
     public Predicate not() {
 
@@ -64,15 +80,16 @@ public class BooleanBuilder implements Predicate {
     }
 
     /**
-     * 値を持つかどうか判定します。
-     * @return 値を持つとき、{@literal true}を返します。
+     * 式を持つかどうか判定します。
+     * @return 式を持つとき、{@literal true}を返します。
      */
     public boolean hasValue() {
         return predicate != null;
     }
 
     /**
-     * 右辺をandでつなげます。
+     * 右辺を論理積( {@literal 左辺 AND 右辺})で評価します。
+     * <p>左辺が存在しない場合は何もしません。
      *
      * @param right 右辺。nullの場合、何もしません。
      * @return 自身のインスタンス
@@ -92,7 +109,8 @@ public class BooleanBuilder implements Predicate {
     }
 
     /**
-     * 右辺をorでつなげます。
+     * 右辺を論理和( {@literal 左辺 OR 右辺})で評価します。
+     * <p>左辺が存在しない場合は何もしません。
      *
      * @param right 右辺。nullの場合、何もしません。
      * @return 自身のインスタンス
@@ -114,8 +132,9 @@ public class BooleanBuilder implements Predicate {
     /**
      * 引数で指定した全ての和({@literal OR})に対して積({@literal AND})を取ります。
      * <p>例：{@literal 左辺 AND (A OR B OR C ...)}
-     * @param predicates
-     * @return
+     *
+     * @param predicates 和(OR)を取る対象の式
+     * @return {@literal 左辺 AND (右辺1 OR 右辺2 OR 右辺3 ...)}
      */
     public BooleanBuilder andAnyOf(Predicate... predicates) {
 
@@ -140,8 +159,9 @@ public class BooleanBuilder implements Predicate {
     /**
      * 引数で指定した全ての積({@literal AND})に対して和({@literal OR})を取ります。
      * <p>例：{@literal 左辺 OR (A AND B AND C ...)}
-     * @param predicates
-     * @return
+     *
+     * @param predicates 和(AND)を取る対象の式
+     * @return {@literal 左辺 OR (右辺1 AND 右辺2 AND 右辺3 ...)}
      */
     public BooleanBuilder orAllOf(Predicate... predicates) {
 
@@ -160,8 +180,6 @@ public class BooleanBuilder implements Predicate {
 
         return or(right);
 
-
     }
-
 
 }

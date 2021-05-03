@@ -10,6 +10,13 @@ import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
 
 import lombok.NonNull;
 
+/**
+ * ブーリアン型を値に持つ式の演算操作を表現します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class BooleanOperation extends BooleanExpression implements Operation<Boolean> {
 
     private PredicateOperation opMixin;
@@ -43,6 +50,11 @@ public class BooleanOperation extends BooleanExpression implements Operation<Boo
         visitor.visit(opMixin, context);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return 2重否定の場合は、否定を取り消した式を返します。
+     */
     @Override
     public BooleanExpression not() {
 
@@ -52,7 +64,5 @@ public class BooleanOperation extends BooleanExpression implements Operation<Boo
         }
         return super.not();
     }
-
-
 
 }

@@ -6,7 +6,7 @@ import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 
 /**
- * 演算子を表す
+ * 式の演算子と引数を表現します。
  *
  *
  * @author T.TSUCHIE

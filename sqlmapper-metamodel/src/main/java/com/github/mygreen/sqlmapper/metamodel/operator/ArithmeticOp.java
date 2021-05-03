@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.operator;
 import lombok.Getter;
 
 /**
- * 算術演算子
+ * 算術演算子。
  *
  *
  * @author T.TSUCHIE
@@ -15,7 +15,7 @@ public enum ArithmeticOp implements Operator {
     DIV(Number.class, 20),
     MOD(Number.class, 20),
     ADD(Number.class, 30),
-    SUB(Number.class, 30),
+    SUB(Number.class, 30)
 
     ;
 

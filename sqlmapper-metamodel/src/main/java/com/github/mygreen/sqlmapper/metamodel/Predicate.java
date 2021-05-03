@@ -4,6 +4,7 @@ import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 
 /**
  * 評価可能な式の終端を表現します。
+ * ブーリアン型の式の用インタフェースとして用います。
  *
  *
  * @author T.TSUCHIE
@@ -12,16 +13,13 @@ import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 public interface Predicate extends Expression<Boolean> {
 
     /**
-     * 論理式の結果を反転します。
-     * @return 論理式の結果を反転した結果を返します。
+     * 式の結果を否定する式を作成します。
+     * @return {@literal NOT 左辺}
      */
     Predicate not();
 
     /**
-     *
-     * @param <C> コンテキストのタイプ
-     * @param visitor  ビジター
-     * @param context コンテキスト
+     * {@inheritDoc}
      */
     <C> void accept(Visitor<C> visitor, C context);
 }

@@ -9,7 +9,7 @@ import com.github.mygreen.sqlmapper.metamodel.expression.SubQueryExpression;
 import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
 
 /**
- * サブクエリ式の実装。
+ * サブクエリ式を値に持つ式の演算操作を表現します。
  *
  *
  * @author T.TSUCHIE

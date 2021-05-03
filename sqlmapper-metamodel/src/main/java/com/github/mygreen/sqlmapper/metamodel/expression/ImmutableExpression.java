@@ -3,12 +3,12 @@ package com.github.mygreen.sqlmapper.metamodel.expression;
 import lombok.Getter;
 
 /**
- * イミュータブルな式の実装。
+ * 不変な式の実装。
  *
  *
  * @author T.TSUCHIE
  *
- * @param <T> 式のタイプ
+ * @param <T> 式のクラスタイプ
  */
 public abstract class ImmutableExpression<T> implements Expression<T> {
 

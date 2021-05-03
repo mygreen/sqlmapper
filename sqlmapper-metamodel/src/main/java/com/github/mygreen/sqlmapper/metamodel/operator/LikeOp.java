@@ -14,7 +14,7 @@ public enum LikeOp implements Operator {
     LIKE(Boolean.class, 40),
     CONTAINS(Boolean.class, 40),
     STARTS(Boolean.class, 40),
-    ENDS(Boolean.class, 40),
+    ENDS(Boolean.class, 40)
 
     ;
 

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * パスの並び順
+ * パスの並び順を表現します。
  *
  *
  * @author T.TSUCHIE

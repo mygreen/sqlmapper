@@ -7,7 +7,7 @@ import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import lombok.Getter;
 
 /**
- * 定数を表現する
+ * 定数を表現します。
  *
  * @parm <T> 定数のタイプ
  * @author T.TSUCHIE
@@ -37,19 +37,42 @@ public class Constant<T> extends ImmutableExpression<T> {
         this.expandable = false;
     }
 
-    public static Constant<String> create(String value) {
+    /**
+     * 文字列型の定数を作成します。
+     * @param value 文字列型
+     * @return 文字列型の定数
+     */
+    public static Constant<String> createString(String value) {
         return new Constant<String>(String.class, value);
     }
 
-    public static Constant<Boolean> create(Boolean value) {
+    /**
+     * ブーリアン型の定数を作成します。
+     * @param value ブーリン案型
+     * @return ブーリアン型の定数
+     */
+    public static Constant<Boolean> createBoolean(Boolean value) {
         return new Constant<Boolean>(Boolean.class, value);
     }
 
+    /**
+     * 汎用的な型の定数を作成ます。
+     * @param <T> クラスタイプ
+     * @param value 定数とする値
+     * @return 汎用的な型の定数
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> Constant<T> create(T value) {
         return new Constant<T>((Class)value.getClass(), value);
     }
 
+    /**
+     * {@link Collection}型/配列型などを定数として作成します。
+     * @param <T>
+     * @param value 定数とする値
+     * @param expandable {@link Collection}型/配列型を各要素を展開して処理するかどうか。
+     * @return {@link Collection}型/配列型などの定数
+     */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> Constant<T> create(T value, boolean expandable) {
         return new Constant<T>((Class)value.getClass(), value, expandable);
