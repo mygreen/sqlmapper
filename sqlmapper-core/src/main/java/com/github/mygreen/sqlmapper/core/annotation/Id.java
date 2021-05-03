@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 主キーのカラム
+ * プロパティが主キーであることを定義します。
  *
  *
  * @author T.TSUCHIE

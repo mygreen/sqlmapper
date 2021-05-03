@@ -192,7 +192,7 @@ public class SqlMapper {
     }
 
     /**
-     * SQLテンプレートファイルを指定して件数のカウント用を行います。
+     * SQLテンプレートファイルを指定して件数のカウントを取得します。
      * @param path SQLテンプレートのファイルパス。
      * @return カウント結果
      */
@@ -202,7 +202,7 @@ public class SqlMapper {
     }
 
     /**
-     * SQLテンプレートファイルを指定して件数のカウント用を行います。
+     * SQLテンプレートファイルを指定して件数のカウントを取得します。
      * @param path SQLテンプレートのファイルパス。
      * @param parameter SQLテンプレートのパラメータ
      * @return カウント結果
@@ -255,7 +255,7 @@ public class SqlMapper {
     }
 
     /**
-     * SQLテンプレートを指定して件数のカウント用を行います。
+     * SQLテンプレートを指定して件数のカウントを取得します。
      * @param sql SQLテンプレート
      * @return カウント結果
      */
@@ -265,7 +265,7 @@ public class SqlMapper {
     }
 
     /**
-     * SQLテンプレートを指定して件数のカウント用を行います。
+     * SQLテンプレートを指定して件数のカウントを取得します。
      * @param sql SQLテンプレート
      * @param parameter SQLテンプレートのパラメータ
      * @return カウント結果

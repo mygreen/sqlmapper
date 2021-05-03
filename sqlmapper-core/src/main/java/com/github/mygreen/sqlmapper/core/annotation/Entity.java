@@ -7,7 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * エンティティ
+ * クラスがエンティティであることを指定します。
+ * このアノテーションはエンティティクラスに適用します。
  *
  *
  * @author T.TSUCHIE
@@ -20,7 +21,6 @@ public @interface Entity {
 
     /**
      * (オプション) エンティティの名前。SQL自動作成時のテーブルのエイリアス名などに使用されます。
-     * @return
      */
     String name() default "";
 

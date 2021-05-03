@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
 
 /**
- * レコードが修正された日時を表すプロパティに付与します。
+ * レコードが修正された日時を表すプロパティであることを定義します。
  * <p>{@link AuditingEntityListener} により処理されます。</p>
  *
  * @author T.TSUCHIE

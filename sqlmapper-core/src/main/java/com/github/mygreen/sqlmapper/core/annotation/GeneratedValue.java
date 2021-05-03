@@ -22,21 +22,11 @@ public @interface GeneratedValue {
     /**
      * アノテーションの付いたエンティティの主キーを生成するために、
      * 永続化プロバイダが使用しなければならない主キー生成戦略。
-     *
-     * @return
      */
     GenerationType strategy() default GenerationType.AUTO;
 
     /**
-     * <p>{@link GenerationType#SEQUENCE} のとき、シーケンス名が指定可能です。
-     *    <br>省略した場合は、<code>テーブル名_カラム名</code> がシーケンス名となります。
-     * </p>
-     *
-     * @return
-     */
-    /**
      * Springコンテナ管理のBean名を指定します。
-     * @return
      */
     String generator() default "";
 
@@ -47,7 +37,7 @@ public @interface GeneratedValue {
     String format() default "";
 
     /**
-     * 主キー生成戦略の型を定義します。
+     * 主キー生成戦略の種別を定義します。
      *
      * @author T.TSUCHIE
      *
@@ -75,6 +65,8 @@ public @interface GeneratedValue {
         /**
          * ランダムなセキュアな値
          */
-        UUID;
+        UUID
+
+        ;
     }
 }

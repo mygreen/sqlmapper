@@ -7,8 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * テーブル
- *
+ * テーブル情報を指定します。
+ * 本アノテーションが指定されていない場合は、デフォルト値が適用されます。
  *
  * @author T.TSUCHIE
  *
@@ -21,16 +21,12 @@ public @interface Table {
     /**
      * (オプション) テーブルの含まれるスキーマ。
      * デフォルトではユーザーにとっての規定のスキーマです。
-     *
-     * @return
      */
     String schema() default "";
 
     /**
      * (オプション) テーブルの含まれるカタログ。
      * デフォルトでは既定のカタログです。
-     *
-     * @return
      */
     String catalog() default "";
 
@@ -38,8 +34,6 @@ public @interface Table {
     /**
      * (オプション) テーブルの名前。
      * デフォルトの値はエンティティの名前です。
-     *
-     * @return
      */
     String name() default "";
 

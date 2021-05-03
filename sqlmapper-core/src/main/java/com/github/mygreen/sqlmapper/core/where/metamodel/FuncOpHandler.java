@@ -22,7 +22,6 @@ public class FuncOpHandler extends OperationHandler<FuncOp>{
     @Override
     public void handle(FuncOp operator, Operation<?> expr, Visitor<VisitorContext> visitor, VisitorContext context) {
 
-
         switch(operator) {
             case LOWER:
                 context.appendSql("LOWER(");

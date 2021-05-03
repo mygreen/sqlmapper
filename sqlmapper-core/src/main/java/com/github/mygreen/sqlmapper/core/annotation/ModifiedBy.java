@@ -10,7 +10,7 @@ import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
 import com.github.mygreen.sqlmapper.core.audit.AuditorProvider;
 
 /**
- * レコードの修正が誰にされたかを表すプロパティに付与します。
+ * レコードの修正が誰にされたかを表すプロパティであることを定義します。
  * <p>プロパティに値を設定するには、{@link AuditorProvider} の実装をSpringのコンテナに登録する必要があります。</p>
  * <p>{@link AuditingEntityListener} により処理されます。</p>
  *

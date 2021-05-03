@@ -7,8 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 永続化対象外とするプロパティに付与します。
- *
+ * プロパティが永続化対象外であることを定義します。
  *
  * @author T.TSUCHIE
  *

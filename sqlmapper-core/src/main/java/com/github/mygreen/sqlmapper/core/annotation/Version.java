@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 楽観的排他キーとしてのバージョンキーに付与します。
+ * プロパティが楽観的排他キーとしてのバージョンキーであることを定義します。
  *
  *
  * @author T.TSUCHIE

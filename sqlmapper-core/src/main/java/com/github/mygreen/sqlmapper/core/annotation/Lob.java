@@ -7,8 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 永続化プロパティまたはフィールドを、データベースがサポートする
- * ラージオブジェクト型のラージオブジェクトとして永続化する必要があることを指定します。
+ * プロパティがのラージオブジェクトであることを定義します。
  *
  *
  * @author T.TSUCHIE

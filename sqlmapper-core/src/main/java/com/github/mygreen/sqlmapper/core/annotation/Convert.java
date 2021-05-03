@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 /**
- * プロパティの変換を指定します。
+ * プロパティの変換方法を指定します。
  *
  * @author T.TSUCHIE
  *
@@ -21,15 +21,12 @@ public @interface Convert {
 
     /**
      * 変換処理の実装クラスを指定します。
-     *
-     * @return {@link ValueType}の実装クラスを指定します。
      */
     @SuppressWarnings("rawtypes")
     Class<? extends ValueType> converter();
 
     /**
      * SpringコンテナのBeanを参照する場合に指定します。
-     * @return Springコンテナに登録しているBean名。
      */
     String name() default "";
 
