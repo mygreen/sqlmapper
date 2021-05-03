@@ -3,16 +3,16 @@ package com.github.mygreen.sqlmapper.core.where.metamodel;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
-import com.github.mygreen.sqlmapper.metamodel.operator.FuncOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 
 /**
- * 関数({@link FuncOp})に対する処理を定義します。
+ * 関数({@link FunctionOp})に対する処理を定義します。
  *
  *
  * @author T.TSUCHIE
  *
  */
-public class FuncOpHandler extends OperationHandler<FuncOp>{
+public class FuncOpHandler extends OperationHandler<FunctionOp>{
 
     @Override
     protected void init() {
@@ -20,7 +20,7 @@ public class FuncOpHandler extends OperationHandler<FuncOp>{
     }
 
     @Override
-    public void handle(FuncOp operator, Operation<?> expr, Visitor<VisitorContext> visitor, VisitorContext context) {
+    public void handle(FunctionOp operator, Operation<?> expr, Visitor<VisitorContext> visitor, VisitorContext context) {
 
         switch(operator) {
             case LOWER:

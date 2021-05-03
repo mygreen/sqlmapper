@@ -8,7 +8,7 @@ import lombok.Getter;
  * @author T.TSUCHIE
  *
  */
-public enum FuncOp implements Operator {
+public enum FunctionOp implements Operator {
 
     // String
     LOWER(String.class, -1),
@@ -33,7 +33,7 @@ public enum FuncOp implements Operator {
     @Getter
     private final int priority;
 
-    private FuncOp(Class<?> resultType, int priority) {
+    private FunctionOp(Class<?> resultType, int priority) {
         this.resultType = resultType;
         this.priority = priority;
     }

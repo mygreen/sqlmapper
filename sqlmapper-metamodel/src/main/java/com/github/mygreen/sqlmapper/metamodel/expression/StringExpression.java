@@ -2,7 +2,7 @@ package com.github.mygreen.sqlmapper.metamodel.expression;
 
 import com.github.mygreen.sqlmapper.metamodel.operation.BooleanOperation;
 import com.github.mygreen.sqlmapper.metamodel.operation.StringOperation;
-import com.github.mygreen.sqlmapper.metamodel.operator.FuncOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.LikeOp;
 
 public abstract class StringExpression extends ComparableExpression<String> {
@@ -50,10 +50,10 @@ public abstract class StringExpression extends ComparableExpression<String> {
     }
 
     public StringExpression lower() {
-        return new StringOperation(FuncOp.LOWER, mixin);
+        return new StringOperation(FunctionOp.LOWER, mixin);
     }
 
     public StringExpression upper() {
-        return new StringOperation(FuncOp.UPPER, mixin);
+        return new StringOperation(FunctionOp.UPPER, mixin);
     }
 }

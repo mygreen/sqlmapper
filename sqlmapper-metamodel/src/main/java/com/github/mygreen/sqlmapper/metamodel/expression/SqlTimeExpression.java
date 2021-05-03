@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.expression;
 import java.sql.Time;
 
 import com.github.mygreen.sqlmapper.metamodel.operation.SqlTimeOperation;
-import com.github.mygreen.sqlmapper.metamodel.operator.FuncOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 
 /**
  * {@link Time} による式を表現します。
@@ -23,7 +23,7 @@ public abstract class SqlTimeExpression extends DateExpressionBase<Time> {
      * @return 関数 {@literal CURRENT_TIME}
      */
     public static SqlTimeExpression currentTime() {
-        return new SqlTimeOperation(FuncOp.CURRENT_TIME);
+        return new SqlTimeOperation(FunctionOp.CURRENT_TIME);
     }
 
     /**
@@ -32,7 +32,7 @@ public abstract class SqlTimeExpression extends DateExpressionBase<Time> {
      * @return 関数 {@literal CURRENT_TIME}
      */
     public static SqlTimeExpression currentTime(int precision) {
-        return new SqlTimeOperation(FuncOp.CURRENT_TIME, Constant.create(precision));
+        return new SqlTimeOperation(FunctionOp.CURRENT_TIME, Constant.create(precision));
     }
 
 }

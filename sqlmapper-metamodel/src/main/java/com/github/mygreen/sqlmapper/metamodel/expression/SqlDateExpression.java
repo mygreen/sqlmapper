@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.expression;
 import java.sql.Date;
 
 import com.github.mygreen.sqlmapper.metamodel.operation.SqlDateOperation;
-import com.github.mygreen.sqlmapper.metamodel.operator.FuncOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 
 
 /**
@@ -24,6 +24,6 @@ public abstract class SqlDateExpression extends DateExpressionBase<Date> {
      * @return 関数 {@literal CURRENT_DATE}
      */
     public static SqlDateExpression currentDate() {
-        return new SqlDateOperation(FuncOp.CURRENT_DATE);
+        return new SqlDateOperation(FunctionOp.CURRENT_DATE);
     }
 }

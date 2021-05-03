@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.expression;
 import java.sql.Timestamp;
 
 import com.github.mygreen.sqlmapper.metamodel.operation.SqlTimestampOperation;
-import com.github.mygreen.sqlmapper.metamodel.operator.FuncOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 
 
 /**
@@ -24,7 +24,7 @@ public abstract class SqlTimestampExpression extends DateExpressionBase<Timestam
      * @return 関数 {@literal CURRENT_TIMESTAMP}
      */
     public static SqlTimestampExpression currentTimestamp() {
-        return new SqlTimestampOperation(FuncOp.CURRENT_TIMESTAMP);
+        return new SqlTimestampOperation(FunctionOp.CURRENT_TIMESTAMP);
     }
 
     /**
@@ -33,6 +33,6 @@ public abstract class SqlTimestampExpression extends DateExpressionBase<Timestam
      * @return 関数 {@literal CURRENT_TIMESTAMP}
      */
     public static SqlTimestampExpression currentTimestamp(int precision) {
-        return new SqlTimestampOperation(FuncOp.CURRENT_TIMESTAMP, Constant.create(precision));
+        return new SqlTimestampOperation(FunctionOp.CURRENT_TIMESTAMP, Constant.create(precision));
     }
 }

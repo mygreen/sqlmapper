@@ -31,7 +31,7 @@ import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
 import com.github.mygreen.sqlmapper.metamodel.operation.QueryMeta;
 import com.github.mygreen.sqlmapper.metamodel.operator.BooleanOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
-import com.github.mygreen.sqlmapper.metamodel.operator.FuncOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.LikeOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
@@ -52,7 +52,7 @@ public class ExpressionVisitor implements Visitor<VisitorContext> {
         operationHandlerMap.put(UnaryOp.class, new UnaryOpHandler());
         operationHandlerMap.put(ComparisionOp.class, new ComparisionOpHandler());
         operationHandlerMap.put(LikeOp.class, new LikeOpHandler());
-        operationHandlerMap.put(FuncOp.class, new FuncOpHandler());
+        operationHandlerMap.put(FunctionOp.class, new FuncOpHandler());
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})

@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.expression;
 import java.time.LocalDateTime;
 
 import com.github.mygreen.sqlmapper.metamodel.operation.LocalDateTimeOperation;
-import com.github.mygreen.sqlmapper.metamodel.operator.FuncOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 
 /**
  * {@link LocalDateTime} による式を表現します。
@@ -23,7 +23,7 @@ public abstract class LocalDateTimeExpression extends TemporalExpressionBase<Loc
      * @return 関数 {@literal CURRENT_TIMESTAMP}
      */
     public static LocalDateTimeExpression currentDateTime() {
-        return new LocalDateTimeOperation(FuncOp.CURRENT_TIMESTAMP);
+        return new LocalDateTimeOperation(FunctionOp.CURRENT_TIMESTAMP);
     }
 
     /**
@@ -32,7 +32,7 @@ public abstract class LocalDateTimeExpression extends TemporalExpressionBase<Loc
      * @return 関数 {@literal CURRENT_TIMESTAMP}
      */
     public static LocalDateTimeExpression currentTimestamp(int precision) {
-        return new LocalDateTimeOperation(FuncOp.CURRENT_TIMESTAMP, Constant.create(precision));
+        return new LocalDateTimeOperation(FunctionOp.CURRENT_TIMESTAMP, Constant.create(precision));
     }
 
 }
