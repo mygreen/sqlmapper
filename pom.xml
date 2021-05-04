@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.mygreen.sqlmapper</groupId>
 	<artifactId>sqlmapper-root</artifactId>
 	<name>SqlMapper</name>
 	<packaging>pom</packaging>
-	<version>${project.version}</version>
+	<version>${revision}</version>
 	<description><![CDATA[ SqlMapper is Java Library for mapping SQL to POJO. ]]></description>
 
 	<modules>
@@ -17,7 +18,7 @@
 	</modules>
 
 	<properties>
-		<project.version>0.1</project.version>
+		<revision>0.2</revision>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>11</java.version>
@@ -79,6 +80,47 @@
 	<pluginRepositories>
 	</pluginRepositories>
 
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<source>${java.version}</source>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<charset>UTF-8</charset>
+					<docencoding>UTF-8</docencoding>
+					<locale>ja_JP</locale>
+					<maxmemory>1024m</maxmemory>
+					<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+					<groups>
+						<group>
+							<title>Core</title>
+							<packages>com.github.mygreen.sqlmapper.core*</packages>
+						</group>
+						<group>
+							<title>Metamodel</title>
+							<packages>com.github.mygreen.sqlmapper.metamodel*</packages>
+						</group>
+						<group>
+							<title>APT</title>
+							<packages>com.github.mygreen.sqlmapper.apt*</packages>
+						</group>
+					</groups>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<!-- Utility -->
 		<dependency>
@@ -122,5 +164,34 @@
 		</dependency>
 
 	</dependencies>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<source>${java.version}</source>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<charset>UTF-8</charset>
+					<docencoding>UTF-8</docencoding>
+					<locale>ja_JP</locale>
+					<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<aggregate>true</aggregate>
+					<inputEncoding>UTF-8</inputEncoding>
+					<outputEncoding>UTF-8</outputEncoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 
 </project>

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>com.github.mygreen.sqlmapper</groupId>
 		<artifactId>sqlmapper-root</artifactId>
-		<version>${project.version}</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>sqlmapper-examples</artifactId>
@@ -119,6 +120,7 @@
 			</plugin>
 
 			<!-- テスト用のメタクラス生成 -->
+			<!--
 			<plugin>
 				<groupId>com.mysema.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
@@ -140,25 +142,26 @@
 					</execution>
 				</executions>
 			</plugin>
+			 -->
 
 		</plugins>
 	</build>
 
 	<dependencies>
 
-		<!-- Utility -->
+		<!--
 		<dependency>
 			<groupId>com.github.mygreen.sqlmapper</groupId>
 			<artifactId>sqlmapper-core</artifactId>
-			<version>${project.version}</version>
+			<version>${revision}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.github.mygreen.sqlmapper</groupId>
 			<artifactId>sqlmapper-apt</artifactId>
-			<version>${project.version}</version>
+			<version>${revision}</version>
 		</dependency>
-
+ -->
 		<!-- DB -->
 		<dependency>
 			<groupId>com.h2database</groupId>
