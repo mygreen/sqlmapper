@@ -119,7 +119,7 @@ public class PropertyMeta {
     /**
      * 読み込み可能なプロパティか判定する。
      * <p>getterメソッドまたはpublicなフィールドが存在する場合</p>
-     * @return
+     * @return {@literal true}のとき読み込み可能。
      */
     public boolean isReadable() {
 
@@ -140,7 +140,7 @@ public class PropertyMeta {
     /**
      * 書込み可能なプロパティか判定する。
      * <p>setterメソッドまたはpublicなフィールドが存在する場合</p>
-     * @return
+     * @return {@literal true}のと書き込み可能。
      */
     public boolean isWritable() {
 
@@ -217,6 +217,7 @@ public class PropertyMeta {
 
     /**
      * 指定したアノテーションを持つか判定します。
+     * @param <A> アノテーションのタイプ。
      * @param annoClass アノテーションのクラスタイプ。
      * @return trueの場合、アノテーションを持ちます。
      */
@@ -226,6 +227,7 @@ public class PropertyMeta {
 
     /**
      * タイプを指定して、アノテーションを取得する。
+     * @param <A> アノテーションのタイプ。
      * @param annoClass アノテーションのクラスタイプ。
      * @return 存在しない場合、空を返します。
      */

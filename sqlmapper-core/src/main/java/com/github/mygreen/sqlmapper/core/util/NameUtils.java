@@ -19,7 +19,8 @@ public class NameUtils {
      * Utils.capitalize("cat") = "Cat"
      * Utils.capitalize("cAt") = "CAt"
      * </pre>
-     * @param str
+     *
+     * @param str 処理対象の文字列
      * @return 引数がnull、空文字の場合、そのまま返す。
      */
     public static String capitalize(final String str) {
@@ -36,6 +37,7 @@ public class NameUtils {
 
     /**
      * 先頭の文字を小文字にする。
+     *
      * @param str 変換対象の文字
      * @return 引数がnull、空文字の場合、そのまま返す。
      */
@@ -53,6 +55,7 @@ public class NameUtils {
 
     /**
      * テーブルのカタログやスキーマを含んだ完全な名前を返します。
+     *
      * @param table テーブル名
      * @param catalog カタログ名(オプション)
      * @param schema スキーマ名(オプション)

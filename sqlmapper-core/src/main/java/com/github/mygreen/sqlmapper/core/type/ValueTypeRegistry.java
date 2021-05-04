@@ -187,7 +187,8 @@ public class ValueTypeRegistry {
     }
 
     /**
-     * {@link ValeType} を登録します。
+     * {@link ValueType} を登録します。
+     *
      * @param <T> 関連付ける型
      * @param type 関連付けるクラスタイプ
      * @param valueType {@link ValueType}の実装

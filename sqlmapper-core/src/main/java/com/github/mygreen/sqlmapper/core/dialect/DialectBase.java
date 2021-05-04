@@ -19,7 +19,7 @@ public abstract class DialectBase implements Dialect {
     /**
      * {@inheritDoc}
      *
-     * @return {@link GenerationType.TABLE} を返します。
+     * @return {@link GenerationType#TABLE} を返します。
      */
     @Override
     public GenerationType getDefaultGenerationType() {

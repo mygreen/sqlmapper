@@ -51,7 +51,6 @@ public interface Dialect {
      * 対応するクラスタイプに対する値タイプを返します。
      * Oracleなどのようにbooleanが存在しない場合は対応する{@link ValueType} に切り替えたりします。
      *
-     * @param <T> クラスタイプ
      * @param valueType 値タイプ
      * @return 値タイプ
      */

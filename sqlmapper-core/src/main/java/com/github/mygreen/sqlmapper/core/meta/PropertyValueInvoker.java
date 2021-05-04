@@ -20,7 +20,7 @@ public class PropertyValueInvoker {
      * @param propertyMeta 取得対象のプロパティ情報
      * @param entityObject 親のオブジェクト
      * @param propertyValue 設定するプロパティの値
-     * @throw {@link NullPointerException} 引数{@literal entityObject}がnullの場合
+     * @throws NullPointerException 引数{@literal entityObject}がnullの場合
      */
     public static void setPropertyValue(final @NonNull PropertyMeta propertyMeta,
             final @NonNull Object entityObject, final Object propertyValue) {
@@ -43,7 +43,7 @@ public class PropertyValueInvoker {
         } else {
             log.warn("Not found saving method or field with property value in {}#{}",
                     entityObject.getClass().getName(), propertyMeta.getName());
-            //TODO: フラグでquitelyをつける
+            //TODO: フラグでquietlyをつける
             throw new IllegalStateException();
         }
 

@@ -82,7 +82,6 @@ public class SelectClause {
      * select句を追加します。
      *
      * @param selectItem セレクト項目
-     * @param columnName カラム名
      */
     public void addSql(String selectItem) {
         if (sql.length() > 0) {

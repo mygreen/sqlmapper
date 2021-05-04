@@ -109,7 +109,7 @@ public interface AutoSelect<T> {
 
     /**
      * ソート順を指定します。
-     * @param orderBy ソートするロパティの並び順情報
+     * @param orders ソートするロパティの並び順情報
      * @return 自身のインスタンス。
      */
     AutoSelect<T> orderBy(OrderSpecifier... orders);

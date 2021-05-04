@@ -42,10 +42,6 @@ public class LocalDateType implements ValueType<LocalDate> {
         this.formatter = DateTimeFormatter.ofPattern(pattern);
     }
 
-    /**
-     * 書式を指定してインスタンスを作成します。
-     * @param pattern SQLに直接埋め込む時にフォーマットする書式。
-     */
     @Override
     public LocalDate getValue(ResultSet rs, int columnIndex) throws SQLException {
 

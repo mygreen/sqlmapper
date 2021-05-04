@@ -29,7 +29,7 @@ public class SimpleWhereBuilder extends AbstractWhere<SimpleWhereBuilder> implem
     }
 
     /**
-     * これまでに追加された条件とこれから追加される条件を {@litera OR} で結合します。
+     * これまでに追加された条件とこれから追加される条件を {@literal OR} で結合します。
      * @return このインスタンス自身
      */
     public SimpleWhereBuilder or() {
@@ -40,8 +40,8 @@ public class SimpleWhereBuilder extends AbstractWhere<SimpleWhereBuilder> implem
     }
 
     /**
-     * これまでに追加された条件と、引数で渡された条件全体を {@litera AND} で結合します。
-     * @param where  {@litera AND}で結合される条件
+     * これまでに追加された条件と、引数で渡された条件全体を {@literal AND} で結合します。
+     * @param where  {@literal AND}で結合される条件
      * @return このインスタンス自身
      */
     public SimpleWhereBuilder and(final AbstractWhere<?> where) {

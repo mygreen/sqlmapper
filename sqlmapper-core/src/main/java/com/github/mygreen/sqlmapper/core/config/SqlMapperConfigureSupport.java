@@ -222,7 +222,7 @@ public abstract class SqlMapperConfigureSupport implements ApplicationContextAwa
 
     /**
      * SQLテンプレートエンジンのBean定義。
-     * 外部ライブラリ splate({@link https://github.com/mygreen/splate/}) を使用します。
+     * 外部ライブラリ <a href="https://github.com/mygreen/splate/">splate</a> を使用します。
      * <p>キャッシュモードや文字コードの設定はプロパティファイルから取得します。
      *
      * @return SQLテンプレートを処理するエンジン

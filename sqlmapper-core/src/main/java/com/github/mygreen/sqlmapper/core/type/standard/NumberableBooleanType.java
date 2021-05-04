@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * 数値をブール値にマッピングして処理を行います。
  * <ul>
- *  <li>DB値 0 => false にマッピング</li>
- *  <li>DB値 1 => true にマッピング</li>
+ *  <li>DB値 0 {@literal =>} false にマッピング</li>
+ *  <li>DB値 1 {@literal =>} true にマッピング</li>
  * </ul>
  *
  * @author T.TSUCHIE

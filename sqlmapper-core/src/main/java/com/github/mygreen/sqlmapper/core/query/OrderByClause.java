@@ -25,7 +25,7 @@ public class OrderByClause {
 
     /**
      * SQLに変換します。
-     * @return
+     * @return 組み立てたSQL
      */
     public String toSql() {
         return sql.toString();

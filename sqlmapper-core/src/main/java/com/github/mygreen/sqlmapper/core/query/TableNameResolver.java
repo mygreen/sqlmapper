@@ -38,8 +38,8 @@ public class TableNameResolver {
     }
 
     /**
-     *
-     * @param entityPath
+     * テーブル名のエイリアスをエンティティ情報から取得します。
+     * @param entityPath エンティティパス
      * @return 別名。見つからない場合は、{@literal null} を返します。
      */
     public String getTableAlias(EntityPath<?> entityPath) {
@@ -47,7 +47,7 @@ public class TableNameResolver {
     }
 
     /**
-     *
+     * テーブル名のエイリアスをエンティティ情報から取得します。
      * @param entityPath エンティティパス
      * @return 別名。見つからない場合は、{@literal null} を返します。
      * @throws IllegalArgumentException 引数が{@link EntityPath} のインスタンスでない場合にスローされます。

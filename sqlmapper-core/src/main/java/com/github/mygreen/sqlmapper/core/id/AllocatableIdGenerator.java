@@ -46,8 +46,8 @@ public abstract class AllocatableIdGenerator {
 
     /**
      * 新しいIDを取得します。
-     * @param sequenceName シーケンス名
-     * @return
+     * @param key シーケンス名
+     * @return 新たらしいID
      */
     public long nextValue(final String key) {
         return idContextMap.computeIfAbsent(key, k -> new IdContext()).getNextValue(key);

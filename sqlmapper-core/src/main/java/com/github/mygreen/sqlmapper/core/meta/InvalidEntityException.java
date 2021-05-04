@@ -15,7 +15,6 @@ public class InvalidEntityException extends SqlMapperException {
 
     /**
      * エラー対象のエンティティクラス
-     * @return エラー対象のエンティティクを取得します。
      */
     @Getter
     private final Class<?> entityClass;

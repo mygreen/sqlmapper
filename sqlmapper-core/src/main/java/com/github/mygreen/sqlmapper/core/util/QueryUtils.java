@@ -110,11 +110,11 @@ public class QueryUtils {
     /**
      * LIKE演算子の値に対するエスケープを行う。
      * <ul>
-     *  <li>{@literal %}->{@literal \%}</li>
-     *  <li>{@literal _}->{@literal \_}</li>
+     *  <li>{@literal %} {@literal =>} {@literal \%}</li>
+     *  <li>{@literal _} {@literal =>} {@literal \_}</li>
      * </ul>
-     * @param str
-     * @return
+     * @param str エスケープ対象の文字列
+     * @return エスケープ後の文字列
      */
     public static String escapeLike(final String str) {
 

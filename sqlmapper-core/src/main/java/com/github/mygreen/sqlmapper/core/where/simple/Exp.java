@@ -40,7 +40,7 @@ public class Exp implements Term {
     /**
      * 指定したインデックス番号のパラメータの設定値を取得する。
      * @param index インデックス番号。0から始まる。
-     * @return
+     * @return パラメータの値。
      */
     public Object getValueAt(int index) {
         return values[index];
