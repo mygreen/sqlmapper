@@ -8,6 +8,7 @@
 		<groupId>com.github.mygreen.sqlmapper</groupId>
 		<artifactId>sqlmapper-root</artifactId>
 		<version>${revision}</version>
+		<relativePath>../</relativePath>
 	</parent>
 
 	<artifactId>sqlmapper-core</artifactId>
@@ -109,7 +110,29 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<source>${java.version}</source>
+					<encoding>${project.build.sourceEncoding}</encoding>
+					<charset>UTF-8</charset>
+					<docencoding>UTF-8</docencoding>
+					<locale>ja_JP</locale>
+					<maxmemory>1024m</maxmemory>
+					<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+					<sourcepath>target/generated-sources/delombok</sourcepath>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 

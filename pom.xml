@@ -83,6 +83,37 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok-maven-plugin</artifactId>
+				<version>1.18.20.0</version>
+				<executions>
+					<execution>
+						<id>delombok</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>delombok</goal>
+						</goals>
+						<configuration>
+							<addOutputDirectory>false</addOutputDirectory>
+							<sourceDirectory>src/main/java</sourceDirectory>
+							<encoding>${project.build.sourceEncoding}</encoding>
+	                    </configuration>
+					</execution>
+					<execution>
+						<id>test-delombok</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>testDelombok</goal>
+						</goals>
+						<configuration>
+							<addOutputDirectory>false</addOutputDirectory>
+							<sourceDirectory>src/test/java</sourceDirectory>
+							<encoding>${project.build.sourceEncoding}</encoding>
+	                    </configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.2.0</version>
@@ -102,6 +133,11 @@
 					<locale>ja_JP</locale>
 					<maxmemory>1024m</maxmemory>
 					<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+					<sourcepath>
+						sqlmapper-core/target/generated-sources/delombok
+						;sqlmapper-metamodel/target/generated-sources/delombok
+						;sqlmapper-apt/target/generated-sources/delombok
+					</sourcepath>
 					<groups>
 						<group>
 							<title>Core</title>
@@ -126,7 +162,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.18</version>
+			<version>1.18.20</version>
 			<scope>provided</scope>
 		</dependency>
 
