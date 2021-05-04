@@ -25,6 +25,7 @@ public class NumberPath<T extends Number & Comparable<T>> extends NumberExpressi
 
     /**
      * プロパティが所属するエンティティの情報とプロパティ名を指定してインスタンスを作成する。
+     * @param type 数値型のクラスタイプ
      * @param parent プロパティが属するエンティティのパス情報。
      * @param propertyName プロパティ名
      */
