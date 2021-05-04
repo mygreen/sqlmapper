@@ -322,12 +322,12 @@ public class PropertyMetaFactory {
                     tableIdContext.setCatalog(a.catalog());
                 }
 
-                if(!a.pkColumnName().isEmpty()) {
-                    tableIdContext.setPkColumn(a.pkColumnName());
+                if(!a.pkColumn().isEmpty()) {
+                    tableIdContext.setPkColumn(a.pkColumn());
                 }
 
-                if(!a.valueColumnName().isEmpty()) {
-                    tableIdContext.setValueColumn(a.valueColumnName());
+                if(!a.valueColumn().isEmpty()) {
+                    tableIdContext.setValueColumn(a.valueColumn());
                 }
 
                 if(a.initialValue() >= 0) {
@@ -359,8 +359,8 @@ public class PropertyMetaFactory {
             });
 
 
-            if(annoTableGenerator.isPresent() && annoTableGenerator.get().pkColumnName().isEmpty()) {
-                sequenceName = annoTableGenerator.get().pkColumnName();
+            if(annoTableGenerator.isPresent() && annoTableGenerator.get().pkColumn().isEmpty()) {
+                sequenceName = annoTableGenerator.get().pkColumn();
             }
 
             TableIdGenerator tableIdGenerator = new TableIdGenerator(

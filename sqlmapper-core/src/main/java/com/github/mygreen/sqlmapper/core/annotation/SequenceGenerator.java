@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
+ * 識別子(主キー)の値をシーケンスにより採番する設定をします。
  *
  *
  * @author T.TSUCHIE
@@ -21,22 +21,17 @@ public @interface SequenceGenerator {
     /**
      * (オプション) シーケンスの含まれるスキーマ。
      * デフォルトではユーザーにとっての規定のスキーマです。
-     *
-     * @return
      */
     String schema() default "";
 
     /**
      * (オプション) シーケンスの含まれるカタログ。
      * デフォルトでは既定のカタログです。
-     *
-     * @return
      */
     String catalog() default "";
 
     /**
-     * (オプション) 主キーの値を取得するデータベースのシーケンスオブジェクトの名前
-     * @return シーケンス名
+     * (オプション) 主キーの値を取得するデータベースのシーケンスオブジェクトの名前。
      */
     String sequenceName() default "";
 

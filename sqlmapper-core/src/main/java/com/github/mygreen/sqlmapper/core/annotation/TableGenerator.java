@@ -6,6 +6,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * 識別子(主キー)の値をテーブルにより採番する設定をします。
+ * <p>このアノテーションは {@link Id}、{@link GeneratedValue} と併わせて使用しなければいけません。</p>
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 @Documented
@@ -37,19 +45,13 @@ public @interface TableGenerator {
      * (オプション) テーブル内の主キーのカラムの名前。
      * @return
      */
-    String pkColumnName() default "";
+    String pkColumn() default "";
 
     /**
-     * (オプション) 生成された値のセットをテーブルに格納されている可能性のある他のものと区別するジェネレーターテーブルの主キーの値。
+     * (オプション) 生成された最新の値を格納するカラムの名前。
      * @return
      */
-    String pkColumnValue() default "";
-
-    /**
-     *
-     * @return
-     */
-    String valueColumnName() default "";
+    String valueColumn() default "";
 
     /**
      * ジェネレーターが生成した値からID番号を割り当てるときにインクリメントする量。

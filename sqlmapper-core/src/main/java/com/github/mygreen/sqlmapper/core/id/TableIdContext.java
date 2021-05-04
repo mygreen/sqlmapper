@@ -1,10 +1,13 @@
 package com.github.mygreen.sqlmapper.core.id;
 
+import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
+import com.github.mygreen.sqlmapper.core.annotation.Id;
+
 import lombok.Data;
 
 /**
  * テーブルを用いたIDを生成するための情報を保持します。
- *
+ * <p>このアノテーションは {@link Id}、{@link GeneratedValue} と併わせて使用しなければいけません。</p>
  *
  * @author T.TSUCHIE
  *
@@ -13,17 +16,17 @@ import lombok.Data;
 public class TableIdContext {
 
     /**
-     * 生成されたID値を格納するテーブルの名前名
+     * 生成されたID値を格納するテーブルの名前。
      */
     private String table;
 
     /**
-     * (オプション) テーブルの含まれるカタログ名
+     * (オプション) テーブルの含まれるカタログ名。
      */
     private String catalog;
 
     /**
-     * (オプション) テーブルの含まれるスキーマ名
+     * (オプション) テーブルの含まれるスキーマ名。
      */
     private String schema;
 
