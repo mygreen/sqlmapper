@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
  *
  */
 @RequiredArgsConstructor
-public class NumerableBooleanType implements ValueType<Boolean> {
+public class NumberableBooleanType implements ValueType<Boolean> {
 
     /**
      * プリミティブ型かどうか

@@ -10,7 +10,7 @@ import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationTyp
 import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.type.standard.BooleanType;
-import com.github.mygreen.sqlmapper.core.type.standard.NumerableBooleanType;
+import com.github.mygreen.sqlmapper.core.type.standard.NumberableBooleanType;
 
 /**
  * 古いOracleDBの方言です。
@@ -22,9 +22,9 @@ import com.github.mygreen.sqlmapper.core.type.standard.NumerableBooleanType;
  */
 public class OracleLegacyDialect extends DialectBase {
 
-    private final NumerableBooleanType objectiveBooleanType = new NumerableBooleanType(false);
+    private final NumberableBooleanType objectiveBooleanType = new NumberableBooleanType(false);
 
-    private final NumerableBooleanType primitiveBooleanType = new NumerableBooleanType(true);
+    private final NumberableBooleanType primitiveBooleanType = new NumberableBooleanType(true);
 
     /**
      * {@inheritDoc}
@@ -73,7 +73,7 @@ public class OracleLegacyDialect extends DialectBase {
     /**
      * {@inheritDoc}
      *
-     * 与えられた値が {@literal boolean/Boolean}のとき、整数型に変換する {@link NumerableBooleanType} に変換します。
+     * 与えられた値が {@literal boolean/Boolean}のとき、整数型に変換する {@link NumberableBooleanType} に変換します。
      */
     @Override
     public ValueType<?> getValueType(@Nullable ValueType<?> valueType) {
