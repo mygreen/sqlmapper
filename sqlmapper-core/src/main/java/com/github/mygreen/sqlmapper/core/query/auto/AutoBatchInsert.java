@@ -9,7 +9,7 @@ import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
  *
  * @author T.TSUCHIE
  *
- * @param <T>
+ * @param <T> 処理対象となるエンティティの型
  */
 public interface AutoBatchInsert<T> {
 

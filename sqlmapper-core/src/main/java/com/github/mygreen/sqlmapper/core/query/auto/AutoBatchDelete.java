@@ -8,7 +8,7 @@ import org.springframework.dao.OptimisticLockingFailureException;
  *
  * @author T.TSUCHIE
  *
- * @param <T>
+ * @param <T> 処理対象となるエンティティの型
  */
 public interface AutoBatchDelete<T> {
 
