@@ -11,7 +11,7 @@ import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
  *
  * @author T.TSUCHIE
  *
- * @param <T>
+ * @param <T> 演算対象のクラスタイプ
  */
 public interface Operation<T> {
 

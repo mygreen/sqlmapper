@@ -9,7 +9,7 @@ import lombok.Getter;
 /**
  * 定数を表現します。
  *
- * @parm <T> 定数のタイプ
+ * @param <T> 定数のタイプ
  * @author T.TSUCHIE
  *
  */
@@ -68,7 +68,7 @@ public class Constant<T> extends ImmutableExpression<T> {
 
     /**
      * {@link Collection}型/配列型などを定数として作成します。
-     * @param <T>
+     * @param <T> クラスタイプ
      * @param value 定数とする値
      * @param expandable {@link Collection}型/配列型を各要素を展開して処理するかどうか。
      * @return {@link Collection}型/配列型などの定数

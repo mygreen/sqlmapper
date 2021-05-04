@@ -12,7 +12,7 @@ import lombok.Getter;
  *
  * @author T.TSUCHIE
  *
- * @param <T> エンティティタイプ
+ * @param <T> エンティティのクラスタイプ
  */
 public abstract class EntityPathBase<T> implements EntityPath<T> {
 
@@ -72,6 +72,7 @@ public abstract class EntityPathBase<T> implements EntityPath<T> {
 
     /**
      * 数値型のプロパティを作成します。
+     * @param <A> 数値型のタイプ
      * @param property プロパティ名
      * @param type 数値型のクラス
      * @return 数値型のプロパティ

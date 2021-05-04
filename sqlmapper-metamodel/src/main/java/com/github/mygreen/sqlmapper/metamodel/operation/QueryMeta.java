@@ -19,8 +19,6 @@ import lombok.Setter;
  *
  *
  * @author T.TSUCHIE
- *
- * @param <Q> クエリのクラスタイプ
  */
 public class QueryMeta {
 

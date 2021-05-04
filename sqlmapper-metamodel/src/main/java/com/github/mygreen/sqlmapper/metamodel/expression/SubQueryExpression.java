@@ -29,7 +29,7 @@ public interface SubQueryExpression<T> extends Expression<T> {
 
     /**
      * ソート順を指定します。
-     * @param orderBy ソートするロパティの並び順情報
+     * @param orders ソートするロパティの並び順情報
      * @return 自身のインスタンス。
      */
     SubQueryExpression<T> orderBy(OrderSpecifier... orders);
@@ -37,14 +37,14 @@ public interface SubQueryExpression<T> extends Expression<T> {
     /**
      * 抽出する行数を指定します。
      * @param limit 行数
-     * @return このインスタンス自身
+     * @return 自身のインスタンス。
      */
     SubQueryExpression<T> limit(int limit);
 
     /**
      * 抽出するデータの開始位置を指定します。
      * @param offset 開始位置。
-     * @return このインスタンス自身
+     * @return 自身のインスタンス。
      */
     SubQueryExpression<T> offset(int offset);
 
@@ -54,7 +54,6 @@ public interface SubQueryExpression<T> extends Expression<T> {
      *
      * @param properties 挿入対象のプロパティ情報。
      * @return 自身のインスタンス。
-     * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
      */
     SubQueryExpression<T> includes(final PropertyPath<?>... properties);
 
