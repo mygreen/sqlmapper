@@ -7,8 +7,9 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigureSupport;
+import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigurationSupport;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.dialect.H2Dialect;
 
@@ -20,8 +21,9 @@ import com.github.mygreen.sqlmapper.core.dialect.H2Dialect;
  * @author T.TSUCHIE
  *
  */
+@EnableTransactionManagement
 @Configuration
-public class TestConfig extends SqlMapperConfigureSupport {
+public class TestConfig extends SqlMapperConfigurationSupport {
 
     @Override
     public DataSource dataSource() {

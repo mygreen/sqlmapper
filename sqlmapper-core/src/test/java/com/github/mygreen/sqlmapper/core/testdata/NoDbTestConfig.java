@@ -10,7 +10,7 @@ import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer
 import org.springframework.transaction.PlatformTransactionManager;
 
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
-import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigureSupport;
+import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigurationSupport;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.dialect.DialectBase;
 
@@ -22,7 +22,7 @@ import com.github.mygreen.sqlmapper.core.dialect.DialectBase;
  *
  */
 @Configuration
-public class NoDbTestConfig extends SqlMapperConfigureSupport {
+public class NoDbTestConfig extends SqlMapperConfigurationSupport {
 
     @Bean
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {

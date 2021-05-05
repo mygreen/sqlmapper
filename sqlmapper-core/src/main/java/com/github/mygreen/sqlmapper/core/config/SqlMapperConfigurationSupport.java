@@ -66,7 +66,7 @@ import com.github.mygreen.sqlmapper.core.type.standard.UUIDType;
  *
  */
 @PropertySource("classpath:/com/github/mygreen/sqlmapper/core/sqlmapper.properties")
-public abstract class SqlMapperConfigureSupport implements ApplicationContextAware, ApplicationEventPublisherAware {
+public abstract class SqlMapperConfigurationSupport implements ApplicationContextAware, ApplicationEventPublisherAware {
 
     /**
      * Springのアプリケーションコンテキスト
