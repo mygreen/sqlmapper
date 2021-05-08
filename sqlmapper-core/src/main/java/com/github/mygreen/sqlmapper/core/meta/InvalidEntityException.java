@@ -28,4 +28,15 @@ public class InvalidEntityException extends SqlMapperException {
         super(message);
         this.entityClass = entityClass;
     }
+
+    /**
+     * インスタンスを作成する
+     * @param entityClass エラー対象のエンティティクラス
+     * @param message エラーメッセージ
+     * @param cause 原因となるエラー
+     */
+    public InvalidEntityException(final Class<?> entityClass, final String message, final Throwable cause) {
+        super(message, cause);
+        this.entityClass = entityClass;
+    }
 }

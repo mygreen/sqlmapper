@@ -367,8 +367,19 @@ public class PropertyMetaFactory {
                     new TableIdIncrementer(jdbcTemplate, tableIdContext),
                     propertyMeta.getPropertyType(), sequenceName);
 
+
             if(!annoGeneratedValue.get().format().isEmpty()) {
-                tableIdGenerator.setFormatter(new DecimalFormat(annoGeneratedValue.get().format()));
+                try {
+                    tableIdGenerator.setFormatter(new DecimalFormat(annoGeneratedValue.get().format()));
+                } catch(IllegalArgumentException e) {
+                    throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.wrongFormat")
+                            .paramWithClass("classType", entityMeta.getEntityType())
+                            .param("property", propertyMeta.getName())
+                            .paramWithAnno("anno", TableGenerator.class)
+                            .param("attrName", "format")
+                            .param("attrValue", annoGeneratedValue.get().format())
+                            .format(), e);
+                }
             }
 
             idGenerator = tableIdGenerator;
