@@ -41,8 +41,9 @@ public class AuditingEntityListener implements InitializingBean {
 
     /**
      * {@inheritDoc}
-     * 監査情報を提供する {@link AuditorProvider}がSpringのコンテナに登録されていない場合は、
-     * デフォルトの空の情報を設定します。
+     *
+     * <p>監査情報を提供する {@link AuditorProvider}がSpringのコンテナに登録されていない場合は、
+     *   デフォルトの空の情報を設定します。
      */
     @Override
     public void afterPropertiesSet() throws Exception {
