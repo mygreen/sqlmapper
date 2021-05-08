@@ -43,7 +43,7 @@ public interface Dialect {
      * シーケンスをインクリメントする処理を取得します。
      * @param dataSource データソース
      * @param sequenceName シーケンス名
-     * @return DBに対応したインクリメントする処理の実装を返します。
+     * @return DBに対応したインクリメントする処理の実装を返します。シーケンスをサポートしない場合は{@literal null}を返します。
      */
     DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName);
 

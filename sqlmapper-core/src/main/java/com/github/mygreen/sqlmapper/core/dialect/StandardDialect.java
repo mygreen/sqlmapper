@@ -6,30 +6,59 @@ import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer
 
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 
+/**
+ * 標準のDBの方言定義。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 public class StandardDialect extends DialectBase {
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@literal "standard"} を返す。
+     */
     @Override
     public String getName() {
-        // TODO 自動生成されたメソッド・スタブ
-        return null;
+        return "standard";
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return
+     * <ul>
+     *  <li>{@link GenerationType#IDENTITY} : {@literal false}</li>
+     *  <li>{@link GenerationType#SEQUENCE} : {@literal false}</li>
+     *  <li>{@link GenerationType#TABLE} : {@literal true}</li>
+     *  <li>その他 : {@literal false}</li>
+     * </ul>
+     */
     @Override
     public boolean isSupportedGenerationType(GenerationType generationType) {
-        // TODO 自動生成されたメソッド・スタブ
-        return false;
+        switch(generationType) {
+            case IDENTITY:
+                return false;
+            case SEQUENCE:
+                return false;
+            case TABLE:
+                return true;
+            default:
+                return false;
+        }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return シーケンスはサポートしないため {@literal null}を返す。
+     */
     @Override
-    public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource,
-            String sequenceName) {
-        // TODO 自動生成されたメソッド・スタブ
+    public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
+        // シーケンスはサポートしない
         return null;
     }
 
-    @Override
-    public String convertLimitSql(String sql, int offset, int limit) {
-        // TODO 自動生成されたメソッド・スタブ
-        return null;
-    }
 }

@@ -3,33 +3,33 @@ package com.github.mygreen.sqlmapper.core.dialect;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
-import org.springframework.jdbc.support.incrementer.H2SequenceMaxValueIncrementer;
+import org.springframework.jdbc.support.incrementer.PostgresSequenceMaxValueIncrementer;
 
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 
+
 /**
- * H2用の方言の定義。
+ * PostgreSQL用の方言の定義
  *
  *
  * @author T.TSUCHIE
  *
  */
-public class H2Dialect extends DialectBase {
+public class PostgresDialect extends DialectBase {
 
     /**
      * {@inheritDoc}
      *
-     * @return {@literal "h2"} を返します。
+     * @return {@literal "pgsql"} を返します。
      */
     @Override
     public String getName() {
-        return "h2";
+        return "pgsql";
     }
 
     /**
      * {@inheritDoc}
      *
-     * @return
      * <ul>
      *  <li>{@link GenerationType#IDENTITY} : {@literal true}</li>
      *  <li>{@link GenerationType#SEQUENCE} : {@literal true}</li>
@@ -54,11 +54,10 @@ public class H2Dialect extends DialectBase {
     /**
      * {@inheritDoc}
      *
-     * @return {@link H2SequenceMaxValueIncrementer} のインスタンスを返します。
+     * @return {@link PostgresSequenceMaxValueIncrementer} のインスタンスを返します。
      */
     @Override
     public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
-        return new H2SequenceMaxValueIncrementer(dataSource, sequenceName);
+        return new PostgresSequenceMaxValueIncrementer(dataSource, sequenceName);
     }
-
 }

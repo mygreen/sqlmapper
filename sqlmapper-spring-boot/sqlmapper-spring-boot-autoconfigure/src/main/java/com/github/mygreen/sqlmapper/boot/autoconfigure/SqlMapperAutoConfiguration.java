@@ -40,6 +40,10 @@ import com.github.mygreen.sqlmapper.core.config.SqlTemplateProperties;
 import com.github.mygreen.sqlmapper.core.config.TableIdGeneratorProperties;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.dialect.H2Dialect;
+import com.github.mygreen.sqlmapper.core.dialect.HsqlDialect;
+import com.github.mygreen.sqlmapper.core.dialect.OracleDialect;
+import com.github.mygreen.sqlmapper.core.dialect.PostgresDialect;
+import com.github.mygreen.sqlmapper.core.dialect.SqliteDialect;
 import com.github.mygreen.sqlmapper.core.dialect.StandardDialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMetaFactory;
@@ -211,8 +215,14 @@ public class SqlMapperAutoConfiguration implements ApplicationContextAware, Appl
             switch(databaseDriver) {
                 case H2:
                     return new H2Dialect();
-                case POSTGRESQL:
+                case HSQLDB:
+                    return new HsqlDialect();
                 case SQLITE:
+                    return new SqliteDialect();
+                case POSTGRESQL:
+                    return new PostgresDialect();
+                case ORACLE:
+                    return new OracleDialect();
                 default:
                     break;
             }

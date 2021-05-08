@@ -1,13 +1,8 @@
 package com.github.mygreen.sqlmapper.core.dialect;
 
-import javax.sql.DataSource;
-
-import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
-import org.springframework.jdbc.support.incrementer.OracleSequenceMaxValueIncrementer;
 import org.springframework.lang.Nullable;
 
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
-import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.type.standard.BooleanType;
 import com.github.mygreen.sqlmapper.core.type.standard.NumberableBooleanType;
@@ -20,7 +15,7 @@ import com.github.mygreen.sqlmapper.core.type.standard.NumberableBooleanType;
  * @author T.TSUCHIE
  *
  */
-public class OracleLegacyDialect extends DialectBase {
+public class OracleLegacyDialect extends OracleDialect {
 
     private final NumberableBooleanType objectiveBooleanType = new NumberableBooleanType(false);
 
@@ -29,17 +24,7 @@ public class OracleLegacyDialect extends DialectBase {
     /**
      * {@inheritDoc}
      *
-     * @return {@literal oracle}を返します。
-     */
-    @Override
-    public String getName() {
-        return "oracle";
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * <ul>
+     * @return <ul>
      *  <li>{@link GenerationType#IDENTITY} : {@literal false}</li>
      *  <li>{@link GenerationType#SEQUENCE} : {@literal true}</li>
      *  <li>{@link GenerationType#TABLE} : {@literal true}</li>
@@ -63,17 +48,7 @@ public class OracleLegacyDialect extends DialectBase {
     /**
      * {@inheritDoc}
      *
-     * @return {@link OracleSequenceMaxValueIncrementer} のインスタンスを返します。
-     */
-    @Override
-    public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
-        return new OracleSequenceMaxValueIncrementer(dataSource, sequenceName);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * 与えられた値が {@literal boolean/Boolean}のとき、整数型に変換する {@link NumberableBooleanType} に変換します。
+     * @return 与えられた値が {@literal boolean/Boolean}のとき、整数型に変換する {@link NumberableBooleanType} に変換します。
      */
     @Override
     public ValueType<?> getValueType(@Nullable ValueType<?> valueType) {
@@ -94,17 +69,7 @@ public class OracleLegacyDialect extends DialectBase {
     /**
      * {@inheritDoc}
      *
-     * @return コメントの形式 /{@literal *}+ヒント{@literal *}/ の形式で返します。
-     */
-    @Override
-    public String getHintComment(final String hint) {
-        return "/*+ " + hint + " */ ";
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * {@literal ROWNUMBER}を使用し、疑似的にLIMIT句を表現します。
+     * @return {@literal ROWNUMBER}を使用し、疑似的にLIMIT句を表現します。
      */
     @Override
     public String convertLimitSql(String sql, int offset, int limit) {
@@ -137,34 +102,4 @@ public class OracleLegacyDialect extends DialectBase {
         return buf.toString();
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @return 必ず{@literal true} を返します。
-     */
-    @Override
-    public boolean isSupportedSelectForUpdate(final SelectForUpdateType type) {
-        // 全てのタイプをサポートする
-        return true;
-    }
-
-    @Override
-    public String getForUpdateSql(final SelectForUpdateType type, final int waitSeconds) {
-
-        StringBuilder buf = new StringBuilder(20)
-                .append(" FOR UPDATE");
-
-        switch(type) {
-            case NORMAL:
-                break;
-            case NOWAIT:
-                buf.append(" NOWAIT");
-                break;
-            case WAIT:
-                buf.append(" WAIT ").append(waitSeconds);
-                break;
-        }
-
-        return buf.toString();
-    }
 }

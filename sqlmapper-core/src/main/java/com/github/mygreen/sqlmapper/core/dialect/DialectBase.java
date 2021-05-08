@@ -34,11 +34,11 @@ public abstract class DialectBase implements Dialect {
     /**
      * {@inheritDoc}
      *
-     * @return {@literal COUNT(*)} を返します。
+     * @return {@literal "count(*)"} を返します。
      */
     @Override
     public String getCountSql() {
-        return "COUNT(*)";
+        return "count(*)";
     }
 
     /**
@@ -64,11 +64,30 @@ public abstract class DialectBase implements Dialect {
     /**
      * {@inheritDoc}
      *
-     * @return {@literal  FOR UPDATE} を返します。
+     * @return {@literal "for update"} を返します。
      */
     @Override
     public String getForUpdateSql(final SelectForUpdateType type, final int waitSeconds) {
-        return " FOR UPDATE";
+        return " for update";
+    }
+
+    @Override
+    public String convertLimitSql(String sql, int offset, int limit) {
+
+        StringBuilder buf = new StringBuilder(sql.length() + 20);
+        buf.append(sql);
+        if (offset > 0) {
+            buf.append(" limit ");
+            buf.append(limit);
+            buf.append(" offset ");
+            buf.append(offset);
+        } else {
+            buf.append(" limit ");
+            buf.append(limit);
+        }
+
+        return buf.toString();
+
     }
 
 }
