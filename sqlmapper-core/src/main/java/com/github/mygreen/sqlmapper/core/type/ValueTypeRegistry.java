@@ -1,11 +1,19 @@
 package com.github.mygreen.sqlmapper.core.type;
 
+import java.math.BigDecimal;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.support.lob.LobHandler;
@@ -19,9 +27,21 @@ import com.github.mygreen.sqlmapper.core.type.enumeration.EnumOrdinalType;
 import com.github.mygreen.sqlmapper.core.type.enumeration.EnumStringType;
 import com.github.mygreen.sqlmapper.core.type.lob.LobByteArrayType;
 import com.github.mygreen.sqlmapper.core.type.lob.LobStringType;
+import com.github.mygreen.sqlmapper.core.type.standard.BigDecimalType;
+import com.github.mygreen.sqlmapper.core.type.standard.BooleanType;
+import com.github.mygreen.sqlmapper.core.type.standard.DoubleType;
+import com.github.mygreen.sqlmapper.core.type.standard.FloatType;
+import com.github.mygreen.sqlmapper.core.type.standard.IntegerType;
+import com.github.mygreen.sqlmapper.core.type.standard.LocalDateTimeType;
+import com.github.mygreen.sqlmapper.core.type.standard.LocalDateType;
+import com.github.mygreen.sqlmapper.core.type.standard.LocalTimeType;
+import com.github.mygreen.sqlmapper.core.type.standard.LongType;
+import com.github.mygreen.sqlmapper.core.type.standard.ShortType;
 import com.github.mygreen.sqlmapper.core.type.standard.SqlDateType;
 import com.github.mygreen.sqlmapper.core.type.standard.SqlTimeType;
 import com.github.mygreen.sqlmapper.core.type.standard.SqlTimestampType;
+import com.github.mygreen.sqlmapper.core.type.standard.StringType;
+import com.github.mygreen.sqlmapper.core.type.standard.UUIDType;
 import com.github.mygreen.sqlmapper.core.type.standard.UtilDateType;
 
 import lombok.Getter;
@@ -35,7 +55,7 @@ import lombok.Setter;
  * @author T.TSUCHIE
  *
  */
-public class ValueTypeRegistry {
+public class ValueTypeRegistry implements InitializingBean {
 
     @Getter
     @Setter
@@ -55,7 +75,59 @@ public class ValueTypeRegistry {
     /**
      * クラスタイプで関連付けられた{@link ValueType}のマップ
      */
-    private Map<Class<?>, ValueType<?>> typeMap = new ConcurrentHashMap<>();
+    protected Map<Class<?>, ValueType<?>> typeMap = new ConcurrentHashMap<>();
+
+    /**
+     * {@inheritDoc}
+     *
+     * <p>初期化処理として、標準の {@link ValueType} を登録する({@link #registerWithDefaultValueTypes()})。
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        registerWithDefaultValueTypes();
+    }
+
+    /**
+     * 標準の {@link ValueType} を登録する。
+     */
+    protected void registerWithDefaultValueTypes() {
+
+        // 文字列用の設定
+        register(String.class, new StringType());
+
+        // ブール値用の設定
+        register(Boolean.class, new BooleanType(false));
+        register(boolean.class, new BooleanType(true));
+
+        // 数値用の設定
+        register(Short.class, new ShortType(false));
+        register(short.class, new ShortType(true));
+        register(Integer.class, new IntegerType(false));
+        register(int.class, new IntegerType(true));
+        register(Long.class, new LongType(false));
+        register(long.class, new LongType(true));
+        register(Float.class, new FloatType(false));
+        register(float.class, new FloatType(true));
+        register(Double.class, new DoubleType(false));
+        register(double.class, new DoubleType(true));
+        register(BigDecimal.class, new BigDecimalType());
+
+        // SQLの時制用の設定
+        // java.util.Date型は、ValueTypeRegistry 内で別途処理される。
+        register(Time.class, new SqlTimeType());
+        register(java.sql.Date.class, new SqlDateType());
+        register(Timestamp.class, new SqlTimestampType());
+
+        // JSR-310の時勢用の設定
+        // タイムゾーンを持たない時制のみサポート
+        register(LocalTime.class, new LocalTimeType());
+        register(LocalDate.class, new LocalDateType());
+        register(LocalDateTime.class, new LocalDateTimeType());
+
+        // その他の型の設定
+        register(UUID.class, new UUIDType());
+
+    }
 
     /**
      * プロパティメタ情報に対する値の変換処理を取得する。
@@ -196,4 +268,5 @@ public class ValueTypeRegistry {
     public <T> void register(@NonNull Class<T> type, @NonNull ValueType<T> valueType) {
         this.typeMap.put(type, valueType);
     }
+
 }

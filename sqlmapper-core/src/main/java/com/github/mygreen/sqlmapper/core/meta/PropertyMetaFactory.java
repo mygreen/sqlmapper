@@ -11,7 +11,6 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.ReflectionUtils;
 
@@ -25,6 +24,7 @@ import com.github.mygreen.sqlmapper.core.annotation.SequenceGenerator;
 import com.github.mygreen.sqlmapper.core.annotation.TableGenerator;
 import com.github.mygreen.sqlmapper.core.annotation.Temporal;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
+import com.github.mygreen.sqlmapper.core.config.TableIdGeneratorProperties;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.id.IdentityIdGenerator;
@@ -84,7 +84,7 @@ public class PropertyMetaFactory {
     @Getter
     @Setter
     @Autowired
-    private Environment env;
+    private TableIdGeneratorProperties tableIdGeneratorProperties;
 
     /**
      * プロパティのメタ情報を作成します。
@@ -301,11 +301,11 @@ public class PropertyMetaFactory {
             Optional<TableGenerator> annoTableGenerator = propertyMeta.getAnnotation(TableGenerator.class);
 
             final TableIdContext tableIdContext = new TableIdContext();
-            tableIdContext.setTable(env.getProperty("sqlmapper.tableIdGenerator.table"));
-            tableIdContext.setSchema(env.getProperty("sqlmapper.tableIdGenerator.schema"));
-            tableIdContext.setCatalog(env.getProperty("sqlmapper.tableIdGenerator.catalog"));
-            tableIdContext.setPkColumn(env.getProperty("sqlmapper.tableIdGenerator.pkColumn"));
-            tableIdContext.setValueColumn(env.getProperty("sqlmapper.tableIdGenerator.valueColumn"));
+            tableIdContext.setTable(tableIdGeneratorProperties.getTable());
+            tableIdContext.setSchema(tableIdGeneratorProperties.getSchema());
+            tableIdContext.setCatalog(tableIdGeneratorProperties.getCatalog());
+            tableIdContext.setPkColumn(tableIdGeneratorProperties.getPkColumn());
+            tableIdContext.setValueColumn(tableIdGeneratorProperties.getValueColumn());
 
             String sequenceName = entityMeta.getTableMeta().getName() + "_" + propertyMeta.getColumnMeta().getName();
 

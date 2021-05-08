@@ -3,10 +3,8 @@ package com.github.mygreen.sqlmapper.core.testdata;
 import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigurationSupport;
@@ -37,15 +35,7 @@ public class TestConfig extends SqlMapperConfigurationSupport {
     }
 
     @Override
-    public PlatformTransactionManager transactionManager(DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
-
-    @Override
     public Dialect dialect() {
         return new H2Dialect();
     }
-
-
-
 }

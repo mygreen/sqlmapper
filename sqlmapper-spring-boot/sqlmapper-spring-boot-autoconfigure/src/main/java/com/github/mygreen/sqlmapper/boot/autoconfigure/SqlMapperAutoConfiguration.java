@@ -1,18 +1,25 @@
-package com.github.mygreen.sqlmapper.core.config;
+package com.github.mygreen.sqlmapper.boot.autoconfigure;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Description;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
@@ -29,38 +36,56 @@ import com.github.mygreen.splate.SqlTemplateEngine;
 import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
+import com.github.mygreen.sqlmapper.core.config.SqlTemplateProperties;
+import com.github.mygreen.sqlmapper.core.config.TableIdGeneratorProperties;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.dialect.H2Dialect;
+import com.github.mygreen.sqlmapper.core.dialect.StandardDialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMetaFactory;
 import com.github.mygreen.sqlmapper.core.naming.DefaultNamingRule;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
 import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
- * SQLMapperのSpringBeanの設定サポート用クラス。
- * 環境ごとに、このクラスを実装してください。
+ * SqlMapperによるAuto-Configuration設定
+ *
  *
  * @author T.TSUCHIE
  *
  */
+@Slf4j
+@Configuration
+@ConditionalOnClass({ DataSource.class, JdbcTemplate.class})
+@ConditionalOnSingleCandidate(DataSource.class)
 @PropertySource("classpath:/com/github/mygreen/sqlmapper/core/sqlmapper.properties")
-public abstract class SqlMapperConfigurationSupport implements ApplicationContextAware, ApplicationEventPublisherAware {
+@EnableConfigurationProperties(SqlMapperProperties.class)
+@AutoConfigureAfter(DataSourceAutoConfiguration.class)
+public class SqlMapperAutoConfiguration implements ApplicationContextAware, ApplicationEventPublisherAware {
 
     /**
      * Springのアプリケーションコンテキスト
      */
-    protected ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
     /**
      * イベントを配信する機能
      */
-    protected ApplicationEventPublisher applicationEventPublisher;
+    private ApplicationEventPublisher applicationEventPublisher;
 
-    /**
-     * Springのコンテナの環境設定
-     */
     @Autowired
-    protected Environment env;
+    private SqlMapperProperties sqlMapperProperties;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    private DataSourceProperties dataSourceProperties;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -73,17 +98,17 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
     }
 
     @Bean
-    @Description("SQLMapperのクエリ実行用のBean。")
+    @ConditionalOnMissingBean
     public SqlMapper sqlMapper() {
         return new SqlMapper(sqlMapperContext());
     }
 
     @Bean
-    @Description("SQLMapperの各設定を保持するBean。")
+    @ConditionalOnMissingBean
     public SqlMapperContext sqlMapperContext() {
 
         final SqlMapperContext context = new SqlMapperContext();
-        context.setJdbcTemplate(jdbcTemplate());
+        context.setJdbcTemplate(jdbcTemplate);
         context.setNamingRule(namingRule());
         context.setMessageFormatter(messageFormatter());
         context.setDialect(dialect());
@@ -91,56 +116,44 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
         context.setApplicationEventPublisher(applicationEventPublisher);
         context.setSqlTemplateEngine(sqlTemplateEngine());
         context.setValueTypeRegistry(valueTypeRegistry());
-        context.setIdGeneratorTransactionTemplate(idGeneratorTransactionTemplate(transactionManager()));
+        context.setIdGeneratorTransactionTemplate(idGeneratorTransactionTemplate());
 
         return context;
 
     }
 
     @Bean
-    @Description("SQLテンプレートの設定値")
+    @ConditionalOnMissingBean
     public SqlTemplateProperties sqlTemplateProperties() {
-        SqlTemplateProperties prop = new SqlTemplateProperties();
-        prop.setCacheMode(env.getRequiredProperty("sqlmapper.sql-template.cache-mode", boolean.class));
-        prop.setEncoding(env.getProperty("sqlmapper.sql-template.encoding"));
-
-        return prop;
+        return sqlMapperProperties.getSqlTemplate();
     }
 
     @Bean
-    @Description("テーブルによる自動採番の設定")
+    @ConditionalOnMissingBean
     public TableIdGeneratorProperties tableIdGeneratorProperties() {
-
-        TableIdGeneratorProperties prop = new TableIdGeneratorProperties();
-        prop.setTable(env.getProperty("sqlmapper.table-id-generator.table"));
-        prop.setSchema(env.getProperty("sqlmapper.table-id-generator.schema"));
-        prop.setCatalog(env.getProperty("sqlmapper.table-id-generator.catalog"));
-        prop.setPkColumn(env.getProperty("sqlmapper.table-id-generator.pk-column"));
-        prop.setValueColumn(env.getProperty("sqlmapper.table-id-generator.value-column"));
-
-        return prop;
+        return sqlMapperProperties.getTableIdGenerator();
     }
 
     @Bean
-    @Description("エンティティの対応クラスからメタ情報を作成するBean。")
+    @ConditionalOnMissingBean
     public EntityMetaFactory entityMetaFactory() {
         return new EntityMetaFactory();
     }
 
     @Bean
-    @Description("エンティティのプロパティからメタ情報を作成するBean。")
+    @ConditionalOnMissingBean
     public PropertyMetaFactory propertyMetaFactory() {
         return new PropertyMetaFactory();
     }
 
     @Bean
-    @Description("テーブルやカラム名の命名規則を定義するBean。")
+    @ConditionalOnMissingBean
     public NamingRule namingRule() {
         return new DefaultNamingRule();
     }
 
     @Bean
-    @Description("メッセージをフォーマットするBean。")
+    @ConditionalOnMissingBean
     public MessageFormatter messageFormatter() {
 
         final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
@@ -158,21 +171,13 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
     }
 
     @Bean
-    @Description("ValueTypeを管理するBean")
+    @ConditionalOnMissingBean
     public ValueTypeRegistry valueTypeRegistry() {
         return new ValueTypeRegistry();
-
     }
 
-    /**
-     * SQLテンプレートエンジンのBean定義。
-     * 外部ライブラリ <a href="https://github.com/mygreen/splate/">splate</a> を使用します。
-     * <p>キャッシュモードや文字コードの設定はプロパティファイルから取得します。
-     *
-     * @return SQLテンプレートを処理するエンジン
-     */
     @Bean
-    @Description("SQLテンプレートを管理するBean")
+    @ConditionalOnMissingBean
     public SqlTemplateEngine sqlTemplateEngine() {
 
         final SqlTemplateEngine templateEngine = new SqlTemplateEngine();
@@ -185,50 +190,61 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
     }
 
     @Bean
-    @Description("LOBを処理するBean。")
+    @ConditionalOnMissingBean
     public LobHandler lobHandler() {
         return new DefaultLobHandler();
     }
 
     @Bean
-    @Description("SQLクエリを発行するJDBCテンプレート")
+    @ConditionalOnMissingBean
     public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource());
+        return new JdbcTemplate(dataSource);
     }
 
     @Bean
-    @Description("DB接続するためのデータソース")
-    public abstract DataSource dataSource();
+    @ConditionalOnMissingBean
+    public Dialect dialect() {
+
+        String url = dataSourceProperties.getUrl();
+        if (url != null) {
+            DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(url);
+            switch(databaseDriver) {
+                case H2:
+                    return new H2Dialect();
+                case POSTGRESQL:
+                case SQLITE:
+                default:
+                    break;
+            }
+        }
+
+        if(log.isWarnEnabled()) {
+            log.warn("StandardDialect was selected, because not explicit configuration and its is not possible to guess from 'sprint.datasource.url' property.");
+        }
+
+        return new StandardDialect();
+
+    }
 
     @Bean
-    @Description("トランザクションマネージャ")
+    @ConditionalOnMissingBean
     public PlatformTransactionManager transactionManager() {
-        return new DataSourceTransactionManager(dataSource());
+        return new DataSourceTransactionManager(dataSource);
     }
 
-    /**
-     * ID生成用のトランザクションテンプレートのBean定義。
-     * <p>デフォルトでは、トランザクションを独立されるため {@link TransactionDefinition#PROPAGATION_REQUIRES_NEW} を使用します。
-     *
-     * @param transactionManager トランザクションマネージャ
-     * @return トランザクションテンプレート
-     */
     @Bean
-    @Description("ID生成用のトランザクションテンプレート")
-    public TransactionTemplate idGeneratorTransactionTemplate(PlatformTransactionManager transactionManager) {
-        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+    @ConditionalOnMissingBean
+    public TransactionTemplate idGeneratorTransactionTemplate() {
+        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager());
         transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
         return transactionTemplate;
     }
 
     @Bean
-    @Description("SQLの方言を表現するBean。")
-    public abstract Dialect dialect();
-
-    @Bean
-    @Description("クエリ実行時のイベントを処理するBean。")
+    @ConditionalOnMissingBean
     public AuditingEntityListener auditingEntityListener() {
         return new AuditingEntityListener();
     }
+
 
 }

@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigurationSupport;
@@ -37,12 +36,6 @@ public class NoDbTestConfig extends SqlMapperConfigurationSupport {
     @Override
     public DataSource dataSource() {
         return new SimpleDriverDataSource();
-    }
-
-    @Override
-    public PlatformTransactionManager transactionManager(DataSource dataSource) {
-        // TODO 自動生成されたメソッド・スタブ
-        return null;
     }
 
     static class NoDbTestDialect extends DialectBase {
