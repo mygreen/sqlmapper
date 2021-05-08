@@ -157,7 +157,7 @@ public class SqlMapperAutoConfiguration implements ApplicationContextAware, Appl
     public MessageFormatter messageFormatter() {
 
         final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.addBasenames("com/github/mygreen/sqlmapper/messages");
+        messageSource.addBasenames("com/github/mygreen/sqlmapper/core/messages");
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setUseCodeAsDefaultMessage(true);
         messageSource.setFallbackToSystemLocale(false);
