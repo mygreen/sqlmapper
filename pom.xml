@@ -14,7 +14,8 @@
 		<module>sqlmapper-core</module>
 		<module>sqlmapper-metamodel</module>
 		<module>sqlmapper-apt</module>
-		<module>sqlmapper-examples</module>
+		<module>sqlmapper-spring-boot</module>
+		<module>sqlmapper-sample</module>
 	</modules>
 
 	<properties>
