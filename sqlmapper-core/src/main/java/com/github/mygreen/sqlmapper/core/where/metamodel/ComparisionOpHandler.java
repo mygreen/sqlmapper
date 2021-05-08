@@ -21,9 +21,9 @@ public class ComparisionOpHandler extends OperationHandler<ComparisionOp> {
         // 比較演算子 - General
         addTemplate(ComparisionOp.EQ, "{0} = {1}");
         addTemplate(ComparisionOp.NE, "{0} <> {1}");
-        addTemplate(ComparisionOp.IN, "{0} IN {1}");
-        addTemplate(ComparisionOp.NOT_IN, "{0} NOT IN {1}");
-        addTemplate(ComparisionOp.BETWEEN, "{0} BETWEEN {1} AND {2}");
+        addTemplate(ComparisionOp.IN, "{0} in {1}");
+        addTemplate(ComparisionOp.NOT_IN, "{0} not in {1}");
+        addTemplate(ComparisionOp.BETWEEN, "{0} between {1} and {2}");
         addTemplate(ComparisionOp.GOE, "{0} >= {1}");
         addTemplate(ComparisionOp.GT, "{0} > {1}");
         addTemplate(ComparisionOp.LOE, "{0} <= {1}");

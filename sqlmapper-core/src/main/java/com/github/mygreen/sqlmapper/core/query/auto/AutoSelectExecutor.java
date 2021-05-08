@@ -492,7 +492,7 @@ public class AutoSelectExecutor<T> {
             hintComment = "";
         }
 
-        String sql = "SELECT "
+        String sql = "select "
                 + hintComment
                 + selectClause.toSql()
                 + fromClause.toSql()

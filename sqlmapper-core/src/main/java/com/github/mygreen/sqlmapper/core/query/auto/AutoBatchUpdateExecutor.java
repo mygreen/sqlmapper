@@ -184,7 +184,7 @@ public class AutoBatchUpdateExecutor {
      * 実行するSQLを組み立てます
      */
     private void prepareSql() {
-        final String sql = "UPDATE "
+        final String sql = "update "
                 + query.getEntityMeta().getTableMeta().getFullName()
                 + setClause.toSql()
                 + whereClause.toSql();

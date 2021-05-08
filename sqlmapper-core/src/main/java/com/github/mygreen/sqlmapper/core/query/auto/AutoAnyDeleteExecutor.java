@@ -92,7 +92,7 @@ public class AutoAnyDeleteExecutor {
      */
     private void prepareSql() {
 
-        final String sql = "DELETE FROM "
+        final String sql = "delete from "
                 + query.getEntityMeta().getTableMeta().getFullName()
                 + whereClause.toSql();
 

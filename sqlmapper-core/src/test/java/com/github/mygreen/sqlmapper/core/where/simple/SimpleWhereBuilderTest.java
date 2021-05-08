@@ -33,7 +33,7 @@ class SimpleWhereBuilderTest extends SimpleWhereBuilder {
         String sql = visitor.getCriteria();
         List<Object> params = visitor.getParamValues();
 
-        assertThat(sql).isEqualTo("first_name = ? AND age >= ?");
+        assertThat(sql).isEqualTo("first_name = ? and age >= ?");
         assertThat(params).containsExactly("Taro", 20);
 
     }
@@ -55,7 +55,7 @@ class SimpleWhereBuilderTest extends SimpleWhereBuilder {
         String sql = visitor.getCriteria();
         List<Object> params = visitor.getParamValues();
 
-        assertThat(sql).isEqualTo("(first_name = ? AND age >= ?) OR (last_name like ?)");
+        assertThat(sql).isEqualTo("(first_name = ? and age >= ?) or (last_name like ?)");
         assertThat(params).containsExactly("Taro", 20, "%Yama%");
 
     }
@@ -77,7 +77,7 @@ class SimpleWhereBuilderTest extends SimpleWhereBuilder {
         String sql = visitor.getCriteria();
         List<Object> params = visitor.getParamValues();
 
-        assertThat(sql).isEqualTo("(first_name = ? AND age >= ?) OR (last_name like ? AND (role = ?))");
+        assertThat(sql).isEqualTo("(first_name = ? and age >= ?) or (last_name like ? and (role = ?))");
         assertThat(params).containsExactly("Taro", 20, "%Yama%", "ADMIN");
 
     }
@@ -93,7 +93,7 @@ class SimpleWhereBuilderTest extends SimpleWhereBuilder {
         assertThatThrownBy(() -> new SimpleWhereBuilder().exp("first_name =", "Yamada"))
         .isInstanceOf(IllegalArgumentException.class);
 
-        assertThatThrownBy(() -> new SimpleWhereBuilder().exp("first_name = ? AND age >= ?", "Yamada"))
+        assertThatThrownBy(() -> new SimpleWhereBuilder().exp("first_name = ? and age >= ?", "Yamada"))
         .isInstanceOf(IllegalArgumentException.class);
 
     }

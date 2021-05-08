@@ -48,13 +48,13 @@ public class LikeOpHandler extends OperationHandler<LikeOp>{
             }
 
             invoke(operator, left, visitor, context);
-            context.appendSql(" LIKE ?");
+            context.appendSql(" like ?");
             context.addParamValue(text);
 
         } else {
             // 定数以外はただのLIKEとして扱う
             invoke(operator, left, visitor, context);
-            context.appendSql(" LIKE ");
+            context.appendSql(" like ");
             invoke(operator, right, visitor, context);
         }
     }

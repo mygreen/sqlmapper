@@ -69,7 +69,7 @@ public class SimpleWhereVisitor implements WhereVisitor {
 
         for(Term term : where.getTerms()) {
             if(criteria.length() > 0) {
-                criteria.append(" AND ");
+                criteria.append(" and ");
             }
 
             term.accept(this);
@@ -109,7 +109,7 @@ public class SimpleWhereVisitor implements WhereVisitor {
         } else {
             for(String sql : result) {
                 if(criteria.length() > 0) {
-                    criteria.append(" OR ");
+                    criteria.append(" or ");
                 }
                 criteria.append("(").append(sql).append(")");
             }

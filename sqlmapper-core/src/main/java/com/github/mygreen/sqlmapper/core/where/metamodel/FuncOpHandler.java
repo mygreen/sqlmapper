@@ -24,25 +24,25 @@ public class FuncOpHandler extends OperationHandler<FunctionOp>{
 
         switch(operator) {
             case LOWER:
-                context.appendSql("LOWER(");
+                context.appendSql("lower(");
                 invoke(operator, expr.getArg(0), visitor, context);
                 context.appendSql(")");
                 break;
             case UPPER:
-                context.appendSql("UPPER(");
+                context.appendSql("upper(");
                 invoke(operator, expr.getArg(0), visitor, context);
                 context.appendSql(")");
                 break;
             case CURRENT_DATE:
-                context.appendSql("CURRENT_DATE");
+                context.appendSql("current_date");
                 doPrecision(expr, context);
                 break;
             case CURRENT_TIME:
-                context.appendSql("CURRENT_TIME");
+                context.appendSql("current_time");
                 doPrecision(expr, context);
                 break;
             case CURRENT_TIMESTAMP:
-                context.appendSql("CURRENT_TIMESTAMP");
+                context.appendSql("current_timestamp");
                 doPrecision(expr, context);
                 break;
             default:

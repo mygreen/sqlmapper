@@ -12,12 +12,12 @@ public class WhereClause {
     /**
      * WHEREのキーワードです。
      */
-    public static final String KEYWORD_WHERE = " WHERE ";
+    public static final String KEYWORD_WHERE = " where ";
 
     /**
      * ANDのキーワードです。
      */
-    public static final String KEYWORD_AND = " AND ";
+    public static final String KEYWORD_AND = " and ";
 
     /**
      * SQLです。
@@ -60,9 +60,7 @@ public class WhereClause {
     }
 
     /**
-     * <p>
      * where句を追加します。
-     * </p>
      * <p>
      * 最初に追加される条件には<code>where</code>が先頭に自動的に追加されます。
      * </p>
@@ -84,9 +82,7 @@ public class WhereClause {
     }
 
     /**
-     * <p>
      * where句を追加します。
-     * </p>
      * <p>
      * 最初に追加される条件には<code>where</code>が先頭に自動的に追加されます。
      * </p>

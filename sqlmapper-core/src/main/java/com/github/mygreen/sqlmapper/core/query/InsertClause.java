@@ -62,7 +62,7 @@ public class InsertClause {
         if(intoSql.length() == 0) {
             intoSql.append(" (").append(columnName).append(')');
 
-            valuesSql.append(" VALUES (").append(expression).append(')');
+            valuesSql.append(" values (").append(expression).append(')');
 
         } else {
             intoSql.setLength(intoSql.length() - 1);

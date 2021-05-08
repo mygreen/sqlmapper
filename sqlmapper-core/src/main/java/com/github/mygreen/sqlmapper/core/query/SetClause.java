@@ -45,7 +45,7 @@ public class SetClause {
      */
     public void addSql(final String columnName, final String expression) {
         if (sql.length() == 0) {
-            sql.append(" SET ");
+            sql.append(" set ");
         } else {
             sql.append(", ");
         }

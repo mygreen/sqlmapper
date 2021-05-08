@@ -83,8 +83,8 @@ public class TableNameResolver {
 
     /**
      * エンティティのパス名を取得します。
-     * @param entityPath
-     * @return
+     * @param entityPath エンティティのパス情報。
+     * @return テーブル名の別名。
      */
     private String getEntityPathName(Path<?> entityPath) {
 

@@ -175,7 +175,7 @@ public class ExpressionVisitor implements Visitor<VisitorContext> {
             });
         }
 
-        String sql = "SELECT "
+        String sql = "select "
                 + selectClause.toSql()
                 + fromClause.toSql()
                 + whereClause.toSql()

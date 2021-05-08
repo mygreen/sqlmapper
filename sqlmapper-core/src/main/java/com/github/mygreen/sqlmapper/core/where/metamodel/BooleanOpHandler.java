@@ -16,8 +16,8 @@ public class BooleanOpHandler extends OperationHandler<BooleanOp> {
 
     @Override
     protected void init() {
-        addTemplate(BooleanOp.AND, "{0} AND {1}");
-        addTemplate(BooleanOp.OR, "{0} OR {1}");
+        addTemplate(BooleanOp.AND, "{0} and {1}");
+        addTemplate(BooleanOp.OR, "{0} or {1}");
     }
 
     @Override

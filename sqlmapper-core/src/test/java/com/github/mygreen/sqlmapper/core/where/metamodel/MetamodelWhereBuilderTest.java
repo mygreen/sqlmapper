@@ -55,7 +55,7 @@ public class MetamodelWhereBuilderTest {
         visitor.visit(new MetamodelWhere(condition));
 
         String sql = visitor.getCriteria();
-        assertThat(sql).isEqualTo("(LOWER(T1_.FIRST_NAME) LIKE ? AND T1_.LAST_NAME = ?) OR (T1_.BIRTHDAY > ? AND (T1_.VERSION BETWEEN ? AND ?))");
+        assertThat(sql).isEqualTo("(lower(T1_.FIRST_NAME) like ? and T1_.LAST_NAME = ?) or (T1_.BIRTHDAY > ? and (T1_.VERSION between ? and ?))");
 
         List<Object> params = visitor.getParamValues();
         assertThat(params).containsExactly("%taro%", "Yamada", LocalDate.of(2000, 1, 1), 0L, 100L);
@@ -79,7 +79,7 @@ public class MetamodelWhereBuilderTest {
         visitor.visit(new MetamodelWhere(condition));
 
         String sql = visitor.getCriteria();
-        assertThat(sql).isEqualTo("T1_.NAME LIKE ? AND T1_.CREATE_AT >= ?");
+        assertThat(sql).isEqualTo("T1_.NAME like ? and T1_.CREATE_AT >= ?");
 
         List<Object> params = visitor.getParamValues();
         assertThat(params).containsExactly("%Yamada%", Timestamp.valueOf("2021-01-01 12:13:14.123"));
@@ -103,7 +103,7 @@ public class MetamodelWhereBuilderTest {
         visitor.visit(new MetamodelWhere(condition));
 
         String sql = visitor.getCriteria();
-        assertThat(sql).isEqualTo("T1_.FIRST_NAME LIKE ? AND EXISTS (SELECT T1_.customer_id, T1_.FIRST_NAME, T1_.LAST_NAME, T1_.BIRTHDAY, T1_.VERSION from CUSTOMER T1_ WHERE T1_.BIRTHDAY > ?)");
+        assertThat(sql).isEqualTo("T1_.FIRST_NAME like ? and exists (select T1_.customer_id, T1_.FIRST_NAME, T1_.LAST_NAME, T1_.BIRTHDAY, T1_.VERSION from CUSTOMER T1_ where T1_.BIRTHDAY > ?)");
 
         List<Object> params = visitor.getParamValues();
         assertThat(params).containsExactly("%taro%", LocalDate.of(2000, 1, 1));
