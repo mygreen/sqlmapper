@@ -24,6 +24,9 @@ public class UUIDGenerator implements IdGenerator {
      */
     private static final List<Class<?>> SUPPORTED_TYPE_LIST = List.of(UUID.class, String.class);
 
+    /**
+     * 生成するIDのクラスタイプ
+     */
     private final Class<?> requiredType;
 
     @Override
