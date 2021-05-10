@@ -9,7 +9,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import com.github.mygreen.splate.ProcessResult;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
-import com.github.mygreen.sqlmapper.core.mapper.SimpleEntityRowMapper;
+import com.github.mygreen.sqlmapper.core.mapper.SqlEntityRowMapper;
 
 
 /**
@@ -79,7 +79,7 @@ public class SqlSelectExecutor<T> {
     public T getSingleResult(EntityMappingCallback<T> callback) {
         prepare();
 
-        SimpleEntityRowMapper<T> rowMapper = new SimpleEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
+        SqlEntityRowMapper<T> rowMapper = new SqlEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues);
     }
 
@@ -92,7 +92,7 @@ public class SqlSelectExecutor<T> {
     public Optional<T> getOptionalResult(EntityMappingCallback<T> callback) {
         prepare();
 
-        SimpleEntityRowMapper<T> rowMapper = new SimpleEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
+        SqlEntityRowMapper<T> rowMapper = new SqlEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         final List<T> ret = context.getJdbcTemplate().query(executedSql, rowMapper, paramValues);
         if(ret.isEmpty()) {
             return Optional.empty();
@@ -110,7 +110,7 @@ public class SqlSelectExecutor<T> {
     public List<T> getResultList(EntityMappingCallback<T> callback) {
         prepare();
 
-        SimpleEntityRowMapper<T> rowMapper = new SimpleEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
+        SqlEntityRowMapper<T> rowMapper = new SqlEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().query(executedSql, rowMapper, paramValues);
     }
 
@@ -122,7 +122,7 @@ public class SqlSelectExecutor<T> {
     public Stream<T> getResultStream(EntityMappingCallback<T> callback) {
         prepare();
 
-        SimpleEntityRowMapper<T> rowMapper = new SimpleEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
+        SqlEntityRowMapper<T> rowMapper = new SqlEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues);
     }
 

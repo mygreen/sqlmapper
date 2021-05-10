@@ -13,12 +13,12 @@ import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
 
 /**
- * 1レコード分のエンティティをマッピングする。
+ * SQLテンプレートによる抽出結果の1レコード分のエンティティをマッピングする。
  *
  * @author T.TSUCHIE
  *
  */
-public class SimpleEntityRowMapper<T> implements RowMapper<T> {
+public class SqlEntityRowMapper<T> implements RowMapper<T> {
 
     /**
      * エンティティクラスです。
@@ -47,7 +47,7 @@ public class SimpleEntityRowMapper<T> implements RowMapper<T> {
      * @param callback エンティティマッピング後のコールバック処理
      */
     @SuppressWarnings("unchecked")
-    public SimpleEntityRowMapper(EntityMeta entityMeta, Optional<EntityMappingCallback<T>> callback) {
+    public SqlEntityRowMapper(EntityMeta entityMeta, Optional<EntityMappingCallback<T>> callback) {
         this.entityClass = (Class<T>)entityMeta.getEntityType();
         this.entityMeta = entityMeta;
         this.callback = callback;

@@ -20,7 +20,7 @@ import com.github.mygreen.sqlmapper.core.query.JoinAssociation;
  * @author T.TSUCHIE
  *
  */
-public class EntityRowMapper<T> implements RowMapper<T> {
+public class AutoEntityRowMapper<T> implements RowMapper<T> {
 
     /**
      * エンティティクラスです。
@@ -56,7 +56,7 @@ public class EntityRowMapper<T> implements RowMapper<T> {
      * @param callback エンティティマッピング後のコールバック処理
      */
     @SuppressWarnings("rawtypes")
-    public EntityRowMapper(Class<T> baseEntityClass, Map<PropertyMeta, Class<?>> propertyMetaEntityTypeMap,
+    public AutoEntityRowMapper(Class<T> baseEntityClass, Map<PropertyMeta, Class<?>> propertyMetaEntityTypeMap,
             List<JoinAssociation> joinAssociations, Optional<EntityMappingCallback<T>> callback) {
         this.baseEntityClass = baseEntityClass;
         this.propertyMetaEntityTypeMap = propertyMetaEntityTypeMap;
@@ -84,7 +84,6 @@ public class EntityRowMapper<T> implements RowMapper<T> {
                 continue;
             }
             Object propertyValue = propertyMeta.getValueType().getValue(rs, i + 1);
-
 
             Object entityObject = entityInstanceMap.get(propertyMetaEntityTypeMap.get(propertyMeta));
             PropertyValueInvoker.setPropertyValue(propertyMeta, entityObject, propertyValue);

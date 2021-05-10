@@ -17,7 +17,7 @@ import org.springframework.util.StringUtils;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
-import com.github.mygreen.sqlmapper.core.mapper.EntityRowMapper;
+import com.github.mygreen.sqlmapper.core.mapper.AutoEntityRowMapper;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.FromClause;
@@ -529,7 +529,7 @@ public class AutoSelectExecutor<T> {
     public T getSingleResult(EntityMappingCallback<T> callback) {
         prepare();
 
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
+        AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues.toArray());
     }
@@ -543,7 +543,7 @@ public class AutoSelectExecutor<T> {
     public Optional<T> getOptionalResult(EntityMappingCallback<T> callback) {
         prepare();
 
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
+        AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
         final List<T> ret = context.getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
         if(ret.isEmpty()) {
@@ -562,7 +562,7 @@ public class AutoSelectExecutor<T> {
     public List<T> getResultList(EntityMappingCallback<T> callback) {
         prepare();
 
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
+        AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
     }
@@ -575,7 +575,7 @@ public class AutoSelectExecutor<T> {
     public Stream<T> getResultStream(EntityMappingCallback<T> callback) {
         prepare();
 
-        EntityRowMapper<T> rowMapper = new EntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
+        AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
         return context.getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues.toArray());
     }

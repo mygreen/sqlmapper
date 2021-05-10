@@ -1,7 +1,7 @@
 package com.github.mygreen.sqlmapper.core.mapper;
 
 /**
- * {@link EntityRowMapper}のコールバック。
+ * {@link AutoEntityRowMapper}のコールバック。
  * JDBCの結果をエンティティにマッピングした後に呼び出される処理です。
  *
  * @author T.TSUCHIE
