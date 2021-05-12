@@ -86,7 +86,7 @@ public class AutoEntityRowMapper<T> implements RowMapper<T> {
             Object propertyValue = propertyMeta.getValueType().getValue(rs, i + 1);
 
             Object entityObject = entityInstanceMap.get(propertyMetaEntityTypeMap.get(propertyMeta));
-            PropertyValueInvoker.setPropertyValue(propertyMeta, entityObject, propertyValue);
+            PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, entityObject, propertyValue);
         }
 
         // 結合テーブルの構成定義の呼び出し

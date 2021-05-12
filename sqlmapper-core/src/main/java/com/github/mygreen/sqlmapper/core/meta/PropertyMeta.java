@@ -4,12 +4,17 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import com.github.mygreen.sqlmapper.core.annotation.CreatedAt;
 import com.github.mygreen.sqlmapper.core.annotation.CreatedBy;
+import com.github.mygreen.sqlmapper.core.annotation.EmbeddedId;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
 import com.github.mygreen.sqlmapper.core.annotation.Lob;
@@ -66,6 +71,22 @@ public class PropertyMeta {
      * アノテーションの情報
      */
     private Map<Class<? extends Annotation>, Annotation> annotationMap = new HashMap<>();
+
+    /**
+     * 埋め込み型の主キーの子プロパティかどうか。
+     */
+    private boolean embeddedableId = false;
+
+    /**
+     * 埋め込みプロパティの情報
+     * <p>key=プロパティ名</p>
+     */
+    private LinkedCaseInsensitiveMap<PropertyMeta> embeddedablePropertyMetaMap = new LinkedCaseInsensitiveMap<>();
+
+    /**
+     * 埋め込みのときの親のプロパティ情報
+     */
+    private Optional<PropertyMeta> parent = Optional.empty();
 
     /**
      * カラムのメタ情報
@@ -245,14 +266,66 @@ public class PropertyMeta {
     }
 
     /**
+     * 埋め込みプロパティ情報を追加する
+     * @param embeddedablePropertyMeta 埋め込みプロパティ
+     */
+    public void addEmbeddedablePropertyMeta(@NonNull PropertyMeta embeddedablePropertyMeta) {
+
+        embeddedablePropertyMeta.parent = Optional.of(this);
+
+        // 親が埋め込み主キーの時
+        if(hasAnnotation(EmbeddedId.class) && !isTransient()) {
+            embeddedablePropertyMeta.embeddedableId = true;
+        }
+
+        this.embeddedablePropertyMetaMap.put(embeddedablePropertyMeta.getName(), embeddedablePropertyMeta);
+
+    }
+
+    /**
+     * 埋め込み用のクラスのプロパティかどか判定する。
+     * @return 埋め込み用のクラスのプロパティの場合trueを変す。
+     */
+    public boolean hasParent() {
+        return parent.isPresent();
+    }
+
+    /**
+     * 埋め込み用のクラスのプロパティの親情報を取得する。
+     * @return 親情のプロパティ情報
+     * @throws NoSuchElementException 親が存在しないときにスローされます。
+     */
+    public PropertyMeta getParent() {
+        return parent.get();
+    }
+
+    /**
+     * 埋め込みプロパティの一覧を取得する。
+     * @return
+     */
+    public Collection<PropertyMeta> getEmbeddedablePopertyMetaList() {
+        return embeddedablePropertyMetaMap.values();
+    }
+
+    /**
      * 主キーかどうか判定する。
      * <p>アノテーション {@link Id}を付与されているかどうかで判定する。</p>
+     * <p>また、親が{@link EmbeddedId} を付与された埋め込みIDの場合は、子も主キーとなるためtrueを返す。</p>
      *
      * @return 主キーの場合は {@literal true}  を返す。
      */
     public boolean isId() {
 
-        return hasAnnotation(Id.class);
+        return hasAnnotation(Id.class) || embeddedableId;
+    }
+
+    /**
+     * 埋め込み用のプロパティかどうか判定する。
+     * <p>埋め込みプロパティの子の場合は、falseを返す。
+     * @return 埋め込みの場合trueを返す。
+     */
+    public boolean isEmbedded() {
+        return hasAnnotation(EmbeddedId.class);
     }
 
     /**

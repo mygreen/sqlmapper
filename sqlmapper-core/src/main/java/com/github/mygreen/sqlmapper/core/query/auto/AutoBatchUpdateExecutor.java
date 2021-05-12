@@ -123,7 +123,7 @@ public class AutoBatchUpdateExecutor {
             for(int i=0; i < dataSize; i++) {
 
                 final List<Object> params = QueryUtils.get(batchParams, i);
-                final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity(i));
+                final Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, query.getEntity(i));
                 params.add(valueType.getSqlParameterValue(propertyValue));
 
             }
@@ -156,7 +156,7 @@ public class AutoBatchUpdateExecutor {
             // 各レコードのパラメータを作成する。
             for(int i=0; i < dataSize; i++) {
                 final List<Object> params = QueryUtils.get(batchParams, i);
-                final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity(i));
+                final Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, query.getEntity(i));
                 params.add(valueType.getSqlParameterValue(propertyValue));
 
             }
@@ -173,7 +173,7 @@ public class AutoBatchUpdateExecutor {
             // 各レコードのパラメータを作成する。
             for(int i=0; i < dataSize; i++) {
                 final List<Object> params = QueryUtils.get(batchParams, i);
-                final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity(i));
+                final Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, query.getEntity(i));
                 params.add(valueType.getSqlParameterValue(propertyValue));
             }
         }
@@ -238,10 +238,10 @@ public class AutoBatchUpdateExecutor {
     private void incrementVresion(final Object entity) {
 
         PropertyMeta propertyMeta = query.getEntityMeta().getVersionPropertyMeta().get();
-        Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, entity);
+        Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, entity);
 
         propertyValue = NumberConvertUtils.incrementNumber(propertyMeta.getPropertyType(), propertyValue);
-        PropertyValueInvoker.setPropertyValue(propertyMeta, entity, propertyValue);
+        PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, entity, propertyValue);
 
     }
 

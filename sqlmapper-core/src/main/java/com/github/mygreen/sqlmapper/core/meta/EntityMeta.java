@@ -96,6 +96,11 @@ public class EntityMeta {
 
         setupRoleProperty(propertyMeta);
 
+        // 埋め込みプロパティの場合、子プロパティを追加する。
+        if(propertyMeta.isEmbedded()) {
+            propertyMeta.getEmbeddedablePopertyMetaList().forEach(p -> setupRoleProperty(p));
+        }
+
     }
 
     /**

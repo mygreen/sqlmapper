@@ -120,7 +120,7 @@ public class AutoBatchInsertExecutor {
             // 各レコードのパラメータを作成する。
             for(int i=0; i < dataSize; i++) {
                 final MapSqlParameterSource paramSource = QueryUtils.get(batchParams, i);
-                Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity(i));
+                Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, query.getEntity(i));
 
                 Optional<GenerationType> generationType = propertyMeta.getIdGenerationType();
                 if(propertyMeta.isId() && generationType.isPresent()) {
@@ -132,14 +132,14 @@ public class AutoBatchInsertExecutor {
                         continue;
                     } else {
                         propertyValue = getNextVal(propertyMeta.getIdGenerator().get(), propertyMeta.getColumnMeta().getName(), i);
-                        PropertyValueInvoker.setPropertyValue(propertyMeta, query.getEntity(i), propertyValue);
+                        PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, query.getEntity(i), propertyValue);
                     }
                 }
 
                 if(propertyValue == null && propertyMeta.isVersion()) {
                     // バージョンキーが設定されていない場合、初期値設定する
                     propertyValue = NumberConvertUtils.convertNumber(propertyMeta.getPropertyType(), INITIAL_VERSION);
-                    PropertyValueInvoker.setPropertyValue(propertyMeta, query.getEntity(i), propertyValue);
+                    PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, query.getEntity(i), propertyValue);
 
                 }
 
@@ -218,7 +218,7 @@ public class AutoBatchInsertExecutor {
                     PropertyMeta propertyMeta = query.getEntityMeta().getColumnPropertyMeta(entry.getKey()).orElseThrow();
                     IdentityIdGenerator idGenerator = (IdentityIdGenerator) propertyMeta.getIdGenerator().get();
                     Object propertyValue = idGenerator.generateValue((Number)entry.getValue());
-                    PropertyValueInvoker.setPropertyValue(propertyMeta, query.getEntity(i), propertyValue);
+                    PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, query.getEntity(i), propertyValue);
 
                 }
 

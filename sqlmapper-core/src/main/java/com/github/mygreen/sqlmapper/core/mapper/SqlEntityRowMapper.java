@@ -70,7 +70,7 @@ public class SqlEntityRowMapper<T> implements RowMapper<T> {
                 continue;
             }
             Object propertyValue = propertyMeta.getValueType().getValue(rs, i + 1);
-            PropertyValueInvoker.setPropertyValue(propertyMeta, entity, propertyValue);
+            PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, entity, propertyValue);
         }
 
         // コールバック処理の実行

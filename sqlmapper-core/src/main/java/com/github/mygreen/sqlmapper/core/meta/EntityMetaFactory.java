@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ReflectionUtils;
 
 import com.github.mygreen.messageformatter.MessageFormatter;
+import com.github.mygreen.sqlmapper.core.annotation.Embeddable;
+import com.github.mygreen.sqlmapper.core.annotation.EmbeddedId;
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
 import com.github.mygreen.sqlmapper.core.annotation.Table;
@@ -157,6 +159,11 @@ public class EntityMetaFactory {
         extractProperty(entityClass, propertyMetaList, entityMeta);
         extractSuperClassProperty(entityClass.getSuperclass(), propertyMetaList, entityMeta);
 
+        // 埋め込みのプロパティを抽出する
+        propertyMetaList.stream()
+            .filter(prop -> prop.isEmbedded())
+            .forEach(prop -> doEmbeddedPropertyMeta(entityClass, prop, entityMeta));
+
         validateEntity(entityClass, propertyMetaList);
 
         propertyMetaList.stream().forEach(p -> entityMeta.addPropertyMeta(p));
@@ -210,6 +217,61 @@ public class EntityMetaFactory {
 
     }
 
+    /**
+     * 指定したプロパティから埋め込み用プロパティを設定する。
+     * @param targetClass 抽出対象のクラス。
+     * @param propertyMeta 処理対象のプロパティ情報
+     * @param entityClass エンティティ情報
+     */
+    private void doEmbeddedPropertyMeta(final Class<?> entityClass, final PropertyMeta propertyMeta,
+            final EntityMeta entityMeta) {
+
+        final Class<?> embeddableClass = propertyMeta.getPropertyType();
+
+        if(embeddableClass.getAnnotation(Embeddable.class) == null) {
+            throw new InvalidEntityException(entityClass, messageFormatter.create("embeddable.anno.required")
+                    .paramWithClass("entityClass", entityClass)
+                    .param("property", propertyMeta.getName())
+                    .paramWithClass("embeddableClass", embeddableClass)
+                    .paramWithAnno("anno", Embeddable.class)
+                    .format());
+        }
+
+        // 埋め込みクラスのプロパティ情報の抽出
+        final List<PropertyMeta> embeddedPropertyList = new ArrayList<>();
+        extractProperty(embeddableClass, embeddedPropertyList, entityMeta);
+
+        validatedEmbeddedProperty(entityClass, embeddableClass, embeddedPropertyList);
+
+        embeddedPropertyList.stream().forEach(p -> propertyMeta.addEmbeddedablePropertyMeta(p));
+
+    }
+
+    /**
+     * 埋め込みクラスの情報の整合性などの検証
+     * <p>
+     *  <li></li>
+     * </p>
+     *
+     * @param entityClass
+     * @param embeddableClass
+     * @param embeddedProperties
+     */
+    private void validatedEmbeddedProperty(final Class<?> entityClass, final Class<?> embeddableClass,
+            final List<PropertyMeta> embeddedPropertyList) {
+
+        // プロパティが存在するかどうか。
+        final long propertyCount = embeddedPropertyList.stream()
+                .filter(p -> !p.isTransient())
+                .count();
+        if(propertyCount == 0) {
+            throw new InvalidEntityException(entityClass, messageFormatter.create("entity.prop.empty")
+                    .paramWithClass("classType", embeddableClass)
+                    .format());
+        }
+
+    }
+
     private void validateEntity(final Class<?> entityClass, final List<PropertyMeta> propertyMetaList) {
 
         // プロパティが存在するかどうか。
@@ -229,9 +291,21 @@ public class EntityMetaFactory {
             if(prop.isTransient() || !prop.isColumn()) {
                 continue;
             }
+
             final String propName = prop.getName();
             if(!existsColumnPropertyNames.add(propName)) {
                 douplicatedColumnPropertyNames.add(propName);
+            }
+
+            // 埋め込みプロパティの場合
+            for(PropertyMeta embeddedProp : prop.getEmbeddedablePopertyMetaList()) {
+                if(embeddedProp.isTransient() || !prop.isColumn()) {
+                    continue;
+                }
+                final String embeddedPropName = embeddedProp.getName();
+                if(!existsColumnPropertyNames.add(embeddedPropName)) {
+                    douplicatedColumnPropertyNames.add(embeddedPropName);
+                }
             }
 
         }
@@ -242,6 +316,22 @@ public class EntityMetaFactory {
                     .format());
         }
 
+        // EmbeddedIdが複数存在しないかどうか。
+        List<PropertyMeta> embeddedIdList = propertyMetaList.stream()
+                .filter(prop -> prop.isId())
+                .filter(prop -> prop.isEmbedded())
+                .collect(Collectors.toList());
+        if(embeddedIdList.size() >= 2) {
+            List<String> propertyNames = embeddedIdList.stream()
+                    .map(prop -> prop.getName())
+                    .collect(Collectors.toList());
+
+            throw new InvalidEntityException(entityClass, messageFormatter.create("entity.anno.multiPropertyAnno")
+                    .paramWithClass("classType", entityClass)
+                    .paramWithAnno("anno", EmbeddedId.class)
+                    .param("propertyNames", propertyNames)
+                    .format());
+        }
 
         // バージョンキーが複数存在しないかどうか。
         List<PropertyMeta> versionList = propertyMetaList.stream()

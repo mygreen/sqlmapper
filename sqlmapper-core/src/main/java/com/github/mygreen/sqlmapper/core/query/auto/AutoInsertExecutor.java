@@ -106,7 +106,7 @@ public class AutoInsertExecutor {
             final String columnName = propertyMeta.getColumnMeta().getName();
 
             // パラメータの組み立て
-            Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
+            Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, query.getEntity());
 
             Optional<GenerationType> generationType = propertyMeta.getIdGenerationType();
             if(propertyMeta.isId() && generationType.isPresent()) {
@@ -116,14 +116,14 @@ public class AutoInsertExecutor {
                     continue;
                 } else {
                     propertyValue = getNextVal(propertyMeta.getIdGenerator().get());
-                    PropertyValueInvoker.setPropertyValue(propertyMeta, query.getEntity(), propertyValue);
+                    PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, query.getEntity(), propertyValue);
                 }
             }
 
             if(propertyValue == null && propertyMeta.isVersion()) {
                 // バージョンキーが設定されていない場合、初期値設定する
                 propertyValue = NumberConvertUtils.convertNumber(propertyMeta.getPropertyType(), INITIAL_VERSION);
-                PropertyValueInvoker.setPropertyValue(propertyMeta, query.getEntity(), propertyValue);
+                PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, query.getEntity(), propertyValue);
 
             }
 
@@ -190,7 +190,7 @@ public class AutoInsertExecutor {
                 PropertyMeta propertyMeta = query.getEntityMeta().getColumnPropertyMeta(entry.getKey()).orElseThrow();
                 IdentityIdGenerator idGenerator = (IdentityIdGenerator) propertyMeta.getIdGenerator().get();
                 Object propertyValue = idGenerator.generateValue((Number)entry.getValue());
-                PropertyValueInvoker.setPropertyValue(propertyMeta, query.getEntity(), propertyValue);
+                PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, query.getEntity(), propertyValue);
 
             }
 

@@ -77,7 +77,7 @@ public class AutoDeleteExecutor {
         for(PropertyMeta propertyMeta : query.getEntityMeta().getIdPropertyMetaList()) {
             String exp = String.format("%s = ?", propertyMeta.getColumnMeta().getName());
 
-            Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
+            Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, query.getEntity());
             ValueType valueType = propertyMeta.getValueType();
             Object value = valueType.getSqlParameterValue(propertyValue);
 
@@ -89,7 +89,7 @@ public class AutoDeleteExecutor {
             final PropertyMeta propertyMeta = query.getEntityMeta().getVersionPropertyMeta().get();
             String exp = String.format("%s = ?", propertyMeta.getColumnMeta().getName());
 
-            Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, query.getEntity());
+            Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, query.getEntity());
             ValueType valueType = propertyMeta.getValueType();
             Object value = valueType.getSqlParameterValue(propertyValue);
 

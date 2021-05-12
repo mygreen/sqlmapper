@@ -172,7 +172,7 @@ public class AutoUpdateImpl<T> implements AutoUpdate<T> {
 
         for(PropertyMeta propertyMeta : entityMeta.getAllColumnPropertyMeta()) {
             final String propertyName = propertyMeta.getName();
-            final Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, beforeEntity);
+            final Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, beforeEntity);
 
             this.beforeStates.put(propertyName, propertyValue);
         }

@@ -84,7 +84,7 @@ public class AutoBatchDeleteExecutor {
             for(PropertyMeta propertyMeta : query.getEntityMeta().getIdPropertyMetaList()) {
                 String exp = String.format("%s = ?", propertyMeta.getColumnMeta().getName());
 
-                Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, entity);
+                Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, entity);
                 ValueType valueType = propertyMeta.getValueType();
                 Object value = valueType.getSqlParameterValue(propertyValue);
 
@@ -96,7 +96,7 @@ public class AutoBatchDeleteExecutor {
                 final PropertyMeta propertyMeta = query.getEntityMeta().getVersionPropertyMeta().get();
                 String exp = String.format("%s = ?", propertyMeta.getColumnMeta().getName());
 
-                Object propertyValue = PropertyValueInvoker.getPropertyValue(propertyMeta, entity);
+                Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, entity);
                 ValueType valueType = propertyMeta.getValueType();
                 Object value = valueType.getSqlParameterValue(propertyValue);
 

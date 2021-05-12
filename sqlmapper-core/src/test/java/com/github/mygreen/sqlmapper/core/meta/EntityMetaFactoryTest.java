@@ -11,6 +11,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.annotation.Column;
+import com.github.mygreen.sqlmapper.core.annotation.Embeddable;
+import com.github.mygreen.sqlmapper.core.annotation.EmbeddedId;
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
@@ -96,6 +98,39 @@ public class EntityMetaFactoryTest {
     }
 
     @Test
+    void testEmbedded() {
+
+        EntityMeta entityMeta = entityMetaFactory.create(EmbeddedEntity.class);
+
+        assertThat(entityMeta.getName()).isEqualTo("EmbeddedEntity");
+
+        TableMeta tableMeta = entityMeta.getTableMeta();
+        assertThat(tableMeta.getName()).isEqualTo("EMBEDDED_ENTITY");
+
+        assertThat(entityMeta.getVersionPropertyMeta()).isEmpty();
+
+        assertThat(entityMeta.getIdPropertyMetaList()).hasSize(2);
+        for(PropertyMeta propertyMeta : entityMeta.getIdPropertyMetaList()) {
+
+            assertThat(propertyMeta.getParent().getName()).isEqualTo("id");
+
+            if(propertyMeta.getName().equals("id1")) {
+                assertThat(propertyMeta.isId()).isTrue();
+                assertThat(propertyMeta.getColumnMeta().getName()).isEqualTo("ID1");
+                assertThat(propertyMeta.isEmbedded()).isFalse();
+
+            } else if(propertyMeta.getName().equals("id2")) {
+                assertThat(propertyMeta.isId()).isTrue();
+                assertThat(propertyMeta.getColumnMeta().getName()).isEqualTo("pk2");
+                assertThat(propertyMeta.isEmbedded()).isFalse();
+
+            }
+
+        }
+
+    }
+
+    @Test
     void testInheritance() {
 
         EntityMeta entityMeta = entityMetaFactory.create(InheritanceEntity.class);
@@ -151,14 +186,14 @@ public class EntityMetaFactoryTest {
             InheritanceEntity entity = new InheritanceEntity();
             entity.setCode("abc");
 
-            Object value = PropertyValueInvoker.getPropertyValue(codePropertyMeta, entity);
+            Object value = PropertyValueInvoker.getEmbeddedPropertyValue(codePropertyMeta, entity);
             assertThat(value).isEqualTo("abc");
 
         }
 
         {
             InheritanceEntity entity = new InheritanceEntity();
-            PropertyValueInvoker.setPropertyValue(codePropertyMeta, entity, "abc");
+            PropertyValueInvoker.setEmbeddedPropertyValue(codePropertyMeta, entity, "abc");
 
             assertThat(entity.getCode()).isEqualTo("abc");
 
@@ -194,6 +229,30 @@ public class EntityMetaFactoryTest {
     }
 
     /**
+     * 埋め込み型のエンティティ
+     *
+     */
+    @Entity
+    @Data
+    public static class EmbeddedEntity {
+
+        @EmbeddedId
+        private PK id;
+
+        private String name;
+
+        @Embeddable
+        @Data
+        public static class PK {
+            private String id1;
+
+            @Column(name = "pk2")
+            private long id2;
+        }
+
+    }
+
+    /**
      * 継承したエンティティ
      * GAPパターン用のベースクラス。
      *
@@ -224,4 +283,5 @@ public class EntityMetaFactoryTest {
         private Map<String, Integer> map;
 
     }
+
 }

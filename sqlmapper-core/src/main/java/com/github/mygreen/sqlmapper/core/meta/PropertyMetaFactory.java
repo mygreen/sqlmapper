@@ -116,7 +116,7 @@ public class PropertyMetaFactory {
         }
 
         // 永続化対象のプロパティはカラム情報を設定します。
-        if(!propertyMeta.isTransient()) {
+        if(!propertyMeta.isEmbedded() && !propertyMeta.isTransient()) {
 
             doColumnMeta(propertyMeta);
             doIdGenerator(propertyMeta, entityMeta);
