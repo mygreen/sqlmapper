@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,6 +16,7 @@ import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.event.PostSelectEvent;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.core.query.JoinAssociation;
 import com.github.mygreen.sqlmapper.core.query.JoinCondition;
@@ -285,18 +287,55 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
     @Override
     public AutoSelectImpl<T> id(@NonNull final Object... idPropertyValues) {
 
-        List<PropertyMeta> idPropertyMetaList = entityMeta.getIdPropertyMetaList();
-        if(idPropertyMetaList.size() != idPropertyValues.length) {
-            throw new IllegalOperateException(context.getMessageFormatter().create("query.noMatchIdPropertySize")
-                    .paramWithClass("entityType", entityPath.getType())
-                    .param("actualSize", idPropertyValues.length)
-                    .param("expectedSize", idPropertyMetaList.size())
-                    .format());
+        Optional<PropertyMeta> embeddedIdPropertyMeta = entityMeta.getEmbeddedIdPropertyMeta();
+        if(isEmbeddedProperty(idPropertyValues, embeddedIdPropertyMeta)) {
+            // 埋め込みIDのとき
+            this.idPropertyValues = getEmbeddedIdValue(idPropertyValues, embeddedIdPropertyMeta.get().getEmbeddedablePopertyMetaList());
+        } else {
+            List<PropertyMeta> idPropertyMetaList = entityMeta.getIdPropertyMetaList();
+            if(idPropertyMetaList.size() != idPropertyValues.length) {
+                throw new IllegalOperateException(context.getMessageFormatter().create("query.noMatchIdPropertySize")
+                        .paramWithClass("entityType", entityPath.getType())
+                        .param("actualSize", idPropertyValues.length)
+                        .param("expectedSize", idPropertyMetaList.size())
+                        .format());
+            }
+
+            this.idPropertyValues = idPropertyValues;
         }
 
-        this.idPropertyValues = idPropertyValues;
-
         return this;
+    }
+
+    /**
+     * IDのクラスタイプが埋め込みIDであるかどうか。
+     * @param idPropertyValues 判定対象の値
+     * @param embeddedIdPropertyMeta 埋め込みIDのメタ情報
+     * @return {@literal true}のとき埋め込みID。
+     */
+    private boolean isEmbeddedProperty(Object[] idPropertyValues, Optional<PropertyMeta> embeddedIdPropertyMeta) {
+        if(idPropertyValues.length != 0 || embeddedIdPropertyMeta.isEmpty()) {
+            return false;
+        }
+
+        Class<?> embeddedType = embeddedIdPropertyMeta.get().getPropertyType();
+        return embeddedType.isAssignableFrom(idPropertyValues[0].getClass());
+    }
+
+    /**
+     * 埋め込みIDの各プロパティの値を取得する。
+     * @param value 埋め込みIDのインスタンス
+     * @param embeddablePropertyList 埋め込みIDのプロパティのメタ情報
+     * @return 埋め込みIDのプロパティの値
+     */
+    private Object[] getEmbeddedIdValue(Object value, Collection<PropertyMeta> embeddablePropertyList) {
+
+        List<Object> idValueList = new ArrayList<>(embeddablePropertyList.size());
+        for(PropertyMeta propertyMeta : embeddablePropertyList) {
+            idValueList.add(PropertyValueInvoker.getPropertyValue(propertyMeta, value));
+        }
+
+        return idValueList.toArray(new Object[idValueList.size()]);
     }
 
     @Override

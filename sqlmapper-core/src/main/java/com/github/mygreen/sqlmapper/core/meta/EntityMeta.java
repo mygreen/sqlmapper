@@ -168,6 +168,16 @@ public class EntityMeta {
     }
 
     /**
+     * 埋め込み用IDのプロパティメタ情報を取得します。
+     * @return 埋め込み用IDのプロパティメタ情報
+     */
+    public Optional<PropertyMeta> getEmbeddedIdPropertyMeta() {
+        return propertyMetaMap.values().stream()
+                .filter(p -> p.isEmbedded())
+                .findFirst();
+    }
+
+    /**
      * バージョンを表すプロパティメタデータを持つかどうか。
      * @return バージョンを表すプロパティメタデータがあれば {@literal true} を返します。
      */
