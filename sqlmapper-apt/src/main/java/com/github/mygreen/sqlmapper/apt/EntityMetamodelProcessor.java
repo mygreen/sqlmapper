@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.apt;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -100,32 +101,65 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
 
         EntityMetamodelFactory factory = new EntityMetamodelFactory(this.getClass().getClassLoader());
 
+        // @Entityが付与されたクラスの処理
         for(Element element : roundEnv.getElementsAnnotatedWith(Entity.class)) {
             try {
                 entityModeles.add(factory.create(element));
             } catch(ClassNotFoundException e) {
                 messager.printMessage(Kind.ERROR, e.getMessage(), element);
+                log.error("fail entity meta model for @Entity.", e);
             }
         }
 
+        // @MappedSuperclassが付与されたクラスの処理
         for(Element element : roundEnv.getElementsAnnotatedWith(MappedSuperclass.class)) {
             try {
                 entityModeles.add(factory.create(element));
             } catch(ClassNotFoundException e) {
                 messager.printMessage(Kind.ERROR, e.getMessage(), element);
+                log.error("fail entity meta model for @MappedSuperclass.", e);
             }
         }
 
+        // @Embeddableが付与されたクラスの処理
         for(Element element : roundEnv.getElementsAnnotatedWith(Embeddable.class)) {
             try {
                 entityModeles.add(factory.create(element));
             } catch(ClassNotFoundException e) {
                 messager.printMessage(Kind.ERROR, e.getMessage(), element);
+                log.error("fail entity meta model for @Embeddable.", e);
+            }
+        }
+
+        // 内部クラスのとき、親クラスに付け替える。
+        List<EntityMetamodel> innerEntityModeles = new ArrayList<>();
+        for(Iterator<EntityMetamodel> itr = entityModeles.iterator(); itr.hasNext(); ) {
+            EntityMetamodel entityModel = itr.next();
+
+            // static 内部クラスのモデル情報を抽出する。
+            if(entityModel.isStaticInnerClass()) {
+                innerEntityModeles.add(entityModel);
+                itr.remove();
+            }
+        }
+
+        for(EntityMetamodel innerModel : innerEntityModeles) {
+            // 親のエンティティモデルに関連付けする。
+            for(EntityMetamodel parentModel : entityModeles) {
+                if(innerModel.getPackageName().equals(parentModel.getFullName())) {
+                    // パッケージ名が親のFQNと一致する場合
+                    parentModel.add(innerModel);
+                }
             }
         }
 
     }
 
+    /**
+     * エンティティのメタモデルクラスのソースを生成します。
+     * @param typeSpec 生成するメタモデルのクラス情報
+     * @param entityModel 生成するメタモデル情報
+     */
     private void generateEntityMetaModel(final TypeSpec typeSpec, final EntityMetamodel entityModel) {
         JavaFile javaFile = JavaFile.builder(entityModel.getPackageName(), typeSpec)
                 .indent(metamodelConfig.getIndent())

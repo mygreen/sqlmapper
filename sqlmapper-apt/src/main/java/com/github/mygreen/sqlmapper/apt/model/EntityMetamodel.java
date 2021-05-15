@@ -4,6 +4,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.mygreen.sqlmapper.apt.AptUtils;
 import com.github.mygreen.sqlmapper.core.annotation.Embeddable;
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
@@ -41,6 +42,11 @@ public class EntityMetamodel {
     private Class<?> entityClass;
 
     /**
+     * staticな内部クラスかどうか。
+     */
+    private boolean staticInnerClass;
+
+    /**
      * アノテーション{@link Entity}の情報
      */
     private Entity entityAnno;
@@ -61,13 +67,20 @@ public class EntityMetamodel {
     private List<PropertyMetamodel> properties = new ArrayList<>();
 
     /**
+     * staticな内部クラスのエンティティの場合
+     */
+    private List<EntityMetamodel> staticInnerEntities = new ArrayList<>();
+
+    /**
      * エンティティのFQNを取得する。
      * @return エンティティのFQN
      */
     public String getFullName() {
         StringBuilder buff = new StringBuilder();
+
         if(packageName != null) {
-            buff.append(packageName).append(".");
+            buff.append(packageName)
+                .append(AptUtils.getPackageClassNameSeparator(this));
         }
 
         buff.append(className);
@@ -81,6 +94,18 @@ public class EntityMetamodel {
      */
     public void add(PropertyMetamodel property) {
         this.properties.add(property);
+    }
+
+    /**
+     * staticな内部クラスのエンティティ情報を追加する。
+     * @param entity エンティティ情報
+     */
+    public void add(EntityMetamodel entity) {
+        if(!entity.isStaticInnerClass()) {
+            throw new IllegalArgumentException("entity is not static inner class : " + entity.getFullName());
+        }
+
+        this.staticInnerEntities.add(entity);
     }
 
     /**

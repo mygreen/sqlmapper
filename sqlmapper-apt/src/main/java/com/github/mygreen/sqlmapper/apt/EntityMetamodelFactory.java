@@ -48,6 +48,9 @@ public class EntityMetamodelFactory {
             entityModel.setPackageName(enclosing.toString());
         }
 
+        // staticな内部クラスか判定します。
+        entityModel.setStaticInnerClass(AptUtils.isStaticInnerClass(entityElement));
+
         // 自身のクラス情報の取得
         Class<?> entityClass = classLoader.loadClass(entityModel.getFullName());
         entityModel.setEntityClass(entityClass);

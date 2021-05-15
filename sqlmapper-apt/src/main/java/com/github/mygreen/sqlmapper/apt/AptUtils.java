@@ -1,5 +1,11 @@
 package com.github.mygreen.sqlmapper.apt;
 
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
+
+import com.github.mygreen.sqlmapper.apt.model.EntityMetamodel;
+
 /**
  * APT処理のユーティリティクラスです。
  *
@@ -107,6 +113,36 @@ public class AptUtils {
 
         return clazz;
 
+    }
+
+    /**
+     * 要素が静的なクラス(static class)か判定します。
+     * @param element 判定対象の要素
+     * @return 静的なクラス(static class)なとき{@literal true}を返します。
+     */
+    public static boolean isStaticInnerClass(final Element element) {
+
+        // クラスかどうか
+        if(element.getKind() != ElementKind.CLASS) {
+            return false;
+        }
+
+        // staticかどうか
+        if(!element.getModifiers().contains(Modifier.STATIC)) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    /**
+     * クラス名とパッケージ名のセパレータを取得します。
+     * @param entityModel エンティティモデル情報
+     * @return 内部クラスのとき {@literal "$"} を返し、それ以外の時は {@literal "."} を返します。
+     */
+    public static String getPackageClassNameSeparator(final EntityMetamodel entityModel) {
+        return entityModel.isStaticInnerClass() ? "$" : ".";
     }
 
 }

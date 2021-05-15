@@ -88,7 +88,7 @@ public class EntitySpecFactory {
         if(propertyModel.isEmbedded()) {
             // 埋め込み用のプロパティの場合
             // public final MPK id = new MPK(this, "id")
-            String embeddedEntityMetamodelName = getEntityMetamodelName(propertyModel.getPropertyType().getSimpleName());
+            String embeddedEntityMetamodelName = resolveEntityMetamodelName(propertyModel.getPropertyType().getSimpleName());
             ClassName embeddedEntityClassName = ClassName.bestGuess(embeddedEntityMetamodelName);
             filedSpec = FieldSpec.builder(embeddedEntityClassName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
                     .initializer("new $T(this, $S)", embeddedEntityClassName, propertyModel.getPropertyName())
@@ -174,7 +174,7 @@ public class EntitySpecFactory {
         final Class<?> entityType = AptUtils.getClassByName(entityModel.getFullName());
 
         // メタモデルのクラス名
-        final String entityMetamodelName = getEntityMetamodelName(entityModel.getClassName());
+        final String entityMetamodelName = resolveEntityMetamodelName(entityModel.getClassName());
 
         // 継承タイプ
         final TypeName superClass;
@@ -185,8 +185,8 @@ public class EntitySpecFactory {
              */
             String superClassName =
                     entityModel.getSuperClass().getPackageName()
-                    + "."
-                    + getEntityMetamodelName(entityModel.getSuperClass().getSimpleName());
+                    + AptUtils.getPackageClassNameSeparator(entityModel)
+                    + resolveEntityMetamodelName(entityModel.getSuperClass().getSimpleName());
 
             superClass = ParameterizedTypeName.get(ClassName.bestGuess(superClassName), TypeVariableName.get(entityType));
         } else {
@@ -235,7 +235,7 @@ public class EntitySpecFactory {
                 .build();
 
         return TypeSpec.classBuilder(entityMetamodelName)
-              .addModifiers(Modifier.PUBLIC)
+              .addModifiers(resolveEntityTypeModifiers(entityModel))
               .superclass(superClass)
               .addAnnotation(createGeneratorAnnoSpec())
               .addJavadoc("$L is SqlMapper's metamodel type for {@link $T}", entityMetamodelName, entityType)
@@ -243,6 +243,7 @@ public class EntitySpecFactory {
               .addMethod(consturctor2)
               .addField(entityFieldSpec)
               .addFields(fieldSpecs)
+              .addTypes(createStaticInnerTypeSpecs(entityModel))
               .build();
 
     }
@@ -259,7 +260,7 @@ public class EntitySpecFactory {
         final Class<?> entityType = AptUtils.getClassByName(entityModel.getFullName());
 
         // メタモデルのクラス名
-        final String entityMetamodelName = getEntityMetamodelName(entityModel.getClassName());
+        final String entityMetamodelName = resolveEntityMetamodelName(entityModel.getClassName());
 
         // 継承タイプ
         final TypeName superClass;
@@ -271,8 +272,8 @@ public class EntitySpecFactory {
              */
             String superClassName =
                     entityModel.getSuperClass().getPackageName()
-                    + "."
-                    + getEntityMetamodelName(entityModel.getSuperClass().getSimpleName());
+                    + AptUtils.getPackageClassNameSeparator(entityModel)
+                    + resolveEntityMetamodelName(entityModel.getSuperClass().getSimpleName());
 
            superClass = ParameterizedTypeName.get(ClassName.bestGuess(superClassName), TypeVariableName.get("E"));
            classTypeVariable = TypeVariableName.get("E", ClassName.get(entityType));
@@ -300,16 +301,15 @@ public class EntitySpecFactory {
                 .addStatement("super(type, name)")
                 .build();
 
-
-
         return TypeSpec.classBuilder(entityMetamodelName)
-              .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+              .addModifiers(resolveEntityTypeModifiers(entityModel))
               .superclass(superClass)
               .addTypeVariable(classTypeVariable)
               .addAnnotation(createGeneratorAnnoSpec())
               .addJavadoc("$L is SqlMapper's metamodel type for {@link $T}", entityMetamodelName, entityType)
               .addMethod(consturctor1)
               .addFields(fieldSpecs)
+              .addTypes(createStaticInnerTypeSpecs(entityModel))
               .build();
 
     }
@@ -325,7 +325,7 @@ public class EntitySpecFactory {
         final Class<?> entityType = AptUtils.getClassByName(entityModel.getFullName());
 
         // メタモデルのクラス名
-        final String entityMetamodelName = getEntityMetamodelName(entityModel.getClassName());
+        final String entityMetamodelName = resolveEntityMetamodelName(entityModel.getClassName());
 
         // 継承タイプ
         final TypeName superClass;
@@ -336,8 +336,8 @@ public class EntitySpecFactory {
              */
             String superClassName =
                     entityModel.getSuperClass().getPackageName()
-                    + "."
-                    + getEntityMetamodelName(entityModel.getSuperClass().getSimpleName());
+                    + AptUtils.getPackageClassNameSeparator(entityModel)
+                    + resolveEntityMetamodelName(entityModel.getSuperClass().getSimpleName());
 
             superClass = ParameterizedTypeName.get(ClassName.bestGuess(superClassName), TypeVariableName.get(entityType));
         } else {
@@ -378,25 +378,62 @@ public class EntitySpecFactory {
                 .build();
 
         return TypeSpec.classBuilder(entityMetamodelName)
-              .addModifiers(Modifier.PUBLIC)
+              .addModifiers(resolveEntityTypeModifiers(entityModel))
               .superclass(superClass)
               .addAnnotation(createGeneratorAnnoSpec())
               .addJavadoc("$L is SqlMapper's metamodel type for {@link $T}", entityMetamodelName, entityType)
               .addMethod(consturctor1)
               .addMethod(consturctor2)
               .addFields(fieldSpecs)
+              .addTypes(createStaticInnerTypeSpecs(entityModel))
               .build();
 
     }
 
+    /**
+     * static内部クラスのメタモデルを作成します。
+     * @param parentEntityModel 親のメタモデル情報
+     * @return static内部のメタモデルクラス
+     */
+    private List<TypeSpec> createStaticInnerTypeSpecs(EntityMetamodel parentEntityModel) {
+
+        List<TypeSpec> list = new ArrayList<>();
+
+        for(EntityMetamodel staticInnerEntityModel : parentEntityModel.getStaticInnerEntities()) {
+            list.add(create(staticInnerEntityModel));
+        }
+
+        return list;
+
+    }
 
     /**
-     * エンティティのメタモデル名を取得する。
+     * エンティティのメタモデルの修飾子を解決します。
+     * @param entityModel エンティティのメタモデル。
+     * @return 修飾子
+     */
+    private Modifier[] resolveEntityTypeModifiers(final EntityMetamodel entityModel) {
+        List<Modifier> list = new ArrayList<>(1);
+        list.add(Modifier.PUBLIC);
+
+        if(entityModel.isAbstract()) {
+            list.add(Modifier.ABSTRACT);
+        }
+
+        if(entityModel.isStaticInnerClass()) {
+            list.add(Modifier.STATIC);
+        }
+
+        return list.toArray(new Modifier[list.size()]);
+    }
+
+    /**
+     * エンティティのメタモデル名を解決します。
      *
      * @param simpleClassName パッケージ名のついていない単純なクラス名。
      * @return 接頭語 + クラス名 + 接尾語。
      */
-    private String getEntityMetamodelName(String simpleClassName) {
+    private String resolveEntityMetamodelName(String simpleClassName) {
         return metamodelConfig.getPrefix()
                 + simpleClassName
                 + metamodelConfig.getSuffix();

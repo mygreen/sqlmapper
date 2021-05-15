@@ -33,4 +33,23 @@ public class EntityMetaModelProcessorTest extends ProcessorTestBase {
         process(EntityMetamodelProcessor.class, Collections.singletonList(file.getPath()), "generated-test-junit");
 
     }
+
+    @Test
+    public void testProcess_embeddedEntity() throws IOException {
+
+        File file1 = new File(PACKAGE_PATH, "Detail.java");
+        process(EntityMetamodelProcessor.class, Collections.singletonList(file1.getPath()), "generated-test-junit");
+
+        File file2 = new File(PACKAGE_PATH, "DetailPK.java");
+        process(EntityMetamodelProcessor.class, Collections.singletonList(file2.getPath()), "generated-test-junit");
+
+    }
+
+    @Test
+    public void testProcess_embeddedEntity2() throws IOException {
+
+        // 内部クラス
+        File file = new File(PACKAGE_PATH, "Detail2.java");
+        process(EntityMetamodelProcessor.class, Collections.singletonList(file.getPath()), "generated-test-junit");
+    }
 }
