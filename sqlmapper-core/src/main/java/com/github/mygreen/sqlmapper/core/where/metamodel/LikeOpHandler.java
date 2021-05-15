@@ -19,7 +19,6 @@ public class LikeOpHandler extends OperationHandler<LikeOp>{
     @Override
     protected void init() {
         // 何もしない
-
     }
 
     @Override
@@ -29,8 +28,6 @@ public class LikeOpHandler extends OperationHandler<LikeOp>{
         Expression<?> right = expr.getArg(1);
 
         if(right instanceof Constant) {
-
-
             String text = ((Constant<?>)right).getValue().toString();
             switch(operator) {
                 case CONTAINS:

@@ -4,6 +4,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.mygreen.sqlmapper.core.annotation.Embeddable;
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
 
@@ -48,6 +49,11 @@ public class EntityMetamodel {
      * アノテーション{@link MappedSuperclass}の情報
      */
     private MappedSuperclass mappedSuperclassAnno;
+
+    /**
+     * アノテーション{@link Embeddable}の情報
+     */
+    private Embeddable embeddableAnno;
 
     /**
      * プロパティ情報
@@ -99,6 +105,14 @@ public class EntityMetamodel {
      */
     public boolean isMappedSuperclass() {
         return mappedSuperclassAnno != null;
+    }
+
+    /**
+     * クラスにアノテーション {@link Embeddable} が付与されているかどうか。
+     * @return {@literal true}のときアノテーション {@link Embeddable} が付与されている。
+     */
+    public boolean isEmbeddable() {
+        return embeddableAnno != null;
     }
 
 }

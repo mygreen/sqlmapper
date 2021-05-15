@@ -26,8 +26,6 @@ public class PropertyMetamodel {
      */
     private Class<?> propertyType;
 
-
-
     /**
      * アノテーション{@link Column}の情報
      */
@@ -42,5 +40,10 @@ public class PropertyMetamodel {
      * 定義されている親クラス
      */
     private String declaredClassName;
+
+    /**
+     * 埋め込み用かどうか。
+     */
+    private boolean embedded;
 
 }

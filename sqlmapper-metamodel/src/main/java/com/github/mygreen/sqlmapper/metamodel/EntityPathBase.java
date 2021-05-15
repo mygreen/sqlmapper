@@ -34,7 +34,13 @@ public abstract class EntityPathBase<T> implements EntityPath<T> {
     private final Map<String, PropertyPath<?>> propertyPathMap = new HashMap<>();
 
     /**
+     * 埋め込みプロパティ（エンティティ）のインスタンスのマップ
+     */
+    private final Map<String, EntityPath<?>> embeddedPropertyPathMap = new HashMap<>();
+
+    /**
      * エンティティのメタモデルのインスタンスを作成します。
+     *
      * @param type エンティティのタイプ。
      * @param name エンティティ名。
      */
@@ -43,9 +49,36 @@ public abstract class EntityPathBase<T> implements EntityPath<T> {
         this.pathMeta = new PathMeta(name, PathType.ROOT);
     }
 
+    /**
+     * 親を持つエンティティのメタモデルのインスタンスを作成します。
+     *
+     * @param type エンティティのタイプ
+     * @param parent 親の情報
+     * @param name エンティティ名
+     */
+    public EntityPathBase(final Class<? extends T> type, final EntityPathBase<?> parent, final String name) {
+        this.type = type;
+        this.pathMeta = new PathMeta(parent, name, PathType.EMBEDDED);
+
+        // 親の埋め込み情報に追加する
+        parent.embeddedPropertyPathMap.put(name, this);
+    }
+
     @Override
     public PropertyPath<?> getPropertyPath(final String propertyName) {
-        return propertyPathMap.get(propertyName);
+        PropertyPath<?> propertyPath = propertyPathMap.get(propertyName);
+        if(propertyPath != null) {
+            return propertyPath;
+        }
+
+        // 埋め込みプロパティの中を探す
+        for(EntityPath<?> entityPath : embeddedPropertyPathMap.values()) {
+            propertyPath = entityPath.getPropertyPath(propertyName);
+            if(propertyPath != null) {
+                return propertyPath;
+            }
+        }
+        return null;
     }
 
     /**

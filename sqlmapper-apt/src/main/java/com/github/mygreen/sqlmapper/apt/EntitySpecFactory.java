@@ -69,7 +69,9 @@ public class EntitySpecFactory {
             fieldSpecs.add(createFieldSpec(propertyModel));
         }
 
-        if(entityModel.isAbstract()) {
+        if(entityModel.isEmbeddable()) {
+            return createTypeSpecAsEmbeddeable(entityModel, fieldSpecs);
+        } else if(entityModel.isAbstract()) {
             return createTypeSpecAsAbstract(entityModel, fieldSpecs);
         } else {
             return createTypeSpecAsNormal(entityModel, fieldSpecs);
@@ -83,7 +85,16 @@ public class EntitySpecFactory {
         final Class<?> propertyType = propertyModel.getPropertyType();
 
         FieldSpec filedSpec;
-        if(String.class.isAssignableFrom(propertyType)) {
+        if(propertyModel.isEmbedded()) {
+            // 埋め込み用のプロパティの場合
+            // public final MPK id = new MPK(this, "id")
+            String embeddedEntityMetamodelName = getEntityMetamodelName(propertyModel.getPropertyType().getSimpleName());
+            ClassName embeddedEntityClassName = ClassName.bestGuess(embeddedEntityMetamodelName);
+            filedSpec = FieldSpec.builder(embeddedEntityClassName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
+                    .initializer("new $T(this, $S)", embeddedEntityClassName, propertyModel.getPropertyName())
+                    .build();
+
+        } else if(String.class.isAssignableFrom(propertyType)) {
             filedSpec = FieldSpec.builder(StringPath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
                     .initializer("createString($S)", propertyModel.getPropertyName())
                     .build();
@@ -156,7 +167,7 @@ public class EntitySpecFactory {
      * 通常のEntityPathの定義を作成する。
      * @param entityModel エンティティモデル
      * @param fieldSpecs フィールド
-     * @return
+     * @return クラス定義情報
      */
     private TypeSpec createTypeSpecAsNormal(final EntityMetamodel entityModel, final List<FieldSpec> fieldSpecs) {
         // エンティティのクラスタイプ
@@ -185,7 +196,6 @@ public class EntitySpecFactory {
              */
             superClass = ParameterizedTypeName.get(EntityPathBase.class, entityType);
         }
-
 
         /*
          * コンストラクタ
@@ -241,7 +251,7 @@ public class EntitySpecFactory {
      * 抽象クラスの場合の定義を作成する。
      * @param entityModel エンティティモデル
      * @param fieldSpecs フィールド
-     * @return
+     * @return クラス定義情報
      */
     private TypeSpec createTypeSpecAsAbstract(final EntityMetamodel entityModel, final List<FieldSpec> fieldSpecs) {
 
@@ -299,6 +309,81 @@ public class EntitySpecFactory {
               .addAnnotation(createGeneratorAnnoSpec())
               .addJavadoc("$L is SqlMapper's metamodel type for {@link $T}", entityMetamodelName, entityType)
               .addMethod(consturctor1)
+              .addFields(fieldSpecs)
+              .build();
+
+    }
+
+    /**
+     * 埋め込み用のEntityPathの定義を作成する。
+     * @param entityModel エンティティモデル
+     * @param fieldSpecs フィールド
+     * @return クラス定義情報
+     */
+    private TypeSpec createTypeSpecAsEmbeddeable(final EntityMetamodel entityModel, final List<FieldSpec> fieldSpecs) {
+        // エンティティのクラスタイプ
+        final Class<?> entityType = AptUtils.getClassByName(entityModel.getFullName());
+
+        // メタモデルのクラス名
+        final String entityMetamodelName = getEntityMetamodelName(entityModel.getClassName());
+
+        // 継承タイプ
+        final TypeName superClass;
+        if(entityModel.getSuperClass() != null) {
+            /*
+             * 継承タイプ - 親が @MappedSuperclass を付与している場合
+             * extends MParent<Sample>
+             */
+            String superClassName =
+                    entityModel.getSuperClass().getPackageName()
+                    + "."
+                    + getEntityMetamodelName(entityModel.getSuperClass().getSimpleName());
+
+            superClass = ParameterizedTypeName.get(ClassName.bestGuess(superClassName), TypeVariableName.get(entityType));
+        } else {
+            /*
+             * 継承タイプ - 通常
+             * extends EntityPatBase<Sample>
+             */
+            superClass = ParameterizedTypeName.get(EntityPathBase.class, entityType);
+        }
+
+        /*
+         * コンストラクタ
+         * public MSample(Class<Sample> type, EntityPathBase<?> parent, String name) {
+         *    super(type, parent, name);
+         * }
+         *
+         */
+        MethodSpec consturctor1 = MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ParameterizedTypeName.get(Class.class, entityType), "type")
+                .addParameter(ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), WildcardTypeName.subtypeOf(Object.class)), "parent")
+                .addParameter(String.class, "name")
+                .addStatement("super(type, parent, name)")
+                .build();
+
+        /*
+         * コンストラクタ
+         * public MSample(EntityPathBase<?> parent, String name) {
+         *    super(Sample.class, parent, name);
+         * }
+         *
+         */
+        MethodSpec consturctor2 = MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), WildcardTypeName.subtypeOf(Object.class)), "parent")
+                .addParameter(String.class, "name")
+                .addStatement("super($T.class, parent, name)", entityType)
+                .build();
+
+        return TypeSpec.classBuilder(entityMetamodelName)
+              .addModifiers(Modifier.PUBLIC)
+              .superclass(superClass)
+              .addAnnotation(createGeneratorAnnoSpec())
+              .addJavadoc("$L is SqlMapper's metamodel type for {@link $T}", entityMetamodelName, entityType)
+              .addMethod(consturctor1)
+              .addMethod(consturctor2)
               .addFields(fieldSpecs)
               .build();
 

@@ -92,7 +92,7 @@ public class TableNameResolver {
 
         buff.append(entityPath.getPathMeta().getElement());
 
-        // ネストしている場合や親をたどる。
+        // ネストしている場合は親をたどる。
         Path<?> parent = entityPath.getPathMeta().getParent();
         while(parent != null && parent.getPathMeta().getType() != PathType.ROOT) {
             buff.insert(0, parent.getPathMeta().getElement() + ".");

@@ -18,6 +18,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
 
 import com.github.mygreen.sqlmapper.apt.model.EntityMetamodel;
+import com.github.mygreen.sqlmapper.core.annotation.Embeddable;
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
 import com.squareup.javapoet.JavaFile;
@@ -90,7 +91,12 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
         return false;
     }
 
-    private void processEntityAnno(final RoundEnvironment roundEnv, List<EntityMetamodel> entityModeles) {
+    /**
+     * エンティティクラスとして処理する。
+     * @param roundEnv 環境情報
+     * @param entityModeles 今まで作成してきたエンティティのメタモデル情報
+     */
+    private void processEntityAnno(final RoundEnvironment roundEnv, final List<EntityMetamodel> entityModeles) {
 
         EntityMetamodelFactory factory = new EntityMetamodelFactory(this.getClass().getClassLoader());
 
@@ -103,6 +109,14 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
         }
 
         for(Element element : roundEnv.getElementsAnnotatedWith(MappedSuperclass.class)) {
+            try {
+                entityModeles.add(factory.create(element));
+            } catch(ClassNotFoundException e) {
+                messager.printMessage(Kind.ERROR, e.getMessage(), element);
+            }
+        }
+
+        for(Element element : roundEnv.getElementsAnnotatedWith(Embeddable.class)) {
             try {
                 entityModeles.add(factory.create(element));
             } catch(ClassNotFoundException e) {

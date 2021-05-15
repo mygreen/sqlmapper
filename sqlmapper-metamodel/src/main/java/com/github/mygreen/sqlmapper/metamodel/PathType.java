@@ -17,6 +17,10 @@ public enum PathType {
     /**
      * 親を持たないルートのパス
      */
-    ROOT
+    ROOT,
+    /**
+     * 親を持つ埋め込み用パス
+     */
+    EMBEDDED
     ;
 }

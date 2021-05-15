@@ -19,9 +19,15 @@ import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-
+/**
+ * シンプルなクラス構成のテスト
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @Slf4j
-class PathTest {
+class NormalPathTest {
 
     @DisplayName("chek meta info.")
     @Test

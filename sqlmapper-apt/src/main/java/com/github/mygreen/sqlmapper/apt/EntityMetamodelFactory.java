@@ -9,6 +9,8 @@ import org.springframework.util.ReflectionUtils;
 
 import com.github.mygreen.sqlmapper.apt.model.EntityMetamodel;
 import com.github.mygreen.sqlmapper.apt.model.PropertyMetamodel;
+import com.github.mygreen.sqlmapper.core.annotation.Embeddable;
+import com.github.mygreen.sqlmapper.core.annotation.EmbeddedId;
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
 import com.github.mygreen.sqlmapper.core.annotation.Transient;
@@ -31,7 +33,7 @@ public class EntityMetamodelFactory {
     /**
      * APTの処理対象のエンティティ情報からメタ情報を抽出する。
      *
-     * @param entityElement アノテーション「{@link Entity}/{@link MappedSuperclass}」が付与されている要素。
+     * @param entityElement アノテーション「{@link Entity}/{@link MappedSuperclass}/{@link Embeddable}」が付与されている要素。
      * @return エンティティのモデル情報。
      * @throws ClassNotFoundException エンティティで指定したクラスが存在しない場合
      */
@@ -51,6 +53,7 @@ public class EntityMetamodelFactory {
         entityModel.setEntityClass(entityClass);
         entityModel.setEntityAnno(entityClass.getAnnotation(Entity.class));
         entityModel.setMappedSuperclassAnno(entityClass.getAnnotation(MappedSuperclass.class));
+        entityModel.setEmbeddableAnno(entityClass.getAnnotation(Embeddable.class));
 
         // 親クラスの取得
         doSuperclass(entityModel, entityClass);
@@ -117,6 +120,9 @@ public class EntityMetamodelFactory {
 
         propertyModel.setPropertyName(field.getName());
         propertyModel.setPropertyType(field.getType());
+
+        // 埋め込み用かどうか
+        propertyModel.setEmbedded(field.getAnnotation(EmbeddedId.class) != null);
 
         return propertyModel;
 

@@ -12,7 +12,8 @@ package com.github.mygreen.sqlmapper.metamodel;
 public interface EntityPath<T> extends Path<T> {
 
     /**
-     * 指定したプロパティ情報を取得する
+     * 指定したプロパティ情報を取得する。
+     * もし、指定したプロパティが埋め込みエンティティ内に存在すれば、埋め込みエンティティ内のプロパティを返す。
      * @param propertyName プロパティ名
      * @return プロパティ情報。指定したプロパティを持たない場合は{@literal null} を返します。
      */
