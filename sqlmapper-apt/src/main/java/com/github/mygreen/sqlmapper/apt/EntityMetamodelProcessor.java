@@ -143,12 +143,13 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
             }
         }
 
-        for(EntityMetamodel innerModel : innerEntityModeles) {
+        for(EntityMetamodel innerEntityModel : innerEntityModeles) {
             // 親のエンティティモデルに関連付けする。
-            for(EntityMetamodel parentModel : entityModeles) {
-                if(innerModel.getPackageName().equals(parentModel.getFullName())) {
+            for(EntityMetamodel parentEntityModel : entityModeles) {
+                if(innerEntityModel.getPackageName().equals(parentEntityModel.getFullName())) {
                     // パッケージ名が親のFQNと一致する場合
-                    parentModel.add(innerModel);
+                    parentEntityModel.add(innerEntityModel);
+                    break;
                 }
             }
         }
