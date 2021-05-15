@@ -57,4 +57,22 @@ public class PathMeta {
     public Optional<Path<?>> getParentAsOptional() {
         return parent;
     }
+
+    /**
+     * ルートのパスを親をだ取り検索します。
+     * @return 自身がルート({@link PathType#ROOT})の場合は{@literal null}を返します。
+     */
+    public Path<?> findRootPath() {
+        if(type == PathType.ROOT) {
+            return null;
+        }
+        PathMeta pathMeta = this;
+        Path<?> parent = null;
+        do{
+            parent = pathMeta.getParent();
+            pathMeta = parent.getPathMeta();
+        } while(parent.getPathMeta().getType() != PathType.ROOT);
+
+        return parent;
+    }
 }

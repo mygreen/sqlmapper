@@ -89,15 +89,16 @@ public class ExpressionVisitor implements Visitor<VisitorContext> {
 
         final PathMeta pathMeta = expr.getPathMeta();
         if(pathMeta.getType() == PathType.PROPERTY) {
-            Class<?> parentClassType = pathMeta.getParent().getType();
+            Path<?> rootPath = pathMeta.findRootPath();
+            Class<?> rootClassType = rootPath.getType();
             String propertyName = pathMeta.getElement();
-            Optional<PropertyMeta> propertyMeta = context.getEntityMetaMap().get(parentClassType).getPropertyMeta(propertyName);
+            Optional<PropertyMeta> propertyMeta = context.getEntityMetaMap().get(rootClassType).findPropertyMeta(propertyName);
             if(propertyMeta.isEmpty()) {
                 throw new IllegalQueryException("unknwon property : " + propertyName);
             }
 
             // TODO: Embeddedのネストした場合を考慮する
-            final String tableName = context.getTableNameResolver().getTableAlias(expr.getPathMeta().getParent());
+            final String tableName = context.getTableNameResolver().getTableAlias(rootPath);
             final String columnName;
             // SQL - カラム名を追加
             if(tableName != null) {
@@ -130,7 +131,7 @@ public class ExpressionVisitor implements Visitor<VisitorContext> {
         final SelectClause selectClause = new SelectClause();
         for(PropertyMeta propertyMeta : entityMeta.getAllColumnPropertyMeta()) {
             final String propertyName = propertyMeta.getName();
-            final PropertyPath<?> propertyPath = queryMeta.getEntityPath().getPropertyPath(propertyName);
+            final PropertyPath<?> propertyPath = queryMeta.getEntityPath().findPropertyPath(propertyName);
 
             if(propertyMeta.isTransient()) {
                 continue;
@@ -161,7 +162,7 @@ public class ExpressionVisitor implements Visitor<VisitorContext> {
         final OrderByClause orderByClause = new OrderByClause();
         for(OrderSpecifier order : queryMeta.getOrders()) {
             String propertyName = order.getPath().getPathMeta().getElement();
-            Optional<PropertyMeta> propertyMeta = entityMeta.getPropertyMeta(propertyName);
+            Optional<PropertyMeta> propertyMeta = entityMeta.findPropertyMeta(propertyName);
 
             String tableAlias = tableNameResolver.getTableAlias(order.getPath().getPathMeta().getParent());
             if(!StringUtils.hasLength(tableAlias)) {

@@ -100,7 +100,7 @@ public class SqlEntityRowMapper<T> implements RowMapper<T> {
             }
 
             // 任意のSQLの場合、カラム名ではなくプロパティ名で定義されている場合がある
-            propertyMeta = entityMeta.getPropertyMeta(columnName);
+            propertyMeta = entityMeta.findPropertyMeta(columnName);
             if(propertyMeta.isPresent()) {
                 propertyMetaList[i] = propertyMeta.get();
             }

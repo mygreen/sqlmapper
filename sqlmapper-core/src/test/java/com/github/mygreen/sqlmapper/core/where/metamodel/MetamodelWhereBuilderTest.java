@@ -18,8 +18,10 @@ import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.testdata.Customer;
+import com.github.mygreen.sqlmapper.core.testdata.EmbeddedEntity;
 import com.github.mygreen.sqlmapper.core.testdata.EntityChild;
 import com.github.mygreen.sqlmapper.core.testdata.MCustomer;
+import com.github.mygreen.sqlmapper.core.testdata.MEmbeddedEntity;
 import com.github.mygreen.sqlmapper.core.testdata.MEntityChild;
 import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
@@ -84,6 +86,30 @@ public class MetamodelWhereBuilderTest {
         List<Object> params = visitor.getParamValues();
         assertThat(params).containsExactly("%Yamada%", Timestamp.valueOf("2021-01-01 12:13:14.123"));
 
+    }
+
+    @Test
+    void testEmbeddedId() {
+
+        MEmbeddedEntity entity = MEmbeddedEntity.embeddedEntity;
+
+        Predicate condition = entity.id.key1.eq("1")
+                .and(entity.name.contains("Yamada"));
+
+        EntityMeta entityMeta = entityMetaFactory.create(EmbeddedEntity.class);
+
+        TableNameResolver tableNameResolver = new TableNameResolver();
+        tableNameResolver.prepareTableAlias(entity);
+
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta),
+                dialect, entityMetaFactory, tableNameResolver);
+        visitor.visit(new MetamodelWhere(condition));
+
+        String sql = visitor.getCriteria();
+        assertThat(sql).isEqualTo("T1_.KEY1 = ? and T1_.NAME like ?");
+
+        List<Object> params = visitor.getParamValues();
+        assertThat(params).containsExactly("1", "%Yamada%");
     }
 
     @Test

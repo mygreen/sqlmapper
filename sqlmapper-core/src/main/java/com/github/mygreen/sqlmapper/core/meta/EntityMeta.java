@@ -115,6 +115,35 @@ public class EntityMeta {
     }
 
     /**
+     * プロパティ名を指定して、プロパティメタ情報を取得します。
+     * 埋め込みID内のプロパティも抽出対象とします。
+     *
+     * @param propertyName プロパティ名
+     * @return プロパティメタ情報
+     */
+    public Optional<PropertyMeta> findPropertyMeta(@NonNull String propertyName) {
+
+        PropertyMeta foundPropertyMeta = propertyMetaMap.get(propertyName);
+        if(foundPropertyMeta != null) {
+            return Optional.of(foundPropertyMeta);
+        }
+
+        for(PropertyMeta propertyMeta : getAllPropertyMeta()) {
+            if(propertyMeta.isEmbedded()) {
+                for(PropertyMeta embeddedPropertyMeta : propertyMeta.getEmbeddedablePopertyMetaList()) {
+                    if(embeddedPropertyMeta.getName().equals(propertyName)) {
+                        return Optional.of(embeddedPropertyMeta);
+                    }
+                }
+            }
+        }
+
+        return Optional.empty();
+
+
+    }
+
+    /**
      * 全てのプロパティメタ情報の一覧を返します。
      * @return プロパティメタ情報の一覧
      */

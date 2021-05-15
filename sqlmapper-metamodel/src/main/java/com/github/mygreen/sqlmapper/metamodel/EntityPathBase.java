@@ -66,6 +66,11 @@ public abstract class EntityPathBase<T> implements EntityPath<T> {
 
     @Override
     public PropertyPath<?> getPropertyPath(final String propertyName) {
+        return propertyPathMap.get(propertyName);
+    }
+
+    @Override
+    public PropertyPath<?> findPropertyPath(final String propertyName) {
         PropertyPath<?> propertyPath = propertyPathMap.get(propertyName);
         if(propertyPath != null) {
             return propertyPath;

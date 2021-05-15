@@ -16,8 +16,8 @@ import org.springframework.util.StringUtils;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
-import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
 import com.github.mygreen.sqlmapper.core.mapper.AutoEntityRowMapper;
+import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.FromClause;
@@ -224,7 +224,7 @@ public class AutoSelectExecutor<T> {
             // ベースとなるエンティティのカラム指定の場合
             for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
                 final String propertyName = propertyMeta.getName();
-                final PropertyPath<?> propertyPath = query.getEntityPath().getPropertyPath(propertyName);
+                final PropertyPath<?> propertyPath = query.getEntityPath().findPropertyPath(propertyName);
 
                 if(propertyMeta.isTransient()) {
                     continue;
@@ -441,7 +441,7 @@ public class AutoSelectExecutor<T> {
 
         for(OrderSpecifier order : query.getOrders()) {
             String propertyName = order.getPath().getPathMeta().getElement();
-            Optional<PropertyMeta> propertyMeta = query.getEntityMeta().getPropertyMeta(propertyName);
+            Optional<PropertyMeta> propertyMeta = query.getEntityMeta().findPropertyMeta(propertyName);
 
             String tableAlias = tableNameResolver.getTableAlias(order.getPath().getPathMeta().getParent());
             if(!StringUtils.hasLength(tableAlias)) {
