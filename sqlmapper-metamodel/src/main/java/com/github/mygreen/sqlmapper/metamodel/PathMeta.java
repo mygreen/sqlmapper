@@ -70,6 +70,10 @@ public class PathMeta {
         Path<?> parent = null;
         do{
             parent = pathMeta.getParent();
+            if(parent == null) {
+                // ありえないが、nullチェックをする。
+                break;
+            }
             pathMeta = parent.getPathMeta();
         } while(parent.getPathMeta().getType() != PathType.ROOT);
 
