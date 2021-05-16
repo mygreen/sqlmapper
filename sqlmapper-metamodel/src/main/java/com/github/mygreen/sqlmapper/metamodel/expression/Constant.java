@@ -70,12 +70,11 @@ public class Constant<T> extends ImmutableExpression<T> {
      * {@link Collection}型/配列型などを定数として作成します。
      * @param <T> クラスタイプ
      * @param value 定数とする値
-     * @param expandable {@link Collection}型/配列型を各要素を展開して処理するかどうか。
      * @return {@link Collection}型/配列型などの定数
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public static <T> Constant<T> create(T value, boolean expandable) {
-        return new Constant<T>((Class)value.getClass(), value, expandable);
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static <T extends Collection> Constant<T> createCollection(T value) {
+        return new Constant<T>((Class)value.getClass(), value, true);
     }
 
     @Override

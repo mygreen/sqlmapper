@@ -111,7 +111,7 @@ public abstract class GeneralExpression<T> extends DslExpression<T> {
         }
 
         return new BooleanOperation(ComparisionOp.IN, mixin,
-                Constant.create(Collections.unmodifiableCollection(right), true));
+                Constant.createCollection(Collections.unmodifiableCollection(right)));
     }
 
     /**
@@ -147,7 +147,7 @@ public abstract class GeneralExpression<T> extends DslExpression<T> {
         }
 
         return new BooleanOperation(ComparisionOp.NOT_IN, mixin,
-                Constant.create(Collections.unmodifiableCollection(right), true));
+                Constant.createCollection(Collections.unmodifiableCollection(right)));
     }
 
     /**
