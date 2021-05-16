@@ -1,5 +1,7 @@
 package com.github.mygreen.sqlmapper.metamodel.expression;
 
+import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitor;
+import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitorContext;
 
 /**
  * DSL式のベースクラス。
@@ -23,5 +25,18 @@ public abstract class DslExpression<T> implements Expression<T> {
     @Override
     public Class<? extends T> getType() {
         return mixin.getType();
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return 式ノードを評価結果。
+     */
+    @Override
+    public String toString() {
+        DebugVisitor visitor = new DebugVisitor();
+        DebugVisitorContext context = new DebugVisitorContext();
+        accept(visitor, context);
+
+        return context.getCriteria();
     }
 }

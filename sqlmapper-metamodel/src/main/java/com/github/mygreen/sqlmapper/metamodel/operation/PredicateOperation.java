@@ -9,6 +9,8 @@ import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
+import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitor;
+import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitorContext;
 
 import lombok.NonNull;
 
@@ -64,5 +66,18 @@ public class PredicateOperation implements Operation<Boolean>, Predicate {
     @Override
     public <C> void accept(Visitor<C> visitor, C context) {
         visitor.visit((Operation<?>)this, context);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return 式ノードを評価結果。
+     */
+    @Override
+    public String toString() {
+        DebugVisitor visitor = new DebugVisitor();
+        DebugVisitorContext context = new DebugVisitorContext();
+        accept(visitor, context);
+
+        return context.getCriteria();
     }
 }

@@ -7,6 +7,8 @@ import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.BooleanExpression;
 import com.github.mygreen.sqlmapper.metamodel.expression.SubQueryExpression;
 import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
+import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitor;
+import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitorContext;
 
 /**
  * サブクエリ式を値に持つ式の演算操作を表現します。
@@ -88,6 +90,19 @@ public class SubQueryOperation<T, Q extends SubQueryExpression<T>> implements Su
     public SubQueryExpression<T> includes(final PropertyPath<?>... properties) {
         this.queryMeta.addInclude(properties);
         return this;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return 式ノードを評価結果。
+     */
+    @Override
+    public String toString() {
+        DebugVisitor visitor = new DebugVisitor();
+        DebugVisitorContext context = new DebugVisitorContext();
+        accept(visitor, context);
+
+        return context.getCriteria();
     }
 
 }

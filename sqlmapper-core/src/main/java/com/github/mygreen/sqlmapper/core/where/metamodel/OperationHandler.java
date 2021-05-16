@@ -17,9 +17,8 @@ import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.expression.SubQueryExpression;
 import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
-import com.github.mygreen.sqlmapper.metamodel.operator.BooleanOp;
-import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
+import com.github.mygreen.sqlmapper.metamodel.support.OperationUtils;
 
 /**
  * 演算子に対する処理を行うためのテンプレートクラス。
@@ -133,7 +132,7 @@ public abstract class OperationHandler<T extends Operator> {
         if(expr instanceof Operation) {
             Operation<?> operation = (Operation<?>)expr;
             // /子ノードが演算子の場合、括弧で囲むか判定する。
-            if(isEnclosedParenthesis(parentOperator, operation.getOperator())) {
+            if(OperationUtils.isEnclosedParenthesis(parentOperator, operation.getOperator())) {
                 context.appendSql("(");
                 visitor.visit(operation, context);
                 context.appendSql(")");
@@ -153,30 +152,6 @@ public abstract class OperationHandler<T extends Operator> {
             throw new IllegalArgumentException("not support Expression instance of " + expr.getClass());
         }
 
-    }
-
-    /**
-     * SQLを括弧で囲むか判定する
-     * @param parentOp 親ノードの演算子
-     * @param childOp 子ノードの演算子
-     * @return 括弧で囲むときは {@literal true} を返す。
-     */
-    protected boolean isEnclosedParenthesis(Operator parentOp, Operator childOp) {
-
-        if(parentOp.getPriority() < childOp.getPriority()) {
-            // 親ノードの演算子の優先度が高い(値が小さい)とき
-            return true;
-        } else if(parentOp == BooleanOp.OR && childOp == BooleanOp.AND) {
-            // 親ノードがORで子ノードがANDのとき
-            // 実際は括弧で囲まなくてもよいが見やすさのために囲む
-            return true;
-        } else if(parentOp instanceof BooleanOp && childOp == ComparisionOp.BETWEEN) {
-            // 親ノードがOR/ANDで子ノードがBETWEENのとき
-            // 実際は括弧で囲まなくてもよいが見やすさのために囲む
-            return true;
-        }
-
-        return false;
     }
 
 }
