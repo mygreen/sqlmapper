@@ -77,13 +77,13 @@ public abstract class DialectBase implements Dialect {
         StringBuilder buf = new StringBuilder(sql.length() + 20);
         buf.append(sql);
         if (offset > 0) {
-            buf.append(" limit ");
-            buf.append(limit);
-            buf.append(" offset ");
-            buf.append(offset);
+            buf.append(" limit ")
+                .append(limit)
+                .append(" offset ")
+                .append(offset);
         } else {
-            buf.append(" limit ");
-            buf.append(limit);
+            buf.append(" limit ")
+                .append(limit);
         }
 
         return buf.toString();
