@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.expression;
 import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
-import com.github.mygreen.sqlmapper.metamodel.operation.QueryMeta;
+import com.github.mygreen.sqlmapper.metamodel.operation.SubQueryMeta;
 
 /**
  * サブクエリの式を表現します。
@@ -18,7 +18,7 @@ public interface SubQueryExpression<T> extends Expression<T> {
      * クエリのメタ情報を取得します。
      * @return クエリのメタ情報
      */
-    QueryMeta getQueryMeta();
+    SubQueryMeta getQueryMeta();
 
     /**
      * 検索条件を指定します。

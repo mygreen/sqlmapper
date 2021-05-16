@@ -28,7 +28,7 @@ import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 import com.github.mygreen.sqlmapper.metamodel.expression.SubQueryExpression;
 import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
-import com.github.mygreen.sqlmapper.metamodel.operation.QueryMeta;
+import com.github.mygreen.sqlmapper.metamodel.operation.SubQueryMeta;
 import com.github.mygreen.sqlmapper.metamodel.operator.BooleanOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
@@ -116,7 +116,7 @@ public class ExpressionVisitor implements Visitor<VisitorContext> {
 
     @Override
     public void visit(final SubQueryExpression<?> expr, final VisitorContext context) {
-        final QueryMeta queryMeta = expr.getQueryMeta();
+        final SubQueryMeta queryMeta = expr.getQueryMeta();
         final Dialect dialect = context.getDialect();
         final TableNameResolver tableNameResolver = context.getTableNameResolver();
 

@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.support;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 import com.github.mygreen.sqlmapper.metamodel.expression.SubQueryExpression;
-import com.github.mygreen.sqlmapper.metamodel.operation.QueryMeta;
+import com.github.mygreen.sqlmapper.metamodel.operation.SubQueryMeta;
 import com.github.mygreen.sqlmapper.metamodel.operation.SubQueryOperation;
 
 /**
@@ -22,7 +22,7 @@ public class SubQueryHelper {
      */
     @SuppressWarnings("rawtypes")
     public static SubQueryExpression<?> from(final EntityPath<?> entityPath) {
-        QueryMeta queryMeta = new QueryMeta();
+        SubQueryMeta queryMeta = new SubQueryMeta();
         queryMeta.setEntityPath(entityPath);
         return new SubQueryOperation(queryMeta);
     }
@@ -36,7 +36,7 @@ public class SubQueryHelper {
      * @return サブクエリの式
      */
     public static <T> SubQueryExpression<T> from(final EntityPath<?> entityPath, final PropertyPath<T> include) {
-        QueryMeta queryMeta = new QueryMeta();
+        SubQueryMeta queryMeta = new SubQueryMeta();
         queryMeta.setEntityPath(entityPath);
         queryMeta.addInclude(include);
         return new SubQueryOperation<>(queryMeta);

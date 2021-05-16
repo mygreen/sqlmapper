@@ -21,14 +21,14 @@ public class SubQueryOperation<T, Q extends SubQueryExpression<T>> implements Su
     /**
      * クエリの情報
      */
-    private final QueryMeta queryMeta;
+    private final SubQueryMeta queryMeta;
 
-    public SubQueryOperation(QueryMeta queryMeta) {
+    public SubQueryOperation(SubQueryMeta queryMeta) {
         this.queryMeta = queryMeta;
     }
 
     @Override
-    public QueryMeta getQueryMeta() {
+    public SubQueryMeta getQueryMeta() {
         return queryMeta;
     }
 

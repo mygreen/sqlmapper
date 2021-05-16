@@ -20,7 +20,7 @@ import lombok.Setter;
  *
  * @author T.TSUCHIE
  */
-public class QueryMeta {
+public class SubQueryMeta {
 
     /**
      * 抽出対象テーブルのエンティティ
