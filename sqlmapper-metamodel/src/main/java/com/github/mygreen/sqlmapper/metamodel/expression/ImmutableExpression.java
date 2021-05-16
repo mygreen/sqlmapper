@@ -3,7 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.expression;
 import lombok.Getter;
 
 /**
- * 不変な式の実装。
+ * 不変な式を表現します。
  *
  *
  * @author T.TSUCHIE
