@@ -3,8 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.expression;
 import java.util.Collection;
 
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
-import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitor;
-import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitorContext;
+import com.github.mygreen.sqlmapper.metamodel.support.OperationUtils;
 
 import lombok.Getter;
 
@@ -90,11 +89,7 @@ public class Constant<T> extends ImmutableExpression<T> {
      */
     @Override
     public String toString() {
-        DebugVisitor visitor = new DebugVisitor();
-        DebugVisitorContext context = new DebugVisitorContext();
-        accept(visitor, context);
-
-        return context.getCriteria();
+        return OperationUtils.toDebugString(this);
     }
 
 }

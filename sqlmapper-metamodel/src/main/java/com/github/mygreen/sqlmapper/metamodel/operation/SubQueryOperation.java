@@ -7,8 +7,7 @@ import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.BooleanExpression;
 import com.github.mygreen.sqlmapper.metamodel.expression.SubQueryExpression;
 import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
-import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitor;
-import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitorContext;
+import com.github.mygreen.sqlmapper.metamodel.support.OperationUtils;
 
 /**
  * サブクエリ式を値に持つ式の演算操作を表現します。
@@ -98,11 +97,7 @@ public class SubQueryOperation<T, Q extends SubQueryExpression<T>> implements Su
      */
     @Override
     public String toString() {
-        DebugVisitor visitor = new DebugVisitor();
-        DebugVisitorContext context = new DebugVisitorContext();
-        accept(visitor, context);
-
-        return context.getCriteria();
+        return OperationUtils.toDebugString(this);
     }
 
 }

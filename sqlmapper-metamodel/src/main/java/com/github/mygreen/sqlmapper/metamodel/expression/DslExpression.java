@@ -1,7 +1,6 @@
 package com.github.mygreen.sqlmapper.metamodel.expression;
 
-import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitor;
-import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitorContext;
+import com.github.mygreen.sqlmapper.metamodel.support.OperationUtils;
 
 /**
  * DSL式のベースクラス。
@@ -33,10 +32,6 @@ public abstract class DslExpression<T> implements Expression<T> {
      */
     @Override
     public String toString() {
-        DebugVisitor visitor = new DebugVisitor();
-        DebugVisitorContext context = new DebugVisitorContext();
-        accept(visitor, context);
-
-        return context.getCriteria();
+        return OperationUtils.toDebugString(this);
     }
 }

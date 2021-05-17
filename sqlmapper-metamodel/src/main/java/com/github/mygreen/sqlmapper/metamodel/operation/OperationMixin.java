@@ -8,6 +8,7 @@ import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.expression.ImmutableExpression;
 import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
+import com.github.mygreen.sqlmapper.metamodel.support.OperationUtils;
 
 /**
  * {@link Operation} のMixin用の実装。
@@ -47,5 +48,14 @@ public class OperationMixin<T> extends ImmutableExpression<T> implements Operati
     @Override
     public <C> void accept(Visitor<C> visitor, C context) {
         visitor.visit(this, context);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @return 式ノードを評価結果。
+     */
+    @Override
+    public String toString() {
+        return OperationUtils.toDebugString(this);
     }
 }

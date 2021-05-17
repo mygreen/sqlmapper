@@ -1,5 +1,7 @@
 package com.github.mygreen.sqlmapper.metamodel.support;
 
+import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
+import com.github.mygreen.sqlmapper.metamodel.operator.ArithmeticOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.BooleanOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
@@ -38,5 +40,20 @@ public class OperationUtils {
         }
 
         return false;
+    }
+
+    /**
+     * 式ノードをデバッグ情報形式の文字列に変換する。
+     * @param exp 式ノード
+     * @return デバッグ情報
+     */
+    public static String toDebugString(final Expression<?> exp) {
+
+        DebugVisitor visitor = new DebugVisitor();
+        DebugVisitorContext context = new DebugVisitorContext();
+        exp.accept(visitor, context);
+
+        return context.getCriteria();
+
     }
 }

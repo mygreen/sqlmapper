@@ -9,8 +9,7 @@ import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
-import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitor;
-import com.github.mygreen.sqlmapper.metamodel.support.DebugVisitorContext;
+import com.github.mygreen.sqlmapper.metamodel.support.OperationUtils;
 
 import lombok.NonNull;
 
@@ -74,10 +73,6 @@ public class PredicateOperation implements Operation<Boolean>, Predicate {
      */
     @Override
     public String toString() {
-        DebugVisitor visitor = new DebugVisitor();
-        DebugVisitorContext context = new DebugVisitorContext();
-        accept(visitor, context);
-
-        return context.getCriteria();
+        return OperationUtils.toDebugString(this);
     }
 }
