@@ -89,10 +89,6 @@ public class DebugVisitor implements Visitor<DebugVisitorContext>{
         operationTemplateMap.put(LikeOp.STARTS, "{0} starts({1})");
         operationTemplateMap.put(LikeOp.ENDS, "{0} ends({1})");
 
-        // EnumOp
-//        operationTemplateMap.put(EnumOp.ENUM_NAME, "enum_name({0})");
-//        operationTemplateMap.put(EnumOp.ENUM_ORDINAL, "enum_ordinal({1})");
-
     }
 
     @Override
