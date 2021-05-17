@@ -24,7 +24,7 @@ public abstract class NumberExpression<T extends Number & Comparable<T>> extends
      * @return {@literal 左辺 + 右辺}
      */
     public <N extends Number & Comparable<?>> NumberExpression<T> add(N right) {
-        return new NumberOperation<T>(getType(), ArithmeticOp.ADD, Constant.create(right));
+        return new NumberOperation<T>(getType(), ArithmeticOp.ADD, mixin, Constant.create(right));
     }
 
     /**
@@ -34,7 +34,7 @@ public abstract class NumberExpression<T extends Number & Comparable<T>> extends
      * @return {@literal 左辺 + 右辺}
      */
     public <N extends Number & Comparable<?>> NumberExpression<T> add(Expression<N> right) {
-        return new NumberOperation<T>(getType(), ArithmeticOp.ADD, right);
+        return new NumberOperation<T>(getType(), ArithmeticOp.ADD, mixin, right);
     }
 
     /**
@@ -44,7 +44,7 @@ public abstract class NumberExpression<T extends Number & Comparable<T>> extends
      * @return {@literal 左辺 - 右辺}
      */
     public <N extends Number & Comparable<?>> NumberExpression<T> substract(N right) {
-        return new NumberOperation<T>(getType(), ArithmeticOp.SUB, Constant.create(right));
+        return new NumberOperation<T>(getType(), ArithmeticOp.SUB, mixin, Constant.create(right));
     }
 
     /**
@@ -54,7 +54,7 @@ public abstract class NumberExpression<T extends Number & Comparable<T>> extends
      * @return {@literal 左辺 - 右辺}
      */
     public <N extends Number & Comparable<?>> NumberExpression<T> substract(Expression<N> right) {
-        return new NumberOperation<T>(getType(), ArithmeticOp.SUB, right);
+        return new NumberOperation<T>(getType(), ArithmeticOp.SUB, mixin, right);
     }
 
     /**
@@ -64,7 +64,7 @@ public abstract class NumberExpression<T extends Number & Comparable<T>> extends
      * @return {@literal 左辺 * 右辺}
      */
     public <N extends Number & Comparable<?>> NumberExpression<T> multiply(N right) {
-        return new NumberOperation<T>(getType(), ArithmeticOp.MULT, Constant.create(right));
+        return new NumberOperation<T>(getType(), ArithmeticOp.MULT, mixin, Constant.create(right));
     }
 
     /**
@@ -74,7 +74,7 @@ public abstract class NumberExpression<T extends Number & Comparable<T>> extends
      * @return {@literal 左辺 * 右辺}
      */
     public <N extends Number & Comparable<?>> NumberExpression<T> multiply(Expression<N> right) {
-        return new NumberOperation<T>(getType(), ArithmeticOp.MULT, right);
+        return new NumberOperation<T>(getType(), ArithmeticOp.MULT, mixin, right);
     }
 
     /**
@@ -94,7 +94,7 @@ public abstract class NumberExpression<T extends Number & Comparable<T>> extends
      * @return {@literal 左辺 / 右辺}
      */
     public <N extends Number & Comparable<?>> NumberExpression<T> divide(Expression<N> right) {
-        return new NumberOperation<T>(getType(), ArithmeticOp.DIV, right);
+        return new NumberOperation<T>(getType(), ArithmeticOp.DIV, mixin, right);
     }
 
     /**
@@ -104,7 +104,7 @@ public abstract class NumberExpression<T extends Number & Comparable<T>> extends
      * @return {@literal 左辺 % 右辺}
      */
     public <N extends Number & Comparable<?>> NumberExpression<T> mod(N right) {
-        return new NumberOperation<T>(getType(), ArithmeticOp.MOD, Constant.create(right));
+        return new NumberOperation<T>(getType(), ArithmeticOp.MOD, mixin, Constant.create(right));
     }
 
     /**
@@ -114,7 +114,7 @@ public abstract class NumberExpression<T extends Number & Comparable<T>> extends
      * @return {@literal 左辺 % 右辺}
      */
     public <N extends Number & Comparable<?>> NumberExpression<T> mod(Expression<N> right) {
-        return new NumberOperation<T>(getType(), ArithmeticOp.MOD, right);
+        return new NumberOperation<T>(getType(), ArithmeticOp.MOD, mixin, right);
     }
 
 }

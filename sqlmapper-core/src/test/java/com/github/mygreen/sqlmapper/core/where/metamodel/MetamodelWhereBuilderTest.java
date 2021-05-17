@@ -65,6 +65,28 @@ public class MetamodelWhereBuilderTest {
     }
 
     @Test
+    void test_arithmetic() {
+        MCustomer entity = MCustomer.customer;
+        Predicate condition = entity.firstName.lower().contains("taro")
+                .and(entity.version.add(1L).gt(2L));
+
+        EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
+
+        TableNameResolver tableNameResolver = new TableNameResolver();
+        tableNameResolver.prepareTableAlias(entity);
+
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta),
+                 dialect, entityMetaFactory, tableNameResolver);
+        visitor.visit(new MetamodelWhere(condition));
+
+        String sql = visitor.getCriteria();
+        assertThat(sql).isEqualTo("lower(T1_.FIRST_NAME) like ? and (T1_.VERSION + ?) > ?");
+
+        List<Object> params = visitor.getParamValues();
+        assertThat(params).containsExactly("%taro%", 1L, 2L);
+    }
+
+    @Test
     void testInheritance() {
 
         MEntityChild entity = MEntityChild.entityChild;

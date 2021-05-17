@@ -32,6 +32,9 @@ public class OperationUtils {
             // 親ノードがOR/ANDで子ノードがBETWEENのとき
             // 実際は括弧で囲まなくてもよいが見やすさのために囲む
             return true;
+        } else if(childOp instanceof ArithmeticOp) {
+            // 子ノードが算術演算子の場合、必ず囲む。
+            return true;
         }
 
         return false;
