@@ -147,7 +147,7 @@ public class AutoDeleteExecutor {
      */
     private void validateRows(final int rows) {
         if(!query.isSuppresOptimisticLockException() && rows == 0) {
-            throw new OptimisticLockingFailureException(context.getMessageFormatter().create("query.alreadyUpdate")
+            throw new OptimisticLockingFailureException(context.getMessageFormatter().create("query.alreadyDelete")
                     .param("entity", query.getEntity())
                     .format());
         }

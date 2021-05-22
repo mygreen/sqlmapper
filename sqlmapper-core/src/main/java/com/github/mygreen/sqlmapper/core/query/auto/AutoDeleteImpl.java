@@ -45,7 +45,7 @@ public class AutoDeleteImpl<T> implements AutoDelete<T> {
     private boolean ignoreVersion = false;
 
     /**
-     * バージョンチェックを行った場合に、更新行数が0行でも{@link OptimisticLockingFailureException}スローしないなら<code>true</code>
+     * バージョンチェックを行った場合に、削除行数が0行でも{@link OptimisticLockingFailureException}スローしないなら<code>true</code>
      */
     @Getter
     private boolean suppresOptimisticLockException = false;

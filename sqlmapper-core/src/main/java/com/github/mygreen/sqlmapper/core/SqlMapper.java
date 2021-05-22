@@ -1,5 +1,6 @@
 package com.github.mygreen.sqlmapper.core;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.github.mygreen.splate.EmptyValueSqlTemplateContext;
@@ -164,7 +165,7 @@ public class SqlMapper {
      * @return バッチ削除を行うSQLを自動生成するクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
-    public <T> AutoBatchUpdate<T> deleteBatch(List<T> entities) {
+    public <T> AutoBatchUpdate<T> deleteBatch(Collection<T> entities) {
         return new AutoBatchUpdateImpl<T>(context, entities);
     }
 

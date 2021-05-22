@@ -19,7 +19,7 @@ public interface AutoDelete<T> {
     AutoDelete<T> ignoreVersion();
 
     /**
-     * バージョンチェックを行った場合に、更新行数が0行でも {@link OptimisticLockingFailureException} をスローしないようにします。
+     * バージョンチェックを行った場合に、削除行数が0行でも {@link OptimisticLockingFailureException} をスローしないようにします。
      * @return このインスタンス自身
      */
     AutoDelete<T> suppresOptimisticLockException();
