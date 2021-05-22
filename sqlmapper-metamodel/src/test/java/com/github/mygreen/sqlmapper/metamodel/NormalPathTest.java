@@ -5,19 +5,14 @@ import static org.assertj.core.api.Assertions.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 import com.github.mygreen.sqlmapper.metamodel.expression.SqlTimestampExpression;
-import com.github.mygreen.sqlmapper.metamodel.expression.SubQueryExpression;
-import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
-import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
-import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * シンプルなクラス構成のテスト
@@ -26,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
  * @author T.TSUCHIE
  *
  */
-@Slf4j
 class NormalPathTest {
 
     @DisplayName("chek meta info.")
@@ -65,8 +59,8 @@ class NormalPathTest {
                 .and(entity.salary.goe(new BigDecimal("1000000")))
                 ;
 
-        Visitor<Void> visitor = new SampleVisitor();
-        exp.accept(visitor, null);
+        String resultString = exp.toString();
+        assertThat(resultString).isEqualTo("\"contains(lower(sampleEntity.name), yamada) and (sampleEntity.age + 10) > 20 and sampleEntity.role in [Admin, Normal] and sampleEntity.updateAt > current_timestamp and sampleEntity.deleted = false and sampleEntity.salary >= 1000000");
 
     }
 
@@ -74,10 +68,12 @@ class NormalPathTest {
     void testBuildOrder() {
         MSampleEntity entity = MSampleEntity.sampleEntity;
 
-        List<OrderSpecifier> orders = List.of(entity.name.desc());
-        for(OrderSpecifier order : orders) {
-            System.out.println(order.getPath().getPathMeta().getElement());
-        }
+        List<OrderSpecifier> orders = List.of(entity.name.desc(), entity.role.asc());
+        String resultString = orders.stream()
+                .map(o -> o.toString())
+                .collect(Collectors.joining(", "));
+
+        assertThat(resultString).isEqualTo("sampleEntity.name DESC, sampleEntity.role ASC");
 
     }
 
@@ -126,47 +122,6 @@ class NormalPathTest {
         public final SqlTimestampPath updateAt = createSqlTimestamp("updateAt");
 
         public final NumberPath<BigDecimal> salary = createNumber("salary", BigDecimal.class);
-
-    }
-
-    static class SampleVisitor implements Visitor<Void> {
-
-        @Override
-        public void visit(Constant<?> expr, Void context) {
-            log.info("visit - Constant");
-
-        }
-
-        @Override
-        public void visit(Operation<?> expr, Void context) {
-            log.info("visit - Operation={}#{}", expr.getOperator().getClass(), expr.getOperator());
-
-            Operator op = expr.getOperator();
-            if(op instanceof ComparisionOp) {
-                // 2項演算子の場合、プロパティとの比較かどうか判定する
-
-            }
-
-            expr.getArgs().forEach(arg -> arg.accept(this, context));
-
-        }
-
-        @Override
-        public void visit(Path<?> expr, Void context) {
-            EntityPath<?> parent =(EntityPath<?>) expr.getPathMeta().getParent();
-            if(parent == null) {
-                log.info("visit - Path={}", expr.getPathMeta().getElement());
-            } else {
-                log.info("visit - Path={}#{}", parent.getType(), expr.getPathMeta().getElement());
-            }
-
-        }
-
-        @Override
-        public void visit(SubQueryExpression<?> expr, Void context) {
-            log.info("visit - SubQueryExpression");
-
-        }
 
     }
 }

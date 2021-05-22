@@ -85,9 +85,9 @@ public class DebugVisitor implements Visitor<DebugVisitorContext>{
         // LikeOp
         operationTemplateMap.put(LikeOp.LIKE, "{0} like {1}");
         // 関数として扱う
-        operationTemplateMap.put(LikeOp.CONTAINS, "{0} contains({1})");
-        operationTemplateMap.put(LikeOp.STARTS, "{0} starts({1})");
-        operationTemplateMap.put(LikeOp.ENDS, "{0} ends({1})");
+        operationTemplateMap.put(LikeOp.CONTAINS, "contains({0}, {1})");
+        operationTemplateMap.put(LikeOp.STARTS, "starts({0}, {1})");
+        operationTemplateMap.put(LikeOp.ENDS, "ends({0}, {1})");
 
     }
 
