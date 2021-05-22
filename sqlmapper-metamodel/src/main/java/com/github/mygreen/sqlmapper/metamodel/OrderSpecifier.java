@@ -24,4 +24,12 @@ public class OrderSpecifier {
      */
     @Getter
     private final Path<?> path;
+
+    /**
+     * {@inheritDoc}
+     * {@literal 対象のパスの評価結果 並び順}
+     */
+    public String toString() {
+        return path.toString() + " " + order.name();
+    }
 }
