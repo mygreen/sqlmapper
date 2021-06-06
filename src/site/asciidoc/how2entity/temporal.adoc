@@ -1,4 +1,4 @@
-[[temporal_type]]
+[[anno_temporal]]
 = 時制を扱う（@Temporal）
 
 フィールドのタイプが、``java.sql.Date`` / ``java.sql.Time`` などの場合、マッピングする　SQLの型がそれぞれ ``DATE``、``TIME`` と明確なため自動的にマッピングできます。

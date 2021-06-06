@@ -7,82 +7,82 @@
 
 |``@Entity``
 |クラスがエンティティであることを定義します。
-|
+|<<anno_entity,詳細>>
 
 |``@Table``
 |テーブル情報を補完し定義します。
-|
+|<<anno_table,詳細>>
 
 |``@MappedSuperclass``
 |エンティティの親クラスであることを定義します。
-|
+|<<anno_mapped_superclass,詳細>>
 
 |``@Column``
 |カラム情報を定義します。
-|
+|<<anno_column,詳細>>
 
 |``@Id``
 |プロパティがID(識別子/主キー)であることを定義します。
-|
+|<<anno_column,詳細>>
 
 |``@EmbeddedId``
 |プロパティが埋め込みID(複合主キー)であることを定義します。
-|
+|<<anno_embedded_id,詳細>>
 
 |``@Embeddable``
 |埋め込みクラスであることを定義します。
-|
+|<<anno_embedded_id,詳細>>
 
 |``@Version``
 |楽観的排他キーとしてのバージョンキーであることを定義します。
-|
+|<<anno_version,詳細>>
 
 |``@Transient``
 |プロパティが永続化対象外であることを定義します。
-|
+|<<anno_transient,詳細>>
 
 |``@Lob``
 |プロパティがラージオブジェクトであることを定義します。
-|
+|<<anno_lob,詳細>>
 
 |``@Temporal``
 |時制のタイプを変換規則を定義します。時制のタイプが不明なときに使用します。
-|
+|<<anno_temporal,詳細>>
 
 |``@Enumerated``
 |列挙型のタイプの変換規則を定義します。
-|
+|<<anno_enumerated,詳細>>
 
 |``@Converter``
 |独自のタイプの変換方法を定義します。
-|
+|<<anno_convert,詳細>>
 
 |``@GeneratedValue``
 |ID(主キー)の値の採番方法を定義します。
-|
+|<<anno_generated_id,詳細>>
 
 |``@SequenceGenerator``
 |ID(主キー)の値の採番方法がシーケンスを用いるときに、詳細を定義します。
-|
+|<<anno_generated_id,詳細>>
 
 |``@TableGenerator``
 |ID(主キー)の値の採番方法がテーブルを用いるときに、詳細を定義します。
-|
+|<<anno_table_gnerarator,詳細>>
 
 |``@CreatedAt``
 |エンティティを新規に保存するときに、監査情報としての日時を自動的に設定する対象であることを定義します。
-|
+|<<anno_created_at,詳細>>
 
 |``@ModifiedAt``
 |既存のエンティティを更新するときに、監査情報としての日時を自動的に設定する対象であることを定義します。
-|
+|<<anno_created_at,詳細>>
 
 |``@CreatedBy``
 |エンティティを新規に保存するときに、監査情報としての作成者を自動的に設定する対象であることを定義します。
-|
+|<<anno_created_by,詳細>>
 
 |``@ModifiedBy``
 |既存のエンティティを更新するときに、監査情報としての更新者を自動的に設定する対象であることを定義します。
-|
+|<<anno_created_by,詳細>>
 
 |===

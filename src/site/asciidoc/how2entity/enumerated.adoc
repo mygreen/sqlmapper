@@ -1,4 +1,4 @@
-[[enumerated_type]]
+[[anno_enumerated]]
 = 列挙型を扱う（@Enumerated）
 
 フィールドの型に列挙型を指定したとき、DBカラムの型としては、``Enum#name()`` で取得した値で永続化されます。

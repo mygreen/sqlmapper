@@ -1,4 +1,4 @@
-[[generated_id]]
+[[anno_generated_id]]
 = 識別子（ID）の自動採番
 
 主キーなどの識別子（ID）の値をを自動生成したい場合は、フィールドにアノテーション ``@GeneratedId`` を付与します。
@@ -47,7 +47,7 @@ public class User {
 * シーケンスをサポートしているDBMSのみ利用できます。
 
 |``@GeneratedValue(strategy=GenerationType.TABLE)``
-|<<table_generator,テーブルを使用して採番>>を行います。
+|<<anno_table_gnerarator,テーブルを使用して採番>>を行います。
 
 * アノテーション ``@TableGenerator`` により詳細に定義できます。
 * <<available_properties,設定可能なプロパティ>> にて全体の設定を変更することもできます。
@@ -63,7 +63,7 @@ public class User {
 |===
 
 
-[[table_gnerarator]]
+[[anno_table_gnerarator]]
 == テーブルによる識別子（ID）の自動採番（@TableGenerator）
 
 IDENTITYやシーケンスなどの機能を使わないで、テーブルを使って採番を行うため、全てのDMBSにて利用できます。

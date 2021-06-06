@@ -1,5 +1,6 @@
 # 監査情報を記録する
 
+[[anno_created_at]]
 ## 作成／更新日時の自動設定(@CreatedAt/@ModifiedAt)
 
 レコードの挿入時、更新時に自動的にタイムスタンプを設定したい時があります。
@@ -34,6 +35,7 @@ public class User {
 }
 ----
 
+[[anno_created_by]]
 ## 作成／更新ユーザの永続化方法(@CreatedBy/@ModifiedBy)
 
 レコードの挿入時、更新時に自動的に操作したユーザ情報を設定したい時があります。

@@ -1,4 +1,4 @@
-[[transient_type]]
+[[anno_transient]]
 = 永続化対象外を指定する（@Transient）
 
 SqlMapper では、フィールドを定義すると、標準で永続化対象となります。
