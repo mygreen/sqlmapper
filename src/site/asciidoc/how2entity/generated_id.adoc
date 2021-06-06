@@ -1,0 +1,167 @@
+[[generated_id]]
+= 識別子（ID）の自動採番
+
+主キーなどの識別子（ID）の値をを自動生成したい場合は、フィールドにアノテーション ``@GeneratedId`` を付与します。
+
+* 属性 ``strategy`` にて生成方法を指定します。
+* 属性 ``generator`` にて、独自の生成方法を実装を指定することもできます。
+* ``@GenratedValue`` は、識別子を定義するアノテーション ``@Id`` とともに付与する必要があります。
+
+[source,java]
+----
+@Entity
+public class User {
+    
+    @Id
+    @GeneratedValue(strategry=GenerationType.IDENTITY)
+    private long id;
+
+    private String name;
+
+    // setter/getterメソッドは省略
+}
+----
+
+
+.識別子の生成方法
+[cols=",a"]
+|===
+| 指定方法 | 概要
+
+|``@GeneratedValue(strategry=GenerationType.AUTO)``
+|データベースにより生成方法が自動手的に選択されます。 
+
+* 選択される方法は、DBダイアクレクト ``Dialect#getDefaultGenerationType()`` により決定されます。 
+* strateryを指定しなければ、``AUTO`` と解釈されます。 
+
+|``@GeneratedValue(strategry=GenerationType.IDENTITY)``
+|IDENTITY列を使用して採番を行います。
+
+* テーブルのカラムの定義も合わせてIDENTITYにする必要があります。
+* IDENTITY列をサポートしているDBMSのみ利用できます。
+
+|``@GeneratedValue(strategy=GenerationType.SEQUENCE)``
+|DBのシーケンスを使用して採番を行います。
+
+* アノテーション ``@SequenceGenerator``にて、詳細に定義することができます。
+* シーケンスをサポートしているDBMSのみ利用できます。
+
+|``@GeneratedValue(strategy=GenerationType.TABLE)``
+|<<table_generator,テーブルを使用して採番>>を行います。
+
+* アノテーション ``@TableGenerator`` により詳細に定義できます。
+* <<available_properties,設定可能なプロパティ>> にて全体の設定を変更することもできます。
+
+|``@GeneratedValue(strategy=GenerationType.UUID)``
+|``java.util.UUID`` を使用しランダムなセキュアな値を生成します。
+
+|``@GeneratedValue(generator=<独自実装)``
+|独自の採番方式の実装クラスを指定します。
+
+* インタフェース ``com.github.mygreen.sqlmapper.core.id.IdGenerator`` を実装する必要があります。
+
+|===
+
+
+[[table_gnerarator]]
+== テーブルによる識別子（ID）の自動採番（@TableGenerator）
+
+IDENTITYやシーケンスなどの機能を使わないで、テーブルを使って採番を行うため、全てのDMBSにて利用できます。
+
+* 利用する際には、事前に採番用のテーブルを定義しておく必要があります。
+** テーブル名、カラム名などは、アノテーション ``@TableGenerator`` または、<<available_properties,プロパティ>> によってカスタマイズすることができます。
+
+.採番用テーブルのDDL
+[source,sql]
+----
+CREATE TABLE IF NOT EXISTS ID_SEQUENCE (
+    -- キー名(<テーブル名>_<カラム名>)
+	SEQUENCE_NAME varchar(255) primary key,
+    -- 採番した値
+	SEQUENCE_VALUE bigint NOT NULL
+);
+----
+
+.標準的な使い方
+[source,java]
+----
+@Entity
+public class User {
+    
+    @Id
+    @GeneratedValue(strategry=GenerationType.TABLE)
+    private long id;
+
+    private String name;
+    // setter/getterメソッドは省略
+}
+----
+
+=== テーブルによる識別子の自動生成の設定
+
+* カスタマイズする場合は、アノテーション ``@TableGenerator`` または、プロパティファイルにて定義します。
+* プロパティファイで定義する場合は、アプリ全体に反映されます。
+** <<spring_normal_properties,JavaConfigによる設定を行っている場合>>は、``@PropertySource`` にて定義したファイルを読み込んでください。
+** <<spring_boot_properties,SpringBootを使用している場合>>は、``application.properties`` または、``application.yml``` に定義をしてください。
+
+.カスタマイズする場合
+[source,java]
+----
+@Entity
+public class User {
+    
+    @Id
+    @GeneratedValue(strategry=GenerationType.TABLE)
+    @TableGenerator(table="USER_GEN", pkColumn="GEN_NAME", valueColumn="GEN_VALUE")
+    private long id;
+
+    private String name;
+    // setter/getterメソッドは省略
+}
+----
+
+.テーブルによる識別子生成のカスタマイズ可能な項目
+|===
+| アノテーションの属性 | プロパティのキー | 初期値 | 説明
+
+| ``table``
+| ``sqlmapper.table-id-generator.table``
+| ``ID_SEQUENCE``
+| 生成したIDの値を永続化するテーブル名。
+
+| ``schema``
+| ``sqlmapper.table-id-generator.schema``
+| - (デフォルト値は空)
+| 生成したIDの値を永続化するテーブルが定義されているスキーマ名。
+
+| ``catalog``
+| ``sqlmapper.table-id-generator.catalog``
+| - (デフォルト値は空)
+| 生成したIDの値を永続化するテーブルが定義されているカタログ名。
+
+| ``pkColumn``
+| ``sqlmapper.table-id-generator.pk-column``
+| ``SEQUENCE_NAME``
+| 生成したIDの名称を保持するカラム名。
+
+| ``valueColumn``
+| ``sqlmapper.table-id-generator.value-column``
+| ``SEQUENCE_VALUE``
+| 生成したIDの値を保持するカラム名。
+
+| ``allocationSize``
+| ``sqlmapper.table-id-generator.allocation-size``
+| ``50``
+| 採番を行う際に、予め指定した値分を払い出しておく値です。値を1にすると、毎回レコードを更新することになり、オーバーヘッドが発生します。
+
+| ``initialValue``
+| ``sqlmapper.table-id-generator.initial-value``
+| ``0``
+| 生成するIDの値の初期値。
+
+|===
+
+
+== 独自実装による識別子（ID）の自動採番
+
+TODO

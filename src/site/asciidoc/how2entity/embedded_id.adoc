@@ -1,0 +1,62 @@
+[[embedded_id]]
+= 複合識別子（複合主キー）の定義
+
+主キーであることに指定には、``@Id`` を使用しますが、複合主キーの場合は複数個指定することもできます。
+
+.複合主キーの定義
+[source,java]
+----
+@Entity
+public class Sample {
+
+    @Id
+    private String id2;
+
+    @Id
+    private Integer id2;
+
+    private String value;
+
+    // getter/setterは省略
+
+}
+----
+
+
+また、埋め込み型として別クラスに抽出して定義することでもできます。
+
+* プロパティには、アノテーション ``@EmbeddedId`` を付与します。
+* 複合キーを定義しているクラスには、アノテーション ``@Embeddable`` を付与します。
+** フィールドには、``@Id`` を付与する必要はりません。
+** エンティティクラスと同様、引数ありのコンストラクタを定義した場合、デフォルトコンストラクタを必ず定義します。
+** ``@Column`` にて、カラム名のとのマッピングを定義することもできます。
+** 埋め込みクラスは、staticな内部クラスとしても定義することができます。
+
+.埋め込み型の複合主キーの定義
+[source,java]
+----
+@Entity
+public class Sample {
+
+    @EmbeddedId
+    private SamplePK pk;
+
+    private String value;
+
+    // getter/setterは省略
+
+    /**
+     * 埋め込み主キーのクラス
+     */
+    @Embeddable
+    public static class SamplePK {
+            
+        private String id2;
+
+        private Integer id2;
+
+        // getter/setterは省略
+    }
+
+}
+----

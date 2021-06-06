@@ -1,0 +1,43 @@
+[[mapped_superclass]]
+= 継承したエンティティを定義する（@MappedSuperclass）
+
+登録日時や更新日など、各テーブルに共通的なカラムを持つ場合は、継承専用のクラスに集約することができます。
+
+* 継承元の親クラスに、アノテーション ``@MappedSuperclass`` を付与すると、フィールド情報が継承先の子クラスに引き継ぐことができます。
+** ``@MappedSuperclass`` を付与したクラスは、エンティティクラスとしては使用できません。
+
+.継承モデル
+[source,java]
+----
+/**
+ * 継承元の親クラス
+ */
+@MappedSuperclass
+public abstract class AbstractEntity {
+
+    @CreatedAt
+    protected Timestamp createdAt;
+
+    @ModdifiedAt
+    protected Timestamp updatedAt;
+
+    @Version
+    protected long version;
+
+    // getter/setterは省略
+}
+
+/**
+ * 継承先の子クラス
+ */
+@Entity
+public class User extends AbstractEntity {
+
+    @Id
+    private Long id;
+
+    private String name;
+
+    // getter/setterは省略
+}
+----

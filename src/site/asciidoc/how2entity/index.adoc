@@ -1,0 +1,21 @@
+[[how2entity]]
+= エンティティの定義方法
+
+アノテーションを使って定義を行います。
+
+
+// 各章のインポート
+include::annotations.adoc[leveloffset=+1]
+include::entity.adoc[leveloffset=+1]
+include::column.adoc[leveloffset=+1]
+include::generated_id.adoc[leveloffset=+1]
+include::embedded_id.adoc[leveloffset=+1]
+include::mapped_superclass.adoc[leveloffset=+1]
+include::version.adoc[leveloffset=+1]
+include::enumerated.adoc[leveloffset=+1]
+include::temporal.adoc[leveloffset=+1]
+include::lob.adoc[leveloffset=+1]
+include::transient.adoc[leveloffset=+1]
+include::audit.adoc[leveloffset=+1]
+include::convert.adoc[leveloffset=+1]
+

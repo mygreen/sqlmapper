@@ -1,0 +1,50 @@
+[[available_properties]]
+= 設定可能なプロパティ
+
+.テーブルによるID生成の設定
+|===
+| キー | デフォルト値 | 説明
+
+| ``sqlmapper.table-id-generator.table``
+| ``ID_SEQUENCE``
+| 生成したIDの値を永続化するテーブル名。
+
+| ``sqlmapper.table-id-generator.schema``
+| - (デフォルト値は空)
+| 生成したIDの値を永続化するテーブルが定義されているスキーマ名。
+
+| ``sqlmapper.table-id-generator.catalog``
+| - (デフォルト値は空)
+| 生成したIDの値を永続化するテーブルが定義されているカタログ名。
+
+| ``sqlmapper.table-id-generator.pk-column``
+| ``SEQUENCE_NAME``
+| 生成したIDの名称を保持するカラム名。
+
+| ``sqlmapper.table-id-generator.value-column``
+| ``SEQUENCE_VALUE``
+| 生成したIDの値を保持するカラム名。
+
+| ``sqlmapper.table-id-generator.allocation-size``
+| ``50``
+| 採番を行う際に、予め指定した値分を払い出しておく値です。値を1にすると、毎回レコードを更新することになり、オーバーヘッドが発生します。
+
+| ``sqlmapper.table-id-generator.initial-value``
+| ``0``
+| 生成するIDの値の初期値。
+
+|===
+
+
+.SQLテンプレートの設定
+|===
+| キー | デフォルト値 | 説明
+
+| ``sqlmapper.sql-template.cache-mode``
+| ``true``
+| SQLテンプレートのパース結果をキャッシュするかどうか。``true`` のきキャッシュします。
+
+| ``sqlmapper.sql-template.encoding``
+| ``UTF-8``
+| SQLテンプレートのファイルの文字コード。
+|===

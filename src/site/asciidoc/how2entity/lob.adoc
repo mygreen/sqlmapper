@@ -1,0 +1,47 @@
+[[lob_type]]
+= ラージオブジェクトを扱う（@Lob）
+
+ラージオブジェクトをマッピングする場合は、アノテーション ``@Lob`` を付与します。
+
+* BLOB(Binay Large Object) と CLOB(Character Large Object)の区別なく同じアノテーションを付与します。
+* DBMSによって、BLOBとCLOBのデータ型は異なるため、詳しくは利用するDBMSのドキュメント及び、JDBCドライバを参照してください。
+
+
+.ラージオブジェクトのマッピング
+[source,java]
+----
+@Entity
+public class Sample {
+
+    @Id
+    private String id;
+
+    /**
+     * BLOBのマッピング
+     */
+    @Lob
+    private byte[] imageData;
+
+    /**
+     * CLOBのマッピング
+     */
+    @Lob
+    private String textData;
+
+    // getter/setterは省略
+
+}
+----
+
+ラージオブジェクトの対応
+[cols=",a"]
+|===
+| DB型 | Java型
+
+|``BLOB``
+|``byte[]``
+
+|``CLOB``
+|``String``
+
+|===

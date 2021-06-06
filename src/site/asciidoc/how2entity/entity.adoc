@@ -1,0 +1,93 @@
+[[entity]]
+= エンティティとテーブルのマッピング方法
+
+エンティティはPOJOとして定義します。
+
+- エンティティであるクラスには、必ず アノテーション ``@Entity`` を付与します。
+- 引数ありのコンストラクタを定義した場合、デフォルトコンストラクタを必ず定義します。
+- フィールドの修飾子がpublic以外の場合は、getter/setterメソッドを必ず定義します。
+
+
+.基本的なエンティティの定義
+[source,java]
+----
+@Entity
+public class User {
+
+    @Id
+    private long id;
+
+    private String name;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+}
+----
+
+[NOTE]
+====
+手動でエンティティクラスを作成する際には、 https://projectlombok.org/[Lombok] を使用して記述減らすことをお勧めします。
+====
+
+.Lombokを使用したエンティティの定義
+[source,java]
+----
+@Data
+@Entity
+public class User {
+
+    @Id
+    private long id;
+
+    private String name;
+}
+----
+
+== エンティティとテーブル名の規約
+
+テーブル名とのマッピングは、エンティティのクラス名を元に決まります。
+
+* Javaのクラスであるエンティティは、キャメルケースで定義します。
+** 例：``UserAttribute``
+* DBのテーブルは、スネークケースで定義します。
+** 例：``USER_ATTRIBUTE`` ※大文字・小文字の区別はなし。
+
+エンティティのクラス名とテーブル名が一致しない場合は、アノテーション ``@Table`` を使用します。
+
+* アノテーション ``@Table`` では、その他に、スキーマ名やカタログ名を定義することができます。
+
+[source,java]
+----
+@Entity
+@Table(name = "USER_ATTR")
+public class UserAttribute {
+
+    private long userId;
+
+    private String address;
+
+    // getter/setterメソッドは省略
+
+}
+----
+
+[NOTE]
+====
+独自の命名規則を使用するときは、``NamingRule`` の実装クラスをSpring Beanとしてコンテナに定義します。
+デフォルトでは、``DefaultNamingRule`` が使用されています。
+====
+

@@ -1,0 +1,173 @@
+[[column]]
+= フィールドとカラムのマッピング方法
+
+エンティティクラスのフィールドは、デフォルト永続化対象です。
+
+* フィールドの修飾子が、非public(private/protected/なし(デフォルト))の場合は、publicなアクセッサメソッド（setter/getter)を定義します。
+* フィールドの修飾子がpublicの場合は、アクセッサメソッドは不要です。
+* 主キーとなるカラムには、アノテーション ``@Id`` を付与します。
+** 主キーの値を自動生成したい場合は、<<generated_id,識別子（ID）の自動採番>> を参照してください。
+
+.アクセッサメソッド必要なフィールド
+[source,java]
+----
+@Entity
+public class User {
+    
+    @Id
+    private long id;
+
+    private String name;
+
+    protected LocalDate birthday;
+
+    String address;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LocalDate getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+}
+----
+
+.アクセッサメソッド不要なフィールド
+[source,java]
+----
+@Entity
+public class User {
+
+    public String name;
+
+    public LocalDate birthday;
+
+    public address;
+}
+----
+
+== サポートするクラスタイプ
+
+フィールドの型は次のいずれかである必要があります。
+
+DBの型は、JDBCドライバがサポートしていれば、対応しているJava型にマッピングが可能です。
+
+
+.標準でサポートするタイプ
+|===
+| Java型 | 一般的なDB型 | 備考
+
+|String
+|CHAR / VARCHAR / CLOB
+|
+
+|boolean / Boolean
+|BOOLEAN/数値型
+|DBの数値型をマッピングする場合は、
+
+|short / Short
+|TINYINT / SMALLINT
+|
+
+|int / Integer
+|INTEGER
+|
+
+|float / Float
+|FLOAT/REAL
+|
+
+|double / Double
+|DOUBLE
+|
+
+|java.math.BigDecimal
+|DECIMAL / NUMERIC
+|
+
+|java.sql.Date / java.time.LocalDate / java.util.Date
+|DATE
+| java.util.Dateの場合は、``@Temporal`` でタイプを指定する必要がある。
+
+|java.sql.Time / java.time.LocalTime / java.util.Date
+|TIME
+| java.util.Dateの場合は、``@Temporal`` でタイプを指定する必要がある。
+
+|java.sql.Timestamp / java.time.LocalDateTime / java.util.Date
+|TIMESTAMP
+| java.util.Dateの場合は、``@Temporal`` でタイプを指定する必要がある。
+
+|byte[]
+|BLOB
+|
+
+|java.util.UUID
+|UUID
+|
+
+|列挙型
+|CHAR / VARCHAR / TINTYINT / SMALLINT / INTEGER
+|列挙型をマッピングする際には、``@Enumerated`` でタイプを指定する必要がある。
+
+|===
+
+
+== フィールドとカラム名の規約
+
+カラムとのマッピングは、フィールド名を元に決まります。
+
+* Javaのフィールドは、キャメルケースで定義します。
+** 例：``firstName``
+* DBのカラムは、スネークケースで定義します。
+** 例：``FIRST_NMAE`` ※大文字・小文字の区別はなし。
+
+フィールド名とカラム名が一致しない場合は、アノテーション ``@Column`` を使用します。
+
+* アノテーション ``@Column`` では、その他に、スキーマ名やカタログ名を定義することができます。
+
+[source,java]
+----
+@Entity
+public class UserAttribute {
+
+    @Column(name="sub_id")
+    private long userId;
+
+    private String address;
+
+    // getter/setterメソッドは省略
+
+}
+----
+
+[NOTE]
+====
+独自の命名規則を使用するときは、``NamingRule`` の実装クラスをSpring Beanとしてコンテナに定義します。
+デフォルトでは、``DefaultNamingRule`` が使用されています。
+====
+

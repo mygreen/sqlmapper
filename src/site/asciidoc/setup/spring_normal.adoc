@@ -1,0 +1,135 @@
+= Spring Framework の設定
+:app-ver: 0.2
+
+非Spring Boot の環境、または、SqlMapperのstater を使用しない時の環境設定方法を説明します。
+
+== ライブラリの依存関係の追加
+
+Mavenを使用している場合は、``pom.xml`` に依存関係を追加します。
+
+利用するDBのJDBCドライバの定義も追加します。
+
+.pom.xmlへの依存関係の追加
+[source, xml]
+----
+<project>
+    <dependencies>
+		<!-- SQLMapperの定義 -->
+		<dependency>
+			<groupId>com.github.mygreen.sqlmapper</groupId>
+			<artifactId>sqlmapper-core</artifactId>
+			<version>0.2</version>
+		</dependency>
+
+		<!-- 利用するDBのJDBCドライバを追加します -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.200</version>
+		</dependency>
+
+    </dependencies>
+</project>
+----
+
+さらに、メタモデルを自動生成する設定を追加します。
+
+.pom.xmlへのメタモデルの自動生成設定の追加
+[source, xml]
+----
+<project>
+    <build>
+        <plugins>
+            <!-- メタモデルを生成するプラグインを追加します -->
+            <plugin>
+				<groupId>com.mysema.maven</groupId>
+				<artifactId>apt-maven-plugin</artifactId>
+				<version>1.1.3</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/generated-sources/java</outputDirectory>
+							<logOnlyOnError>false</logOnlyOnError>
+							<processors>
+								<processor>com.github.mygreen.sqlmapper.apt.EntityMetamodelProcessor</processor>
+							</processors>
+							<sourceEncoding>UTF-8</sourceEncoding>
+						</configuration>
+					</execution>
+				</executions>
+                <dependencies>
+				    <dependency>
+						<groupId>com.github.mygreen.sqlmapper</groupId>
+						<artifactId>sqlmapper-apt</artifactId>
+						<version>0.2</version>
+					</dependency>
+			    </dependencies>
+			</plugin>
+        </plugins>
+    </build>
+</project>
+----
+
+== JavaConfigの設定
+
+SqlMapper用のJavaConfigのサポートクラス ``SqlMapperConfigurationSupport`` を継承して定義します。
+
+データソースとDBの方言種別を環境に合わせ定義します。
+
+.JavaConfigの定義
+[source, java]
+----
+import javax.sql.DataSource;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
+import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigurationSupport;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.dialect.H2Dialect;
+
+
+@Configuration
+public class SqlMapperConfig extends SqlMapperConfigurationSupport {
+
+    // データソースの定義
+    @Override
+    public DataSource dataSource() {
+        return new EmbeddedDatabaseBuilder()
+                .generateUniqueName(true)
+                .setType(EmbeddedDatabaseType.H2)
+                .setScriptEncoding("UTF-8")
+                .build();
+    }
+
+    // DBの方言種別の定義
+    @Override
+    public Dialect dialect() {
+        return new H2Dialect();
+    }
+}
+----
+
+[[spring_normal_properties]]
+=== プロパティの上書き
+
+テーブルによる識別子の生成などの設定を上書きする場合は、Springのアノテーション ``@PropertySource`` を使用し、プロパティを上書きします。
+
+設定可能なプロパティは、<<available_properties,設定可能なプロパティ>> を参照してください。
+
+JavaConfigの定義
+[source, java]
+----
+import org.springframework.context.annotation.PropertySource;
+
+@Configuration
+@PropertySource("classpath:application.properties")
+public class SqlMapperConfig extends SqlMapperConfigurationSupport {
+    // ・・・省略
+}
+----

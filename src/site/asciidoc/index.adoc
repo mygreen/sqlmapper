@@ -1,0 +1,20 @@
+= SqlMapper
+:lang: ja
+:doctype: book
+:toc: left
+:toclevels: 3
+:toc-title: 目次
+:sectnums:
+:icons: font
+:example-caption: 例
+:table-caption: 表
+:figure-caption: 図
+:source-highlighter: highlightjs
+
+SqlMapper は、Spring Framework　のJDBC機能を使って、「S2JDBC の再実装 + 機能追加」 を目指した O/R Mapperのライブラリです。
+
+// 各章のインポート
+include::setup/index.adoc[leveloffset=+1]
+include::how2use/index.adoc[leveloffset=+1]
+include::how2entity/index.adoc[leveloffset=+1]
+include::release/index.adoc[leveloffset=+1]

@@ -1,0 +1,8 @@
+[[setup]]
+= セットアップ
+
+// 各章のインポート
+include::environment.adoc[leveloffset=+1]
+include::spring_normal.adoc[leveloffset=+1]
+include::spring_boot.adoc[leveloffset=+1]
+include::properties.adoc[leveloffset=+1]
