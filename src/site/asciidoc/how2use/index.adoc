@@ -1,8 +1,0 @@
-# 使い方
-
-環境設定を済ませた状態を前提として説明します。
-未設定の場合は、<<setup,セットアップ>> を参照して設定してください。
-
-// 各章のインポート
-include::autoquery.adoc[leveloffset=+1]
-include::filequery.adoc[leveloffset=+1]

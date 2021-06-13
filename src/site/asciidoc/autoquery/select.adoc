@@ -1,0 +1,287 @@
+# 検索
+
+検索を行うには、`SqlMapper#selectFrom(...)` メソッドを使用します。
+
+メソッドチェインで検索条件などを指定します。
+
+## 複数件検索
+
+複数件を検索する場合は、`getResultList()` を使います。
+
+* 検索結果が0件のときは、空のリストを返します。
+* 検索するエンティティは、`from()` でメタモデルを指定します。
+
+[source,java]
+----
+List<Employee> results = sqlMapper.selectFrom(MEmployee.employee)
+        .getResultList();
+----
+
+## 1件検索
+
+1件検索する場合は、`getSingleResult()` を使用します。
+
+* 1件も見つからない、または、2件以上見つかった場合、Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
+
+[source,java]
+----
+Employee result = sqlMapper.selectFrom(MEmployee.employee)
+        .getSingleResult();
+----
+
+0件/複数件見つかったときに例外をスローされないようにするには、`getOptionalResult()` を使用します。
+
+* 戻り値を `java.util.Optinal` で受け取ることができます。
+
+[source,java]
+----
+Optional<Employee> result = sqlMapper.selectFrom(MEmployee.employee)
+        .getOptionalResult();
+----
+
+## Streamによる検索
+
+検索結果を多くの行を返すため、`List` でまとめて受け取ることが困難な場合は、`getResultStream()` を使用します。
+
+.検索結果の1件目を取得する
+[source,java]
+----
+Employee result = sqlMapper.selectFrom(MEmployee.employee)
+        .getResultStream()
+        .findFirst()
+        .get();
+----
+
+.検索結果をイテレーションする
+[source,java]
+----
+sqlMapper.selectFrom(MEmployee.employee)
+        .getResultStream()
+        .forEach({
+            //TODO:任意の処理
+        })
+----
+
+## 検索結果の行数取得
+
+SQLの `SELECT COUNT(*) ～` による検索結果の行数を取得するには、`getCount()` を使用します。
+
+[source,java]
+----
+long count = sqlMapper.selectFrom(MEmployee.employee)
+        .getCount();
+----
+
+## 結合
+
+他のエンティティと結合する場合は、次のメソッドを使用します。
+
+* `innerJoin(...)` : エンティティを内部結合（INNERT JOIN） します。
+* `leftJoin(...)` : エンティティを左外部結合（LEFT OUTER JOIN）します。
+* 結合条件は、メタモデルを使用して指定します。
+* 結合したエンティティの保存は、`associate(...)` を使用してプログラマティックに行います。
+
+.結合したエンティティのクエリ実行
+[source,java]
+----
+MEmployee e = MEmployee.employee;
+MSection s = MSection.section;
+
+List<Employee> results = sqlMapper.selectFrom(e)
+        .innerJoin(s, (to) -> to.code.eq(e.sectionCode))
+        .associate(e, s, (e1, e2) -> e1.setSection(e2))
+        .getResultList();
+----
+
+* 結合した結果を保持するプロパティ（例. section）は、エンティティ上ではアノテーション `@Transient` を付与して永続化対象外とします。
+
+.結合した結果を保持するエンティティクラスの定義
+[source,java]
+----
+public class Employee {
+
+    @Id
+    private Long id;
+
+    /**
+     * 部門情報 - 結合したエンティティを保持する
+     */
+    @Transient
+    private Section section;
+
+    // getter/setterは省略
+}
+----
+
+## IDとバージョンによる検索条件指定
+
+IDプロパティ（主キー）を指定して検索対象を指定する場合は、`id(Object...)` を使用します。
+
+* 引数はエンティティに定義されたIDプロパティと同じ個数・並び順で指定する必要があります。
+
+[source,java]
+----
+Employee results = sqlMapper.selectFrom(MEmployee.employee)
+        .id(5)
+        .getSingleResult();
+----
+
+IDプロパティと同時にバージョンを指定することもできます。 バージョンプロパティを指定する場合は、 version(Object) を使います。
+
+* IDを指定しないでバージョンだけを指定することはできません。もしバージョンだけを指定した場合、例外 `IllegalOperateException` がスローされます。
+
+[source,java]
+----
+Employee result = sqlMapper.selectFrom(MEmployee.employee)
+        .id(5)
+        .version(2)
+        .getSingleResult();
+----
+
+
+埋め込み型IDを使用する場合は、埋め込み型IDクラスのインスタンスを指定します。
+
+[source,java]
+----
+Employee results = sqlMapper.selectFrom(MEmployee.employee)
+        .id(new PK(1, 200))
+        .getSingleResult();
+----
+
+## 複雑な検索条件指定
+
+より複雑な検索条件を指定する場合は、`where(...)` を使用します。
+
+* <<metamodel,メタモデル>> を使い検索条件をある程度、型安全に組み立てることができます。
+* 使用するエンティティのメタモデルのインスタンスは、`seleftFrom(..)` / `innertJoin(...)` / `leftJoin(...)` の何れかで指定したインスタンスである必要があります。
+
+[source,java]
+----
+MEmployee e = MEmployee.employee;
+MSection s = MSection.section;
+
+List<Employee> results = sqlMapper.selectFrom(e)
+        .innerJoin(s, (to) -> to.code.eq(e.sectionCode))
+        .where(e.hireDate.before(LocalDate.of(2020, 5, 1)).and(s.name.contains("開発")))
+        .getResultList();
+----
+
+[[select_order_by]]
+## 並び順
+
+並び順を指定する場合は、`orderBy(...)` を使用します。
+
+* <<metamodel,メタモデル>> を使いエンティティのプロパティに対する並び順を指定します。
+
+[source,java]
+----
+MEmployee e = MEmployee.employee;
+
+List<Employee> results = sqlMapper.selectFrom(e)
+        .orderBy(e.name.asc(), e.hireDate.desc())
+        .getResultList();
+----
+
+## 排他制御
+
+`SELECT` 時にロックを取得するには、以下のメソッドを使用します。
+
+* `forUpdate()`
+* `forUpdateNoWait()`
+* `forUpdateWait(int seconds)` 
+
+
+全てのRDBMSでこれらの操作が利用できるわけではありません。
+サポートされていないメソッドを呼び出すと `IllegalOperateException` がスローされます。
+
+[source,java]
+----
+List<Employee> results = sqlMapper.selectFrom(MEmployee.employee)
+        .forUpdate()
+        .getResultList();
+----
+
+## 指定したプロパティのみを検索結果に含める
+
+指定したプロパティのみを検索結果に含める場合は、`includes(...)` を使用します。
+
+* ただし、`@Id` アノテーションが付けられたプロパティは無条件で検索結果に含まれます。 
+* 特に、ラージオブジェクトの場合、不要なプロパティを検索結果から除外することで、 データベースから転送されるデータ量やJVMのメモリ使用量を減らすことができます。
+
+[source,java]
+----
+MEmployee e = MEmployee.employee;
+
+List<Employee> results = sqlMapper.selectFrom(e)
+        .includes(e.id, e.name)
+        .getResultList();
+----
+
+次のように結合するエンティティのプロパティを指定することもできます
+
+[source,java]
+----
+MEmployee e = MEmployee.employee;
+MSection s = MSection.section;
+
+List<Employee> results = sqlMapper.selectFrom(e)
+        .innerJoin(s, (to) -> to.code.eq(e.sectionCode))
+        .associate(e, s, (e1, e2) -> e1.setSection(e2))
+        .includes(e.id, e.name, s.name)
+        .getResultList();
+----
+
+NOTE: `includes(...)` と `excludes(...)` の両方で同じプロパティを指定した場合、`excludes(...)` が優先されます。
+
+
+## 指定したプロパティを検索結果から除外する
+
+指定したプロパティを検索結果から除外する場合は、`excludes(...)` を使用します。
+
+* ただし、`@Id` アノテーションが付けられたプロパティは無条件で検索結果に含まれます。 
+* 特に、ラージオブジェクトの場合、不要なプロパティを検索結果から除外することで、 データベースから転送されるデータ量やJVMのメモリ使用量を減らすことができます。
+
+
+[source,java]
+----
+MEmployee e = MEmployee.employee;
+
+List<Employee> results = sqlMapper.selectFrom(e)
+        .excludes(e.address)
+        .getResultList();
+----
+
+次のように結合するエンティティのプロパティを指定することもできます
+
+[source,java]
+----
+MEmployee e = MEmployee.employee;
+MSection s = MSection.section;
+
+List<Employee> results = sqlMapper.selectFrom(e)
+        .innerJoin(s, (to) -> to.code.eq(e.sectionCode))
+        .associate(e, s, (e1, e2) -> e1.setSection(e2))
+        .excludes(e.address, s.tel)
+        .getResultList();
+----
+
+## ページング
+
+ページングを指定するには、以下のメソッドを使用します。
+
+* `limit(int limit)` : 取得する行数を指定します。
+* `offset(int offset)` : 最初に取得する行の位置を指定します。最初の行の位置は0になります。 
+
+ページングを指定するには、必ず <<select_order_by,並び順>> の指定も必要です。
+
+[source,java]
+----
+MEmployee e = MEmployee.employee;
+
+List<Employee> results = sqlMapper.selectFrom(e)
+        .orderBy(e.name.asc(), e.hireDate.desc())
+        .limit(100)
+        .offset(10)
+        .getResultList();
+----
+

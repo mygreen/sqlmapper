@@ -15,6 +15,8 @@ SqlMapper は、Spring Framework　のJDBC機能を使って、「S2JDBC の再�
 
 // 各章のインポート
 include::setup/index.adoc[leveloffset=+1]
-include::how2use/index.adoc[leveloffset=+1]
+include::autoquery/index.adoc[leveloffset=+1]
+include::filequery/index.adoc[leveloffset=+1]
 include::how2entity/index.adoc[leveloffset=+1]
+include::transaction/index.adoc[leveloffset=+1]
 include::release/index.adoc[leveloffset=+1]
