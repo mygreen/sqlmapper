@@ -1,1 +1,63 @@
 # 挿入
+
+## 1件挿入
+
+エンティティを挿入する場合は、`SqlMapper#insert(...)` と `execute()` を組み合わせ使用します。
+
+* `insert(...)` の引数はエンティティのインスタンスを指定します。
+* `execute()` の戻り値は、更新した行数です。
+* 挿入するときに識別子を自動設定することができます。
+** 詳細は、<<anno_generated_id,識別子の自動採番>> を参照してください。
+* 一意制約違反によりエンティティの挿入ができない場合は、例外 `org.springframework.dao.DuplicateKeyException` がスローされます。
+
+[source,java]
+----
+int count = sqlMapper.insert(employee)
+        .execute();
+----
+
+## バッチ挿入
+
+複数のエンティティをバッチ挿入する場合は、`insertBatch(...)` と `execute()` を組み合わせて使用します。
+
+* `insertBatch(...)` の引数はエンティティのインスタンスのリストあるいは配列（可変長引数）を指定します。
+* `execute()` の戻り値は、更新した行数の配列です。
+* 挿入するときに識別子を自動設定することができます。
+** 詳細は、<<anno_generated_id,識別子の自動採番>> を参照してください。
+* 一意制約違反によりエンティティの挿入ができない場合は、例外 `org.springframework.dao.DuplicateKeyException` がスローされます。
+
+[source,java]
+----
+int[] countArray = sqlMapper.insertBatch(employees)
+        .execute();
+----
+
+NOTE: 処理時のバッチサイズは引数で指定したエンティティのサイズと同一になります。
+バッチサイズを変更したい場合は、エンティティを分割して実行してください。
+
+## 指定したプロパティのみを挿入対象にする
+
+指定したプロパティのみを挿入対象にする場合は、 `includes()` を使用します。
+
+[source,java]
+----
+MEmployee e = MEmployee.employee;
+
+int count = sqlMapper.insert(employee)
+        .includes(e.id, e.name)
+        .execute();
+----
+
+## 指定したプロパティを挿入対象から除外する
+
+指定したプロパティを挿入対象から除外する場合は、 `excludes()` を使用します。
+
+[source,java]
+----
+MEmployee e = MEmployee.employee;
+
+int count = sqlMapper.insert(employee)
+        .excludes(e.version)
+        .execute();
+----
+

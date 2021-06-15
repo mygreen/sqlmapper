@@ -22,8 +22,5 @@ include::select.adoc[leveloffset=+1]
 include::insert.adoc[leveloffset=+1]
 include::update.adoc[leveloffset=+1]
 include::delete.adoc[leveloffset=+1]
-include::batch_insert.adoc[leveloffset=+1]
-include::batch_update.adoc[leveloffset=+1]
-include::batch_delete.adoc[leveloffset=+1]
 include::metamodel.adoc[leveloffset=+1]
 
