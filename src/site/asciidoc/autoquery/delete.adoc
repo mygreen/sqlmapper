@@ -1,6 +1,6 @@
-# 削除
+= 削除
 
-## 1件削除
+== 1件削除
 
 エンティティを削除する場合は、`delete(...)` と `execute()` を組み合わせて使用します。
 
@@ -18,7 +18,7 @@ int count = sqlMapper.delete(employee)
         .execute();
 ----
 
-## バッチ削除
+== バッチ削除
 
 複数のエンティティをバッチ削除する場合は、`deleteBatch(...)` と `execute()` を組み合わせて使用します。
 
@@ -37,7 +37,7 @@ int[] countArray = sqlMapper.deleteBatch(employees)
 NOTE: 処理時のバッチサイズは引数で指定したエンティティのサイズと同一になります。
 バッチサイズを変更したい場合は、エンティティを分割して実行してください。
 
-## 削除条件の指定
+== 削除条件の指定
 
 任にの条件で削除を行う場合、`deleteFrom(...)` と `execute()` を使用します。
 
@@ -49,12 +49,11 @@ NOTE: 処理時のバッチサイズは引数で指定したエンティティ�
 MEmployee e = MEmployee.employee;
 
 int count = sqlMapper.deleteFrom(e)
-        .where(e.hireDate.before(LocalDate.of(2020, 5, 1))
+        .where(e.hireDate.before(LocalDate.of(2020, 5, 1)))
         .execute();
 ----
 
-
-## バージョンをチェックしないで削除する
+== バージョンをチェックしないで削除する
 
 バージョンをチェックしないで削除する場合は、`ignoreVersion()` を使用します。
 
@@ -67,7 +66,7 @@ int count = sqlMapper.delete(employee)
         .execute();
 ----
 
-## 削除行数をチェックしない
+== 削除行数をチェックしない
 
 バージョンによる楽観的排他制御を行う場合、 削除できた行数が0だと `org.springframework.dao.OptimisticLockingFailureException` が発生します。
 
