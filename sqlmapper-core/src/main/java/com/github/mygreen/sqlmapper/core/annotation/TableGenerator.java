@@ -36,13 +36,13 @@ public @interface TableGenerator {
     String catalog() default "";
 
     /**
-     * (オプション) 生成されたID値を格納するテーブルの名前。
+     * (オプション) 生成された識別子(主キー)の値を格納するテーブルの名前。
      * @return
      */
     String table() default "";
 
     /**
-     * (オプション) テーブル内の主キーのカラムの名前。
+     * (オプション) テーブル内の識別子(主キー)のカラムの名前。
      * @return
      */
     String pkColumn() default "";
@@ -54,17 +54,18 @@ public @interface TableGenerator {
     String valueColumn() default "";
 
     /**
-     * ジェネレーターが生成した値からID番号を割り当てるときにインクリメントする量。
+     * (オプション) 採番する際に予め払い出しておく個数の値。
+     * <p>この属性で指定した分をあらかじめ払い出しておくことで、逐次生成することによるオーバーヘッドを削減します。
      * <p>指定できる値は、1以上の整数です。</p>
      * @return
      */
-    int allocationSize() default 50;
+    long allocationSize() default 50L;
 
     /**
      * (オプション) 生成された最後の値を格納するカラムを初期化するために使用される初期値。
      * <p>指定できる値は、0以上の整数です。</p>
      * @return
      */
-    int initialValue() default 0;
+    long initialValue() default 0L;
 
 }

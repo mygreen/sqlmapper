@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.KeyHolder;
@@ -192,6 +193,7 @@ public class AutoBatchInsertExecutor {
     /**
      * 挿入処理を実行します。
      * @return 挿入したレコード件数を返します。
+     * @throws DuplicateKeyException 主キーなどのが一意制約に違反したとき。
      */
     public int[] execute() {
 

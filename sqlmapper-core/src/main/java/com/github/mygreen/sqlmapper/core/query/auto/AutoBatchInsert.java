@@ -1,5 +1,7 @@
 package com.github.mygreen.sqlmapper.core.query.auto;
 
+import org.springframework.dao.DuplicateKeyException;
+
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
@@ -34,6 +36,7 @@ public interface AutoBatchInsert<T> {
     /**
      * クエリを実行します。
      * @return 更新した行数。
+     * @throws DuplicateKeyException 主キーなどのが一意制約に違反したとき。
      */
     int[] execute();
 

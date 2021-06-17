@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.KeyHolder;
@@ -169,6 +170,7 @@ public class AutoInsertExecutor {
     /**
      * 挿入の実行
      * @return 更新した行数
+     * @throws DuplicateKeyException 主キーなどのが一意制約に違反したとき。
      */
     public int execute() {
         prepare();

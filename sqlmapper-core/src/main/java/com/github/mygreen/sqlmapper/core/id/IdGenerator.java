@@ -1,4 +1,4 @@
-    package com.github.mygreen.sqlmapper.core.id;
+package com.github.mygreen.sqlmapper.core.id;
 
 import org.springframework.dao.DataIntegrityViolationException;
 

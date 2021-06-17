@@ -1,5 +1,7 @@
 package com.github.mygreen.sqlmapper.core.query.auto;
 
+import org.springframework.dao.DuplicateKeyException;
+
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
@@ -21,7 +23,7 @@ public interface AutoInsert<T> {
      * @return 自身のインスタンス。
      * @throws IllegalOperateException エンティティに存在しないプロパティ名を指定した場合にスローされます。
      */
-    AutoInsert<T> includes(final PropertyPath<?>... properties);
+    AutoInsert<T> includes(PropertyPath<?>... properties);
 
     /**
      * 指定のプロパティを挿入対象から除外します。
@@ -29,11 +31,12 @@ public interface AutoInsert<T> {
      * @param properties 除外対象のプロパティ情報。
      * @return 自身のインスタンス。
      */
-    AutoInsert<T> excludes(final PropertyPath<?>... properties);
+    AutoInsert<T> excludes(PropertyPath<?>... properties);
 
     /**
      * クエリを実行します。
      * @return 挿入した行数。
+     * @throws DuplicateKeyException 主キーなどのが一意制約に違反したとき。
      */
     int execute();
 

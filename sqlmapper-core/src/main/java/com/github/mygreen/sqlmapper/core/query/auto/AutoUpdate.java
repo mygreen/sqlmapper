@@ -76,7 +76,8 @@ public interface AutoUpdate<T> {
 
     /**
      * 更新クエリを実行します。
-     * @return 更新したレコード件数を返します。
+     * @return 更新したレコード件数です。更新対象のプロパティ（カラム）がない場合は {@literal 0} を返します。
+     * @throws OptimisticLockingFailureException 楽観的排他制御を行う場合に該当するレコードが存在しない場合にスローされます。
      */
     int execute();
 

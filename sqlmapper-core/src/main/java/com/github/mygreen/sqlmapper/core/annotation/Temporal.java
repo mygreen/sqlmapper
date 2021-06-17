@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * プロパティが時刻であることを定義します。
+ * プロパティが時制であることを定義します。
  * <p>{@literal java.util.Date}の場合、時制の型が不明なのでこのアノテーションを付与して確定する必要があります</p>
  *
  *

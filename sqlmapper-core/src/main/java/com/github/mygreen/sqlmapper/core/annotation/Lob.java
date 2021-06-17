@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * プロパティがのラージオブジェクトであることを定義します。
+ * プロパティがラージオブジェクトであることを定義します。
  *
  *
  * @author T.TSUCHIE

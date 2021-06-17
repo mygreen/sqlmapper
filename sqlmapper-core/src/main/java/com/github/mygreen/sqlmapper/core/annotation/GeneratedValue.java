@@ -7,6 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.text.DecimalFormat;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+
 /**
  * 識別子(主キー)の値を自動生成する方法を定義します。
  *
@@ -20,8 +22,8 @@ import java.text.DecimalFormat;
 public @interface GeneratedValue {
 
     /**
-     * アノテーションの付いたエンティティの主キーを生成するために、
-     * 永続化プロバイダが使用しなければならない主キー生成戦略。
+     * アノテーションの付いたエンティティの識別子(主キー)を生成するために、
+     * 永続化プロバイダが使用しなければならない生成戦略。
      */
     GenerationType strategy() default GenerationType.AUTO;
 
@@ -44,26 +46,27 @@ public @interface GeneratedValue {
      */
     enum GenerationType {
         /**
-         * 永続化プロバイダが特定のデータベースに対して適切な戦略を選択しなければならないことを示します。
+         * 永続化プロバイダが特定のデータベースに対して適切な戦略を選択して主キーに値を割り当てます。
+         * 選択される戦略は、DBダイアクレクト {@link Dialect#getDefaultGenerationType()} により決定されます。
          */
         AUTO,
         /**
-         * 永続化プロバイダはデータベースのIDカラムを使用してエンティティの主キーに値を割り当てなければならないことを示します。
+         * 永続化プロバイダはデータベースのIDENTITY列を使用してエンティティの主キーに値を割り当てます。
          */
         IDENTITY,
 
         /**
-         * 永続化プロバイダはデータベースのシーケンスを使用してエンティティの主キーに値を割り当てなければならないことを示します。
+         * 永続化プロバイダはデータベースのシーケンスを使用してエンティティの主キーに値を割り当てます。
          */
         SEQUENCE,
 
         /**
-         * 永続化プロバイダは一意性を保証するために基になるデータベースのテーブルを使用してエンティティの主キーに値を割り当てなければならないことを示します。
+         * 永続化プロバイダは一意性を保証するために基になるデータベースのテーブルを使用してエンティティの主キーに値を割り当てます。
          */
         TABLE,
 
         /**
-         * ランダムなセキュアな値
+         * 永続化プロバイダは {@link java.util.UUID} を使用しランダムなセキュアな値を割り当てます。
          */
         UUID
 
