@@ -78,6 +78,7 @@ public class AutoSelectTest {
                 .associate(employee, section, (e1, e2) -> e1.setSection(e2))
                 .associate(section, businessEstablishment, (e1, e2) -> e1.setBusinessEstablishment(e2))
                 .where(employee.name.eq("山田太郎"))
+                .orderBy(employee.name.asc(), employee.hireDate.desc())
                 .getResultList();
 
         assertThat(entity).hasSize(1);
