@@ -43,10 +43,10 @@ public class TableIdContext {
     /**
      * (オプション) 生成された最後の値を格納するカラムを初期化するために使用される初期値。
      */
-    private long initialValue = 0L;
+    private long initialValue;
 
     /**
      * (オプション) ジェネレーターが生成した値からID番号を割り当てるときにインクリメントする量。
      */
-    private long allocationSize = 20;
+    private long allocationSize;
 }

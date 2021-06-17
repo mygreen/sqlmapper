@@ -37,4 +37,14 @@ public class TableIdGeneratorProperties {
      */
     private String valueColumn;
 
+    /**
+     * 一度にインクリメントする量。
+     */
+    private long allocationSize;
+
+    /**
+     * 値の初期値
+     */
+    private long initialValue;
+
 }

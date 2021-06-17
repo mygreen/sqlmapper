@@ -306,6 +306,8 @@ public class PropertyMetaFactory {
             tableIdContext.setCatalog(tableIdGeneratorProperties.getCatalog());
             tableIdContext.setPkColumn(tableIdGeneratorProperties.getPkColumn());
             tableIdContext.setValueColumn(tableIdGeneratorProperties.getValueColumn());
+            tableIdContext.setAllocationSize(tableIdGeneratorProperties.getAllocationSize());
+            tableIdContext.setInitialValue(tableIdGeneratorProperties.getInitialValue());
 
             String sequenceName = entityMeta.getTableMeta().getName() + "_" + propertyMeta.getColumnMeta().getName();
 
@@ -330,7 +332,7 @@ public class PropertyMetaFactory {
                     tableIdContext.setValueColumn(a.valueColumn());
                 }
 
-                if(a.initialValue() >= 0) {
+                if(a.initialValue() >= 0L) {
                     tableIdContext.setInitialValue(a.initialValue());
                 } else {
                     throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.min")
@@ -343,7 +345,7 @@ public class PropertyMetaFactory {
                             .format());
                 }
 
-                if(a.allocationSize() >= 1) {
+                if(a.allocationSize() >= 1L) {
                     tableIdContext.setAllocationSize(a.allocationSize());
                 } else {
                     throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.min")

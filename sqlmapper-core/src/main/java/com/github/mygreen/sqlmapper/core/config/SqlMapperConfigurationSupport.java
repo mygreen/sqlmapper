@@ -117,6 +117,8 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
         prop.setCatalog(env.getProperty("sqlmapper.table-id-generator.catalog"));
         prop.setPkColumn(env.getProperty("sqlmapper.table-id-generator.pk-column"));
         prop.setValueColumn(env.getProperty("sqlmapper.table-id-generator.value-column"));
+        prop.setAllocationSize(Long.parseLong(env.getProperty("sqlmapper.table-id-generator.allocation-size")));
+        prop.setInitialValue(Long.parseLong(env.getProperty("sqlmapper.table-id-generator.initial-value")));
 
         return prop;
     }
