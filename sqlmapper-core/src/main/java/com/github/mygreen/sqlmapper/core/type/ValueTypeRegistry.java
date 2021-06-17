@@ -177,9 +177,9 @@ public class ValueTypeRegistry implements InitializingBean {
     protected ValueType<?> getValueType(final PropertyMeta propertyMeta, final Convert convertAnno) {
 
         if(convertAnno.name().isEmpty()) {
-            return BeanUtils.instantiateClass(convertAnno.converter());
+            return BeanUtils.instantiateClass(convertAnno.type());
         } else {
-            return applicationContext.getBean(convertAnno.name(), convertAnno.converter());
+            return applicationContext.getBean(convertAnno.name(), convertAnno.type());
         }
     }
 
