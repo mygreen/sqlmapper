@@ -64,7 +64,7 @@ public class User {
 
 
 [[anno_table_gnerarator]]
-== テーブルによる識別子（ID）の自動採番（@TableGenerator）
+== テーブルによる識別子（ID）の自動採番
 
 IDENTITYやシーケンスなどの機能を使わないで、テーブルを使って採番を行うため、全てのDMBSにて利用できます。
 
