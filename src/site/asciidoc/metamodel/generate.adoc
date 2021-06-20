@@ -1,0 +1,51 @@
+= 自動生成のカスタマイズ
+
+エンティティのメタモデルに対する自動生成の設定の基本は、<<setup,セットアップ>> を参照してください。
+
+
+* メタモデルの出力ディレクトリは、タグ `<outputDirectory>` で指定します。
+* メタモデルのソースの文字コードは、タグ `<sourceEncoding>` で指定します。
+** メタモデルのクラス名の接頭語／接尾語をカスタマイズを行う場合は、タグ `<option>` の中で指定を行います。
+** `<sqlmapper.prefix>` : メタでモルのクラス名の接頭語。
+*** デフォルトは、`M` です。
+** `<sqlmapper.suffix>` : メタでモルのクラス名の接尾語。
+*** デフォルトは、`` (空文字) です。
+
+[source,xml]
+----
+<plugin>
+	<groupId>com.mysema.maven</groupId>
+	<artifactId>apt-maven-plugin</artifactId>
+	<version>1.1.3</version>
+	<executions>
+		<execution>
+			<phase>generate-sources</phase>
+			<goals>
+				<goal>process</goal>
+			</goals>
+			<configuration>
+                <!-- ▼▼▼メタモデルの出力ディレクトリ▼▼▼ -->
+				<outputDirectory>target/generated-sources/java</outputDirectory>
+				<logOnlyOnError>false</logOnlyOnError>
+				<processors>
+					<processor>com.github.mygreen.sqlmapper.apt.EntityMetamodelProcessor</processor>
+				</processors>
+                <!-- ▼▼▼メタモデルのソースの文字コード▼▼▼ -->
+				<sourceEncoding>UTF-8</sourceEncoding>
+				<options>
+                    <!-- ▼▼▼メタモデルの接頭語▼▼▼ -->
+					<sqlmapper.prefix>M</sqlmapper.prefix>
+                    <!-- ▼▼▼メタモデルの接尾語▼▼▼ -->
+					<sqlmapper.suffix></sqlmapper.suffix>
+				</options>
+			</configuration>
+		</execution>
+	</executions>
+    <dependencies>
+	    <dependency>
+			<groupId>com.github.mygreen.sqlmapper</groupId>
+			<artifactId>sqlmapper-apt</artifactId>
+		</dependency>
+    </dependencies>
+</plugin>
+----
