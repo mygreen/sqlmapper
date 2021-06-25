@@ -1,6 +1,5 @@
 package com.github.mygreen.sqlmapper.apt.model;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,19 +31,14 @@ public class EntityMetamodel {
     private String className;
 
     /**
-     * 親クラス
+     * 自身のクラス情報
      */
-    private Class<?> superClass;
+    private AptType type;
 
     /**
-     * エンティティ自身のクラス
+     * 親クラス(パッケージ名含む)
      */
-    private Class<?> entityClass;
-
-    /**
-     * staticな内部クラスかどうか。
-     */
-    private boolean staticInnerClass;
+    private AptType superClassType;
 
     /**
      * アノテーション{@link Entity}の情報
@@ -101,19 +95,11 @@ public class EntityMetamodel {
      * @param entity エンティティ情報
      */
     public void add(EntityMetamodel entity) {
-        if(!entity.isStaticInnerClass()) {
+        if(!entity.getType().isStaticInnerClass()) {
             throw new IllegalArgumentException("entity is not static inner class : " + entity.getFullName());
         }
 
         this.staticInnerEntities.add(entity);
-    }
-
-    /**
-     * エンティティが抽象クラスかどうか。
-     * @return {@literal true}のとき抽象クラス。
-     */
-    public boolean isAbstract() {
-        return Modifier.isAbstract(entityClass.getModifiers());
     }
 
     /**
@@ -138,6 +124,14 @@ public class EntityMetamodel {
      */
     public boolean isEmbeddable() {
         return embeddableAnno != null;
+    }
+
+    /**
+     * {@link MappedSuperclass}が付与された親クラスを持つかどうか。
+     * @return {@literal true}のときき{@link MappedSuperclass}が付与された親クラス
+     */
+    public boolean hasSuperClass() {
+        return superClassType != null;
     }
 
 }

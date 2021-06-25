@@ -1,8 +1,12 @@
 package com.github.mygreen.sqlmapper.apt;
 
+import java.util.List;
+
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 
 import com.github.mygreen.sqlmapper.apt.model.EntityMetamodel;
 
@@ -16,119 +20,24 @@ import com.github.mygreen.sqlmapper.apt.model.EntityMetamodel;
 public class AptUtils {
 
     /**
-     * プリミティブ型を考慮した指定したクラス情報を取得します。
-     *
-     * @param className クラス名
-     * @return クラス情報
-     */
-    public static Class<?> getClassByName(final String className) {
-
-        if(className.equals("byte")) {
-            return byte.class;
-
-        } else if(className.equals("short")) {
-            return short.class;
-
-        } else if(className.equals("int")) {
-            return int.class;
-
-        } else if(className.equals("long")) {
-            return long.class;
-
-        } else if(className.equals("float")) {
-            return float.class;
-
-        } else if(className.equals("double")) {
-            return double.class;
-
-        } else if(className.equals("boolean")) {
-            return boolean.class;
-
-        } else if(className.equals("char")) {
-            return char.class;
-        }
-
-        try {
-            return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("not found class for name : " + className, e);
-        }
-    }
-
-    /**
-     * プリミティブ型の数値クラスかどうか判定します。
-     * @param clazz クラス情報
-     * @return {@literal true}のとき、プリミティブ型のクラス情報
-     */
-    public static boolean isPrimitiveNumber(Class<?> clazz) {
-        if(!clazz.isPrimitive()) {
-            return false;
-        }
-
-        return short.class.isAssignableFrom(clazz)
-                || int.class.isAssignableFrom(clazz)
-                || long.class.isAssignableFrom(clazz)
-                || float.class.isAssignableFrom(clazz)
-                || double.class.isAssignableFrom(clazz)
-                ;
-
-    }
-
-    /**
-     * プリミティブ型に対するラッパークラスを取得します。
-     * プリミティブ型でない場合はそのまま引数を返します。
-     * @param clazz クラス情報
-     * @return クラス情報。
-     */
-    public static Class<?> getWrapperClass(Class<?> clazz) {
-
-        if(!clazz.isPrimitive()) {
-            return clazz;
-        }
-
-        if(byte.class.isAssignableFrom(clazz)) {
-            return Byte.class;
-
-        } else if(short.class.isAssignableFrom(clazz)) {
-            return Short.class;
-
-        } else if(int.class.isAssignableFrom(clazz)) {
-            return Integer.class;
-
-        } else if(long.class.isAssignableFrom(clazz)) {
-            return Long.class;
-
-        } else if(float.class.isAssignableFrom(clazz)) {
-            return Float.class;
-
-        } else if(double.class.isAssignableFrom(clazz)) {
-            return Double.class;
-
-        } else if(boolean.class.isAssignableFrom(clazz)) {
-            return Boolean.class;
-
-        } else if(char.class.isAssignableFrom(clazz)) {
-            return Character.class;
-        }
-
-        return clazz;
-
-    }
-
-    /**
-     * 要素が静的なクラス(static class)か判定します。
+     * 要素が非finalなインスタンスフィールド(非staticなフィールド)か判定します。
      * @param element 判定対象の要素
-     * @return 静的なクラス(static class)なとき{@literal true}を返します。
+     * @return 非finalなインスタンスフィールド(非staticなフィールド)のとき{@literal true}を返します。
      */
-    public static boolean isStaticInnerClass(final Element element) {
+    public static boolean isInstanceField(final Element element) {
 
-        // クラスかどうか
-        if(element.getKind() != ElementKind.CLASS) {
+        // フィールドかどうか
+        if(element.getKind() != ElementKind.FIELD) {
             return false;
         }
 
-        // staticかどうか
-        if(!element.getModifiers().contains(Modifier.STATIC)) {
+        // 非static かどうか
+        if(element.getModifiers().contains(Modifier.STATIC)) {
+            return false;
+        }
+
+        // 非finalかどうか
+        if(element.getModifiers().contains(Modifier.FINAL)) {
             return false;
         }
 
@@ -142,7 +51,32 @@ public class AptUtils {
      * @return 内部クラスのとき {@literal "$"} を返し、それ以外の時は {@literal "."} を返します。
      */
     public static String getPackageClassNameSeparator(final EntityMetamodel entityModel) {
-        return entityModel.isStaticInnerClass() ? "$" : ".";
+        return entityModel.getType().isStaticInnerClass() ? "$" : ".";
+    }
+
+    /**
+     * 継承しているクラス情報を抽出する。
+     * @param type 現在のクラス情報
+     * @param typeUtils ユーティリティ。
+     * @param superTypes 抽出したクラス情報。
+     */
+    public static void extractSuperClassTypes(final TypeMirror type, final Types typeUtils, final List<TypeMirror> superTypes) {
+
+        if(type.toString().equals(Object.class.getCanonicalName())) {
+            return;
+        }
+
+        List<? extends TypeMirror> list = typeUtils.directSupertypes(type);
+        for(TypeMirror superType : list) {
+            if(!superTypes.contains(superType)) {
+                superTypes.add(superType);
+            }
+
+            // 再帰的に見ていく
+            extractSuperClassTypes(superType, typeUtils, superTypes);
+        }
+
+
     }
 
 }

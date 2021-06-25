@@ -1,12 +1,16 @@
 package com.github.mygreen.sqlmapper.apt;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 
-import org.springframework.util.ReflectionUtils;
-
+import com.github.mygreen.sqlmapper.apt.model.AptType;
 import com.github.mygreen.sqlmapper.apt.model.EntityMetamodel;
 import com.github.mygreen.sqlmapper.apt.model.PropertyMetamodel;
 import com.github.mygreen.sqlmapper.core.annotation.Embeddable;
@@ -28,7 +32,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EntityMetamodelFactory {
 
-    private final ClassLoader classLoader;
+    private final Types typeUtils;
 
     /**
      * APTの処理対象のエンティティ情報からメタ情報を抽出する。
@@ -37,7 +41,7 @@ public class EntityMetamodelFactory {
      * @return エンティティのモデル情報。
      * @throws ClassNotFoundException エンティティで指定したクラスが存在しない場合
      */
-    public EntityMetamodel create(final Element entityElement) throws ClassNotFoundException {
+    public EntityMetamodel create(final TypeElement entityElement) throws ClassNotFoundException {
 
         final EntityMetamodel entityModel = new EntityMetamodel();
         entityModel.setClassName(entityElement.getSimpleName().toString());
@@ -47,22 +51,18 @@ public class EntityMetamodelFactory {
         if(enclosing != null) {
             entityModel.setPackageName(enclosing.toString());
         }
-
-        // staticな内部クラスか判定します。
-        entityModel.setStaticInnerClass(AptUtils.isStaticInnerClass(entityElement));
+        entityModel.setType(createAptType(entityElement.asType()));
 
         // 自身のクラス情報の取得
-        Class<?> entityClass = classLoader.loadClass(entityModel.getFullName());
-        entityModel.setEntityClass(entityClass);
-        entityModel.setEntityAnno(entityClass.getAnnotation(Entity.class));
-        entityModel.setMappedSuperclassAnno(entityClass.getAnnotation(MappedSuperclass.class));
-        entityModel.setEmbeddableAnno(entityClass.getAnnotation(Embeddable.class));
+        entityModel.setEntityAnno(entityElement.getAnnotation(Entity.class));
+        entityModel.setMappedSuperclassAnno(entityElement.getAnnotation(MappedSuperclass.class));
+        entityModel.setEmbeddableAnno(entityElement.getAnnotation(Embeddable.class));
 
         // 親クラスの取得
-        doSuperclass(entityModel, entityClass);
+        doSuperclass(entityModel, entityElement);
 
         // プロパティ情報の取得
-        doPropety(entityModel, entityClass);
+        doPropety(entityModel, entityElement);
 
         return entityModel;
     }
@@ -70,18 +70,25 @@ public class EntityMetamodelFactory {
     /**
      * 親クラスがアノテーション {@link MappedSuperclass} が付与されている場合、情報を付与する。
      * @param entityModel エンティティのモデル情報。
-     * @param entityClass 情報作成もとのエンティティクラス。
+     * @param entityElement 情報作成元のエンティティ情報。
      */
-    private void doSuperclass(final EntityMetamodel entityModel, final Class<?> entityClass) {
+    private void doSuperclass(final EntityMetamodel entityModel, final TypeElement entityElement) {
 
-        final Class<?> superClass = entityClass.getSuperclass();
-        if(superClass.equals(Object.class)) {
+        final TypeMirror superclassType = entityElement.getSuperclass();
+        if(superclassType.toString().equals(Object.class.getCanonicalName())) {
             // 継承していない場合
             return;
         }
 
-        if(superClass.getAnnotation(MappedSuperclass.class) != null) {
-            entityModel.setSuperClass(superClass);
+        Element superclassElement = typeUtils.asElement(superclassType);
+        if(superclassElement == null || !(superclassElement instanceof TypeElement)) {
+            // 親クラスがタイプ情報でない場合
+            return;
+        }
+
+        TypeElement superTypeElement = (TypeElement) superclassElement;
+        if(superTypeElement.getAnnotation(MappedSuperclass.class) != null) {
+            entityModel.setSuperClassType(createAptType(superclassType));
         }
 
     }
@@ -89,46 +96,60 @@ public class EntityMetamodelFactory {
     /**
      * エンティティタイプを元にエンティティのメタ情報を作成する。
      * @param entityModel エンティティのメタ情報
-     * @param entityClass エンティティタイプ
+     * @param entityElement 情報作成元のエンティティ情報。
      */
-    private void doPropety(final EntityMetamodel entityModel, final Class<?> entityClass) {
+    private void doPropety(final EntityMetamodel entityModel, final TypeElement entityElement) {
 
-        for(Field field : entityClass.getDeclaredFields()) {
-            int modifiers = field.getModifiers();
-            if(Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {
+        for(Element enclosedElement : entityElement.getEnclosedElements()) {
+            if(!AptUtils.isInstanceField(enclosedElement)) {
                 continue;
             }
 
-            ReflectionUtils.makeAccessible(field);
-
-            if(field.getAnnotation(Transient.class) != null) {
+            if(enclosedElement.getAnnotation(Transient.class) != null) {
                 // 永続化対象外は除外
                 continue;
             }
 
-            entityModel.add(createPropertyModel(field));
-
+            entityModel.add(createPropertyModel((VariableElement)enclosedElement));
         }
 
     }
 
     /**
      * フィールド情報を元にプロパティのメタ情報を作成する。
-     * @param field フィールド
+     * @param fieldElement フィールド
      * @return プロパティのメタ情報
      */
-    private PropertyMetamodel createPropertyModel(final Field field) {
+    private PropertyMetamodel createPropertyModel(final VariableElement fieldElement) {
 
         PropertyMetamodel propertyModel = new PropertyMetamodel();
 
-        propertyModel.setPropertyName(field.getName());
-        propertyModel.setPropertyType(field.getType());
+        propertyModel.setPropertyName(fieldElement.getSimpleName().toString());
+
+        TypeMirror type = fieldElement.asType();
+        propertyModel.setPropertyType(createAptType(type));
 
         // 埋め込み用かどうか
-        propertyModel.setEmbedded(field.getAnnotation(EmbeddedId.class) != null);
+        propertyModel.setEmbedded(fieldElement.getAnnotation(EmbeddedId.class) != null);
 
         return propertyModel;
 
     }
 
+    /**
+     * APT処理用のタイプ情報を作成する。
+     * @param typeMirror タイプ情報
+     * @return APT処理用のタイプ情報
+     */
+    private AptType createAptType(final TypeMirror typeMirror) {
+
+        AptType aptType = new AptType(typeMirror, Optional.ofNullable(typeUtils.asElement(typeMirror)));
+
+        // 継承クラスの抽出
+        List<TypeMirror> superTypes = new ArrayList<TypeMirror>();
+        AptUtils.extractSuperClassTypes(typeMirror, typeUtils, superTypes);
+        aptType.setSuperTypes(superTypes);
+
+        return aptType;
+    }
 }

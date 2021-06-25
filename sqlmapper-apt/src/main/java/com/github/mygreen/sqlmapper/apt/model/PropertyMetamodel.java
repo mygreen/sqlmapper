@@ -22,9 +22,9 @@ public class PropertyMetamodel {
     private String propertyName;
 
     /**
-     * プロパティのクラスタイプ
+     * プロパティのタイプ情報
      */
-    private Class<?> propertyType;
+    private AptType propertyType;
 
     /**
      * アノテーション{@link Column}の情報
@@ -35,11 +35,6 @@ public class PropertyMetamodel {
      * アノテーション{@link Column}が付与されている要素
      */
     private Element columnAnnoElemenet;
-
-    /**
-     * 定義されている親クラス
-     */
-    private String declaredClassName;
 
     /**
      * 埋め込み用かどうか。

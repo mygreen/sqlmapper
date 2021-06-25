@@ -2,7 +2,7 @@ package com.github.mygreen.sqlmapper.apt;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,7 @@ public class EntityMetaModelProcessorTest extends ProcessorTestBase {
     public void testProcess_entity() throws IOException {
 
         File file = new File(PACKAGE_PATH, "Customer.java");
-        process(EntityMetamodelProcessor.class, Collections.singletonList(file.getPath()), "generated-test-junit");
+        process(EntityMetamodelProcessor.class, List.of(file.getPath()), "generated-test-junit");
 
     }
 
@@ -22,7 +22,7 @@ public class EntityMetaModelProcessorTest extends ProcessorTestBase {
     public void testProcess_mappedSuperclass() throws IOException {
 
         File file = new File(PACKAGE_PATH, "EntityBase.java");
-        process(EntityMetamodelProcessor.class, Collections.singletonList(file.getPath()), "generated-test-junit");
+        process(EntityMetamodelProcessor.class, List.of(file.getPath()), "generated-test-junit");
 
     }
 
@@ -30,7 +30,7 @@ public class EntityMetaModelProcessorTest extends ProcessorTestBase {
     public void testProcess_ineritanceEntity() throws IOException {
 
         File file = new File(PACKAGE_PATH, "Order.java");
-        process(EntityMetamodelProcessor.class, Collections.singletonList(file.getPath()), "generated-test-junit");
+        process(EntityMetamodelProcessor.class, List.of(file.getPath()), "generated-test-junit");
 
     }
 
@@ -38,10 +38,8 @@ public class EntityMetaModelProcessorTest extends ProcessorTestBase {
     public void testProcess_embeddedEntity() throws IOException {
 
         File file1 = new File(PACKAGE_PATH, "Detail.java");
-        process(EntityMetamodelProcessor.class, Collections.singletonList(file1.getPath()), "generated-test-junit");
-
         File file2 = new File(PACKAGE_PATH, "DetailPK.java");
-        process(EntityMetamodelProcessor.class, Collections.singletonList(file2.getPath()), "generated-test-junit");
+        process(EntityMetamodelProcessor.class, List.of(file1.getPath(), file2.getPath()), "generated-test-junit");
 
     }
 
@@ -50,6 +48,6 @@ public class EntityMetaModelProcessorTest extends ProcessorTestBase {
 
         // 内部クラス
         File file = new File(PACKAGE_PATH, "Detail2.java");
-        process(EntityMetamodelProcessor.class, Collections.singletonList(file.getPath()), "generated-test-junit");
+        process(EntityMetamodelProcessor.class, List.of(file.getPath()), "generated-test-junit");
     }
 }

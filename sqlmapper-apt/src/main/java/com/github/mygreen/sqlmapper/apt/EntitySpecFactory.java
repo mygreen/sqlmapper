@@ -14,6 +14,7 @@ import javax.annotation.processing.Generated;
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.Modifier;
 
+import com.github.mygreen.sqlmapper.apt.model.AptType;
 import com.github.mygreen.sqlmapper.apt.model.EntityMetamodel;
 import com.github.mygreen.sqlmapper.apt.model.PropertyMetamodel;
 import com.github.mygreen.sqlmapper.core.util.NameUtils;
@@ -71,7 +72,7 @@ public class EntitySpecFactory {
 
         if(entityModel.isEmbeddable()) {
             return createTypeSpecAsEmbeddeable(entityModel, fieldSpecs);
-        } else if(entityModel.isAbstract()) {
+        } else if(entityModel.getType().isAbstract()) {
             return createTypeSpecAsAbstract(entityModel, fieldSpecs);
         } else {
             return createTypeSpecAsNormal(entityModel, fieldSpecs);
@@ -82,80 +83,80 @@ public class EntitySpecFactory {
 
     private FieldSpec createFieldSpec(final PropertyMetamodel propertyModel) {
 
-        final Class<?> propertyType = propertyModel.getPropertyType();
+        final AptType propertyType = propertyModel.getPropertyType();
 
         FieldSpec filedSpec;
         if(propertyModel.isEmbedded()) {
             // 埋め込み用のプロパティの場合
             // public final MPK id = new MPK(this, "id")
-            String embeddedEntityMetamodelName = resolveEntityMetamodelName(propertyModel.getPropertyType().getSimpleName());
+            String embeddedEntityMetamodelName = resolveEntityMetamodelName(propertyType.getSimpleName());
             ClassName embeddedEntityClassName = ClassName.bestGuess(embeddedEntityMetamodelName);
             filedSpec = FieldSpec.builder(embeddedEntityClassName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
                     .initializer("new $T(this, $S)", embeddedEntityClassName, propertyModel.getPropertyName())
                     .build();
 
-        } else if(String.class.isAssignableFrom(propertyType)) {
+        } else if(propertyType.isInheritanceOf(String.class)) {
             filedSpec = FieldSpec.builder(StringPath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
                     .initializer("createString($S)", propertyModel.getPropertyName())
                     .build();
 
-        } else if (Number.class.isAssignableFrom(propertyType) || AptUtils.isPrimitiveNumber(propertyType)) {
-            TypeName filedTypeName = ParameterizedTypeName.get(NumberPath.class, AptUtils.getWrapperClass(propertyType));
+        } else if (propertyType.isInheritanceOf(Number.class) || propertyType.isPrimitiveNumber()) {
+            TypeName filedTypeName = ParameterizedTypeName.get(ClassName.get(NumberPath.class), propertyType.getWrapperTypeName());
             filedSpec = FieldSpec.builder(filedTypeName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
-                    .initializer("createNumber($S, $T.class)", propertyModel.getPropertyName(), AptUtils.getWrapperClass(propertyType))
+                    .initializer("createNumber($S, $T.class)", propertyModel.getPropertyName(), propertyType.getWrapperTypeName())
                     .build();
 
-        } else if (Boolean.class.isAssignableFrom(propertyType) || boolean.class.isAssignableFrom(propertyType)) {
+        } else if (propertyType.isInheritanceOf(Boolean.class) || propertyType.isPrimitiveBoolean()) {
             filedSpec = FieldSpec.builder(BooleanPath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
                     .initializer("createBoolean($S)", propertyModel.getPropertyName())
                     .build();
 
         } else if(propertyType.isEnum()) {
-            TypeName filedTypeName = ParameterizedTypeName.get(EnumPath.class, propertyType);
+            TypeName filedTypeName = ParameterizedTypeName.get(ClassName.get(EnumPath.class), propertyType.getTypeName());
             filedSpec = FieldSpec.builder(filedTypeName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
-                    .initializer("createEnum($S, $T.class)", propertyModel.getPropertyName(), propertyType)
+                    .initializer("createEnum($S, $T.class)", propertyModel.getPropertyName(), propertyType.getTypeName())
                     .build();
 
-        } else if(Timestamp.class.isAssignableFrom(propertyType)) {
+        } else if(propertyType.isInheritanceOf(Timestamp.class)) {
             filedSpec = FieldSpec.builder(SqlTimestampPath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
                     .initializer("createSqlTimestamp($S)", propertyModel.getPropertyName())
                     .build();
 
-        } else if(Time.class.isAssignableFrom(propertyType)) {
+        } else if(propertyType.isInheritanceOf(Time.class)) {
             filedSpec = FieldSpec.builder(SqlTimePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
                     .initializer("createSqlTime($S)", propertyModel.getPropertyName())
                     .build();
 
-        } else if(Date.class.isAssignableFrom(propertyType)) {
+        } else if(propertyType.isInheritanceOf(Date.class)) {
             filedSpec = FieldSpec.builder(SqlDatePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
                     .initializer("createSqlDate($S)", propertyModel.getPropertyName())
                     .build();
 
-        } else if(java.util.Date.class.isAssignableFrom(propertyType)) {
+        } else if(propertyType.isInheritanceOf(java.util.Date.class)) {
             filedSpec = FieldSpec.builder(UtilDatePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
                     .initializer("createUtilDate($S)", propertyModel.getPropertyName())
                     .build();
 
-        } else if(LocalDate.class.isAssignableFrom(propertyType)) {
+        } else if(propertyType.isInheritanceOf(LocalDate.class)) {
             filedSpec = FieldSpec.builder(LocalDatePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
                     .initializer("createLocalDate($S)", propertyModel.getPropertyName())
                     .build();
 
-        } else if(LocalTime.class.isAssignableFrom(propertyType)) {
+        } else if(propertyType.isInheritanceOf(LocalTime.class)) {
             filedSpec = FieldSpec.builder(LocalTimePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
                     .initializer("createLocalTime($S)", propertyModel.getPropertyName())
                     .build();
 
-        } else if(LocalDateTime.class.isAssignableFrom(propertyType)) {
+        } else if(propertyType.isInheritanceOf(LocalDateTime.class)) {
             filedSpec = FieldSpec.builder(LocalDateTimePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
                     .initializer("createLocalDateTime($S)", propertyModel.getPropertyName())
                     .build();
 
         } else {
             // 汎用的なGeneralPathにする
-            TypeName filedTypeName = ParameterizedTypeName.get(GeneralPath.class, propertyType);
+            TypeName filedTypeName = ParameterizedTypeName.get(ClassName.get(GeneralPath.class), propertyType.getTypeName());
             filedSpec = FieldSpec.builder(filedTypeName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
-                    .initializer("createGeneral($S, $T.class)", propertyModel.getPropertyName(), propertyType)
+                    .initializer("createGeneral($S, $T.class)", propertyModel.getPropertyName(), propertyType.getTypeName())
                     .build();
         }
 
@@ -170,31 +171,32 @@ public class EntitySpecFactory {
      * @return クラス定義情報
      */
     private TypeSpec createTypeSpecAsNormal(final EntityMetamodel entityModel, final List<FieldSpec> fieldSpecs) {
-        // エンティティのクラスタイプ
-        final Class<?> entityType = AptUtils.getClassByName(entityModel.getFullName());
+        // エンティティのクラス
+        final ClassName entityType = entityModel.getType().asClassName();
 
         // メタモデルのクラス名
         final String entityMetamodelName = resolveEntityMetamodelName(entityModel.getClassName());
 
         // 継承タイプ
-        final TypeName superClass;
-        if(entityModel.getSuperClass() != null) {
+        final TypeName metamodelSuperClass;
+        if(entityModel.hasSuperClass()) {
             /*
              * 継承タイプ - 親が @MappedSuperclass を付与している場合
              * extends MParent<Sample>
              */
-            String superClassName =
-                    entityModel.getSuperClass().getPackageName()
+            ClassName superClass = entityModel.getSuperClassType().asClassName();
+            String metamodelSuperClassName =
+                    superClass.packageName()
                     + AptUtils.getPackageClassNameSeparator(entityModel)
-                    + resolveEntityMetamodelName(entityModel.getSuperClass().getSimpleName());
+                    + resolveEntityMetamodelName(superClass.simpleName());
 
-            superClass = ParameterizedTypeName.get(ClassName.bestGuess(superClassName), TypeVariableName.get(entityType));
+            metamodelSuperClass = ParameterizedTypeName.get(ClassName.bestGuess(metamodelSuperClassName), TypeVariableName.get(entityType.simpleName()));
         } else {
             /*
              * 継承タイプ - 通常
              * extends EntityPatBase<Sample>
              */
-            superClass = ParameterizedTypeName.get(EntityPathBase.class, entityType);
+            metamodelSuperClass = ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), entityType);
         }
 
         /*
@@ -206,7 +208,7 @@ public class EntitySpecFactory {
          */
         MethodSpec consturctor1 = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterizedTypeName.get(Class.class, entityType), "type")
+                .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), entityType), "type")
                 .addParameter(String.class, "name")
                 .addStatement("super(type, name)")
                 .build();
@@ -236,7 +238,7 @@ public class EntitySpecFactory {
 
         return TypeSpec.classBuilder(entityMetamodelName)
               .addModifiers(resolveEntityTypeModifiers(entityModel))
-              .superclass(superClass)
+              .superclass(metamodelSuperClass)
               .addAnnotation(createGeneratorAnnoSpec())
               .addJavadoc("$L is SqlMapper's metamodel type for {@link $T}", entityMetamodelName, entityType)
               .addMethod(consturctor1)
@@ -256,35 +258,36 @@ public class EntitySpecFactory {
      */
     private TypeSpec createTypeSpecAsAbstract(final EntityMetamodel entityModel, final List<FieldSpec> fieldSpecs) {
 
-        // エンティティのクラスタイプ
-        final Class<?> entityType = AptUtils.getClassByName(entityModel.getFullName());
+        // エンティティのクラス名情報
+        final ClassName entityType = entityModel.getType().asClassName();
 
         // メタモデルのクラス名
         final String entityMetamodelName = resolveEntityMetamodelName(entityModel.getClassName());
 
         // 継承タイプ
-        final TypeName superClass;
+        final TypeName metamodelSuperClass;
         final TypeVariableName classTypeVariable;
-        if(entityModel.getSuperClass() != null) {
+        if(entityModel.hasSuperClass()) {
             /*
              * 継承タイプ - 親が @MappedSuperclass を付与している場合
              * MSample<E extends Sample> extends MParent<E>
              */
-            String superClassName =
-                    entityModel.getSuperClass().getPackageName()
+            ClassName superClass = entityModel.getSuperClassType().asClassName();
+            String metamodelSuperClassName =
+                    superClass.packageName()
                     + AptUtils.getPackageClassNameSeparator(entityModel)
-                    + resolveEntityMetamodelName(entityModel.getSuperClass().getSimpleName());
+                    + resolveEntityMetamodelName(superClass.simpleName());
 
-           superClass = ParameterizedTypeName.get(ClassName.bestGuess(superClassName), TypeVariableName.get("E"));
-           classTypeVariable = TypeVariableName.get("E", ClassName.get(entityType));
+           metamodelSuperClass = ParameterizedTypeName.get(ClassName.bestGuess(metamodelSuperClassName), TypeVariableName.get("E"));
+           classTypeVariable = TypeVariableName.get("E", entityType);
 
         } else {
             /*
              * 継承タイプ - 自身が抽象クラス
              * MSample<E extends Sample> extends EntityPatBase<E>
              */
-            superClass = ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), TypeVariableName.get("E"));
-            classTypeVariable = TypeVariableName.get("E", ClassName.get(entityType));
+            metamodelSuperClass = ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), TypeVariableName.get("E"));
+            classTypeVariable = TypeVariableName.get("E", entityType);
         }
 
 
@@ -303,7 +306,7 @@ public class EntitySpecFactory {
 
         return TypeSpec.classBuilder(entityMetamodelName)
               .addModifiers(resolveEntityTypeModifiers(entityModel))
-              .superclass(superClass)
+              .superclass(metamodelSuperClass)
               .addTypeVariable(classTypeVariable)
               .addAnnotation(createGeneratorAnnoSpec())
               .addJavadoc("$L is SqlMapper's metamodel type for {@link $T}", entityMetamodelName, entityType)
@@ -322,30 +325,31 @@ public class EntitySpecFactory {
      */
     private TypeSpec createTypeSpecAsEmbeddeable(final EntityMetamodel entityModel, final List<FieldSpec> fieldSpecs) {
         // エンティティのクラスタイプ
-        final Class<?> entityType = AptUtils.getClassByName(entityModel.getFullName());
+        final ClassName entityType = entityModel.getType().asClassName();
 
         // メタモデルのクラス名
         final String entityMetamodelName = resolveEntityMetamodelName(entityModel.getClassName());
 
         // 継承タイプ
-        final TypeName superClass;
-        if(entityModel.getSuperClass() != null) {
+        final TypeName metamodelSuperClass;
+        if(entityModel.hasSuperClass()) {
             /*
              * 継承タイプ - 親が @MappedSuperclass を付与している場合
              * extends MParent<Sample>
              */
-            String superClassName =
-                    entityModel.getSuperClass().getPackageName()
+            ClassName superClass = entityModel.getSuperClassType().asClassName();
+            String metamodelSuperClassName =
+                    superClass.packageName()
                     + AptUtils.getPackageClassNameSeparator(entityModel)
-                    + resolveEntityMetamodelName(entityModel.getSuperClass().getSimpleName());
+                    + resolveEntityMetamodelName(superClass.simpleName());
 
-            superClass = ParameterizedTypeName.get(ClassName.bestGuess(superClassName), TypeVariableName.get(entityType));
+            metamodelSuperClass = ParameterizedTypeName.get(ClassName.bestGuess(metamodelSuperClassName), TypeVariableName.get(entityType.simpleName()));
         } else {
             /*
              * 継承タイプ - 通常
              * extends EntityPatBase<Sample>
              */
-            superClass = ParameterizedTypeName.get(EntityPathBase.class, entityType);
+            metamodelSuperClass = ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), entityType);
         }
 
         /*
@@ -357,7 +361,7 @@ public class EntitySpecFactory {
          */
         MethodSpec consturctor1 = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(ParameterizedTypeName.get(Class.class, entityType), "type")
+                .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), entityType), "type")
                 .addParameter(ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), WildcardTypeName.subtypeOf(Object.class)), "parent")
                 .addParameter(String.class, "name")
                 .addStatement("super(type, parent, name)")
@@ -379,7 +383,7 @@ public class EntitySpecFactory {
 
         return TypeSpec.classBuilder(entityMetamodelName)
               .addModifiers(resolveEntityTypeModifiers(entityModel))
-              .superclass(superClass)
+              .superclass(metamodelSuperClass)
               .addAnnotation(createGeneratorAnnoSpec())
               .addJavadoc("$L is SqlMapper's metamodel type for {@link $T}", entityMetamodelName, entityType)
               .addMethod(consturctor1)
@@ -416,11 +420,11 @@ public class EntitySpecFactory {
         List<Modifier> list = new ArrayList<>(1);
         list.add(Modifier.PUBLIC);
 
-        if(entityModel.isAbstract()) {
+        if(entityModel.getType().isAbstract()) {
             list.add(Modifier.ABSTRACT);
         }
 
-        if(entityModel.isStaticInnerClass()) {
+        if(entityModel.getType().isStaticInnerClass()) {
             list.add(Modifier.STATIC);
         }
 

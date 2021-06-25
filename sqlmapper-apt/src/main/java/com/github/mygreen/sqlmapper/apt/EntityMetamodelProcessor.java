@@ -54,6 +54,11 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
      */
     private MetamodelConfig metamodelConfig;
 
+    /**
+     * エンティティのメタモデル情報の作成クラス
+     */
+    private EntityMetamodelFactory entityMetamodelFactory;
+
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
@@ -61,6 +66,7 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
         this.filer = processingEnv.getFiler();
         this.messager = processingEnv.getMessager();
         this.metamodelConfig = new MetamodelConfig(processingEnv.getOptions());
+        this.entityMetamodelFactory = new EntityMetamodelFactory(processingEnv.getTypeUtils());
     }
 
     @Override
@@ -99,12 +105,10 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
      */
     private void processEntityAnno(final RoundEnvironment roundEnv, final List<EntityMetamodel> entityModeles) {
 
-        EntityMetamodelFactory factory = new EntityMetamodelFactory(this.getClass().getClassLoader());
-
         // @Entityが付与されたクラスの処理
         for(Element element : roundEnv.getElementsAnnotatedWith(Entity.class)) {
             try {
-                entityModeles.add(factory.create(element));
+                entityModeles.add(entityMetamodelFactory.create((TypeElement)element));
             } catch(ClassNotFoundException e) {
                 messager.printMessage(Kind.ERROR, e.getMessage(), element);
                 log.error("fail entity meta model for @Entity.", e);
@@ -114,7 +118,7 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
         // @MappedSuperclassが付与されたクラスの処理
         for(Element element : roundEnv.getElementsAnnotatedWith(MappedSuperclass.class)) {
             try {
-                entityModeles.add(factory.create(element));
+                entityModeles.add(entityMetamodelFactory.create((TypeElement)element));
             } catch(ClassNotFoundException e) {
                 messager.printMessage(Kind.ERROR, e.getMessage(), element);
                 log.error("fail entity meta model for @MappedSuperclass.", e);
@@ -124,7 +128,7 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
         // @Embeddableが付与されたクラスの処理
         for(Element element : roundEnv.getElementsAnnotatedWith(Embeddable.class)) {
             try {
-                entityModeles.add(factory.create(element));
+                entityModeles.add(entityMetamodelFactory.create((TypeElement)element));
             } catch(ClassNotFoundException e) {
                 messager.printMessage(Kind.ERROR, e.getMessage(), element);
                 log.error("fail entity meta model for @Embeddable.", e);
@@ -137,7 +141,7 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
             EntityMetamodel entityModel = itr.next();
 
             // static 内部クラスのモデル情報を抽出する。
-            if(entityModel.isStaticInnerClass()) {
+            if(entityModel.getType().isStaticInnerClass()) {
                 innerEntityModeles.add(entityModel);
                 itr.remove();
             }
