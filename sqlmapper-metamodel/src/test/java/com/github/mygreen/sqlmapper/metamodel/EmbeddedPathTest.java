@@ -13,7 +13,7 @@ import lombok.Data;
  * @author T.TSUCHIE
  *
  */
-class EmbeddedPathTest {
+public class EmbeddedPathTest {
 
     @Test
     void testPathMeta() {

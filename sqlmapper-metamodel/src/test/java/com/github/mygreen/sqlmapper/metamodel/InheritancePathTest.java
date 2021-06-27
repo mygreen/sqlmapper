@@ -17,7 +17,7 @@ import lombok.EqualsAndHashCode;
  * @author T.TSUCHIE
  *
  */
-class InheritancePathTest {
+public class InheritancePathTest {
 
     @Test
     void testPathMeta() {

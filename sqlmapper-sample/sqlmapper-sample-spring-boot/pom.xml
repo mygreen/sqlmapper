@@ -108,6 +108,9 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+					<annotationProcessors>
+						<annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
+					</annotationProcessors>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -123,6 +126,48 @@
 			</plugin>
 
 			<!-- メタクラス生成 -->
+			<!--
+			<plugin>
+				<groupId>org.bsc.maven</groupId>
+				<artifactId>maven-processor-plugin</artifactId>
+				<version>4.5</version>
+				<executions>
+					<execution>
+						<id>process</id>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<compilerArguments>-encoding ${project.build.sourceEncoding}</compilerArguments>
+							<processors>
+								<processor>com.github.mygreen.sqlmapper.apt.EntityMetamodelProcessor</processor>
+							</processors>
+							<outputDirectory>target/generated-sources/java</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>target/generated-sources/java</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			-->
 			<plugin>
 				<groupId>com.mysema.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
@@ -143,15 +188,6 @@
 						</configuration>
 					</execution>
 				</executions>
-				<!-- ここに定義するとMavenリポジトリを見に行くので、テストなどでは外に定義する
-				<dependencies>
-				    <dependency>
-						<groupId>com.github.mygreen.sqlmapper</groupId>
-						<artifactId>sqlmapper-apt</artifactId>
-						<version>${revision}</version>
-					</dependency>
-			    </dependencies>
-			     -->
 			</plugin>
 		</plugins>
 	</build>

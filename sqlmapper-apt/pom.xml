@@ -14,6 +14,7 @@
 	<packaging>jar</packaging>
 
 	<properties>
+		<jacoco.include.package>com.github.mygreen.sqlmapper.apt.*</jacoco.include.package>
 	</properties>
 
 	<build>
@@ -94,12 +95,19 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+					<annotationProcessors>
+						<!-- Lombokだけコンパイル時に実行されうようにする。 -->
+						<annotationProcessor>lombok.launch.AnnotationProcessorHider$AnnotationProcessor</annotationProcessor>
+					</annotationProcessors>
 				</configuration>
 			</plugin>
 
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.2</version>
+				<configuration>
+					<argLine>${jacocoArgs}</argLine>
+				</configuration>
 				<dependencies>
 					<dependency>
 						<groupId>org.junit.platform</groupId>
@@ -107,6 +115,24 @@
 						<version>1.3.2</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>jacoco-prepage-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<propertyName>jacocoArgs</propertyName>
+							<includes>
+								<include>${jacoco.include.package}</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -132,7 +158,7 @@
 				</configuration>
 			</plugin>
 
-			<!-- テスト用のメタクラス生成 -->
+			<!-- メタクラス生成 -->
 			<plugin>
 				<groupId>com.mysema.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
@@ -157,12 +183,10 @@
 					</execution>
 				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
 
 	<dependencies>
-
 		<dependency>
 			<groupId>com.github.mygreen.sqlmapper</groupId>
 			<artifactId>sqlmapper-core</artifactId>

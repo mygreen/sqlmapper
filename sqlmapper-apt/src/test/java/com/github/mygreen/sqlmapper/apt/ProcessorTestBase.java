@@ -47,7 +47,7 @@ public class ProcessorTestBase {
      * @param processorClass アノテーションプロセッサ
      * @param classes 処理対象のクラス名称。
      * @param target 生成したファイルの保存ディレクトリ
-     * @throws IOException
+     * @throws IOException ファイル生成に失敗した場合
      */
     protected void process(Class<? extends AbstractProcessor> processorClass, List<String> classes, String target) throws IOException {
         File out = new File("target/" + target);
@@ -62,9 +62,12 @@ public class ProcessorTestBase {
         List<String> options = new ArrayList<String>(classes.size() + 3);
         options.add("-s");
         options.add("target/" + target);
+
+        // 自身のAnnotationProcessorのみ実行する。
         options.add("-proc:only");
         options.add("-processor");
         options.add(processorClass.getName());
+
         options.add("-sourcepath");
         options.add("src/test/java");
 

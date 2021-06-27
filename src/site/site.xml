@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="${project.name}">
+	<!--
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-fluido-skin</artifactId>
+		<version>1.9</version>
+	</skin>
+	 -->
+	<body>
+		<breadcrumbs>
+			<item name="Top" href="index.html" />
+		</breadcrumbs>
+		<menu name="関連リンク">
+			<item name="GitHub" href="https://github.com/mygreen/sqlmapper/" />
+			<item name="JavaDoc" href="apidocs/index.html" />
+		</menu>
+		<menu ref="reports" />
+	</body>
+</project>

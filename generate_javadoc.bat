@@ -7,7 +7,7 @@ set LOG_FILE="target/javadoc.log"
 
 call env.bat
 
-rem call mvn clean
+call mvn clean
 
 mkdir target
 call mvn --version > %LOG_FILE% 2>&1 
