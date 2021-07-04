@@ -14,9 +14,9 @@ call asciidoctor -D _build index.adoc
 
 popd
 
-rmdir /q /s .\target\site\docs
-mkdir .\target\site\docs
-xcopy /y /e .\docs\_build .\target\site\docs
+rmdir /q /s .\target\site\how2docs
+mkdir .\target\site\how2docs
+xcopy /y /e .\docs\_build .\target\site\how2docs
 
 REM github-pages‚Ìsphinx‘Î‰
 echo "" > .\target\site\.nojekyll

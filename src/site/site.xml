@@ -20,6 +20,7 @@
 		</breadcrumbs>
 
 		<menu name="関連リンク">
+			<item name="使い方" href="how2docs/index.html" />
 			<item name="GitHub" href="https://github.com/mygreen/sqlmapper/" />
 			<item name="JavaDoc" href="apidocs/index.html" />
 		</menu>
