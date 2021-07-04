@@ -14,7 +14,20 @@ mkdir target
 call mvn --version > %LOG_FILE% 2>&1 
 call mvn site -Dgpg.skip=true -pl %MVN_PROJECT_LIST% >> %LOG_FILE% 2>&1 
 
-REM github-pagesã®å¯¾å¿œ
+echo W–ñ‚³‚ê‚½ jacoco-report ‚ÌƒRƒs[
+xcopy /S /Y /E /Q report-aggregate\target\site\jacoco-aggregate target\site\jacoco-aggregate
+
+echo Šeƒ‚ƒWƒ…[ƒ‹‚ÌƒTƒCƒg‚ÌƒRƒs[
+xcopy /S /Y /E /Q /I sqlmapper-parent\target\site target\site\sqlmapper-parent
+xcopy /S /Y /E /Q /I sqlmapper-parent\sqlmapper-apt\target\site target\site\sqlmapper-parent\sqlmapper-apt
+xcopy /S /Y /E /Q /I sqlmapper-parent\sqlmapper-core\target\site target\site\sqlmapper-parent\sqlmapper-core
+xcopy /S /Y /E /Q /I sqlmapper-parent\sqlmapper-metamodel\target\site target\site\sqlmapper-parent\sqlmapper-metamodel
+
+xcopy /S /Y /E /Q /I sqlmapper-parent\sqlmapper-spring-boot\target\site target\site\sqlmapper-parent\sqlmapper-spring-boot
+xcopy /S /Y /E /Q /I sqlmapper-parent\sqlmapper-spring-boot\sqlmapper-spring-boot-autoconfigure\target\site target\site\sqlmapper-parent\sqlmapper-spring-boot\sqlmapper-spring-boot-autoconfigure
+xcopy /S /Y /E /Q /I sqlmapper-parent\sqlmapper-spring-boot\sqlmapper-spring-boot-starter\target\site target\site\sqlmapper-parent\sqlmapper-spring-boot\sqlmapper-spring-boot-starter
+
+REM github-pages‚Ì‘Î‰
 echo "" > .\target\site\.nojekyll
 
 start target/site.log

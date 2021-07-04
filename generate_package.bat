@@ -11,7 +11,7 @@ call mvn clean
 
 mkdir target
 call mvn --version > %LOG_FILE% 2>&1 
-call mvn -e package -Dmaven.test.skip=true >> %LOG_FILE% 2>&1 
+call mvn -e package -Dmaven.test.skip=true -pl %MVN_PROJECT_LIST% >> %LOG_FILE% 2>&1 
 
 start target/package.log
 
