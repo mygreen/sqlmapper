@@ -1,0 +1,30 @@
+<style>
+    /**
+     * 関連リンクの見出し
+     */
+    #toc.toc2 .relations {
+        margin-bottom: .8rem;
+    }
+    /**
+     * 外部リンクのアイコン
+     */
+     #toc.toc2 a.externalink {
+        display: inline-block;
+        padding-right: 16px;
+        background: url(_static/external-link-12.png) no-repeat right center;
+    }
+</style>
+<script src="_static/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    // 目次に独自のリンクを追加します。
+    var tocObj = $('<div id="toctitle">関連リンク</div>');
+    var linkObj = $('<ul class="sectlevel1 relations"></ul>')
+        .append('<li><a href="../index.html">プロジェクト情報</a></li>')
+        .append('<li><a href="../project-reports.html">レポート情報</a></li>')
+        .append('<li><a class="externalink" href="../apidocs/index.html" target="_blank">JavaDoc</a></li>')
+        .append('<li><a class="externalink" href="https://github.com/mygreen/sqlmapper" target="_blank">GitHub</a></li>')
+        ;
+    $('#toc').prepend(linkObj).prepend(tocObj);
+});
+</script>
