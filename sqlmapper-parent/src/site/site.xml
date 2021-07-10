@@ -6,7 +6,7 @@
 	</bannerLeft>
 	<body>
 		<breadcrumbs>
-			<item name="Top" href="https://mygreen.github.io/sqlmapper/index.html" />
+			<item name="Top" href="https://mygreen.github.io/sqlmapper/" />
 		</breadcrumbs>
 
 		<menu ref="parent" inherit="top" />
