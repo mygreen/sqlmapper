@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AutoAnyDeleteImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-apt</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.query.auto</a> &gt; <span class="el_source">AutoAnyDeleteImpl.java</span></div><h1>AutoAnyDeleteImpl.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.query.auto;
+
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.metamodel.EntityPath;
+import com.github.mygreen.sqlmapper.metamodel.Predicate;
+
+import lombok.Getter;
+import lombok.NonNull;
+
+/**
+ * 任意の条件を指定して削除を行うSQLを自動生成するクエリの実装です。
+ *
+ * @author T.TSUCHIE
+ * @param &lt;T&gt; 処理対象となるエンティティの型
+ *
+ */
+public class AutoAnyDeleteImpl&lt;T&gt; implements AutoAnyDelete&lt;T&gt; {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+<span class="nc" id="L23">    @Getter</span>
+    private final SqlMapperContext context;
+
+<span class="nc" id="L26">    @Getter</span>
+    private final Class&lt;T&gt; baseClass;
+
+<span class="nc" id="L29">    @Getter</span>
+    private final EntityPath&lt;T&gt; entityPath;
+
+<span class="nc" id="L32">    @Getter</span>
+    private final EntityMeta entityMeta;
+
+    /**
+     * クライテリアです。
+     */
+<span class="nc" id="L38">    @Getter</span>
+    private Predicate where;
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+<span class="nc bnc" id="L42" title="All 4 branches missed.">    public AutoAnyDeleteImpl(@NonNull SqlMapperContext context, @NonNull EntityPath&lt;T&gt; entityPath) {</span>
+<span class="nc" id="L43">        this.context = context;</span>
+<span class="nc" id="L44">        this.entityPath = entityPath;</span>
+<span class="nc" id="L45">        this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());</span>
+<span class="nc" id="L46">        this.baseClass = (Class&lt;T&gt;)entityMeta.getEntityType();</span>
+<span class="nc" id="L47">    }</span>
+
+    @Override
+<span class="nc bnc" id="L50" title="All 2 branches missed.">    public AutoAnyDeleteImpl&lt;T&gt; where(@NonNull Predicate where) {</span>
+<span class="nc" id="L51">        this.where = where;</span>
+<span class="nc" id="L52">        return this;</span>
+    }
+
+    @Override
+    public int execute() {
+<span class="nc" id="L57">        return new AutoAnyDeleteExecutor(this)</span>
+<span class="nc" id="L58">                .execute();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

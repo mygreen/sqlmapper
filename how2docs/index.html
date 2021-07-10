@@ -1,0 +1,4158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.15">
+<meta name="copyright" content="Tatsuo TSUCHIE, 2021">
+<title>SqlMapper</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<style>
+/* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
+/* Uncomment @import statement to use as custom stylesheet */
+/*@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";*/
+article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section{display:block}
+audio,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+a{background:none}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+abbr[title]{border-bottom:1px dotted}
+b,strong{font-weight:bold}
+dfn{font-style:italic}
+hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,*::before,*::after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;word-wrap:anywhere;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:0}
+p{font-family:inherit;font-weight:400;font-size:1em;line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #dddddf;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em;height:0}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{font-size:1em;line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0;font-size:1em}
+ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
+ul.square{list-style-type:square}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
+abbr{text-transform:none}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede;word-wrap:normal}
+table thead,table tfoot{background:#f7f8f7}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt{background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
+.clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
+.clearfix::after,.float-group::after{clear:both}
+:not(pre).nobreak{word-wrap:normal}
+:not(pre).nowrap{white-space:nowrap}
+:not(pre).pre-wrap{white-space:pre-wrap}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
+pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
+pre>code{display:block}
+pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
+em em{font-style:normal}
+strong strong{font-weight:400}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menuref{color:#000}
+.menuseq b:not(.caret),.menuref{font-weight:inherit}
+.menuseq{word-spacing:-.02em}
+.menuseq b.caret{font-size:1.25em;line-height:.8}
+.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
+b.button::before,b.button::after{position:relative;top:-1px;font-weight:400}
+b.button::before{content:"[";padding:0 3px 0 2px}
+b.button::after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin-left:auto;margin-right:auto;margin-top:0;margin-bottom:0;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header::before,#header::after,#content::before,#content::after,#footnotes::before,#footnotes::after,#footer::before,#footer::after{content:" ";display:table}
+#header::after,#content::after,#footnotes::after,#footer::after{clear:both}
+#content{margin-top:1.25em}
+#content::before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:-ms-flexbox;display:-webkit-flex;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span::before{content:"\00a0\2013\00a0"}
+#header .details br+span.author::before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark::before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber::after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #dddddf;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #e7e7e9;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+#toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #e7e7e9;left:auto;right:0}}
+@media screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:none;background:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:rgba(255,255,255,.8);line-height:1.44}
+#content{margin-bottom:.625em}
+.sect1{padding-bottom:.625em}
+@media screen and (min-width:768px){#content{margin-bottom:1.25em}
+.sect1{padding-bottom:1.25em}}
+.sect1:last-child{padding-bottom:0}
+.sect1+.sect1{border-top:1px solid #e7e7e9}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor::before,h2>a.anchor::before,h3>a.anchor::before,#toctitle>a.anchor::before,.sidebarblock>.content>.title>a.anchor::before,h4>a.anchor::before,h5>a.anchor::before,h6>a.anchor::before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+details>summary:first-of-type{cursor:pointer;display:list-item;outline:none;margin-bottom:.75em}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
+.paragraph.lead>p,#preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
+table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:inherit}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
+.sidebarblock{border-style:solid;border-width:1px;border-color:#dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;-webkit-border-radius:4px;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock>.content>pre{-webkit-border-radius:4px;border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
+@media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
+@media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
+.literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class="highlight"],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
+.literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
+.listingblock:hover code[data-lang]::before{display:block}
+.listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
+.listingblock.terminal pre .command:not([data-prompt])::before{content:"$"}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;-webkit-border-radius:4px;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.prettyprint{background:#f7f7f8}
+pre.prettyprint .linenums{line-height:1.45;margin-left:2em}
+pre.prettyprint li{background:none;list-style-type:inherit;padding-left:0}
+pre.prettyprint li code[data-lang]::before{opacity:1}
+pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
+table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
+table.linenotable td.code{padding-left:.75em}
+table.linenotable td.linenos{border-right:1px solid currentColor;opacity:.35;padding-right:.5em}
+pre.pygments .lineno{border-right:1px solid currentColor;opacity:.35;display:inline-block;margin-right:.75em}
+pre.pygments .lineno::before{content:"";margin-right:-.125em}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock:not(.excerpt)>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote::before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.75em;margin-right:.5ex;text-align:right}
+.verseblock{margin:0 1em 1.25em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract blockquote::before,.quoteblock.excerpt blockquote::before,.quoteblock .quoteblock blockquote::before{display:none}
+.quoteblock.abstract blockquote,.quoteblock.abstract p,.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{line-height:1.6;word-spacing:0}
+.quoteblock.abstract{margin:0 1em 1.25em;display:block}
+.quoteblock.abstract>.title{margin:0 0 .375em;font-size:1.15em;text-align:center}
+.quoteblock.excerpt>blockquote,.quoteblock .quoteblock{padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
+.quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
+.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;font-size:.85rem;text-align:left;margin-right:0}
+p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
+td.tableblock>.content>:last-child{margin-bottom:-1.25em}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all>*>tr>*{border-width:1px}
+table.grid-cols>*>tr>*{border-width:0 1px}
+table.grid-rows>*>tr>*{border-width:1px 0}
+table.frame-all{border-width:1px}
+table.frame-ends{border-width:1px 0}
+table.frame-sides{border-width:0 1px}
+table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-child>*{border-top-width:0}
+table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
+table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
+table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
+table.stripes-all tr,table.stripes-odd tr:nth-of-type(odd),table.stripes-even tr:nth-of-type(even),table.stripes-hover tr:hover{background:#f8f8f7}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
+ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
+ul.unstyled,ol.unstyled{margin-left:0}
+ul.checklist{margin-left:.625em}
+ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
+ul.checklist li>p:first-child>input[type="checkbox"]:first-child{margin-right:.25em}
+ul.inline{display:-ms-flexbox;display:-webkit-box;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap;list-style:none;margin:0 0 .625em -1.25em}
+ul.inline>li{margin-left:1.25em}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+td.hdlist2{word-wrap:anywhere}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
+.colist td:not([class]):first-child img{max-width:none}
+.colist td:not([class]):last-child{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:solid 4px #fff;-webkit-box-shadow:0 0 0 1px #ddd;box-shadow:0 0 0 1px #ddd}
+.imageblock.left{margin:.25em .625em 1.25em 0}
+.imageblock.right{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
+.gist .file-data>table td.line-data{width:99%}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background:#00fafa}
+.black{color:#000}
+.black-background{background:#000}
+.blue{color:#0000bf}
+.blue-background{background:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background:#fa00fa}
+.gray{color:#606060}
+.gray-background{background:#7d7d7d}
+.green{color:#006000}
+.green-background{background:#007d00}
+.lime{color:#00bf00}
+.lime-background{background:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background:#7d0000}
+.navy{color:#000060}
+.navy-background{background:#00007d}
+.olive{color:#606000}
+.olive-background{background:#7d7d00}
+.purple{color:#600060}
+.purple-background{background:#7d007d}
+.red{color:#bf0000}
+.red-background{background:#fa0000}
+.silver{color:#909090}
+.silver-background{background:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background:#fafa00}
+span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);-webkit-border-radius:50%;border-radius:50%;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]::after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,span.alt{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background:#fffef7;border-color:#e0e0dc;-webkit-box-shadow:0 1px 4px #e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@page{margin:1.25cm .75cm}
+@media print{*{-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}
+html{font-size:80%}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare)::after,a[href^="https:"]:not(.bare)::after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]::after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#header,#content,#footnotes,#footer{max-width:none}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span::before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]::before{display:block}
+#footer{padding:0 .9375em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+@media print,amzn-kf8{#header>h1:first-child{margin-top:1.25rem}
+.sect1{padding:0!important}
+.sect1+.sect1{border:0}
+#footer{background:none}
+#footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
+@media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/styles/github.min.css">
+<style>
+    /**
+     * 関連リンクの見出し
+     */
+    #toc.toc2 .relations {
+        margin-bottom: .8rem;
+    }
+    /**
+     * 外部リンクのアイコン
+     */
+     #toc.toc2 a.externalink {
+        display: inline-block;
+        padding-right: 16px;
+        background: url(_static/external-link-12.png) no-repeat right center;
+    }
+</style>
+<script src="_static/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+    // 目次に独自のリンクを追加します。
+    var tocObj = $('<div id="toctitle">関連リンク</div>');
+    var linkObj = $('<ul class="sectlevel1 relations"></ul>')
+        .append('<li><a href="../index.html">プロジェクト情報</a></li>')
+        .append('<li><a href="../project-reports.html">レポート情報</a></li>')
+        .append('<li><a class="externalink" href="../apidocs/index.html" target="_blank">JavaDoc</a></li>')
+        .append('<li><a class="externalink" href="https://github.com/mygreen/sqlmapper" target="_blank">GitHub</a></li>')
+        ;
+    $('#toc').prepend(linkObj).prepend(tocObj);
+});
+</script>
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<h1>SqlMapper</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">目次</div>
+<ul class="sectlevel1">
+<li><a href="#setup">1. セットアップ</a>
+<ul class="sectlevel2">
+<li><a href="#_前提環境前提条件">1.1. 前提環境・前提条件</a></li>
+<li><a href="#_spring_framework_の設定">1.2. Spring Framework の設定</a>
+<ul class="sectlevel3">
+<li><a href="#_ライブラリの依存関係の追加">1.2.1. ライブラリの依存関係の追加</a></li>
+<li><a href="#_javaconfigの設定">1.2.2. JavaConfigの設定</a></li>
+</ul>
+</li>
+<li><a href="#_spring_bootの設定">1.3. Spring Bootの設定</a>
+<ul class="sectlevel3">
+<li><a href="#_ライブラリの依存関係の追加_2">1.3.1. ライブラリの依存関係の追加</a></li>
+<li><a href="#_データソースの設定">1.3.2. データソースの設定</a></li>
+</ul>
+</li>
+<li><a href="#available_properties">1.4. 設定可能なプロパティ</a></li>
+</ul>
+</li>
+<li><a href="#autoquery">2. Criteria API</a>
+<ul class="sectlevel2">
+<li><a href="#_criteria_apiでできないこと">2.1. Criteria APIでできないこと</a></li>
+<li><a href="#_検索">2.2. 検索</a>
+<ul class="sectlevel3">
+<li><a href="#_複数件検索">2.2.1. 複数件検索</a></li>
+<li><a href="#_1件検索">2.2.2. 1件検索</a></li>
+<li><a href="#_streamによる検索">2.2.3. Streamによる検索</a></li>
+<li><a href="#_検索結果の行数取得">2.2.4. 検索結果の行数取得</a></li>
+<li><a href="#_結合">2.2.5. 結合</a></li>
+<li><a href="#_idとバージョンによる検索条件指定">2.2.6. IDとバージョンによる検索条件指定</a></li>
+<li><a href="#_複雑な検索条件の指定">2.2.7. 複雑な検索条件の指定</a></li>
+<li><a href="#select_order_by">2.2.8. 並び順</a></li>
+<li><a href="#_排他制御">2.2.9. 排他制御</a></li>
+<li><a href="#_指定したプロパティのみを検索結果に含める">2.2.10. 指定したプロパティのみを検索結果に含める</a></li>
+<li><a href="#_指定したプロパティを検索結果から除外する">2.2.11. 指定したプロパティを検索結果から除外する</a></li>
+<li><a href="#_ページング">2.2.12. ページング</a></li>
+</ul>
+</li>
+<li><a href="#_挿入">2.3. 挿入</a>
+<ul class="sectlevel3">
+<li><a href="#_1件挿入">2.3.1. 1件挿入</a></li>
+<li><a href="#_バッチ挿入">2.3.2. バッチ挿入</a></li>
+<li><a href="#_指定したプロパティのみを挿入対象にする">2.3.3. 指定したプロパティのみを挿入対象にする</a></li>
+<li><a href="#_指定したプロパティを挿入対象から除外する">2.3.4. 指定したプロパティを挿入対象から除外する</a></li>
+</ul>
+</li>
+<li><a href="#_更新">2.4. 更新</a>
+<ul class="sectlevel3">
+<li><a href="#_1件挿入_2">2.4.1. 1件挿入</a></li>
+<li><a href="#_バッチ更新">2.4.2. バッチ更新</a></li>
+<li><a href="#_バージョンプロパティを通常の更新対象にする">2.4.3. バージョンプロパティを通常の更新対象にする</a></li>
+<li><a href="#_nullの項目を更新しない">2.4.4. nullの項目を更新しない</a></li>
+<li><a href="#_指定したプロパティのみを更新対象にする">2.4.5. 指定したプロパティのみを更新対象にする</a></li>
+<li><a href="#_指定したプロパティを更新対象から除外する">2.4.6. 指定したプロパティを更新対象から除外する</a></li>
+<li><a href="#_変更のあったプロパティのみを更新対象にする">2.4.7. 変更のあったプロパティのみを更新対象にする</a></li>
+<li><a href="#_更新行数をチェックしない">2.4.8. 更新行数をチェックしない</a></li>
+</ul>
+</li>
+<li><a href="#_削除">2.5. 削除</a>
+<ul class="sectlevel3">
+<li><a href="#_1件削除">2.5.1. 1件削除</a></li>
+<li><a href="#_バッチ削除">2.5.2. バッチ削除</a></li>
+<li><a href="#_削除条件の指定">2.5.3. 削除条件の指定</a></li>
+<li><a href="#_バージョンをチェックしないで削除する">2.5.4. バージョンをチェックしないで削除する</a></li>
+<li><a href="#_削除行数をチェックしない">2.5.5. 削除行数をチェックしない</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_sqlによるクエリ実行">3. SQLによるクエリ実行</a>
+<ul class="sectlevel2">
+<li><a href="#_検索_2">3.1. 検索</a>
+<ul class="sectlevel3">
+<li><a href="#_複数件検索_2">3.1.1. 複数件検索</a></li>
+<li><a href="#_1件検索_2">3.1.2. 1件検索</a></li>
+<li><a href="#_streamによる検索_2">3.1.3. Streamによる検索</a></li>
+<li><a href="#_検索結果の行数取得_2">3.1.4. 検索結果の行数取得</a></li>
+</ul>
+</li>
+<li><a href="#_挿入更新削除">3.2. 挿入・更新・削除</a></li>
+</ul>
+</li>
+<li><a href="#filequery">4. SQLファイルによるクエリ実行</a>
+<ul class="sectlevel2">
+<li><a href="#_sqlファイルのパス">4.1. SQLファイルのパス</a>
+<ul class="sectlevel3">
+<li><a href="#_sqlファイルの文字コードとキャッシュ設定">4.1.1. SQLファイルの文字コードとキャッシュ設定</a></li>
+</ul>
+</li>
+<li><a href="#_検索_3">4.2. 検索</a>
+<ul class="sectlevel3">
+<li><a href="#_複数件検索_3">4.2.1. 複数件検索</a></li>
+<li><a href="#_1件検索_3">4.2.2. 1件検索</a></li>
+<li><a href="#_streamによる検索_3">4.2.3. Streamによる検索</a></li>
+<li><a href="#_検索結果の行数取得_3">4.2.4. 検索結果の行数取得</a></li>
+</ul>
+</li>
+<li><a href="#_挿入更新削除_2">4.3. 挿入・更新・削除</a></li>
+</ul>
+</li>
+<li><a href="#how2entity">5. エンティティの定義方法</a>
+<ul class="sectlevel2">
+<li><a href="#_アノテーション一覧">5.1. アノテーション一覧</a></li>
+<li><a href="#anno_entity">5.2. エンティティとテーブルのマッピング方法</a>
+<ul class="sectlevel3">
+<li><a href="#anno_table">5.2.1. エンティティとテーブル名の規約</a></li>
+</ul>
+</li>
+<li><a href="#anno_column">5.3. フィールドとカラムのマッピング方法</a>
+<ul class="sectlevel3">
+<li><a href="#_サポートするクラスタイプ">5.3.1. サポートするクラスタイプ</a></li>
+<li><a href="#_フィールドとカラム名の規約">5.3.2. フィールドとカラム名の規約</a></li>
+</ul>
+</li>
+<li><a href="#anno_generated_id">5.4. 識別子（ID）の自動採番</a>
+<ul class="sectlevel3">
+<li><a href="#anno_table_gnerarator">5.4.1. テーブルによる識別子（ID）の自動採番</a></li>
+<li><a href="#_独自実装による識別子idの自動採番">5.4.2. 独自実装による識別子（ID）の自動採番</a></li>
+</ul>
+</li>
+<li><a href="#anno_embedded_id">5.5. 複合識別子（複合主キー）の定義</a></li>
+<li><a href="#anno_mapped_superclass">5.6. 継承したエンティティを定義する</a></li>
+<li><a href="#anno_version">5.7. 楽観的排他制御用のバージョン</a></li>
+<li><a href="#anno_enumerated">5.8. 列挙型を扱う</a>
+<ul class="sectlevel3">
+<li><a href="#_列挙型の任意のメソッドの値を使用する場合">5.8.1. 列挙型の任意のメソッドの値を使用する場合</a></li>
+</ul>
+</li>
+<li><a href="#anno_temporal">5.9. 時制を扱う</a></li>
+<li><a href="#anno_lob">5.10. ラージオブジェクトを扱う</a></li>
+<li><a href="#anno_transient">5.11. 永続化対象外を指定する</a></li>
+<li><a href="#_監査情報を記録する">5.12. 監査情報を記録する</a>
+<ul class="sectlevel3">
+<li><a href="#anno_created_at">5.12.1. 作成／更新日時の自動設定</a></li>
+<li><a href="#anno_created_by">5.12.2. 作成／更新ユーザの永続化方法</a></li>
+</ul>
+</li>
+<li><a href="#anno_convert">5.13. 独自の型をマッピングする</a></li>
+</ul>
+</li>
+<li><a href="#metamodel">6. メタモデル</a>
+<ul class="sectlevel2">
+<li><a href="#_メタモデルとは">6.1. メタモデルとは</a></li>
+<li><a href="#_自動生成のカスタマイズ">6.2. 自動生成のカスタマイズ</a></li>
+</ul>
+</li>
+<li><a href="#transaction">7. トランザクション</a>
+<ul class="sectlevel2">
+<li><a href="#_宣言的トランザクション管理">7.1. 宣言的トランザクション管理</a>
+<ul class="sectlevel3">
+<li><a href="#_プログラムによるトランザクション管理">7.1.1. プログラムによるトランザクション管理</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_リリースノート">8. リリースノート</a>
+<ul class="sectlevel2">
+<li><a href="#_ver_0_2_2021_06_xx">8.1. ver.0.2 - 2021-06-xx</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>SqlMapper は、Spring Framework　のJDBC機能を使って、「S2JDBC の再実装 + 機能追加」 を目指した O/R Mapperのライブラリです。</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="setup">1. セットアップ</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_前提環境前提条件">1.1. 前提環境・前提条件</h3>
+<div class="paragraph">
+<p>本ライブラリの前提条件を以下に示します。</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">表 1. 依存ライブラリの前提条件</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">項目</th>
+<th class="tableblock halign-left valign-top">値</th>
+<th class="tableblock halign-left valign-top">備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Java</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JDK11+</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">必須</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring Framework</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">5.3+</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">必須</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Spring Boot</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2.4+</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">オプション</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">表 2. サポートしているDB</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">DB</th>
+<th class="tableblock halign-left valign-top">バージョン</th>
+<th class="tableblock halign-left valign-top">備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">H2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HSQLDB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oracle</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">v12+</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oracle 11以前を使用するときには、<code>OracleLegacyDialect</code> を使用する。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SQLite</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PostgreSQL</p></td>
+<td class="tableblock halign-left valign-top"></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_spring_framework_の設定">1.2. Spring Framework の設定</h3>
+<div class="paragraph">
+<p>非Spring Boot の環境、または、SqlMapperのstater を使用しない時の環境設定方法を説明します。</p>
+</div>
+<div class="sect3">
+<h4 id="_ライブラリの依存関係の追加">1.2.1. ライブラリの依存関係の追加</h4>
+<div class="paragraph">
+<p>Mavenを使用している場合は、<code>pom.xml</code> に依存関係を追加します。</p>
+</div>
+<div class="paragraph">
+<p>利用するDBのJDBCドライバの定義も追加します。</p>
+</div>
+<div class="listingblock">
+<div class="title">pom.xmlへの依存関係の追加</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;project&gt;
+    &lt;dependencies&gt;
+		&lt;!-- SQLMapperの定義 --&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;com.github.mygreen.sqlmapper&lt;/groupId&gt;
+			&lt;artifactId&gt;sqlmapper-core&lt;/artifactId&gt;
+			&lt;version&gt;0.2&lt;/version&gt;
+		&lt;/dependency&gt;
+
+		&lt;!-- 利用するDBのJDBCドライバを追加します --&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;com.h2database&lt;/groupId&gt;
+			&lt;artifactId&gt;h2&lt;/artifactId&gt;
+			&lt;version&gt;1.4.200&lt;/version&gt;
+		&lt;/dependency&gt;
+
+    &lt;/dependencies&gt;
+&lt;/project&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>さらに、メタモデルを自動生成する設定を追加します。</p>
+</div>
+<div class="listingblock">
+<div class="title">pom.xmlへのメタモデルの自動生成設定の追加</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;project&gt;
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;!-- メタモデルを生成するプラグインを追加します --&gt;
+            &lt;plugin&gt;
+				&lt;groupId&gt;com.mysema.maven&lt;/groupId&gt;
+				&lt;artifactId&gt;apt-maven-plugin&lt;/artifactId&gt;
+				&lt;version&gt;1.1.3&lt;/version&gt;
+				&lt;executions&gt;
+					&lt;execution&gt;
+						&lt;phase&gt;generate-sources&lt;/phase&gt;
+						&lt;goals&gt;
+							&lt;goal&gt;process&lt;/goal&gt;
+						&lt;/goals&gt;
+						&lt;configuration&gt;
+							&lt;outputDirectory&gt;target/generated-sources/java&lt;/outputDirectory&gt;
+							&lt;logOnlyOnError&gt;false&lt;/logOnlyOnError&gt;
+							&lt;processors&gt;
+								&lt;processor&gt;com.github.mygreen.sqlmapper.apt.EntityMetamodelProcessor&lt;/processor&gt;
+							&lt;/processors&gt;
+							&lt;sourceEncoding&gt;UTF-8&lt;/sourceEncoding&gt;
+						&lt;/configuration&gt;
+					&lt;/execution&gt;
+				&lt;/executions&gt;
+                &lt;dependencies&gt;
+				    &lt;dependency&gt;
+						&lt;groupId&gt;com.github.mygreen.sqlmapper&lt;/groupId&gt;
+						&lt;artifactId&gt;sqlmapper-apt&lt;/artifactId&gt;
+						&lt;version&gt;0.2&lt;/version&gt;
+					&lt;/dependency&gt;
+			    &lt;/dependencies&gt;
+			&lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_javaconfigの設定">1.2.2. JavaConfigの設定</h4>
+<div class="paragraph">
+<p>SqlMapper用のJavaConfigのサポートクラス <code>SqlMapperConfigurationSupport</code> を継承して定義します。</p>
+</div>
+<div class="paragraph">
+<p>データソースとDBの方言種別を環境に合わせ定義します。</p>
+</div>
+<div class="listingblock">
+<div class="title">JavaConfigの定義</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import javax.sql.DataSource;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
+import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigurationSupport;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.dialect.H2Dialect;
+
+
+@Configuration
+public class SqlMapperConfig extends SqlMapperConfigurationSupport {
+
+    // データソースの定義
+    @Override
+    public DataSource dataSource() {
+        return new EmbeddedDatabaseBuilder()
+                .generateUniqueName(true)
+                .setType(EmbeddedDatabaseType.H2)
+                .setScriptEncoding("UTF-8")
+                .build();
+    }
+
+    // DBの方言種別の定義
+    @Override
+    public Dialect dialect() {
+        return new H2Dialect();
+    }
+}</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="spring_normal_properties">プロパティの上書き</h5>
+<div class="paragraph">
+<p>テーブルによる識別子の生成などの設定を上書きする場合は、Springのアノテーション <code>@PropertySource</code> を使用し、プロパティを上書きします。</p>
+</div>
+<div class="paragraph">
+<p>設定可能なプロパティは、<a href="#available_properties">設定可能なプロパティ</a> を参照してください。</p>
+</div>
+<div class="paragraph">
+<p>JavaConfigの定義</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import org.springframework.context.annotation.PropertySource;
+
+@Configuration
+@PropertySource("classpath:application.properties")
+public class SqlMapperConfig extends SqlMapperConfigurationSupport {
+    // ・・・省略
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_spring_bootの設定">1.3. Spring Bootの設定</h3>
+<div class="paragraph">
+<p>Spring Boot のSqlMapper 専用の starter を使った環境設定方法を説明します。</p>
+</div>
+<div class="sect3">
+<h4 id="_ライブラリの依存関係の追加_2">1.3.1. ライブラリの依存関係の追加</h4>
+<div class="paragraph">
+<p>Mavenを使用している場合は、<code>pom.xml</code> に依存関係を追加します。</p>
+</div>
+<div class="paragraph">
+<p>利用するDBのJDBCドライバの定義も追加します。</p>
+</div>
+<div class="listingblock">
+<div class="title">pom.xmlへの依存関係の追加</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;project&gt;
+    &lt;dependencies&gt;
+		&lt;!-- SQLMapperのSpringBoot用のstarterの追加 --&gt;
+        &lt;dependency&gt;
+			&lt;groupId&gt;com.github.mygreen.sqlmapper&lt;/groupId&gt;
+			&lt;artifactId&gt;sqlmapper-spring-boot-starter&lt;/artifactId&gt;
+			&lt;version&gt;0.2&lt;/version&gt;
+		&lt;/dependency&gt;
+
+		&lt;!-- 利用するDBのJDBCドライバを追加します --&gt;
+		&lt;dependency&gt;
+			&lt;groupId&gt;com.h2database&lt;/groupId&gt;
+			&lt;artifactId&gt;h2&lt;/artifactId&gt;
+		&lt;/dependency&gt;
+
+    &lt;/dependencies&gt;
+&lt;/project&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>さらに、メタモデルを自動生成する設定を追加します。</p>
+</div>
+<div class="listingblock">
+<div class="title">pom.xmlへのメタモデルの自動生成設定の追加</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;project&gt;
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;!-- メタモデルを生成するプラグインを追加します --&gt;
+            &lt;plugin&gt;
+				&lt;groupId&gt;com.mysema.maven&lt;/groupId&gt;
+				&lt;artifactId&gt;apt-maven-plugin&lt;/artifactId&gt;
+				&lt;version&gt;1.1.3&lt;/version&gt;
+				&lt;executions&gt;
+					&lt;execution&gt;
+						&lt;phase&gt;generate-sources&lt;/phase&gt;
+						&lt;goals&gt;
+							&lt;goal&gt;process&lt;/goal&gt;
+						&lt;/goals&gt;
+						&lt;configuration&gt;
+							&lt;outputDirectory&gt;target/generated-sources/java&lt;/outputDirectory&gt;
+							&lt;logOnlyOnError&gt;false&lt;/logOnlyOnError&gt;
+							&lt;processors&gt;
+								&lt;processor&gt;com.github.mygreen.sqlmapper.apt.EntityMetamodelProcessor&lt;/processor&gt;
+							&lt;/processors&gt;
+							&lt;sourceEncoding&gt;UTF-8&lt;/sourceEncoding&gt;
+						&lt;/configuration&gt;
+					&lt;/execution&gt;
+				&lt;/executions&gt;
+                &lt;dependencies&gt;
+				    &lt;dependency&gt;
+						&lt;groupId&gt;com.github.mygreen.sqlmapper&lt;/groupId&gt;
+						&lt;artifactId&gt;sqlmapper-apt&lt;/artifactId&gt;
+						&lt;version&gt;0.2&lt;/version&gt;
+					&lt;/dependency&gt;
+			    &lt;/dependencies&gt;
+			&lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_データソースの設定">1.3.2. データソースの設定</h4>
+<div class="paragraph">
+<p>データソースの接続定義をアプリケーションプロパティに定義します。</p>
+</div>
+<div class="paragraph">
+<p>データソースの定義は、SpringBoot標準の定義を使用します。</p>
+</div>
+<div class="listingblock">
+<div class="title">データソースの定義</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+    username: sa
+    password:</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="spring_boot_properties">プロパティの上書き</h5>
+<div class="paragraph">
+<p>テーブルによる識別子の生成などの設定を上書きする場合は、SpringBootの <code>applicaiton.yml</code> や <code>application.properties</code> に定義します。</p>
+</div>
+<div class="paragraph">
+<p>設定可能なプロパティは、<a href="#available_properties">設定可能なプロパティ</a> を参照してください。</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="available_properties">1.4. 設定可能なプロパティ</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">表 3. テーブルによるID生成の設定</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">キー</th>
+<th class="tableblock halign-left valign-top">デフォルト値</th>
+<th class="tableblock halign-left valign-top">説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.table</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ID_SEQUENCE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">生成したIDの値を永続化するテーブル名。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.schema</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">- (デフォルト値は空)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">生成したIDの値を永続化するテーブルが定義されているスキーマ名。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.catalog</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">- (デフォルト値は空)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">生成したIDの値を永続化するテーブルが定義されているカタログ名。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.pk-column</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SEQUENCE_NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">生成したIDの名称を保持するカラム名。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.value-column</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SEQUENCE_VALUE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">生成したIDの値を保持するカラム名。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.allocation-size</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>50</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">採番を行う際に、予め指定した値分を払い出しておく値です。値を1にすると、毎回レコードを更新することになり、オーバーヘッドが発生します。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.initial-value</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>0</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">生成するIDの値の初期値。</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">表 4. SQLテンプレートの設定</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">キー</th>
+<th class="tableblock halign-left valign-top">デフォルト値</th>
+<th class="tableblock halign-left valign-top">説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.sql-template.cache-mode</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>true</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SQLテンプレートのパース結果をキャッシュするかどうか。<code>true</code> のきキャッシュします。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.sql-template.encoding</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>UTF-8</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SQLテンプレートのファイルの文字コード。</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="autoquery">2. Criteria API</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>プログラムでSQLを組み立てる Crieria API の使い方を説明します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>エンティティクラスにたいするメタモデルを使用するため、予め <a href="#setup">セットアップ</a> を参照して設定しておく必要があります。</p>
+</li>
+<li>
+<p>エンティティクラスの定義は、<a href="#how2entity">エンティティの定義方法</a> を参照して作成しておく必要があります。</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_criteria_apiでできないこと">2.1. Criteria APIでできないこと</h3>
+<div class="paragraph">
+<p>Criteria APIでは、ある程度のSQLを組み立てることができますが、全てのSQLをサポートしているわけではありません。</p>
+</div>
+<div class="paragraph">
+<p>そのため、本ライブラリの非サポートSQLまたは、複雑なSQLを実行する場合は、<a href="#filequery">SQLテンプレート</a> を使用することをお勧めします。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>SUMなどの集計関数はサポートしていません。</p>
+</li>
+<li>
+<p>グループ化(<code>GROUP BY</code>)、<code>HAVING</code>句はサポートしていません。</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_検索">2.2. 検索</h3>
+<div class="paragraph">
+<p>検索を行うには、<code>selectFrom(&#8230;&#8203;)</code> メソッドを使用します。</p>
+</div>
+<div class="paragraph">
+<p>メソッドチェインで検索条件などを指定します。</p>
+</div>
+<div class="sect3">
+<h4 id="_複数件検索">2.2.1. 複数件検索</h4>
+<div class="paragraph">
+<p>複数件を検索する場合は、<code>getResultList()</code> を使います。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>検索結果が0件のときは、空のリストを返します。</p>
+</li>
+<li>
+<p>検索するエンティティは、<code>from()</code> でメタモデルを指定します。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">List&lt;Employee&gt; results = sqlMapper.selectFrom(MEmployee.employee)
+        .getResultList();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_1件検索">2.2.2. 1件検索</h4>
+<div class="paragraph">
+<p>1件検索する場合は、<code>getSingleResult()</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>1件も見つからない、または、2件以上見つかった場合、Springの例外 <code>IncorrectResultSizeDataAccessException</code> がスローされます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Employee result = sqlMapper.selectFrom(MEmployee.employee)
+        .getSingleResult();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>0件/複数件見つかったときに例外をスローされないようにするには、<code>getOptionalResult()</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>戻り値を <code>java.util.Optinal</code> で受け取ることができます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Optional&lt;Employee&gt; result = sqlMapper.selectFrom(MEmployee.employee)
+        .getOptionalResult();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_streamによる検索">2.2.3. Streamによる検索</h4>
+<div class="paragraph">
+<p>検索結果を多くの行を返すため、<code>List</code> でまとめて受け取ることが困難な場合は、<code>getResultStream()</code> を使用します。</p>
+</div>
+<div class="listingblock">
+<div class="title">検索結果の1件目を取得する</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Employee result = sqlMapper.selectFrom(MEmployee.employee)
+        .getResultStream()
+        .findFirst()
+        .get();</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">検索結果をイテレーションする</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">sqlMapper.selectFrom(MEmployee.employee)
+        .getResultStream()
+        .forEach({
+            //TODO:任意の処理
+        })</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_検索結果の行数取得">2.2.4. 検索結果の行数取得</h4>
+<div class="paragraph">
+<p>SQLの <code>SELECT COUNT(*) ～</code> による検索結果の行数を取得するには、<code>getCount()</code> を使用します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">long count = sqlMapper.selectFrom(MEmployee.employee)
+        .getCount();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_結合">2.2.5. 結合</h4>
+<div class="paragraph">
+<p>他のエンティティと結合する場合は、次のメソッドを使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>innerJoin(&#8230;&#8203;)</code> : エンティティを内部結合（INNERT JOIN） します。</p>
+</li>
+<li>
+<p><code>leftJoin(&#8230;&#8203;)</code> : エンティティを左外部結合（LEFT OUTER JOIN）します。</p>
+</li>
+<li>
+<p>結合条件は、メタモデルを使用して指定します。</p>
+</li>
+<li>
+<p>結合したエンティティの保存は、<code>associate(&#8230;&#8203;)</code> を使用してプログラマティックに行います。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">結合したエンティティのクエリ実行</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+MSection s = MSection.section;
+
+List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
+        .innerJoin(s, (to) -&gt; to.code.eq(e.sectionCode))
+        .associate(e, s, (e1, e2) -&gt; e1.setSection(e2))
+        .getResultList();</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>結合した結果を保持するプロパティ（例. section）は、エンティティ上ではアノテーション <code>@Transient</code> を付与して永続化対象外とします。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">結合した結果を保持するエンティティクラスの定義</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class Employee {
+
+    @Id
+    private Long id;
+
+    /**
+     * 部門情報 - 結合したエンティティを保持する
+     */
+    @Transient
+    private Section section;
+
+    // getter/setterは省略
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_idとバージョンによる検索条件指定">2.2.6. IDとバージョンによる検索条件指定</h4>
+<div class="paragraph">
+<p>IDプロパティ（主キー）を指定して検索対象を指定する場合は、<code>id(Object&#8230;&#8203;)</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>引数はエンティティに定義されたIDプロパティと同じ個数・並び順で指定する必要があります。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Employee results = sqlMapper.selectFrom(MEmployee.employee)
+        .id(5)
+        .getSingleResult();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>IDプロパティと同時にバージョンを指定することもできます。 バージョンプロパティを指定する場合は、 version(Object) を使います。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>IDを指定しないでバージョンだけを指定することはできません。もしバージョンだけを指定した場合、例外 <code>IllegalOperateException</code> がスローされます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Employee result = sqlMapper.selectFrom(MEmployee.employee)
+        .id(5)
+        .version(2)
+        .getSingleResult();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>埋め込み型IDを使用する場合は、埋め込み型IDクラスのインスタンスを指定します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Employee results = sqlMapper.selectFrom(MEmployee.employee)
+        .id(new PK(1, 200))
+        .getSingleResult();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_複雑な検索条件の指定">2.2.7. 複雑な検索条件の指定</h4>
+<div class="paragraph">
+<p>より複雑な検索条件を指定する場合は、<code>where(&#8230;&#8203;)</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#metamodel">メタモデル</a> を使い検索条件をある程度、型安全に組み立てることができます。</p>
+</li>
+<li>
+<p>使用するエンティティのメタモデルのインスタンスは、<code>seleftFrom(..)</code> / <code>innertJoin(&#8230;&#8203;)</code> / <code>leftJoin(&#8230;&#8203;)</code> の何れかで指定したインスタンスである必要があります。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+MSection s = MSection.section;
+
+List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
+        .innerJoin(s, (to) -&gt; to.code.eq(e.sectionCode))
+        .where(e.hireDate.before(LocalDate.of(2020, 5, 1)).and(s.name.contains("開発")))
+        .getResultList();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="select_order_by">2.2.8. 並び順</h4>
+<div class="paragraph">
+<p>並び順を指定する場合は、<code>orderBy(&#8230;&#8203;)</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#metamodel">メタモデル</a> を使いエンティティのプロパティに対する並び順を指定します。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+
+List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
+        .orderBy(e.name.asc(), e.hireDate.desc())
+        .getResultList();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_排他制御">2.2.9. 排他制御</h4>
+<div class="paragraph">
+<p><code>SELECT</code> 時にロックを取得するには、以下のメソッドを使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>forUpdate()</code></p>
+</li>
+<li>
+<p><code>forUpdateNoWait()</code></p>
+</li>
+<li>
+<p><code>forUpdateWait(int seconds)</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>全てのRDBMSでこれらの操作が利用できるわけではありません。
+サポートされていないメソッドを呼び出すと <code>IllegalOperateException</code> がスローされます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">List&lt;Employee&gt; results = sqlMapper.selectFrom(MEmployee.employee)
+        .forUpdate()
+        .getResultList();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_指定したプロパティのみを検索結果に含める">2.2.10. 指定したプロパティのみを検索結果に含める</h4>
+<div class="paragraph">
+<p>指定したプロパティのみを検索結果に含める場合は、<code>includes(&#8230;&#8203;)</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ただし、<code>@Id</code> アノテーションが付けられたプロパティは無条件で検索結果に含まれます。</p>
+</li>
+<li>
+<p>特に、ラージオブジェクトの場合、不要なプロパティを検索結果から除外することで、 データベースから転送されるデータ量やJVMのメモリ使用量を減らすことができます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+
+List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
+        .includes(e.id, e.name)
+        .getResultList();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>次のように結合するエンティティのプロパティを指定することもできます</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+MSection s = MSection.section;
+
+List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
+        .innerJoin(s, (to) -&gt; to.code.eq(e.sectionCode))
+        .associate(e, s, (e1, e2) -&gt; e1.setSection(e2))
+        .includes(e.id, e.name, s.name)
+        .getResultList();</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>includes(&#8230;&#8203;)</code> と <code>excludes(&#8230;&#8203;)</code> の両方で同じプロパティを指定した場合、<code>excludes(&#8230;&#8203;)</code> が優先されます。
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_指定したプロパティを検索結果から除外する">2.2.11. 指定したプロパティを検索結果から除外する</h4>
+<div class="paragraph">
+<p>指定したプロパティを検索結果から除外する場合は、<code>excludes(&#8230;&#8203;)</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ただし、<code>@Id</code> アノテーションが付けられたプロパティは無条件で検索結果に含まれます。</p>
+</li>
+<li>
+<p>特に、ラージオブジェクトの場合、不要なプロパティを検索結果から除外することで、 データベースから転送されるデータ量やJVMのメモリ使用量を減らすことができます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+
+List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
+        .excludes(e.address)
+        .getResultList();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>次のように結合するエンティティのプロパティを指定することもできます</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+MSection s = MSection.section;
+
+List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
+        .innerJoin(s, (to) -&gt; to.code.eq(e.sectionCode))
+        .associate(e, s, (e1, e2) -&gt; e1.setSection(e2))
+        .excludes(e.address, s.tel)
+        .getResultList();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_ページング">2.2.12. ページング</h4>
+<div class="paragraph">
+<p>ページングを指定するには、以下のメソッドを使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>limit(int limit)</code> : 取得する行数を指定します。</p>
+</li>
+<li>
+<p><code>offset(int offset)</code> : 最初に取得する行の位置を指定します。最初の行の位置は0になります。</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>ページングを指定するには、必ず <a href="#select_order_by">並び順</a> の指定も必要です。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+
+List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
+        .orderBy(e.name.asc(), e.hireDate.desc())
+        .limit(100)
+        .offset(10)
+        .getResultList();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_挿入">2.3. 挿入</h3>
+<div class="sect3">
+<h4 id="_1件挿入">2.3.1. 1件挿入</h4>
+<div class="paragraph">
+<p>エンティティを挿入する場合は、<code>insert(&#8230;&#8203;)</code> と <code>execute()</code> を組み合わせて使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>insert(&#8230;&#8203;)</code> の引数はエンティティのインスタンスを指定します。</p>
+</li>
+<li>
+<p><code>execute()</code> の戻り値は、更新した行数です。</p>
+</li>
+<li>
+<p>挿入するときに識別子を自動設定することができます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>詳細は、<a href="#anno_generated_id">識別子の自動採番</a> を参照してください。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>一意制約違反によりエンティティの挿入ができない場合は、例外 <code>org.springframework.dao.DuplicateKeyException</code> がスローされます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">int count = sqlMapper.insert(employee)
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_バッチ挿入">2.3.2. バッチ挿入</h4>
+<div class="paragraph">
+<p>複数のエンティティをバッチ挿入する場合は、<code>insertBatch(&#8230;&#8203;)</code> と <code>execute()</code> を組み合わせて使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>insertBatch(&#8230;&#8203;)</code> の引数はエンティティのインスタンスのリストあるいは配列（可変長引数）を指定します。</p>
+</li>
+<li>
+<p><code>execute()</code> の戻り値は、更新した行数の配列です。</p>
+</li>
+<li>
+<p>挿入するときに識別子を自動設定することができます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>詳細は、<a href="#anno_generated_id">識別子の自動採番</a> を参照してください。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>一意制約違反によりエンティティの挿入ができない場合は、例外 <code>org.springframework.dao.DuplicateKeyException</code> がスローされます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">int[] countArray = sqlMapper.insertBatch(employees)
+        .execute();</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+処理時のバッチサイズは引数で指定したエンティティのサイズと同一になります。
+バッチサイズを変更したい場合は、エンティティを分割して実行してください。
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_指定したプロパティのみを挿入対象にする">2.3.3. 指定したプロパティのみを挿入対象にする</h4>
+<div class="paragraph">
+<p>指定したプロパティのみを挿入対象にする場合は、 <code>includes()</code> を使用します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+
+int count = sqlMapper.insert(employee)
+        .includes(e.id, e.name)
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_指定したプロパティを挿入対象から除外する">2.3.4. 指定したプロパティを挿入対象から除外する</h4>
+<div class="paragraph">
+<p>指定したプロパティを挿入対象から除外する場合は、 <code>excludes()</code> を使用します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+
+int count = sqlMapper.insert(employee)
+        .excludes(e.version)
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_更新">2.4. 更新</h3>
+<div class="sect3">
+<h4 id="_1件挿入_2">2.4.1. 1件挿入</h4>
+<div class="paragraph">
+<p>エンティティを更新する場合は、<code>update(&#8230;&#8203;)</code> と <code>execute()</code> を組み合わせます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>update(&#8230;&#8203;)</code> の引数はエンティティのインスタンスを指定します。</p>
+</li>
+<li>
+<p><code>execute()</code> の戻り値は、更新した行数です。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>更新対象のプロパティ（カラム）がない場合は、<code>0</code> を返します。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>更新するときに、バージョンによる楽観的排他制御をすることができます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>楽観敵排他エラーが発生したときは例外 <code>org.springframework.dao.OptimisticLockingFailureException</code> がスローされます。。</p>
+</li>
+<li>
+<p>詳しくは、 <a href="#anno_version">バージョン定義</a> を参照してください。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>識別子定義のなエンティティは <code>update(&#8230;&#8203;)</code> で更新することはできません。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">int count = sqlMapper.update(employee)
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_バッチ更新">2.4.2. バッチ更新</h4>
+<div class="paragraph">
+<p>複数のエンティティをバッチ更新する場合は、<code>updateBatch(&#8230;&#8203;)</code> と <code>execute()`</code> を組み合わせます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>updateBatch(&#8230;&#8203;)</code> の引数はエンティティのインスタンスのリストあるいは配列（可変長引数）を指定します。</p>
+</li>
+<li>
+<p><code>execute()</code> の戻り値は、更新した行数の配列です。</p>
+</li>
+<li>
+<p>更新するときに、バージョンによる楽観的排他制御をすることができます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>楽観敵排他エラーが発生したときは例外 `org.springframework.dao.</p>
+</li>
+<li>
+<p>詳しくは、 <a href="#anno_version">バージョン定義</a> を参照してください。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>識別子定義のなエンティティは <code>updateBatch(&#8230;&#8203;)</code> で更新することはできません。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">int[] countArray = sqlMapper.updateBatch(employees)
+        .execute();</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+処理時のバッチサイズは引数で指定したエンティティのサイズと同一になります。
+バッチサイズを変更したい場合は、エンティティを分割して実行してください。
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_バージョンプロパティを通常の更新対象にする">2.4.3. バージョンプロパティを通常の更新対象にする</h4>
+<div class="paragraph">
+<p>バージョンプロパティを通常の更新対象に含め、バージョンチェックの対象外にする場合は、  <code>includesVersion()</code> を使います。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">int count = sqlMapper.update(employee)
+        .includesVersion()
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_nullの項目を更新しない">2.4.4. nullの項目を更新しない</h4>
+<div class="paragraph">
+<p>更新の対象からnullの項目を除外する場合は、 <code>excludesNull()</code> を使用します。</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+バッチ系の更新は、すべてのエンティティに同じSQLを適用しなければならないので、 null を除外してバッチ更新することはできません。
+なぜなら、すべてのエンティティの null の項目が同じだとは限らないからです。
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">int count = sqlMapper.update(employee)
+        .excludesNull()
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_指定したプロパティのみを更新対象にする">2.4.5. 指定したプロパティのみを更新対象にする</h4>
+<div class="paragraph">
+<p>指定したプロパティのみを更新対象にする場合は、<code>includes()</code> を使用します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+
+int count = sqlMapper.update(employee)
+        .includes(e.id, e.name)
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_指定したプロパティを更新対象から除外する">2.4.6. 指定したプロパティを更新対象から除外する</h4>
+<div class="paragraph">
+<p>指定したプロパティを更新対象から除外する場合は、 <code>excludes()</code> を使用します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+
+int count = sqlMapper.update(employee)
+        .excludes(e.version)
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_変更のあったプロパティのみを更新対象にする">2.4.7. 変更のあったプロパティのみを更新対象にする</h4>
+<div class="paragraph">
+<p>変更のあったプロパティのみを更新対象にする場合は、<code>changedFrom()</code> を使います。</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+バッチ系の更新は、すべてのエンティティに同じSQLを適用しなければならないので、 変更のあったプロパティのみをバッチ更新することはできません。
+なぜなら、変更のあったプロパティがすべてのエンティティで同じだとは限らないからです。
+最初の引数は、変更前の状態を持ったエンティティもしくはマップです。
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Employee before = ...;
+
+int count = sqlMapper.update(employee)
+        .changedFrom(before)
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_更新行数をチェックしない">2.4.8. 更新行数をチェックしない</h4>
+<div class="paragraph">
+<p>バージョンによる楽観的排他制御を行う場合、 更新できた行数が0だと <code>org.springframework.dao.OptimisticLockingFailureException</code> が発生します。</p>
+</div>
+<div class="paragraph">
+<p>更新行数を正しく返さないJDBCドライバを使用する場合は、<code>suppresOptimisticLockException()</code> を呼び出すことで、更新できた行数のチェックを行わなくなります。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Employee before = ...;
+
+int count = sqlMapper.update(employee)
+        .suppresOptimisticLockException()
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_削除">2.5. 削除</h3>
+<div class="sect3">
+<h4 id="_1件削除">2.5.1. 1件削除</h4>
+<div class="paragraph">
+<p>エンティティを削除する場合は、<code>delete(&#8230;&#8203;)</code> と <code>execute()</code> を組み合わせて使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>insert(&#8230;&#8203;)</code> の引数はエンティティのインスタンスを指定します。</p>
+</li>
+<li>
+<p><code>execute()</code> の戻り値は、削除した行数です。</p>
+</li>
+<li>
+<p>削除するときに、バージョンによる楽観的排他制御をすることができます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>楽観敵排他エラーが発生したときは例外 <code>org.springframework.dao.OptimisticLockingFailureException</code> がスローされます。。</p>
+</li>
+<li>
+<p>詳しくは、 <a href="#anno_version">バージョン定義</a> を参照してください。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>識別子定義のなエンティティは <code>delete(&#8230;&#8203;)</code> で削除することはできません。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>代わりに、<code>deleteFrom(&#8230;&#8203;)</code> を使用してください。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">int count = sqlMapper.delete(employee)
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_バッチ削除">2.5.2. バッチ削除</h4>
+<div class="paragraph">
+<p>複数のエンティティをバッチ削除する場合は、<code>deleteBatch(&#8230;&#8203;)</code> と <code>execute()</code> を組み合わせて使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>execute()</code> の戻り値は、削除した行数の配列です。</p>
+</li>
+<li>
+<p>削除するときに、バージョンによる楽観的排他制御をすることができます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>楽観敵排他エラーが発生したときは例外 `org.springframework.dao.</p>
+</li>
+<li>
+<p>詳しくは、 <a href="#anno_version">バージョン定義</a> を参照してください。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>識別子定義のなエンティティは <code>updateBatch(&#8230;&#8203;)</code> で削除することはできません。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">int[] countArray = sqlMapper.deleteBatch(employees)
+        .execute();</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+処理時のバッチサイズは引数で指定したエンティティのサイズと同一になります。
+バッチサイズを変更したい場合は、エンティティを分割して実行してください。
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_削除条件の指定">2.5.3. 削除条件の指定</h4>
+<div class="paragraph">
+<p>任にの条件で削除を行う場合、<code>deleteFrom(&#8230;&#8203;)</code> と <code>execute()</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>条件を指定する場合は、<code>where(&#8230;&#8203;)</code> を使用します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>条件を指定しなければ、全レコードが削除されるので注意してください。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+
+int count = sqlMapper.deleteFrom(e)
+        .where(e.hireDate.before(LocalDate.of(2020, 5, 1)))
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_バージョンをチェックしないで削除する">2.5.4. バージョンをチェックしないで削除する</h4>
+<div class="paragraph">
+<p>バージョンをチェックしないで削除する場合は、<code>ignoreVersion()</code> を使用します。</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+削除条件を指定する <code>deleteFrom(&#8230;&#8203;)</code> を使用するときは、<code>ignoreVersion()</code>　を指定することはできません。
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">int count = sqlMapper.delete(employee)
+        .ignoreVersion()
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_削除行数をチェックしない">2.5.5. 削除行数をチェックしない</h4>
+<div class="paragraph">
+<p>バージョンによる楽観的排他制御を行う場合、 削除できた行数が0だと <code>org.springframework.dao.OptimisticLockingFailureException</code> が発生します。</p>
+</div>
+<div class="paragraph">
+<p>削除行数を正しく返さないJDBCドライバを使用する場合は、<code>suppresOptimisticLockException()</code> を呼び出すことで、更新できた行数のチェックを行わなくなります。</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+削除条件を指定する <code>deleteFrom(&#8230;&#8203;)</code> を使用するときは、<code>suppresOptimisticLockException()</code>　を使用することはできません。
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Employee before = ...;
+
+int count = sqlMapper.delete(employee)
+        .suppresOptimisticLockException()
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_sqlによるクエリ実行">3. SQLによるクエリ実行</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>SQLによるクエリの実行方法を説明します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>SQLパーサには、SQLテンプレートの1つのライブラリである <a href="https://mygreen.github.io/splate/" target="_blnak">splate</a> を使用しています。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>単純なSQLとしても使用できますが、SQLテンプレート独自の文法も使用できます。</p>
+</li>
+<li>
+<p>文法などの詳細な情報は、splate のドキュメントを参照してください。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_検索_2">3.1. 検索</h3>
+<div class="sect3">
+<h4 id="_複数件検索_2">3.1.1. 複数件検索</h4>
+<div class="paragraph">
+<p>SQLを使って、複数件検索をする場合は、<code>selectBySql(..)</code> と <code>getResultList()</code> を組み合わせます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("salary", nwe BigDecimal(2000)));
+
+List&lt;Employee&gt; results = sqlMapper.selectBySql(
+            Employee.class,
+            "select * from employee where salary &gt;= /*salary*/",
+            templateContext)
+        .getResultList();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_1件検索_2">3.1.2. 1件検索</h4>
+<div class="paragraph">
+<p>SQLを使って1件検索をする場合は、 <code>selectBySql(&#8230;&#8203;)</code> と <code>getSingleResult()</code> を組み合わせます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>1件も見つからない、または、2件以上見つかった場合、Springの例外 <code>IncorrectResultSizeDataAccessException</code> がスローされます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("id", 10));
+
+Employee result = sqlMapper.sqlMapper.selectBySql(
+            Employee.class,
+            "select * from employee where id = /*id*/",
+            templateContext)
+        .getSingleResult();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>0件/複数件見つかったときに例外をスローされないようにするには、<code>getOptionalResult()</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>戻り値を <code>java.util.Optinal</code> で受け取ることができます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("id", 10));
+
+Optional&lt;Employee&gt; result = sqlMapper.sqlMapper.selectBySql(
+            Employee.class,
+            "select * from employee where id = /*id*/",
+            templateContext)
+        .getOptionalResult();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_streamによる検索_2">3.1.3. Streamによる検索</h4>
+<div class="paragraph">
+<p>検索結果を多くの行を返すため、<code>List</code> でまとめて受け取ることが困難な場合は、<code>getResultStream()</code> を使用します。</p>
+</div>
+<div class="listingblock">
+<div class="title">検索結果の1件目を取得する</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("salary", nwe BigDecimal(2000)));
+
+List&lt;Employee&gt; results = sqlMapper.selectBySql(
+            Employee.class,
+            "select * from employee where salary &gt;= /*salary*/",
+            templateContext)
+        .getResultStream()
+        .findFirst()
+        .get()</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">検索結果をイテレーションする</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("salary", nwe BigDecimal(2000)));
+
+List&lt;Employee&gt; results = sqlMapper.selectBySql(
+            Employee.class,
+            "select * from employee where salary &gt;= /*salary*/",
+            templateContext)
+        .getResultStream()
+        .forEach({
+            //TODO:任意の処理
+        })</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_検索結果の行数取得_2">3.1.4. 検索結果の行数取得</h4>
+<div class="paragraph">
+<p><code>SELECT COUNT(*) ～</code> による検索結果の行数を取得するには、<code>getCountBySql(&#8230;&#8203;)</code> を使用します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("salary", nwe BigDecimal(2000)));
+
+long count = sqlMapper.selectBySql(
+            Employee.class,
+            "select * from employee where salary &gt;= /*salary*/",
+            templateContext)
+            getCount();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_挿入更新削除">3.2. 挿入・更新・削除</h3>
+<div class="paragraph">
+<p>SQLを使ってエンティティを更新する場合は、 <code>updateBySql(&#8230;&#8203;)</code> と <code>execute()</code> を組み合わせます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>挿入、削除も <code>updateBySql(&#8230;&#8203;)</code> を使います。</p>
+</li>
+<li>
+<p><code>execute()</code> の戻り値は、更新した行数です。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("salary", nwe BigDecimal(2000), "id", 5));
+
+int count = sqlMapper.updateBySql(
+            Employee.class,
+            "update employee set salary = /*salary*/1000 */ where id = /*id*/1",
+            templateContext)
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="filequery">4. SQLファイルによるクエリ実行</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>SQLファイルによるクエリの実行方法を説明します。</p>
+</div>
+<div class="paragraph">
+<p>単純なSQLだとソースコードに直接記述したほうが、面倒くさくなくて楽（わざわざファイルを作る必要がない）ですが、複雑なSQLはファイルに記述した方がメンテナンスがしやすくなります。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>SQLファイルは、SQLテンプレートと呼ばれ、処理するライブラリとして、 <a href="https://mygreen.github.io/splate/" target="_blnak">splate</a> を使用しています。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>文法などの詳細な情報は、splate のドキュメントを参照してください。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_sqlファイルのパス">4.1. SQLファイルのパス</h3>
+<div class="paragraph">
+<p>SQLテンプレートのファイルパスは、Spring Framework の <a href="https://docs.spring.io/spring-framework/docs/5.1.x/spring-framework-reference/core.html#resources-resourceloader" target="blank">ResourceLoader</a> を使用しているため接頭語を付けることで様々なリソースにアクセスできます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>classpath:～</code> - クラスパス上から読み込みます。例）<code>classpath:/sql/hoge.sql</code></p>
+</li>
+<li>
+<p><code>file:～</code> - システムファイルから読み込みます。例）<code>file:c:/sql/hoge.sql</code></p>
+</li>
+<li>
+<p><code>http:～</code> - ネットワーク上のURLから読み込みます。例）<code><a href="http://hoge.com/sql/hoge.sql" class="bare">http://hoge.com/sql/hoge.sql</a></code></p>
+</li>
+<li>
+<p>なし - Spring Framework の <code>ApplicationContext</code> のインスタンスに依存します 。例） <code>/sql/hoge.sql</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">SQLテンプレートの記述</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">select * from employee
+where
+salary &gt;= /*salaryMin*/1000
+and salary &lt;= /*salaryMax*/2000</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">ファイルに定義したSQLテンプレートの指定</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SelectParam beanParam = new SelectParam();
+beanParam.salaryMin = new BigDecimal(1200);
+beanParam.salaryMax = new BigDecimal(1800);
+
+SqlTemplateContext templateContext = new BeanPropertySqlTemplateContext(beanParam);
+
+List&lt;Employee&gt; results = sqlMapper.selectBySqlFile(
+            Employee.class,
+            "sqltemplate/employee/selectAll.sql",
+            templateContext)
+        .getResultList();</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_sqlファイルの文字コードとキャッシュ設定">4.1.1. SQLファイルの文字コードとキャッシュ設定</h4>
+<div class="paragraph">
+<p>SQLファイルの設定を変更したい場合は、<a href="#available_properties">SQLテンプレートの設定可能なプロパティ</a> を参照して設定変更をしてください。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>SQLファイルのデフォルトの文字コードは、<code>UTF-8</code> です。</p>
+</li>
+<li>
+<p>SQLファイルはデフォルトでパースした結果をキャッシュしておき次回実行時の性能向上を行います。</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_検索_3">4.2. 検索</h3>
+<div class="sect3">
+<h4 id="_複数件検索_3">4.2.1. 複数件検索</h4>
+<div class="paragraph">
+<p>SQLファイルを使って、複数件検索をする場合は、<code>selectBySqlFile(..)</code> と <code>getResultList()</code> を組み合わせます。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("salary", nwe BigDecimal(2000)));
+
+List&lt;Employee&gt; results = sqlMapper.selectBySqlFile(
+            Employee.class,
+            "examples/sql/employee/selectAll.sql",
+            templateContext)
+        .getResultList();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_1件検索_3">4.2.2. 1件検索</h4>
+<div class="paragraph">
+<p>SQLファイルを使って1件検索をする場合は、 <code>selectBySqlFile(&#8230;&#8203;)</code> と <code>getSingleResult()</code> を組み合わせます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>1件も見つからない、または、2件以上見つかった場合、Springの例外 <code>IncorrectResultSizeDataAccessException</code> がスローされます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("id", 10));
+
+Employee result = sqlMapper.sqlMapper.selectBySqlFile(
+            Employee.class,
+            "examples/sql/employee/selectSingle.sql",
+            templateContext)
+        .getSingleResult();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>0件/複数件見つかったときに例外をスローされないようにするには、<code>getOptionalResult()</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>戻り値を <code>java.util.Optinal</code> で受け取ることができます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("id", 10));
+
+Optional&lt;Employee&gt; result =sqlMapper.sqlMapper.selectBySqlFile(
+            Employee.class,
+            "examples/sql/employee/selectSingle.sql",
+            templateContext)
+        .getOptionalResult();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_streamによる検索_3">4.2.3. Streamによる検索</h4>
+<div class="paragraph">
+<p>検索結果を多くの行を返すため、<code>List</code> でまとめて受け取ることが困難な場合は、<code>getResultStream()</code> を使用します。</p>
+</div>
+<div class="listingblock">
+<div class="title">検索結果の1件目を取得する</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("salary", nwe BigDecimal(2000)));
+
+List&lt;Employee&gt; results = sqlMapper.selectBySqlFile(
+            Employee.class,
+            "examples/sql/employee/selectAll.sql",
+            templateContext)
+        .getResultStream()
+        .findFirst()
+        .get()</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">検索結果をイテレーションする</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("salary", nwe BigDecimal(2000)));
+
+List&lt;Employee&gt; results = sqlMapper.selectBySqlFile(
+            Employee.class,
+            "examples/sql/employee/selectAll.sql",
+            templateContext)
+        .getResultStream()
+        .forEach({
+            //TODO:任意の処理
+        })</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_検索結果の行数取得_3">4.2.4. 検索結果の行数取得</h4>
+<div class="paragraph">
+<p><code>SELECT COUNT(*) ～</code> による検索結果の行数を取得するには、<code>getCountBySqlFile(&#8230;&#8203;)</code> を使用します。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("salary", nwe BigDecimal(2000)));
+
+long count = sqlMapper.selectBySqlFile(
+            Employee.class,
+            "examples/sql/employee/selectAll.sql",
+            templateContext)
+            getCount();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_挿入更新削除_2">4.3. 挿入・更新・削除</h3>
+<div class="paragraph">
+<p>SQLファイルを使ってエンティティを更新する場合は、 <code>updateBySqlFile(&#8230;&#8203;)</code> と <code>execute()</code> を組み合わせます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>挿入、削除も <code>updateBySqlFile(&#8230;&#8203;)</code> を使います。</p>
+</li>
+<li>
+<p><code>execute()</code> の戻り値は、更新した行数です。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("salary", nwe BigDecimal(2000), "id", 5));
+
+int count = sqlMapper.updateBySqlFile(
+            Employee.class,
+            "examples/sql/employee/update.sql",
+            templateContext)
+        .execute();</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="how2entity">5. エンティティの定義方法</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>アノテーションを使って定義を行います。</p>
+</div>
+<div class="sect2">
+<h3 id="_アノテーション一覧">5.1. アノテーション一覧</h3>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">表 5. アノテーション一覧</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">アノテーション</th>
+<th class="tableblock halign-left valign-top">概要</th>
+<th class="tableblock halign-left valign-top">詳細リンク</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Entity</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">クラスがエンティティであることを定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_entity">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Table</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">テーブル情報を補完し定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_table">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@MappedSuperclass</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティの親クラスであることを定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_mapped_superclass">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Column</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">カラム情報を定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_column">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Id</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">プロパティがID(識別子/主キー)であることを定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_column">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@EmbeddedId</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">プロパティが埋め込みID(複合主キー)であることを定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_embedded_id">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Embeddable</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">埋め込みクラスであることを定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_embedded_id">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Version</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">楽観的排他キーとしてのバージョンキーであることを定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_version">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Transient</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">プロパティが永続化対象外であることを定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_transient">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Lob</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">プロパティがラージオブジェクトであることを定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_lob">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Temporal</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">時制のタイプを変換規則を定義します。時制のタイプが不明なときに使用します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_temporal">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Enumerated</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">列挙型のタイプの変換規則を定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_enumerated">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@Converter</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">独自のタイプの変換方法を定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_convert">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@GeneratedValue</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID(主キー)の値の採番方法を定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_generated_id">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@SequenceGenerator</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID(主キー)の値の採番方法がシーケンスを用いるときに、詳細を定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_generated_id">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@TableGenerator</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ID(主キー)の値の採番方法がテーブルを用いるときに、詳細を定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_table_gnerarator">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@CreatedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティを新規に保存するときに、監査情報としての日時を自動的に設定する対象であることを定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_created_at">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@ModifiedAt</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">既存のエンティティを更新するときに、監査情報としての日時を自動的に設定する対象であることを定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_created_at">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@CreatedBy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティを新規に保存するときに、監査情報としての作成者を自動的に設定する対象であることを定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_created_by">詳細</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@ModifiedBy</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">既存のエンティティを更新するときに、監査情報としての更新者を自動的に設定する対象であることを定義します。</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="#anno_created_by">詳細</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="anno_entity">5.2. エンティティとテーブルのマッピング方法</h3>
+<div class="paragraph">
+<p>エンティティはPOJOとして定義します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>エンティティであるクラスには、必ず アノテーション <code>@Entity</code> を付与します。</p>
+</li>
+<li>
+<p>引数ありのコンストラクタを定義した場合、デフォルトコンストラクタを必ず定義します。</p>
+</li>
+<li>
+<p>フィールドの修飾子がpublic以外の場合は、getter/setterメソッドを必ず定義します。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">基本的なエンティティの定義</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class User {
+
+    @Id
+    private long id;
+
+    private String name;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>手動でエンティティクラスを作成する際には、 <a href="https://projectlombok.org/">Lombok</a> を使用して記述減らすことをお勧めします。</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">Lombokを使用したエンティティの定義</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Data
+@Entity
+public class User {
+
+    @Id
+    private long id;
+
+    private String name;
+}</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="anno_table">5.2.1. エンティティとテーブル名の規約</h4>
+<div class="paragraph">
+<p>テーブル名とのマッピングは、エンティティのクラス名を元に決まります。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Javaのクラスであるエンティティは、キャメルケースで定義します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>例：<code>UserAttribute</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>DBのテーブルは、スネークケースで定義します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>例：<code>USER_ATTRIBUTE</code> ※大文字・小文字の区別はなし。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>エンティティのクラス名とテーブル名が一致しない場合は、アノテーション <code>@Table</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>アノテーション <code>@Table</code> では、その他に、スキーマ名やカタログ名を定義することができます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+@Table(name = "USER_ATTR")
+public class UserAttribute {
+
+    private long userId;
+
+    private String address;
+
+    // getter/setterメソッドは省略
+
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>独自の命名規則を使用するときは、<code>NamingRule</code> の実装クラスをSpring Beanとしてコンテナに定義します。
+デフォルトでは、<code>DefaultNamingRule</code> が使用されています。</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="anno_column">5.3. フィールドとカラムのマッピング方法</h3>
+<div class="paragraph">
+<p>エンティティクラスのフィールドは、デフォルト永続化対象です。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>フィールドの修飾子が、非public(private/protected/なし(デフォルト))の場合は、publicなアクセッサメソッド（setter/getter)を定義します。</p>
+</li>
+<li>
+<p>フィールドの修飾子がpublicの場合は、アクセッサメソッドは不要です。</p>
+</li>
+<li>
+<p>主キーとなるカラムには、アノテーション <code>@Id</code> を付与します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>主キーの値を自動生成したい場合は、<a href="#generated_id">識別子（ID）の自動採番</a> を参照してください。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">アクセッサメソッド必要なフィールド</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class User {
+
+    @Id
+    private long id;
+
+    private String name;
+
+    protected LocalDate birthday;
+
+    String address;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LocalDate getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(LocalDate birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">アクセッサメソッド不要なフィールド</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class User {
+
+    public String name;
+
+    public LocalDate birthday;
+
+    public address;
+}</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_サポートするクラスタイプ">5.3.1. サポートするクラスタイプ</h4>
+<div class="paragraph">
+<p>フィールドの型は次のいずれかである必要があります。</p>
+</div>
+<div class="paragraph">
+<p>DBの型は、JDBCドライバがサポートしていれば、対応しているJava型にマッピングが可能です。</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">表 6. 標準でサポートするタイプ</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Java型</th>
+<th class="tableblock halign-left valign-top">一般的なDB型</th>
+<th class="tableblock halign-left valign-top">備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CHAR / VARCHAR / CLOB</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean / Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BOOLEAN/数値型</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DBの数値型をマッピングする場合は、</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">short / Short</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TINYINT / SMALLINT</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">int / Integer</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">INTEGER</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">float / Float</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">FLOAT/REAL</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">double / Double</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DOUBLE</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.math.BigDecimal</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DECIMAL / NUMERIC</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.sql.Date / java.time.LocalDate / java.util.Date</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">DATE</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Dateの場合は、<code>@Temporal</code> でタイプを指定する必要がある。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.sql.Time / java.time.LocalTime / java.util.Date</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TIME</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Dateの場合は、<code>@Temporal</code> でタイプを指定する必要がある。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.sql.Timestamp / java.time.LocalDateTime / java.util.Date</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">TIMESTAMP</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.Dateの場合は、<code>@Temporal</code> でタイプを指定する必要がある。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">byte[]</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">BLOB</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">java.util.UUID</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UUID</p></td>
+<td class="tableblock halign-left valign-top"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">列挙型</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CHAR / VARCHAR / TINTYINT / SMALLINT / INTEGER</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">列挙型をマッピングする際には、<code>@Enumerated</code> でタイプを指定する必要がある。</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_フィールドとカラム名の規約">5.3.2. フィールドとカラム名の規約</h4>
+<div class="paragraph">
+<p>カラムとのマッピングは、フィールド名を元に決まります。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Javaのフィールドは、キャメルケースで定義します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>例：<code>firstName</code></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>DBのカラムは、スネークケースで定義します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>例：<code>FIRST_NMAE</code> ※大文字・小文字の区別はなし。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>フィールド名とカラム名が一致しない場合は、アノテーション <code>@Column</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>アノテーション <code>@Column</code> では、その他に、スキーマ名やカタログ名を定義することができます。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class UserAttribute {
+
+    @Column(name="sub_id")
+    private long userId;
+
+    private String address;
+
+    // getter/setterメソッドは省略
+
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>独自の命名規則を使用するときは、<code>NamingRule</code> の実装クラスをSpring Beanとしてコンテナに定義します。
+デフォルトでは、<code>DefaultNamingRule</code> が使用されています。</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="anno_generated_id">5.4. 識別子（ID）の自動採番</h3>
+<div class="paragraph">
+<p>主キーなどの識別子（ID）の値をを自動生成したい場合は、フィールドにアノテーション <code>@GeneratedId</code> を付与します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>属性 <code>strategy</code> にて生成方法を指定します。</p>
+</li>
+<li>
+<p>属性 <code>generator</code> にて、独自の生成方法を実装を指定することもできます。</p>
+</li>
+<li>
+<p><code>@GenratedValue</code> は、識別子を定義するアノテーション <code>@Id</code> とともに付与する必要があります。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class User {
+
+    @Id
+    @GeneratedValue(strategry=GenerationType.IDENTITY)
+    private long id;
+
+    private String name;
+
+    // setter/getterメソッドは省略
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">表 7. 識別子の生成方法</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">指定方法</th>
+<th class="tableblock halign-left valign-top">概要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@GeneratedValue(strategry=GenerationType.AUTO)</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>データベースにより生成方法が自動手的に選択されます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>選択される方法は、DBダイアクレクト <code>Dialect#getDefaultGenerationType()</code> により決定されます。</p>
+</li>
+<li>
+<p>strateryを指定しなければ、<code>AUTO</code> と解釈されます。</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@GeneratedValue(strategry=GenerationType.IDENTITY)</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>IDENTITY列を使用して採番を行います。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>テーブルのカラムの定義も合わせてIDENTITYにする必要があります。</p>
+</li>
+<li>
+<p>IDENTITY列をサポートしているDBMSのみ利用できます。</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@GeneratedValue(strategy=GenerationType.SEQUENCE)</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>DBのシーケンスを使用して採番を行います。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>アノテーション <code>@SequenceGenerator</code>にて、詳細に定義することができます。</p>
+</li>
+<li>
+<p>シーケンスをサポートしているDBMSのみ利用できます。</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@GeneratedValue(strategy=GenerationType.TABLE)</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><a href="#anno_table_gnerarator">テーブルを使用して採番</a>を行います。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>アノテーション <code>@TableGenerator</code> により詳細に定義できます。</p>
+</li>
+<li>
+<p><a href="#available_properties">設定可能なプロパティ</a> にて全体の設定を変更することもできます。</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@GeneratedValue(strategy=GenerationType.UUID)</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>java.util.UUID</code> を使用しランダムなセキュアな値を生成します。</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>@GeneratedValue(generator=&lt;独自実装)</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p>独自の採番方式の実装クラスを指定します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>インタフェース <code>com.github.mygreen.sqlmapper.core.id.IdGenerator</code> を実装する必要があります。</p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+<div class="sect3">
+<h4 id="anno_table_gnerarator">5.4.1. テーブルによる識別子（ID）の自動採番</h4>
+<div class="paragraph">
+<p>IDENTITYやシーケンスなどの機能を使わないで、テーブルを使って採番を行うため、全てのDMBSにて利用できます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>利用する際には、事前に採番用のテーブルを定義しておく必要があります。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>テーブル名、カラム名などは、アノテーション <code>@TableGenerator</code> または、<a href="#available_properties">プロパティ</a> によってカスタマイズすることができます。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">採番用テーブルのDDL</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">CREATE TABLE IF NOT EXISTS ID_SEQUENCE (
+    -- キー名(&lt;テーブル名&gt;_&lt;カラム名&gt;)
+	SEQUENCE_NAME varchar(255) primary key,
+    -- 採番した値
+	SEQUENCE_VALUE bigint NOT NULL
+);</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">標準的な使い方</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class User {
+
+    @Id
+    @GeneratedValue(strategry=GenerationType.TABLE)
+    private long id;
+
+    private String name;
+    // setter/getterメソッドは省略
+}</code></pre>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_テーブルによる識別子の自動生成の設定">テーブルによる識別子の自動生成の設定</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>カスタマイズする場合は、アノテーション <code>@TableGenerator</code> または、プロパティファイルにて定義します。</p>
+</li>
+<li>
+<p>プロパティファイで定義する場合は、アプリ全体に反映されます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#spring_normal_properties">JavaConfigによる設定を行っている場合</a>は、<code>@PropertySource</code> にて定義したファイルを読み込んでください。</p>
+</li>
+<li>
+<p><a href="#spring_boot_properties">SpringBootを使用している場合</a>は、<code>application.properties</code> または、<code>application.yml</code>` に定義をしてください。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">カスタマイズする場合</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class User {
+
+    @Id
+    @GeneratedValue(strategry=GenerationType.TABLE)
+    @TableGenerator(table="USER_GEN", pkColumn="GEN_NAME", valueColumn="GEN_VALUE")
+    private long id;
+
+    private String name;
+    // setter/getterメソッドは省略
+}</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">表 8. テーブルによる識別子生成のカスタマイズ可能な項目</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">アノテーションの属性</th>
+<th class="tableblock halign-left valign-top">プロパティのキー</th>
+<th class="tableblock halign-left valign-top">初期値</th>
+<th class="tableblock halign-left valign-top">説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>table</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.table</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>ID_SEQUENCE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">生成したIDの値を永続化するテーブル名。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>schema</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.schema</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">- (デフォルト値は空)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">生成したIDの値を永続化するテーブルが定義されているスキーマ名。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>catalog</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.catalog</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">- (デフォルト値は空)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">生成したIDの値を永続化するテーブルが定義されているカタログ名。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>pkColumn</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.pk-column</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SEQUENCE_NAME</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">生成したIDの名称を保持するカラム名。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>valueColumn</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.value-column</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SEQUENCE_VALUE</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">生成したIDの値を保持するカラム名。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>allocationSize</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.allocation-size</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>50</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">採番を行う際に、予め指定した値分を払い出しておく値です。値を1にすると、毎回レコードを更新することになり、オーバーヘッドが発生します。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>initialValue</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sqlmapper.table-id-generator.initial-value</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>0</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">生成するIDの値の初期値。</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_独自実装による識別子idの自動採番">5.4.2. 独自実装による識別子（ID）の自動採番</h4>
+<div class="paragraph">
+<p>TODO</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="anno_embedded_id">5.5. 複合識別子（複合主キー）の定義</h3>
+<div class="paragraph">
+<p>主キーであることに指定には、<code>@Id</code> を使用しますが、複合主キーの場合は複数個指定することもできます。</p>
+</div>
+<div class="listingblock">
+<div class="title">複合主キーの定義</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class Sample {
+
+    @Id
+    private String id2;
+
+    @Id
+    private Integer id2;
+
+    private String value;
+
+    // getter/setterは省略
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>また、埋め込み型として別クラスに抽出して定義することでもできます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>プロパティには、アノテーション <code>@EmbeddedId</code> を付与します。</p>
+</li>
+<li>
+<p>複合キーを定義しているクラスには、アノテーション <code>@Embeddable</code> を付与します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>フィールドには、<code>@Id</code> を付与する必要はりません。</p>
+</li>
+<li>
+<p>エンティティクラスと同様、引数ありのコンストラクタを定義した場合、デフォルトコンストラクタを必ず定義します。</p>
+</li>
+<li>
+<p><code>@Column</code> にて、カラム名のとのマッピングを定義することもできます。</p>
+</li>
+<li>
+<p>埋め込みクラスは、staticな内部クラスとしても定義することができます。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">埋め込み型の複合主キーの定義</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class Sample {
+
+    @EmbeddedId
+    private SamplePK pk;
+
+    private String value;
+
+    // getter/setterは省略
+
+    /**
+     * 埋め込み主キーのクラス
+     */
+    @Embeddable
+    public static class SamplePK {
+
+        private String id2;
+
+        private Integer id2;
+
+        // getter/setterは省略
+    }
+
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="anno_mapped_superclass">5.6. 継承したエンティティを定義する</h3>
+<div class="paragraph">
+<p>登録日時や更新日など、各テーブルに共通的なカラムを持つ場合は、継承専用のクラスに集約することができます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>継承元の親クラスに、アノテーション <code>@MappedSuperclass</code> を付与すると、フィールド情報が継承先の子クラスに引き継ぐことができます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>@MappedSuperclass</code> を付与したクラスは、エンティティクラスとしては使用できません。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">継承モデル</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">/**
+ * 継承元の親クラス
+ */
+@MappedSuperclass
+public abstract class AbstractEntity {
+
+    @CreatedAt
+    protected Timestamp createdAt;
+
+    @ModdifiedAt
+    protected Timestamp updatedAt;
+
+    @Version
+    protected long version;
+
+    // getter/setterは省略
+}
+
+/**
+ * 継承先の子クラス
+ */
+@Entity
+public class User extends AbstractEntity {
+
+    @Id
+    private Long id;
+
+    private String name;
+
+    // getter/setterは省略
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="anno_version">5.7. 楽観的排他制御用のバージョン</h3>
+<div class="paragraph">
+<p>エンティティ更新時にバージョンキー（排他キー）を利用して楽観的排他ロックを行う場合、アノテーション <code>@Version</code> を付与します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>楽観的排他制御とは、排他処理のために DB ないしテーブルにロックをかけるのではなく、更新時にレコードが既に他のトランザクションによって更新されていないことを検出する手法です。</p>
+</li>
+<li>
+<p>レコードを更新するときに、更新対象のレコードのバージョンキーと更新元のデータの値を比較し同じであれば「+1」し、異なれば既に他のトランザクションによって更新されていると判断し例外をスローます。</p>
+</li>
+<li>
+<p>楽観的排他の制約に違反した場合、「org.springframework.dao.OptimisticLockingFailureException」がスローされます。</p>
+</li>
+<li>
+<p>バージョンキーとして定義可能なフィールドの型は、<code>int/Integer</code> または、<code>long/Long</code> です。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class User {
+
+    @Id
+    private String id;
+
+    private String name;
+
+    @Version
+    private long version;
+
+    // getter/setterは省略
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="anno_enumerated">5.8. 列挙型を扱う</h3>
+<div class="paragraph">
+<p>フィールドの型に列挙型を指定したとき、DBカラムの型としては、<code>Enum#name()</code> で取得した値で永続化されます。</p>
+</div>
+<div class="paragraph">
+<p>アノテーション <code>@Enumerated</code> にて、列挙型の変換規則を指定することができます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>アノテーションの属性 <code>value</code> の値として、<code>EnumType</code> を指定することで、どの値を採用するか定義できます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>属性 <code>value</code> はデフォルト属性なので、省略して指定することができます。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class User {
+
+    @Id
+    private long id;
+
+    private String name;
+
+    @Enumerated(EnumType.ORDINAL)
+    private UserType type;
+}
+
+// 列挙型の定義
+public enum UserType {
+    CUSTOMER, ADMIN, DEVELOPER;
+}</code></pre>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_列挙型の任意のメソッドの値を使用する場合">5.8.1. 列挙型の任意のメソッドの値を使用する場合</h4>
+<div class="paragraph">
+<p>TODO</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="anno_temporal">5.9. 時制を扱う</h3>
+<div class="paragraph">
+<p>フィールドのタイプが、<code>java.sql.Date</code> / <code>java.sql.Time</code> などの場合、マッピングする　SQLの型がそれぞれ <code>DATE</code>、<code>TIME</code> と明確なため自動的にマッピングできます。</p>
+</div>
+<div class="paragraph">
+<p>しかし、<code>java.util.Date</code> の場合は、日付/時間/日時 なのか不明なため、アノテーション <code>@Temporal</code> を使用し、マッピング規則を指定する必要があります。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class Sample {
+
+    private java.sql.Date datetime1;
+
+    // 時制のタイプが不明なので、アノテーションを付与する必要がある。
+    @Temporal(TemporalType.TIMESTAMP)
+    private java.util.Date datetime2;
+
+    //setter/getterは省略
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>また、本ライブラリでは、Java8で追加された、Date and Time APIの <code>LocalDate</code> / <code>LocalTIme</code> / <code>LocalDateTime</code> も扱うことができます。</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">表 9. 時制型の定義方法</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">DB型</th>
+<th class="tableblock halign-left valign-top">Java型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TIMESTAMP</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p><code>java.sql.Timestmap</code></p>
+</li>
+<li>
+<p><code>java.time.LocalDateTime</code></p>
+</li>
+<li>
+<p><code>@Temporal(TemporalType.TIMESTAMP) java.util.Date</code></p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>DATE</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p><code>java.sql.Date</code></p>
+</li>
+<li>
+<p><code>java.time.LocalDate</code></p>
+</li>
+<li>
+<p><code>@Temporal(TemporalType.DATE) java.util.Date</code></p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>TIME</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="ulist">
+<ul>
+<li>
+<p><code>java.sql.Time</code></p>
+</li>
+<li>
+<p><code>java.time.LocalTime</code></p>
+</li>
+<li>
+<p><code>@Temporal(TemporalType.TIME) java.util.Date</code></p>
+</li>
+</ul>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="anno_lob">5.10. ラージオブジェクトを扱う</h3>
+<div class="paragraph">
+<p>ラージオブジェクトをマッピングする場合は、アノテーション <code>@Lob</code> を付与します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>BLOB(Binay Large Object) と CLOB(Character Large Object)の区別なく同じアノテーションを付与します。</p>
+</li>
+<li>
+<p>DBMSによって、BLOBとCLOBのデータ型は異なるため、詳しくは利用するDBMSのドキュメント及び、JDBCドライバを参照してください。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">ラージオブジェクトのマッピング</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class Sample {
+
+    @Id
+    private String id;
+
+    /**
+     * BLOBのマッピング
+     */
+    @Lob
+    private byte[] imageData;
+
+    /**
+     * CLOBのマッピング
+     */
+    @Lob
+    private String textData;
+
+    // getter/setterは省略
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>ラージオブジェクトの対応</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">DB型</th>
+<th class="tableblock halign-left valign-top">Java型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>BLOB</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>byte[]</code></p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>CLOB</code></p></td>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
+<p><code>String</code></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="anno_transient">5.11. 永続化対象外を指定する</h3>
+<div class="paragraph">
+<p>SqlMapper では、フィールドを定義すると、標準で永続化対象となります。
+そのため、該当するカラムがテーブルに存在しないとSQL実行エラーとなる場合があります。</p>
+</div>
+<div class="paragraph">
+<p>永続化対象から外したい場合は、そのフィールドにアノテーション <code>@Transient</code> を付与します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>アノテーション <code>@Transient</code> を付与したフィールドはメタモデルの生成からも除外されます。</p>
+</li>
+<li>
+<p>Java の修飾子「transient」を指定しても SqlMapper の永続化対象外と同じ効果を得られます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>修飾子「transient」は Web のセッションにおいても永続化、直列化（serialize）から対象外となるため、SqlMapper としては使用しないで、アノテーション <code>@Transient</code> の方を利用することをお勧めします。</p>
+</li>
+<li>
+<p>修飾子「transient」の使い道は、インタフェース「java.io.Serializable」を実装していないクラスで、値を格納するような Entity や DTO ではない Spring Bean のような機能を持ったインスタンスを永続化対象から外すために使用します。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class User {
+
+    @Id
+    private String id;
+
+    private String name;
+
+    @Transient
+    private UserAttribute attribute;
+
+    // getter/setterは省略
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_監査情報を記録する">5.12. 監査情報を記録する</h3>
+<div class="sect3">
+<h4 id="anno_created_at">5.12.1. 作成／更新日時の自動設定</h4>
+<div class="paragraph">
+<p>レコードの挿入時、更新時に自動的にタイムスタンプを設定したい時があります。</p>
+</div>
+<div class="paragraph">
+<p>その場合、フィールドにアノテーション <code>@CreatedAt</code> / <code>@ModifiedAt</code> を付与します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>アノテーションを付与するには<a href="#temporal_type">時制型</a>である必要があります。</p>
+</li>
+<li>
+<p><code>@CreatedAt</code> は、レコードの作成、すなわち、SQLのINSERT 文を実行するときにシステム日時を設定します。</p>
+</li>
+<li>
+<p><code>@ModifiedAt</code> は、レコードの作成時と更新時、すなわわち SQLの <code>INSERT / UPDATE</code> 文を実行するときにシステム日時を設定します。</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+この機能は、SQL実行前にエンティティのフィールドの値を更新して実行します。
+そのため、何かしらのエラーによりDBのロールバックがされたときは、更新されたエンティティのフィールドの値は戻らないので注意してください。
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class User {
+
+    @Id
+    private long id;
+
+    private String name;
+
+    @CreatedAt
+    private Timestamp createdAt;
+
+    @ModdifiedAt
+    private Timestamp updatedAt;
+
+    // getter/setterは省略
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="anno_created_by">5.12.2. 作成／更新ユーザの永続化方法</h4>
+<div class="paragraph">
+<p>レコードの挿入時、更新時に自動的に操作したユーザ情報を設定したい時があります。</p>
+</div>
+<div class="paragraph">
+<p>その場合、フィールドにアノテーション <code>@CreatedBy</code> / <code>@ModifiedBy</code> を付与します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>本機能を利用するには、インタフェース <code>AuditorProvider</code> を実装したクラスをSpringBeanに登録する必要があります。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>SpringSecurity を利用している場合は、<code>SecurityContextHolder</code> からユーザ情報を取得します。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>@CreatedBy</code> は、レコードの作成、すなわち、SQLのINSERT 文を実行するときにユーザ情報を設定します。</p>
+</li>
+<li>
+<p><code>@ModifiedBy</code> は、レコードの作成時と更新時、すなわわち SQLの <code>INSERT / UPDATE</code> 文を実行するときにユーザ情報を設定します。</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+この機能は、SQL実行前にエンティティのフィールドの値を更新して実行します。
+そのため、何かしらのエラーによりDBのロールバックがされたときは、更新されたエンティティのフィールドの値は戻らないので注意してください。
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="title">エンティティの定義</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class User {
+
+    @Id
+    private long id;
+
+    private String name;
+
+    @CreatedAt
+    private String createdBy;
+
+    @ModdifiedAt
+    private String updatedBy;
+
+    // getter/setterは省略
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">ユーザ情報の取得の実装例</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import java.util.Optional;
+
+import com.github.mygreen.sqlmapper.core.audit.AuditorProvider;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+@Component
+public class MyAuditorProvider&lt;String&gt; implements AuditorProvider {
+
+    /**
+     * 現在の監査人を取得します。
+     *
+     * @return 現在の監査人。
+     */
+    Optional&lt;String&gt; getCurrentAuditor() {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            // 未ログインのときのユーザ名
+            return "unknown";
+        }
+
+        LoginUser user = (LoginUser) authentication.getPrincipal();
+        return Optional.ofNullable(user.getName());
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="anno_convert">5.13. 独自の型をマッピングする</h3>
+<div class="paragraph">
+<p>本ライブラリで未サポートのJava型にマッピングする場合、アノテーション <code>@Convert</code> を付与します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>属性 <code>type</code> にて、変換処理を行う <code>ValueType</code> の実装クラスを指定します。</p>
+</li>
+<li>
+<p>属性 <code>name</code> を指定した場合、<code>ValueType</code> の実装を Springコンテナに登録されている Beanを取得します。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">エンティティの定義</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class User {
+
+    @Id
+    private String id;
+
+    private String name;
+
+    @Convert(type=UrlType.class)
+    private URL url;
+
+    // getter/setterは省略
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">変換処理の実装</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import java.net.URL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.github.mygreen.sqlmapper.core.type.ValueType;
+
+public class UrlType implements ValueType&lt;URL&gt; {
+
+    /**
+     * カラムの値を返します。(DB -&gt; Javaへの変換処理)
+     */
+    @Override
+    public URL getValue(ResultSet rs, int columnIndex) throws SQLException {
+
+        String value = rs.getString(columnIndex);
+        if(value == null) {
+            return null;
+        }
+
+        return new URL(value);
+    }
+
+    /**
+     * SQLのパラメータ変数として値を取得します。(Java -&gt; DBへの変換処理)
+     * &lt;p&gt;JDBCが対応していないタイプの場合は、対応している値に変換します。&lt;/p&gt;
+     * &lt;p&gt;{@link SqlParameterValue} として返すことで、特殊な値を対応することができます。&lt;/p&gt;
+     */
+    @Override
+    public Object getSqlParameterValue(URL value) {
+        return value != null ? value.toString() : null;
+    }
+
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="metamodel">6. メタモデル</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_メタモデルとは">6.1. メタモデルとは</h3>
+<div class="paragraph">
+<p>エンティティのメタモデルとは、Criteria API を使ってクエリを組み立てる際の補助的なクラスです。</p>
+</div>
+<div class="paragraph">
+<p>次のようなエンティティクラスが定義されているとします。</p>
+</div>
+<div class="listingblock">
+<div class="title">エンティティのコード</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">@Entity
+public class Employee {
+
+    @Id
+    public Integer id;
+
+    public String name;
+
+    public Integer age;
+
+    @Version
+    public Integer version;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>上記のエンティティクラスに対するメタモデルクラスは、<code>MEmployee</code> のコードになります。</p>
+</div>
+<div class="paragraph">
+<p>エンティティクラスと同じ名前のプロパティ <code>id</code> / <code>name</code> / <code>age</code> / <code>vesion</code> を持ちます。</p>
+</div>
+<div class="listingblock">
+<div class="title">メタモデルのコード</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public class MEmployee extends EntityPathBase&lt;Employee&gt; {
+
+    public static final MEmployee employee = new MEmployee("employee");
+
+    public MEmployee(Class&lt;? extends Employee&gt; type, String name) {
+        super(type, name);
+    }
+
+    public MEmployee(String name) {
+        super(Employee.class, name);
+    }
+
+    public final StringPath id = createString("id");
+
+    public final StringPath name = createString("name");
+
+    public final NumberPath&lt;Integer&gt; age = createNumber("age", Integer.class);
+
+    public final NumberPath&lt;Long&gt; version = createNumber("version", Long.class);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Criteria APIを使用して検索を行うとき、メタモデルクラスは検索条件を組み立てるときに使用できます。</p>
+</div>
+<div class="paragraph">
+<p>プロパティのクラスタイプによって、予めSQLの演算子に対応するメソッドが実装されており、迷うことなくクエリを組み立てることができます。</p>
+</div>
+<div class="listingblock">
+<div class="title">Criteria APIの検索条件の組み立て</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">MEmployee e = MEmployee.employee;
+
+List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
+        .where(e.name.lower().starts("yamada").and(e.age.beteween(20, 30)))
+        .getResultList();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>組み立てられるSQLは次のようになります。</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-sql hljs" data-lang="sql">select T1_.ID, T1_.NAME, T1_.AGE, T1_.VERSION  from EMPLOYEE T1_ where lower(T1_.NAME) like ? and T1.AGE BETWEEN ? and ?</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>メタモデルを使用すると、演算子に対するメソッドの引数として、ジェネリクスを使用しているため、ある程度 <strong>型安全（タイプセーフ</strong> に利用できます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>例えば、String型のプロパティ <code>name</code> に対するメソッド <code>starts(&#8230;&#8203;)</code> は、文字列型を渡す必要がありますが、数値型を渡すとコンパイルエラーとなります。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>また、メタモデルの他の利点として、テーブルのカラムを変更する際、エンティティのプロパティの名称も変更しますが、Criteria APIで使用している個所がコンパイルエラーとなり、 <strong>影響個所</strong> がすぐにわかります。さらに、プロパティ名の綴り間違など防ぐことができます。</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+本ライブラリのCriteria APIの型安全は、プロパティのクラスタイプしか保障しません。
+例えば、同じ文字列型であるが電話番号と氏名は別な意味であり、ドメインという意味的な範囲は保障できません。
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_自動生成のカスタマイズ">6.2. 自動生成のカスタマイズ</h3>
+<div class="paragraph">
+<p>エンティティのメタモデルに対する自動生成の設定の基本は、<a href="#setup">セットアップ</a> を参照してください。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>メタモデルの出力ディレクトリは、タグ <code>&lt;outputDirectory&gt;</code> で指定します。</p>
+</li>
+<li>
+<p>メタモデルのソースの文字コードは、タグ <code>&lt;sourceEncoding&gt;</code> で指定します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>メタモデルのクラス名の接頭語／接尾語をカスタマイズを行う場合は、タグ <code>&lt;option&gt;</code> の中で指定を行います。</p>
+</li>
+<li>
+<p><code>&lt;sqlmapper.prefix&gt;</code> : メタでモルのクラス名の接頭語。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>デフォルトは、<code>M</code> です。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>&lt;sqlmapper.suffix&gt;</code> : メタでモルのクラス名の接尾語。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>デフォルトは、`` (空文字) です。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;plugin&gt;
+	&lt;groupId&gt;com.mysema.maven&lt;/groupId&gt;
+	&lt;artifactId&gt;apt-maven-plugin&lt;/artifactId&gt;
+	&lt;version&gt;1.1.3&lt;/version&gt;
+	&lt;executions&gt;
+		&lt;execution&gt;
+			&lt;phase&gt;generate-sources&lt;/phase&gt;
+			&lt;goals&gt;
+				&lt;goal&gt;process&lt;/goal&gt;
+			&lt;/goals&gt;
+			&lt;configuration&gt;
+                &lt;!-- ▼▼▼メタモデルの出力ディレクトリ▼▼▼ --&gt;
+				&lt;outputDirectory&gt;target/generated-sources/java&lt;/outputDirectory&gt;
+				&lt;logOnlyOnError&gt;false&lt;/logOnlyOnError&gt;
+				&lt;processors&gt;
+					&lt;processor&gt;com.github.mygreen.sqlmapper.apt.EntityMetamodelProcessor&lt;/processor&gt;
+				&lt;/processors&gt;
+                &lt;!-- ▼▼▼メタモデルのソースの文字コード▼▼▼ --&gt;
+				&lt;sourceEncoding&gt;UTF-8&lt;/sourceEncoding&gt;
+				&lt;options&gt;
+                    &lt;!-- ▼▼▼メタモデルの接頭語▼▼▼ --&gt;
+					&lt;sqlmapper.prefix&gt;M&lt;/sqlmapper.prefix&gt;
+                    &lt;!-- ▼▼▼メタモデルの接尾語▼▼▼ --&gt;
+					&lt;sqlmapper.suffix&gt;&lt;/sqlmapper.suffix&gt;
+				&lt;/options&gt;
+			&lt;/configuration&gt;
+		&lt;/execution&gt;
+	&lt;/executions&gt;
+    &lt;dependencies&gt;
+	    &lt;dependency&gt;
+			&lt;groupId&gt;com.github.mygreen.sqlmapper&lt;/groupId&gt;
+			&lt;artifactId&gt;sqlmapper-apt&lt;/artifactId&gt;
+		&lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/plugin&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="transaction">7. トランザクション</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_宣言的トランザクション管理">7.1. 宣言的トランザクション管理</h3>
+<div class="paragraph">
+<p>アノテーション <code>@Transactional</code> を使用した宣言的トランザクション</p>
+</div>
+<div class="paragraph">
+<p><a href="https://spring.pleiades.io/spring-framework/docs/current/reference/html/data-access.html#transaction-declarative" class="bare">https://spring.pleiades.io/spring-framework/docs/current/reference/html/data-access.html#transaction-declarative</a></p>
+</div>
+<div class="sect3">
+<h4 id="_プログラムによるトランザクション管理">7.1.1. プログラムによるトランザクション管理</h4>
+
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_リリースノート">8. リリースノート</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_ver_0_2_2021_06_xx">8.1. ver.0.2 - 2021-06-xx</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>初期リリース</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2021-07-10 11:05:11 +0900
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
+<script>
+if (!hljs.initHighlighting.called) {
+  hljs.initHighlighting.called = true
+  ;[].slice.call(document.querySelectorAll('pre.highlight > code')).forEach(function (el) { hljs.highlightBlock(el) })
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AutoInsertImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-apt</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.query.auto</a> &gt; <span class="el_source">AutoInsertImpl.java</span></div><h1>AutoInsertImpl.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.query.auto;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.event.PostInsertEvent;
+import com.github.mygreen.sqlmapper.core.event.PreInsertEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.metamodel.EntityPath;
+import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
+
+import lombok.Getter;
+import lombok.NonNull;
+
+/**
+ * 挿入を行うSQLを自動生成するクエリの実装です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param &lt;T&gt; 処理対象となるエンティティの型
+ */
+public class AutoInsertImpl&lt;T&gt; implements AutoInsert&lt;T&gt; {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+<span class="fc" id="L30">    @Getter</span>
+    private final SqlMapperContext context;
+
+    /**
+     * 挿入対象のエンティティのインスタンス
+     */
+<span class="fc" id="L36">    @Getter</span>
+    private final T entity;
+
+    /**
+     * エンティティのメタ情報
+     */
+<span class="fc" id="L42">    @Getter</span>
+    private final EntityMeta entityMeta;
+
+    /**
+     * 挿入対象とするプロパティ一覧
+     */
+<span class="fc" id="L48">    @Getter</span>
+    private final Set&lt;String&gt; includesProperties = new LinkedHashSet&lt;&gt;();
+
+    /**
+     * 挿入対象から除外するプロパティ一覧
+     */
+<span class="fc" id="L54">    @Getter</span>
+    private final Set&lt;String&gt; excludesProperties = new LinkedHashSet&lt;&gt;();
+
+<span class="pc bpc" id="L57" title="2 of 4 branches missed.">    public AutoInsertImpl(@NonNull SqlMapperContext context, @NonNull T entity) {</span>
+<span class="fc" id="L58">        this.context = context;</span>
+<span class="fc" id="L59">        this.entity = entity;</span>
+<span class="fc" id="L60">        this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());</span>
+<span class="fc" id="L61">    }</span>
+
+    @Override
+    public AutoInsertImpl&lt;T&gt; includes(final PropertyPath&lt;?&gt;... properties) {
+
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
+<span class="nc" id="L67">            String propertyName = prop.getPathMeta().getElement();</span>
+
+            // 挿入対象のプロパティの親のチェック
+<span class="nc" id="L70">            EntityPath&lt;?&gt; parentPath = (EntityPath&lt;?&gt;)prop.getPathMeta().getParent();</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            if(!entityMeta.getEntityType().equals(parentPath.getType())) {</span>
+<span class="nc" id="L72">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noIncludeProperty&quot;)</span>
+<span class="nc" id="L73">                        .paramWithClass(&quot;classType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L74">                        .param(&quot;properyName&quot;, propertyName)</span>
+<span class="nc" id="L75">                        .format());</span>
+            }
+
+<span class="nc" id="L78">            this.includesProperties.add(propertyName);</span>
+        }
+
+<span class="nc" id="L81">        return this;</span>
+
+    }
+
+    @Override
+    public AutoInsertImpl&lt;T&gt; excludes(final PropertyPath&lt;?&gt;... properties) {
+
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
+<span class="nc" id="L89">            String propertyName = prop.getPathMeta().getElement();</span>
+
+            // 除外対象のプロパティの親のチェック
+<span class="nc" id="L92">            EntityPath&lt;?&gt; parentPath = (EntityPath&lt;?&gt;)prop.getPathMeta().getParent();</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">            if(!entityMeta.getEntityType().equals(parentPath.getType())) {</span>
+<span class="nc" id="L94">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noIncludeProperty&quot;)</span>
+<span class="nc" id="L95">                        .paramWithClass(&quot;classType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L96">                        .param(&quot;properyName&quot;, propertyName)</span>
+<span class="nc" id="L97">                        .format());</span>
+
+            }
+
+<span class="nc" id="L101">            this.excludesProperties.add(propertyName);</span>
+        }
+
+<span class="nc" id="L104">        return this;</span>
+
+    }
+
+    @Override
+    public int execute() {
+
+<span class="fc" id="L111">        context.getApplicationEventPublisher().publishEvent(new PreInsertEvent(this, entityMeta, entity));</span>
+
+<span class="fc" id="L113">        final int result = new AutoInsertExecutor(this)</span>
+<span class="fc" id="L114">                .execute();</span>
+
+<span class="fc" id="L116">        context.getApplicationEventPublisher().publishEvent(new PostInsertEvent(this, entityMeta, entity));</span>
+<span class="fc" id="L117">        return result;</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QueryUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.util</a> &gt; <span class="el_source">QueryUtils.java</span></div><h1>QueryUtils.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.util.StringUtils;
+
+/**
+ * クエリ組み立て時のヘルパークラス
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+<span class="nc" id="L16">public class QueryUtils {</span>
+
+    /**
+     * {@link String}の配列に変換して返します。
+     * @param list 要素が文字列のリスト
+     * @return {@link String}の配列
+     */
+    public static String[] toArray(List&lt;String&gt; list) {
+<span class="fc" id="L24">        return list.toArray(new String[list.size()]);</span>
+    }
+
+    /**
+     * 指定したインデックスのSQLパラメータソースを取得します。
+     * &lt;p&gt;インスタンスが存在しなければ、新しく作成します。&lt;/p&gt;
+     * @param paramSources 取得対象のSQLパラメータソース。
+     * @param index インデックス
+     * @return SQLパラメータソース。
+     */
+    public static MapSqlParameterSource get(MapSqlParameterSource[] paramSources, int index) {
+<span class="nc" id="L35">        MapSqlParameterSource paramSource = paramSources[index];</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if(paramSource == null) {</span>
+<span class="nc" id="L37">            paramSources[index] = new MapSqlParameterSource();</span>
+        }
+
+<span class="nc" id="L40">        return paramSource;</span>
+    }
+
+    /**
+     * 指定したインデックスのSQLパラメータソースを取得します。
+     * &lt;p&gt;インスタンスが存在しなければ、新しく作成します。&lt;/p&gt;
+     * @param batchParams 取得対象のSQLパラメータソース。
+     * @param index インデックス
+     * @return SQLパラメータソース。
+     */
+    public static List&lt;Object&gt; get(List&lt;Object&gt;[] batchParams, int index) {
+<span class="nc" id="L51">        List&lt;Object&gt; params = batchParams[index];</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        if(params == null) {</span>
+<span class="nc" id="L53">            batchParams[index] = new ArrayList&lt;&gt;();</span>
+        }
+<span class="nc" id="L55">        return params;</span>
+    }
+
+    /**
+     * JdbcItemplate用のバッチ実行用のパラメータの形式に変換する。
+     * @param batchParams 変換対象のパラメータ
+     * @return {@code List&lt;Object[]&gt;} の毛市域に変換したパラメータ。
+     */
+    public static List&lt;Object[]&gt; convertBatchArgs(List&lt;Object&gt;[] batchParams) {
+
+<span class="nc" id="L65">        List&lt;Object[]&gt; batchArgs = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        for(List&lt;Object&gt; params : batchParams) {</span>
+<span class="nc" id="L67">            int size = params.size();</span>
+<span class="nc" id="L68">            Object[] args = new Object[size];</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">            for(int i=0; i &lt; size; i++) {</span>
+<span class="nc" id="L70">                args[i] = params.get(i);</span>
+            }
+<span class="nc" id="L72">            batchArgs.add(args);</span>
+        }
+
+<span class="nc" id="L75">        return batchArgs;</span>
+
+    }
+
+    /**
+     * 指定した回数文字を繰り返す。
+     * @param str 繰り返す文字。(nullや空文字の場合は空文字を返す)
+     * @param separator 区切り文字 (nullや空文字の場合は区切り文字は追加しない)
+     * @param repeat 繰り返し数。(0以下の場合は空文字を返す)
+     * @return 指定した文字を繰り返した結果。
+     */
+    public static String repeat(final String str, final String separator, final int repeat) {
+
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        if(!StringUtils.hasLength(str)) {</span>
+<span class="nc" id="L89">            return &quot;&quot;;</span>
+        }
+
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        if(repeat &lt;= 0) {</span>
+<span class="nc" id="L93">            return &quot;&quot;;</span>
+        }
+
+<span class="nc" id="L96">        StringBuilder result = new StringBuilder();</span>
+
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        for(int i=0; i &lt; repeat; i++) {</span>
+<span class="nc bnc" id="L99" title="All 4 branches missed.">            if(result.length() &gt; 0 &amp;&amp; !StringUtils.hasLength(separator)) {</span>
+<span class="nc" id="L100">                result.append(separator);</span>
+            }
+
+<span class="nc" id="L103">            result.append(str);</span>
+        }
+
+<span class="nc" id="L106">        return result.toString();</span>
+
+    }
+
+    /**
+     * LIKE演算子の値に対するエスケープを行う。
+     * &lt;ul&gt;
+     *  &lt;li&gt;{@literal %} {@literal =&gt;} {@literal \%}&lt;/li&gt;
+     *  &lt;li&gt;{@literal _} {@literal =&gt;} {@literal \_}&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param str エスケープ対象の文字列
+     * @return エスケープ後の文字列
+     */
+    public static String escapeLike(final String str) {
+
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">        if(!StringUtils.hasLength(str)) {</span>
+<span class="nc" id="L122">            return &quot;&quot;;</span>
+        }
+
+<span class="fc" id="L125">        return str.replaceAll(&quot;%&quot;, &quot;\\%&quot;)</span>
+<span class="fc" id="L126">                .replaceAll(&quot;_&quot;, &quot;\\_&quot;);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

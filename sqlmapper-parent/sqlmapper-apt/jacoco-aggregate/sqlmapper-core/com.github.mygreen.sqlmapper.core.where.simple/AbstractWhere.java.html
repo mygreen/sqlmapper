@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AbstractWhere.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-apt</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.where.simple</a> &gt; <span class="el_source">AbstractWhere.java</span></div><h1>AbstractWhere.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.where.simple;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.github.mygreen.sqlmapper.core.where.Where;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+
+/**
+ * 項を保持する機能を提供します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param &lt;T&gt; 実装先のクラス。
+ */
+<span class="fc" id="L20">public abstract class AbstractWhere&lt;T extends AbstractWhere&lt;T&gt;&gt; implements Where {</span>
+
+    /**
+     * 項のリスト。
+     * 式としては{@literal AND}条件で結合されます。
+     *
+     */
+<span class="fc" id="L27">    @Getter(AccessLevel.PROTECTED)</span>
+    protected final List&lt;Term&gt; terms = new ArrayList&lt;&gt;();
+
+    /**
+     * 式を追加します。
+     * @param exp 式を指定します。プレースホルダーとして {@literal ?}が使用可能です。
+     * @param values プレースホルダ―に対する値を指定します。
+     * @return 自身のインスタンスを返します。
+     * @throws IllegalArgumentException 指定した値の個数と式中のプレースホルダーの個数が一致しないときにスローされます。
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">    public T exp(@NonNull final String exp, final Object... values) {</span>
+
+        // 式中にプレースホルダーが存在するかチェックする。
+<span class="fc" id="L41">        final int expCount = countChar(exp, '?');</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        final int valueCount = values == null ? 0 : values.length;</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if(expCount != valueCount) {</span>
+<span class="fc" id="L45">            String message = String.format(&quot;exp not containing the number of placeholder '?'.&quot;</span>
+                    + &quot;exp=[%s].&quot;
+                    + &quot; count of in exp = %d, count of value = %d&quot;
+<span class="fc" id="L48">                    , exp, expCount, valueCount);</span>
+<span class="fc" id="L49">            throw new IllegalArgumentException(message);</span>
+        }
+
+<span class="fc" id="L52">        addTerm(new Exp(exp, values));</span>
+<span class="fc" id="L53">        return (T)this;</span>
+    }
+
+    /**
+     * 指定した文字数をカウントします。
+     * @param text 検索対象の文字列
+     * @param c 検索する文字
+     * @return 文字数
+     */
+    private static int countChar(final String text, final char c) {
+<span class="pc bpc" id="L63" title="2 of 4 branches missed.">        if(text == null || text.isEmpty()) {</span>
+<span class="nc" id="L64">            return 0;</span>
+        }
+
+<span class="fc" id="L67">        int index = 0;</span>
+<span class="fc" id="L68">        int count = 0;</span>
+
+<span class="fc" id="L70">        int length = text.length();</span>
+
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        while(length &gt; index) {</span>
+<span class="fc" id="L73">            index = text.indexOf(c, index) + 1;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">            if (index == 0) {</span>
+<span class="fc" id="L75">                break;</span>
+            }
+<span class="fc" id="L77">            count++;</span>
+        }
+
+<span class="fc" id="L80">        return count;</span>
+    }
+
+    /**
+     * 項を追加します。
+     * @param term 追加する項
+     */
+    protected void addTerm(Term term) {
+<span class="fc" id="L88">        this.terms.add(term);</span>
+<span class="fc" id="L89">    }</span>
+
+    /**
+     * 現在のインスタンスを{@link SimpleWhere} として取り出します。
+     * &lt;p&gt;取り出したときには現在の条件式の情報はクリアされます。&lt;/p&gt;
+     * @return 現在のインスタンスを{@link SimpleWhere}
+     */
+    protected Where putAsSimpleWhere() {
+<span class="fc" id="L97">        final SimpleWhere where = new SimpleWhere();</span>
+<span class="fc" id="L98">        where.terms.addAll(getTerms());</span>
+<span class="fc" id="L99">        this.terms.clear();</span>
+
+<span class="fc" id="L101">        return where;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

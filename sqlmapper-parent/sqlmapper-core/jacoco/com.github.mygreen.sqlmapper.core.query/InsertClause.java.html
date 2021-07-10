@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InsertClause.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.query</a> &gt; <span class="el_source">InsertClause.java</span></div><h1>InsertClause.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.query;
+
+/**
+ * INSERTのINTO句とVALUES句を組み立てるクラスです。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class InsertClause {
+
+    /**
+     * INTO句を組み立てる文字列バッファ。
+     */
+    private final StringBuilder intoSql;
+
+    /**
+     * VALUES句を組み立てる文字列バッファ。
+     */
+    private final StringBuilder valuesSql;
+
+    /**
+     * インスタンスを構築します。
+     */
+<span class="nc" id="L25">    public InsertClause() {</span>
+<span class="nc" id="L26">        this.intoSql = new StringBuilder();</span>
+<span class="nc" id="L27">        this.valuesSql = new StringBuilder();</span>
+<span class="nc" id="L28">    }</span>
+
+    /**
+     * インスタンスを構築します。
+     * @param capacity 文字列バッファの初期容量。
+     */
+<span class="nc" id="L34">    public InsertClause(final int capacity) {</span>
+<span class="nc" id="L35">        this.intoSql = new StringBuilder();</span>
+<span class="nc" id="L36">        this.valuesSql = new StringBuilder();</span>
+<span class="nc" id="L37">    }</span>
+
+    /**
+     * INTO句をSQLに変換します。
+     * @return SQL
+     */
+    public String toIntoSql() {
+<span class="nc" id="L44">        return intoSql.toString();</span>
+    }
+
+    /**
+     * VALUES句をSQLに変換します。
+     * @return SQL
+     */
+    public String toValuesSql() {
+<span class="nc" id="L52">        return valuesSql.toString();</span>
+    }
+
+    /**
+     * INTO句とVALUES句を追加します。
+     * @param columnName VALUES句のカラム名
+     * @param expression INSERT句の式
+     */
+    public void addSql(final String columnName, final String expression) {
+
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if(intoSql.length() == 0) {</span>
+<span class="nc" id="L63">            intoSql.append(&quot; (&quot;).append(columnName).append(')');</span>
+
+<span class="nc" id="L65">            valuesSql.append(&quot; values (&quot;).append(expression).append(')');</span>
+
+        } else {
+<span class="nc" id="L68">            intoSql.setLength(intoSql.length() - 1);</span>
+<span class="nc" id="L69">            intoSql.append(&quot;, &quot;).append(columnName).append(')');</span>
+
+<span class="nc" id="L71">            valuesSql.setLength(valuesSql.length() - 1);</span>
+<span class="nc" id="L72">            valuesSql.append(&quot;, &quot;).append(expression).append(')');</span>
+
+        }
+
+<span class="nc" id="L76">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

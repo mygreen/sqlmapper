@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GeneralExpression.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel.expression</a> &gt; <span class="el_source">GeneralExpression.java</span></div><h1>GeneralExpression.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel.expression;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
+import com.github.mygreen.sqlmapper.metamodel.operation.BooleanOperation;
+import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
+
+/**
+ * 汎用的な型に対する式。
+ * &lt;p&gt;{@literal byte[]} 型など専用の式の型がないときに用います。
+ *
+ *
+ * @author T.TSUCHIE
+ * @param &lt;T&gt; 式のタイプ
+ *
+ */
+public abstract class GeneralExpression&lt;T&gt; extends DslExpression&lt;T&gt; {
+
+    public GeneralExpression(Expression&lt;T&gt; mixin) {
+<span class="fc" id="L23">        super(mixin);</span>
+<span class="fc" id="L24">    }</span>
+
+    /**
+     * {@literal 左辺 = 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 = 右辺}
+     */
+    public BooleanExpression eq(T right) {
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if(right == null) {</span>
+<span class="nc" id="L33">            return isNull();</span>
+        }
+<span class="fc" id="L35">        return eq(Constant.create(right));</span>
+    }
+
+    /**
+     * {@literal 左辺 = 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 = 右辺}
+     */
+    public BooleanExpression eq(Expression&lt;? extends T&gt; right) {
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if(right == null) {</span>
+<span class="nc" id="L45">            return isNull();</span>
+        }
+<span class="fc" id="L47">        return new BooleanOperation(ComparisionOp.EQ, mixin, right);</span>
+    }
+
+    /**
+     * {@literal 左辺 &lt;&gt; 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 &lt;&gt; 右辺}
+     */
+    public BooleanExpression ne(T right) {
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if(right == null) {</span>
+<span class="nc" id="L57">            return isNotNull();</span>
+        }
+<span class="nc" id="L59">        return ne(Constant.create(right));</span>
+    }
+
+    /**
+     * {@literal 左辺 &lt;&gt; 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 &lt;&gt; 右辺}
+     */
+    public BooleanExpression ne(Expression&lt;? extends T&gt; right) {
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        if(right == null) {</span>
+<span class="nc" id="L69">            return isNotNull();</span>
+        }
+<span class="nc" id="L71">        return new BooleanOperation(ComparisionOp.NE, mixin, right);</span>
+    }
+
+    /**
+     * {@literal 左辺 IS NULL} として比較する式を作成します。
+     * @return {@literal 左辺 IS NULL}
+     */
+    public BooleanExpression isNull() {
+<span class="nc" id="L79">        return new BooleanOperation(UnaryOp.IS_NULL, mixin);</span>
+    }
+
+    /**
+     * {@literal 左辺 IS NOT NULL} として比較する式を作成します。
+     * @return {@literal 左辺 IS NOT NULL}
+     */
+    public BooleanExpression isNotNull() {
+<span class="nc" id="L87">        return new BooleanOperation(UnaryOp.IS_NOT_NULL, mixin);</span>
+    }
+
+    /**
+     * {@literal 左辺 IN (右辺1, 右辺2, 右辺3, ...)} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 IN (右辺1, 右辺2, 右辺3, ...)}
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public BooleanExpression in(T... right) {
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        if(right.length == 1) {</span>
+<span class="nc" id="L98">            return eq(right[0]);</span>
+        }
+<span class="fc" id="L100">        return in(Arrays.asList(right));</span>
+    }
+
+    /**
+     * {@literal 左辺 IN (右辺[0], 右辺[1], 右辺[2], ...)} として比較する式を作成します。
+     * @param right 右辺。指定した右辺は各要素として展開されて処理されます。
+     * @return {@literal 左辺 IN (右辺[0], 右辺[1], 右辺[2], ...)}
+     */
+    public BooleanExpression in(Collection&lt;? extends T&gt; right) {
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if(right.size() == 1) {</span>
+<span class="nc" id="L110">            return eq(right.iterator().next());</span>
+        }
+
+<span class="fc" id="L113">        return new BooleanOperation(ComparisionOp.IN, mixin,</span>
+<span class="fc" id="L114">                Constant.createCollection(Collections.unmodifiableCollection(right)));</span>
+    }
+
+    /**
+     * {@literal 左辺 IN (右辺)} として比較する式を作成します。
+     * @param right 右辺。実行する際にはサブクエリとして展開されて処理されます。
+     * @return {@literal 左辺 IN (右辺)}
+     */
+    public BooleanExpression in(SubQueryExpression&lt;T&gt; right) {
+<span class="nc" id="L123">        return new BooleanOperation(ComparisionOp.IN, mixin, right);</span>
+    }
+
+    /**
+     * {@literal 左辺 NOT IN (右辺1, 右辺2, 右辺3, ...)} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 NOT IN (右辺1, 右辺2, 右辺3, ...)}
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public BooleanExpression notIn(T... right) {
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        if(right.length == 1) {</span>
+<span class="nc" id="L134">            return ne(right[0]);</span>
+        }
+<span class="nc" id="L136">        return notIn(Arrays.asList(right));</span>
+    }
+
+    /**
+     * {@literal 左辺 NOT IN (右辺[0], 右辺[1], 右辺[2], ...)} として比較する式を作成します。
+     * @param right 右辺。指定した右辺は各要素として展開されて処理されます。
+     * @return {@literal 左辺 NOT IN (右辺[0], 右辺[1], 右辺[2], ...)}
+     */
+    public BooleanExpression notIn(Collection&lt;? extends T&gt; right) {
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if(right.size() == 1) {</span>
+<span class="nc" id="L146">            return ne(right.iterator().next());</span>
+        }
+
+<span class="nc" id="L149">        return new BooleanOperation(ComparisionOp.NOT_IN, mixin,</span>
+<span class="nc" id="L150">                Constant.createCollection(Collections.unmodifiableCollection(right)));</span>
+    }
+
+    /**
+     * {@literal 左辺 NOT IN (右辺)} として比較する式を作成します。
+     * @param right 右辺。実行する際にはサブクエリとして展開されて処理されます。
+     * @return {@literal 左辺 NOT IN (右辺)}
+     */
+    public BooleanExpression notIn(SubQueryExpression&lt;T&gt; right) {
+<span class="nc" id="L159">        return new BooleanOperation(ComparisionOp.NOT_IN, mixin, right);</span>
+    }
+
+ }
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>ValueTypeRegistry.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.type</a> &gt; <span class="el_source">ValueTypeRegistry.java</span></div><h1>ValueTypeRegistry.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.type;
+
+import java.math.BigDecimal;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.jdbc.support.lob.LobHandler;
+
+import com.github.mygreen.messageformatter.MessageFormatter;
+import com.github.mygreen.sqlmapper.core.annotation.Convert;
+import com.github.mygreen.sqlmapper.core.annotation.Enumerated;
+import com.github.mygreen.sqlmapper.core.annotation.Temporal;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.type.enumeration.EnumOrdinalType;
+import com.github.mygreen.sqlmapper.core.type.enumeration.EnumStringType;
+import com.github.mygreen.sqlmapper.core.type.lob.LobByteArrayType;
+import com.github.mygreen.sqlmapper.core.type.lob.LobStringType;
+import com.github.mygreen.sqlmapper.core.type.standard.BigDecimalType;
+import com.github.mygreen.sqlmapper.core.type.standard.BooleanType;
+import com.github.mygreen.sqlmapper.core.type.standard.DoubleType;
+import com.github.mygreen.sqlmapper.core.type.standard.FloatType;
+import com.github.mygreen.sqlmapper.core.type.standard.IntegerType;
+import com.github.mygreen.sqlmapper.core.type.standard.LocalDateTimeType;
+import com.github.mygreen.sqlmapper.core.type.standard.LocalDateType;
+import com.github.mygreen.sqlmapper.core.type.standard.LocalTimeType;
+import com.github.mygreen.sqlmapper.core.type.standard.LongType;
+import com.github.mygreen.sqlmapper.core.type.standard.ShortType;
+import com.github.mygreen.sqlmapper.core.type.standard.SqlDateType;
+import com.github.mygreen.sqlmapper.core.type.standard.SqlTimeType;
+import com.github.mygreen.sqlmapper.core.type.standard.SqlTimestampType;
+import com.github.mygreen.sqlmapper.core.type.standard.StringType;
+import com.github.mygreen.sqlmapper.core.type.standard.UUIDType;
+import com.github.mygreen.sqlmapper.core.type.standard.UtilDateType;
+
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+
+/**
+ * {@link ValueType} を管理します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L58">public class ValueTypeRegistry implements InitializingBean {</span>
+
+<span class="nc" id="L60">    @Getter</span>
+<span class="nc" id="L61">    @Setter</span>
+    @Autowired
+    private ApplicationContext applicationContext;
+
+<span class="nc" id="L65">    @Getter</span>
+<span class="nc" id="L66">    @Setter</span>
+    @Autowired
+    private MessageFormatter messageFormatter;
+
+<span class="nc" id="L70">    @Getter</span>
+<span class="nc" id="L71">    @Setter</span>
+    @Autowired
+    private LobHandler lobHandler;
+
+    /**
+     * クラスタイプで関連付けられた{@link ValueType}のマップ
+     */
+<span class="fc" id="L78">    protected Map&lt;Class&lt;?&gt;, ValueType&lt;?&gt;&gt; typeMap = new ConcurrentHashMap&lt;&gt;();</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * &lt;p&gt;初期化処理として、標準の {@link ValueType} を登録する({@link #registerWithDefaultValueTypes()})。
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+<span class="fc" id="L87">        registerWithDefaultValueTypes();</span>
+<span class="fc" id="L88">    }</span>
+
+    /**
+     * 標準の {@link ValueType} を登録する。
+     */
+    protected void registerWithDefaultValueTypes() {
+
+        // 文字列用の設定
+<span class="fc" id="L96">        register(String.class, new StringType());</span>
+
+        // ブール値用の設定
+<span class="fc" id="L99">        register(Boolean.class, new BooleanType(false));</span>
+<span class="fc" id="L100">        register(boolean.class, new BooleanType(true));</span>
+
+        // 数値用の設定
+<span class="fc" id="L103">        register(Short.class, new ShortType(false));</span>
+<span class="fc" id="L104">        register(short.class, new ShortType(true));</span>
+<span class="fc" id="L105">        register(Integer.class, new IntegerType(false));</span>
+<span class="fc" id="L106">        register(int.class, new IntegerType(true));</span>
+<span class="fc" id="L107">        register(Long.class, new LongType(false));</span>
+<span class="fc" id="L108">        register(long.class, new LongType(true));</span>
+<span class="fc" id="L109">        register(Float.class, new FloatType(false));</span>
+<span class="fc" id="L110">        register(float.class, new FloatType(true));</span>
+<span class="fc" id="L111">        register(Double.class, new DoubleType(false));</span>
+<span class="fc" id="L112">        register(double.class, new DoubleType(true));</span>
+<span class="fc" id="L113">        register(BigDecimal.class, new BigDecimalType());</span>
+
+        // SQLの時制用の設定
+        // java.util.Date型は、ValueTypeRegistry 内で別途処理される。
+<span class="fc" id="L117">        register(Time.class, new SqlTimeType());</span>
+<span class="fc" id="L118">        register(java.sql.Date.class, new SqlDateType());</span>
+<span class="fc" id="L119">        register(Timestamp.class, new SqlTimestampType());</span>
+
+        // JSR-310の時勢用の設定
+        // タイムゾーンを持たない時制のみサポート
+<span class="fc" id="L123">        register(LocalTime.class, new LocalTimeType());</span>
+<span class="fc" id="L124">        register(LocalDate.class, new LocalDateType());</span>
+<span class="fc" id="L125">        register(LocalDateTime.class, new LocalDateTimeType());</span>
+
+        // その他の型の設定
+<span class="fc" id="L128">        register(UUID.class, new UUIDType());</span>
+
+<span class="fc" id="L130">    }</span>
+
+    /**
+     * プロパティメタ情報に対する値の変換処理を取得する。
+     * @param propertyMeta プロパティメタ情報
+     * @return 対応する {@link ValueType}の実装。
+     * @throws ValueTypeNotFoundException 対応する {@link ValueType} が見つからない場合。
+     */
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">    public ValueType&lt;?&gt; findValueType(@NonNull PropertyMeta propertyMeta) {</span>
+
+<span class="fc" id="L140">        Optional&lt;Convert&gt; convertAnno = propertyMeta.getAnnotation(Convert.class);</span>
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">        if(convertAnno.isPresent()) {</span>
+<span class="nc" id="L142">            return getValueType(propertyMeta, convertAnno.get());</span>
+        }
+
+<span class="fc" id="L145">        final Class&lt;?&gt; propertyType = propertyMeta.getPropertyType();</span>
+
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">        if(propertyMeta.isLob()) {</span>
+<span class="nc" id="L148">            return getLobType(propertyMeta);</span>
+        }
+
+<span class="fc bfc" id="L151" title="All 2 branches covered.">        if(typeMap.containsKey(propertyType)) {</span>
+<span class="fc" id="L152">            return typeMap.get(propertyType);</span>
+        }
+
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        if(propertyType.isEnum()) {</span>
+<span class="fc" id="L156">            return getEnumType(propertyMeta);</span>
+        }
+
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">        if(Date.class.isAssignableFrom(propertyType)) {</span>
+<span class="fc" id="L160">            return getUtilDateType(propertyMeta);</span>
+        }
+
+<span class="nc" id="L163">        throw new ValueTypeNotFoundException(propertyMeta, messageFormatter.create(&quot;typeValue.notFound&quot;)</span>
+<span class="nc" id="L164">                .paramWithClass(&quot;entityClass&quot;, propertyMeta.getDeclaringClass())</span>
+<span class="nc" id="L165">                .param(&quot;property&quot;, propertyMeta.getName())</span>
+<span class="nc" id="L166">                .paramWithClass(&quot;propertyType&quot;, propertyType)</span>
+<span class="nc" id="L167">                .format());</span>
+
+    }
+
+    /**
+     * アノテーション {@link Convert} から {@link ValueType} を取得する。
+     * @param propertyMeta 対象となるプロパティメタ情報
+     * @param convertAnno 変換規則を指定するアノテーション
+     * @return {@link ValueType}のインスタンス。
+     */
+    protected ValueType&lt;?&gt; getValueType(final PropertyMeta propertyMeta, final Convert convertAnno) {
+
+<span class="nc bnc" id="L179" title="All 2 branches missed.">        if(convertAnno.name().isEmpty()) {</span>
+<span class="nc" id="L180">            return BeanUtils.instantiateClass(convertAnno.type());</span>
+        } else {
+<span class="nc" id="L182">            return applicationContext.getBean(convertAnno.name(), convertAnno.type());</span>
+        }
+    }
+
+    /**
+     * ラージオブジェクト用の{@link ValueType} を取得する。
+     * @param propertyMeta 対象となるプロパティメタ情報
+     * @return {@link ValueType}のインスタンス。
+     */
+    protected ValueType&lt;?&gt; getLobType(final PropertyMeta propertyMeta) {
+
+<span class="nc" id="L193">        final Class&lt;?&gt; propertyType = propertyMeta.getPropertyType();</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        if(String.class.isAssignableFrom(propertyType)) {</span>
+<span class="nc" id="L195">            return new LobStringType(lobHandler);</span>
+
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        } else if (byte[].class.isAssignableFrom(propertyType)) {</span>
+<span class="nc" id="L198">            return new LobByteArrayType(lobHandler);</span>
+        }
+
+<span class="nc" id="L201">        throw new ValueTypeNotFoundException(propertyMeta, messageFormatter.create(&quot;typeValue.notFoundLob&quot;)</span>
+<span class="nc" id="L202">                .paramWithClass(&quot;entityClass&quot;, propertyMeta.getDeclaringClass())</span>
+<span class="nc" id="L203">                .param(&quot;property&quot;, propertyMeta.getName())</span>
+<span class="nc" id="L204">                .paramWithClass(&quot;propertyType&quot;, propertyType)</span>
+<span class="nc" id="L205">                .format());</span>
+
+    }
+
+    /**
+     * 列挙型用の{@link ValueType} を取得する。
+     * @param propertyMeta 対象となるプロパティメタ情報
+     * @return {@link ValueType}のインスタンス。
+     */
+    @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+    protected ValueType&lt;?&gt; getEnumType(final PropertyMeta propertyMeta) {
+
+<span class="fc" id="L217">        Optional&lt;Enumerated&gt; enumeratedAnno = propertyMeta.getAnnotation(Enumerated.class);</span>
+<span class="fc" id="L218">        Class&lt;?&gt; propertyType = propertyMeta.getPropertyType();</span>
+
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">        if(enumeratedAnno.isPresent()) {</span>
+<span class="fc" id="L221">            final Enumerated.EnumType enumType = enumeratedAnno.get().value();</span>
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">            if(enumType == Enumerated.EnumType.ORDINAL) {</span>
+<span class="nc" id="L223">                return new EnumOrdinalType(propertyType, messageFormatter);</span>
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">            } else if(enumType == Enumerated.EnumType.STRING) {</span>
+<span class="fc" id="L225">                return new EnumStringType(propertyType, messageFormatter);</span>
+            }
+        }
+
+        // デフォルトの場合
+<span class="nc" id="L230">        return new EnumStringType(propertyType, messageFormatter);</span>
+
+    }
+
+    /**
+     * 時制の型が不明な {@link java.util.Date} の ValueType} を取得する。
+     * @param propertyMeta 対象となるプロパティメタ情報
+     * @return {@link ValueType}のインスタンス。
+     */
+    protected ValueType&lt;?&gt; getUtilDateType(final PropertyMeta propertyMeta) {
+
+<span class="fc" id="L241">        Optional&lt;Temporal&gt; temporalAnno = propertyMeta.getAnnotation(Temporal.class);</span>
+
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">        if(temporalAnno.isPresent()) {</span>
+<span class="fc" id="L244">            final Temporal.TemporalType temporalType = temporalAnno.get().value();</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">            if(temporalType == Temporal.TemporalType.TIMESTAMP) {</span>
+<span class="fc" id="L246">                return new UtilDateType(new SqlTimestampType());</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">            } else if(temporalType == Temporal.TemporalType.DATE) {</span>
+<span class="nc" id="L248">                return new UtilDateType(new SqlDateType());</span>
+
+<span class="nc bnc" id="L250" title="All 2 branches missed.">            } else if(temporalType == Temporal.TemporalType.TIME) {</span>
+<span class="nc" id="L251">                return new UtilDateType(new SqlTimeType());</span>
+
+            }
+        }
+
+        // デフォルトの場合
+<span class="nc" id="L257">        return new UtilDateType(new SqlTimestampType());</span>
+
+    }
+
+    /**
+     * {@link ValueType} を登録します。
+     *
+     * @param &lt;T&gt; 関連付ける型
+     * @param type 関連付けるクラスタイプ
+     * @param valueType {@link ValueType}の実装
+     */
+<span class="pc bpc" id="L268" title="2 of 4 branches missed.">    public &lt;T&gt; void register(@NonNull Class&lt;T&gt; type, @NonNull ValueType&lt;T&gt; valueType) {</span>
+<span class="fc" id="L269">        this.typeMap.put(type, valueType);</span>
+<span class="fc" id="L270">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
