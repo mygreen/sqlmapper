@@ -14,6 +14,7 @@
 - 現状の使い勝手は、 [Doma2](https://doma.readthedocs.io/en/latest/) の Criteria API に近いものとなっています。
 
 ## ライセンス
+
 Apache License verion 2.0
 
 ## 前提条件
@@ -26,10 +27,11 @@ Apache License verion 2.0
 ## ドキュメント
 
 - 使用方法
-  - 
+  - https://mygreen.github.io/sqlmapper/how2docs/index.html
 - プロジェクト情報
-  - 
+  - https://mygreen.github.io/sqlmapper/
 - JavaDoc
-  - 
+  - https://mygreen.github.io/sqlmapper/apidocs/index.html
+
 
 
