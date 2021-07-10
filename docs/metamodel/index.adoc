@@ -1,7 +1,0 @@
-[[metamodel]]
-= メタモデル
-
-// 各章のインポート
-include::basic.adoc[leveloffset=+1]
-include::generate.adoc[leveloffset=+1]
-

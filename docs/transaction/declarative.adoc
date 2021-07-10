@@ -1,5 +1,0 @@
-= 宣言的トランザクション管理
-
-アノテーション ``@Transactional`` を使用した宣言的トランザクション
-
-https://spring.pleiades.io/spring-framework/docs/current/reference/html/data-access.html#transaction-declarative[]
