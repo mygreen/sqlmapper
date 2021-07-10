@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>OrderSpecifier.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel</a> &gt; <span class="el_source">OrderSpecifier.java</span></div><h1>OrderSpecifier.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * パスの並び順を表現します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L13">@RequiredArgsConstructor</span>
+public class OrderSpecifier {
+
+    /**
+     * 並び順
+     */
+<span class="nc" id="L19">    @Getter</span>
+    private final OrderType order;
+
+    /**
+     * 対象のパス
+     */
+<span class="nc" id="L25">    @Getter</span>
+    private final Path&lt;?&gt; path;
+
+    /**
+     * {@inheritDoc}
+     * {@literal 対象のパスの評価結果 並び順}
+     */
+    public String toString() {
+<span class="fc" id="L33">        return path.toString() + &quot; &quot; + order.name();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

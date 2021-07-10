@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AutoBatchDeleteImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.query.auto</a> &gt; <span class="el_source">AutoBatchDeleteImpl.java</span></div><h1>AutoBatchDeleteImpl.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.query.auto;
+
+import java.util.Collection;
+
+import org.springframework.dao.OptimisticLockingFailureException;
+
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.event.PostBatchDeleteEvent;
+import com.github.mygreen.sqlmapper.core.event.PreBatchDeleteEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+
+import lombok.Getter;
+import lombok.NonNull;
+
+
+/**
+ * バッチ削除を行うSQLを自動生成するクエリの実装です。
+ *
+ * @author T.TSUCHIE
+ *
+ * @param &lt;T&gt; 処理対象となるエンティティの型
+ */
+public class AutoBatchDeleteImpl&lt;T&gt; implements AutoBatchDelete&lt;T&gt; {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+<span class="nc" id="L29">    @Getter</span>
+    private final SqlMapperContext context;
+
+<span class="nc" id="L32">    @Getter</span>
+    private final T[] entities;
+
+    /**
+     * エンティティ情報
+     */
+<span class="nc" id="L38">    @Getter</span>
+    private final EntityMeta entityMeta;
+
+    /**
+     * バージョンプロパティを無視して削除するかどうか。
+     */
+<span class="nc" id="L44">    @Getter</span>
+    private boolean ignoreVersion = false;
+
+    /**
+     * バージョンチェックを行った場合に、更新行数が0行でも{@link OptimisticLockingFailureException}スローしないなら&lt;code&gt;true&lt;/code&gt;
+     */
+<span class="nc" id="L50">    @Getter</span>
+    private boolean suppresOptimisticLockException = false;
+
+<span class="nc bnc" id="L53" title="All 4 branches missed.">    public AutoBatchDeleteImpl(@NonNull SqlMapperContext context, @NonNull T[] entities) {</span>
+<span class="nc" id="L54">        this.context = context;</span>
+
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if(entities.length == 0) {</span>
+<span class="nc" id="L57">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.notEmptyEntity&quot;)</span>
+<span class="nc" id="L58">                    .format());</span>
+        }
+
+<span class="nc" id="L61">        this.entities = entities;</span>
+<span class="nc" id="L62">        this.entityMeta = context.getEntityMetaFactory().create(entities[0].getClass());</span>
+
+<span class="nc" id="L64">        validateTarget();</span>
+<span class="nc" id="L65">    }</span>
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+<span class="nc bnc" id="L68" title="All 4 branches missed.">    public AutoBatchDeleteImpl(@NonNull SqlMapperContext context, @NonNull Collection&lt;T&gt; entities) {</span>
+<span class="nc" id="L69">        this(context, (T[])entities.toArray());</span>
+<span class="nc" id="L70">    }</span>
+
+    private void validateTarget() {
+        // 主キーを持つかどうかのチェック
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if(entityMeta.getIdPropertyMetaList().isEmpty()) {</span>
+<span class="nc" id="L75">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.requiredId&quot;)</span>
+<span class="nc" id="L76">                    .paramWithClass(&quot;entityType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L77">                    .format());</span>
+        }
+<span class="nc" id="L79">    }</span>
+
+    /**
+     * インデックスを指定して処理対象のエンティティを取得します。
+     * @param index インデックス
+     * @return エンティティ
+     */
+    public T getEntity(final int index) {
+<span class="nc" id="L87">        return entities[index];</span>
+    }
+
+    /**
+     * 処理対象のエンティティの個数を取得します。
+     * @return エンティティの個数
+     */
+    public int getEntitySize() {
+<span class="nc" id="L95">        return entities.length;</span>
+    }
+
+    @Override
+    public AutoBatchDeleteImpl&lt;T&gt; ignoreVersion() {
+<span class="nc" id="L100">        this.ignoreVersion = true;</span>
+<span class="nc" id="L101">        return this;</span>
+    }
+
+    @Override
+    public AutoBatchDeleteImpl&lt;T&gt; suppresOptimisticLockException() {
+<span class="nc" id="L106">        this.suppresOptimisticLockException = true;</span>
+<span class="nc" id="L107">        return this;</span>
+    }
+
+    @Override
+    public int execute() {
+
+<span class="nc" id="L113">        context.getApplicationEventPublisher().publishEvent(new PreBatchDeleteEvent(this, entityMeta, entities));</span>
+
+<span class="nc" id="L115">        final int result = new AutoBatchDeleteExecutor(this)</span>
+<span class="nc" id="L116">                .execute();</span>
+
+<span class="nc" id="L118">        context.getApplicationEventPublisher().publishEvent(new PostBatchDeleteEvent(this, entityMeta, entities));</span>
+<span class="nc" id="L119">        return result;</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

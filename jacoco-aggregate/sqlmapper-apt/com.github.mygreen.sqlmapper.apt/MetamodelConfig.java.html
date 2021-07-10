@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>MetamodelConfig.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-apt</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.apt</a> &gt; <span class="el_source">MetamodelConfig.java</span></div><h1>MetamodelConfig.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.apt;
+
+import java.util.Map;
+
+import lombok.RequiredArgsConstructor;
+
+/**
+ * メタモデルの生成オプション。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L14">@RequiredArgsConstructor</span>
+public class MetamodelConfig {
+
+    /**
+     * 生成オプションのキー - エンティティのメタモデルクラスの接頭語
+     */
+    public static final String KEY_PREFIX = &quot;sqlmapper.prefix&quot;;
+
+    /**
+     * 生成オプションのキー - エンティティのメタモデルクラスの接尾語
+     */
+    public static final String KEY_SUFFIX = &quot;sqlmapper.suffix&quot;;
+
+    /**
+     * 生成オプションのキー - 生成ソースのインデント
+     */
+    public static final String KEY_INDENT = &quot;sqlmapper.indent&quot;;
+
+    /**
+     * APTの設定オプション
+     */
+    private final Map&lt;String, String&gt; options;
+
+    /**
+     * 生成するエンティティのメタモデルクラスの接尾語
+     * @return 初期値 {@literal M}。
+     */
+    public String getPrefix() {
+<span class="fc" id="L42">        return options.getOrDefault(KEY_PREFIX, &quot;M&quot;);</span>
+    }
+
+    /**
+     * 生成するエンティティのメタモデルクラスの接尾語
+     * @return 初期値は空文字({@literal &quot;&quot;})。
+     */
+    public String getSuffix() {
+<span class="fc" id="L50">        return options.getOrDefault(KEY_SUFFIX, &quot;&quot;);</span>
+    }
+
+    /**
+     * 生成するソースのインデント
+     * @return 初期値は半角スペース4つ({@literal    }
+     */
+    public String getIndent() {
+<span class="fc" id="L58">        return options.getOrDefault(KEY_INDENT, &quot;    &quot;);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
