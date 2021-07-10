@@ -25,7 +25,7 @@
 			<item name="JavaDoc" href="apidocs/index.html" />
 		</menu>
 		<!-- サンプルなどのモジュールが表示されるので最低限のものを表示 -->
-		<menu name="modules">
+		<menu name="モジュール">
 			<item name="sqlmapper-parent" href="sqlmapper-parent/index.html" />
 		</menu>
 		<menu ref="reports" />
