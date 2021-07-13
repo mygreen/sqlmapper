@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>EntityPathBase.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel</a> &gt; <span class="el_source">EntityPathBase.java</span></div><h1>EntityPathBase.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import lombok.Getter;
+
+/**
+ * エンティティのメタモデルのベースクラス。
+ * &lt;p&gt;エンティティのメタモデルは基本的にこのクラスを実装して作成します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param &lt;T&gt; エンティティのクラスタイプ
+ */
+public abstract class EntityPathBase&lt;T&gt; implements EntityPath&lt;T&gt; {
+
+    /**
+     * エンティティタイプ
+     */
+<span class="fc" id="L22">    @Getter</span>
+    private final Class&lt;? extends T&gt; type;
+
+    /**
+     * エンティティのメタ情報
+     */
+<span class="fc" id="L28">    @Getter</span>
+    private final PathMeta pathMeta;
+
+    /**
+     * プロパティのインスタンスのマップ
+     */
+<span class="fc" id="L34">    private final Map&lt;String, PropertyPath&lt;?&gt;&gt; propertyPathMap = new HashMap&lt;&gt;();</span>
+
+    /**
+     * 埋め込みプロパティ（エンティティ）のインスタンスのマップ
+     */
+<span class="fc" id="L39">    private final Map&lt;String, EntityPath&lt;?&gt;&gt; embeddedPropertyPathMap = new HashMap&lt;&gt;();</span>
+
+    /**
+     * エンティティのメタモデルのインスタンスを作成します。
+     *
+     * @param type エンティティのタイプ。
+     * @param name エンティティ名。
+     */
+<span class="fc" id="L47">    public EntityPathBase(final Class&lt;? extends T&gt; type, final String name) {</span>
+<span class="fc" id="L48">        this.type = type;</span>
+<span class="fc" id="L49">        this.pathMeta = new PathMeta(name, PathType.ROOT);</span>
+<span class="fc" id="L50">    }</span>
+
+    /**
+     * 親を持つエンティティのメタモデルのインスタンスを作成します。
+     *
+     * @param type エンティティのタイプ
+     * @param parent 親の情報
+     * @param name エンティティ名
+     */
+<span class="fc" id="L59">    public EntityPathBase(final Class&lt;? extends T&gt; type, final EntityPathBase&lt;?&gt; parent, final String name) {</span>
+<span class="fc" id="L60">        this.type = type;</span>
+<span class="fc" id="L61">        this.pathMeta = new PathMeta(parent, name, PathType.EMBEDDED);</span>
+
+        // 親の埋め込み情報に追加する
+<span class="fc" id="L64">        parent.embeddedPropertyPathMap.put(name, this);</span>
+<span class="fc" id="L65">    }</span>
+
+    @Override
+    public PropertyPath&lt;?&gt; getPropertyPath(final String propertyName) {
+<span class="nc" id="L69">        return propertyPathMap.get(propertyName);</span>
+    }
+
+    @Override
+    public PropertyPath&lt;?&gt; findPropertyPath(final String propertyName) {
+<span class="nc" id="L74">        PropertyPath&lt;?&gt; propertyPath = propertyPathMap.get(propertyName);</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if(propertyPath != null) {</span>
+<span class="nc" id="L76">            return propertyPath;</span>
+        }
+
+        // 埋め込みプロパティの中を探す
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        for(EntityPath&lt;?&gt; entityPath : embeddedPropertyPathMap.values()) {</span>
+<span class="nc" id="L81">            propertyPath = entityPath.getPropertyPath(propertyName);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">            if(propertyPath != null) {</span>
+<span class="nc" id="L83">                return propertyPath;</span>
+            }
+<span class="nc" id="L85">        }</span>
+<span class="nc" id="L86">        return null;</span>
+    }
+
+    /**
+     * 文字列型のプロパティを作成します。
+     * @param property プロパティ名
+     * @return 文字列型のプロパティ。
+     */
+    protected StringPath createString(final String property) {
+<span class="fc" id="L95">        StringPath propertyPath = new StringPath(this, property);</span>
+<span class="fc" id="L96">        propertyPathMap.put(property, propertyPath);</span>
+<span class="fc" id="L97">        return propertyPath;</span>
+    }
+
+    /**
+     * boolean型またはそのラッパークラス型のプロパティを作成します。
+     * @param property プロパティ名
+     * @return boolean型またはそのラッパークラス型のプロパティ
+     */
+    protected BooleanPath createBoolean(final String property) {
+<span class="fc" id="L106">        BooleanPath propertyPath = new BooleanPath(this, property);</span>
+<span class="fc" id="L107">        propertyPathMap.put(property, propertyPath);</span>
+<span class="fc" id="L108">        return propertyPath;</span>
+    }
+
+    /**
+     * 数値型のプロパティを作成します。
+     * @param &lt;A&gt; 数値型のタイプ
+     * @param property プロパティ名
+     * @param type 数値型のクラス
+     * @return 数値型のプロパティ
+     */
+    @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+    protected &lt;A extends Number &amp; Comparable&lt;A&gt;&gt; NumberPath&lt;A&gt; createNumber(final String property, final Class&lt;? super A&gt; type) {
+<span class="fc" id="L120">        NumberPath&lt;A&gt; propertyPath = new NumberPath&lt;&gt;((Class)type, this, property);</span>
+<span class="fc" id="L121">        propertyPathMap.put(property, propertyPath);</span>
+<span class="fc" id="L122">        return propertyPath;</span>
+    }
+
+    /**
+     * 列挙型のプロパティを作成します。
+     * @param &lt;A&gt; 列挙型のタイプ
+     * @param property プロパティ名
+     * @param type 列挙型のクラス
+     * @return 列挙型のプロパティ
+     */
+    @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+    protected &lt;A extends Enum&lt;A&gt;&gt; EnumPath&lt;A&gt; createEnum(final String property, final Class&lt;? super A&gt; type) {
+<span class="fc" id="L134">        EnumPath&lt;A&gt; propertyPath = new EnumPath&lt;&gt;((Class)type, this, property);</span>
+<span class="fc" id="L135">        propertyPathMap.put(property, propertyPath);</span>
+<span class="fc" id="L136">        return propertyPath;</span>
+    }
+
+    /**
+     * {@link java.sql.Date} 型のプロパティを作成します。
+     * @param property プロパティ名
+     * @return {@link java.sql.Date} 型のプロパティ
+     */
+    protected SqlDatePath createSqlDate(final String property) {
+<span class="nc" id="L145">        SqlDatePath propertyPath = new SqlDatePath(this, property);</span>
+<span class="nc" id="L146">        propertyPathMap.put(property, propertyPath);</span>
+<span class="nc" id="L147">        return propertyPath;</span>
+    }
+
+    /**
+     * {@link java.sql.Time} 型のプロパティを作成します。
+     * @param property プロパティ名
+     * @return {@link java.sql.Time} 型のプロパティ
+     */
+    protected SqlTimePath createSqlTime(final String property) {
+<span class="nc" id="L156">        SqlTimePath propertyPath = new SqlTimePath(this, property);</span>
+<span class="nc" id="L157">        propertyPathMap.put(property, propertyPath);</span>
+<span class="nc" id="L158">        return propertyPath;</span>
+    }
+
+    /**
+     * {@link java.sql.Timestamp} 型のプロパティを作成します。
+     * @param property プロパティ名
+     * @return {@link java.sql.Timestamp} 型のプロパティ
+     */
+    protected SqlTimestampPath createSqlTimestamp(final String property) {
+<span class="fc" id="L167">        SqlTimestampPath propertyPath = new SqlTimestampPath(this, property);</span>
+<span class="fc" id="L168">        propertyPathMap.put(property, propertyPath);</span>
+<span class="fc" id="L169">        return propertyPath;</span>
+    }
+
+    /**
+     * {@link java.util.Date} 型のプロパティを作成します。
+     * @param property プロパティ名
+     * @return {@link java.util.Date} 型のプロパティ
+     */
+    protected UtilDatePath createUtilDate(final String property) {
+<span class="fc" id="L178">        UtilDatePath propertyPath = new UtilDatePath(this, property);</span>
+<span class="fc" id="L179">        propertyPathMap.put(property, propertyPath);</span>
+<span class="fc" id="L180">        return propertyPath;</span>
+    }
+
+    /**
+     * {@link java.time.LocalDate} 型のプロパティを作成します。
+     * @param property プロパティ名
+     * @return {@link java.time.LocalDate} 型のプロパティ
+     */
+    protected LocalDatePath createLocalDate(String property) {
+<span class="fc" id="L189">        LocalDatePath propertyPath = new LocalDatePath(this, property);</span>
+<span class="fc" id="L190">        propertyPathMap.put(property, propertyPath);</span>
+<span class="fc" id="L191">        return propertyPath;</span>
+    }
+
+    /**
+     * {@link java.time.LocalTime} 型のプロパティを作成します。
+     * @param property プロパティ名
+     * @return {@link java.time.LocalTime} 型のプロパティ
+     */
+    protected LocalTimePath createLocalTime(final String property) {
+<span class="nc" id="L200">        LocalTimePath propertyPath = new LocalTimePath(this, property);</span>
+<span class="nc" id="L201">        propertyPathMap.put(property, propertyPath);</span>
+<span class="nc" id="L202">        return propertyPath;</span>
+    }
+
+    /**
+     * {@link java.time.LocalDateTime} 型のプロパティを作成します。
+     * @param property プロパティ名
+     * @return {@link java.time.LocalDateTime} 型のプロパティ
+     */
+    protected LocalDateTimePath createLocalDateTime(final String property) {
+<span class="nc" id="L211">        LocalDateTimePath propertyPath = new LocalDateTimePath(this, property);</span>
+<span class="nc" id="L212">        propertyPathMap.put(property, propertyPath);</span>
+<span class="nc" id="L213">        return propertyPath;</span>
+    }
+
+    /**
+     * 汎用的な型のプロパティを作成します。
+     * &lt;p&gt;{@literal byte[]} 型など専用の式がないプロパティ型のときに用います。
+     *
+     * @param &lt;A&gt; プロパティの型
+     * @param property プロパティ名
+     * @param type プロパティのクラスタイプ
+     * @return 汎用的な型のプロパティ
+     */
+    @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+    protected &lt;A&gt; GeneralPath&lt;A&gt; createGeneral(String property, Class&lt;? super A&gt; type) {
+<span class="nc" id="L227">        GeneralPath propertyPath = new GeneralPath&lt;A&gt;((Class)type, this, property);</span>
+<span class="nc" id="L228">        propertyPathMap.put(property, propertyPath);</span>
+<span class="nc" id="L229">        return propertyPath;</span>
+    }
+
+    @Override
+    public &lt;C&gt; void accept(Visitor&lt;C&gt; visitor, C context) {
+<span class="nc" id="L234">        visitor.visit(this, context);</span>
+<span class="nc" id="L235">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

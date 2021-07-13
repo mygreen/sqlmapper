@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JoinCondition.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.query</a> &gt; <span class="el_source">JoinCondition.java</span></div><h1>JoinCondition.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.query;
+
+import com.github.mygreen.sqlmapper.metamodel.EntityPath;
+import com.github.mygreen.sqlmapper.metamodel.Predicate;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * テーブルの結合情報を保持します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param &lt;ENTITY&gt; 結合先のエンティティタイプ
+ */
+<span class="fc" id="L17">@RequiredArgsConstructor</span>
+public class JoinCondition&lt;ENTITY extends EntityPath&lt;?&gt;&gt; {
+
+    /**
+     * テーブルの結合種別
+     */
+<span class="fc" id="L23">    @Getter</span>
+    private final JoinType type;
+
+    /**
+     * 結合先テーブルのエンティティ情報
+     */
+<span class="fc" id="L29">    @Getter</span>
+    private final ENTITY toEntity;
+
+    /**
+     * 結合条件の組み立て
+     */
+<span class="fc" id="L35">    @Getter</span>
+    private final Conditioner&lt;ENTITY&gt; conditioner;
+
+    /**
+     * テーブルの結合条件を組み立てます。
+     *
+     *
+     * @author T.TSUCHIE
+     * @param &lt;ENTITY&gt; 結合対象のエンティティのタイプ。
+     *
+     */
+    public interface Conditioner&lt;ENTITY&gt; {
+
+        /**
+         * 結合条件を組み立てます。
+         * @param entity 結合対象のエンティティ。
+         * @return 結合条件。
+         */
+        Predicate build(ENTITY entity);
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

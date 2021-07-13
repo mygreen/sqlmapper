@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>SqlMapperContext.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-apt</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core</a> &gt; <span class="el_source">SqlMapperContext.java</span></div><h1>SqlMapperContext.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import com.github.mygreen.messageformatter.MessageFormatter;
+import com.github.mygreen.splate.SqlTemplateEngine;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
+import com.github.mygreen.sqlmapper.core.naming.NamingRule;
+import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * SqlMapperの設定情報を保持します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L24">public class SqlMapperContext {</span>
+
+<span class="fc" id="L26">    @Getter</span>
+<span class="fc" id="L27">    @Setter</span>
+    private JdbcTemplate jdbcTemplate;
+
+<span class="nc" id="L30">    @Getter</span>
+<span class="fc" id="L31">    @Setter</span>
+    private NamingRule namingRule;
+
+<span class="nc" id="L34">    @Getter</span>
+<span class="fc" id="L35">    @Setter</span>
+    private MessageFormatter messageFormatter;
+
+<span class="fc" id="L38">    @Getter</span>
+<span class="fc" id="L39">    @Setter</span>
+    private Dialect dialect;
+
+<span class="fc" id="L42">    @Getter</span>
+<span class="fc" id="L43">    @Setter</span>
+    private EntityMetaFactory entityMetaFactory;
+
+    /**
+     * 主キーの生成時用のトランザクションテンプレート。
+     *
+     */
+<span class="nc" id="L50">    @Getter</span>
+<span class="fc" id="L51">    @Setter</span>
+    private TransactionTemplate idGeneratorTransactionTemplate;
+
+    /**
+     * 各SQL実行時のイベントを配信する機能
+     */
+<span class="fc" id="L57">    @Getter</span>
+<span class="fc" id="L58">    @Setter</span>
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    /**
+     * SQLテンプレートエンジン
+     */
+<span class="nc" id="L64">    @Getter</span>
+<span class="fc" id="L65">    @Setter</span>
+    private SqlTemplateEngine sqlTemplateEngine;
+
+<span class="nc" id="L68">    @Getter</span>
+<span class="fc" id="L69">    @Setter</span>
+    private ValueTypeRegistry valueTypeRegistry;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

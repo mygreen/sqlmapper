@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>EntityMeta.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-apt</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.meta</a> &gt; <span class="el_source">EntityMeta.java</span></div><h1>EntityMeta.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.meta;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.util.LinkedCaseInsensitiveMap;
+
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+/**
+ * エンティティのメタ情報です。
+ *
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L21">@RequiredArgsConstructor</span>
+public class EntityMeta {
+
+    /**
+     * エンティティのクラスタイプです。
+     */
+<span class="fc" id="L27">    @Getter</span>
+    private final Class&lt;?&gt; entityType;
+
+    /**
+     * エンティティの名称です。SQL自動作成時のテーブルのエイリアス名などに使用されます。
+     */
+<span class="fc" id="L33">    @Getter</span>
+<span class="fc" id="L34">    @Setter</span>
+    private String name;
+
+<span class="fc" id="L37">    @Getter</span>
+<span class="fc" id="L38">    @Setter</span>
+    private TableMeta tableMeta;
+
+    /**
+     * プロパティ情報
+     * &lt;p&gt;key=プロパティ名&lt;/p&gt;
+     */
+<span class="fc" id="L45">    private LinkedCaseInsensitiveMap&lt;PropertyMeta&gt; propertyMetaMap = new LinkedCaseInsensitiveMap&lt;&gt;();</span>
+
+    /**
+     * 主キーのプロパティ情報
+     */
+<span class="fc" id="L50">    @Getter</span>
+    private List&lt;PropertyMeta&gt; idPropertyMetaList = new ArrayList&lt;&gt;();
+
+    /**
+     * バージョンキー用のカラムプロパティ
+     */
+<span class="fc" id="L56">    @Getter</span>
+<span class="fc" id="L57">    private Optional&lt;PropertyMeta&gt; versionPropertyMeta = Optional.empty();</span>
+
+    /**
+     * 作成日時用のカラムプロパティ
+     */
+<span class="fc" id="L62">    @Getter</span>
+<span class="fc" id="L63">    private Optional&lt;PropertyMeta&gt; createdAtPropertyMeta = Optional.empty();</span>
+
+    /**
+     * 作成者用のカラムプロパティ
+     */
+<span class="fc" id="L68">    @Getter</span>
+<span class="fc" id="L69">    private Optional&lt;PropertyMeta&gt; createdByPropertyMeta = Optional.empty();</span>
+
+    /**
+     * 修正日時用のカラムプロパティ
+     */
+<span class="fc" id="L74">    @Getter</span>
+<span class="fc" id="L75">    private Optional&lt;PropertyMeta&gt; modifiedAtPropertyMeta = Optional.empty();</span>
+
+    /**
+     * 修正者用のカラムプロパティ
+     */
+<span class="fc" id="L80">    @Getter</span>
+<span class="fc" id="L81">    private Optional&lt;PropertyMeta&gt; modifiedByPropertyMeta = Optional.empty();</span>
+
+    /**
+     * カラム用のプロパティ情報
+     * &lt;p&gt;key=カラム名&lt;/p&gt;
+     */
+<span class="fc" id="L87">    private LinkedCaseInsensitiveMap&lt;PropertyMeta&gt; columnPropertyMetaMap = new LinkedCaseInsensitiveMap&lt;&gt;();</span>
+
+    /**
+     * プロパティのメタ情報を追加します。
+     * @param propertyMeta メタ情報
+     */
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">    public void addPropertyMeta(@NonNull PropertyMeta propertyMeta) {</span>
+
+<span class="fc" id="L95">        this.propertyMetaMap.put(propertyMeta.getName(), propertyMeta);</span>
+
+<span class="fc" id="L97">        setupRoleProperty(propertyMeta);</span>
+
+        // 埋め込みプロパティの場合、子プロパティを追加する。
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if(propertyMeta.isEmbedded()) {</span>
+<span class="fc" id="L101">            propertyMeta.getEmbeddedablePopertyMetaList().forEach(p -&gt; setupRoleProperty(p));</span>
+        }
+
+<span class="fc" id="L104">    }</span>
+
+    /**
+     * プロパティメタ情報を取得します。
+     * @param propertyName プロパティ名
+     * @return プロパティメタ情報
+     */
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">    public Optional&lt;PropertyMeta&gt; getPropertyMeta(@NonNull String propertyName) {</span>
+
+<span class="fc" id="L113">        return Optional.ofNullable(propertyMetaMap.get(propertyName));</span>
+
+    }
+
+    /**
+     * プロパティ名を指定して、プロパティメタ情報を取得します。
+     * 埋め込みID内のプロパティも抽出対象とします。
+     *
+     * @param propertyName プロパティ名
+     * @return プロパティメタ情報
+     */
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">    public Optional&lt;PropertyMeta&gt; findPropertyMeta(@NonNull String propertyName) {</span>
+
+<span class="fc" id="L126">        PropertyMeta foundPropertyMeta = propertyMetaMap.get(propertyName);</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        if(foundPropertyMeta != null) {</span>
+<span class="fc" id="L128">            return Optional.of(foundPropertyMeta);</span>
+        }
+
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        for(PropertyMeta propertyMeta : getAllPropertyMeta()) {</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">            if(propertyMeta.isEmbedded()) {</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">                for(PropertyMeta embeddedPropertyMeta : propertyMeta.getEmbeddedablePopertyMetaList()) {</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">                    if(embeddedPropertyMeta.getName().equals(propertyName)) {</span>
+<span class="fc" id="L135">                        return Optional.of(embeddedPropertyMeta);</span>
+                    }
+<span class="nc" id="L137">                }</span>
+            }
+<span class="nc" id="L139">        }</span>
+
+<span class="nc" id="L141">        return Optional.empty();</span>
+
+
+    }
+
+    /**
+     * 全てのプロパティメタ情報の一覧を返します。
+     * @return プロパティメタ情報の一覧
+     */
+    public Collection&lt;PropertyMeta&gt; getAllPropertyMeta() {
+<span class="fc" id="L151">        return propertyMetaMap.values();</span>
+    }
+
+    /**
+     * プロパティメタ情報のサイズを返します。
+     * @return プロパティメタ情報のサイズ
+     */
+    public int getPropertyMetaSize() {
+<span class="nc" id="L159">        return propertyMetaMap.size();</span>
+    }
+
+    /**
+     * プロパティメタデータがあるかどうかを返します。
+     * @param propertyName プロパティ名
+     * @return {@literal true}のときプロパティメタデータがあります。
+     */
+    public boolean hasPropertyMeta(String propertyName) {
+<span class="nc" id="L168">        return propertyMetaMap.containsKey(propertyName);</span>
+    }
+
+    /**
+     * カラムに紐づくプロパティメタ情報を取得します。
+     * @param columnName カラム名。大文字・小文字の区別はしない。
+     * @return カラムに紐づくプロパティメタ情報
+     */
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">    public Optional&lt;PropertyMeta&gt; getColumnPropertyMeta(@NonNull String columnName) {</span>
+
+<span class="fc" id="L178">        return Optional.ofNullable(columnPropertyMetaMap.get(columnName));</span>
+    }
+
+    /**
+     * カラムに紐づく全てのプロパティメタ情報を取得します。
+     * @return カラムに紐づく全てのプロパティメタ情報
+     */
+    public Collection&lt;PropertyMeta&gt; getAllColumnPropertyMeta() {
+<span class="fc" id="L186">        return columnPropertyMetaMap.values();</span>
+    }
+
+    /**
+     * カラムに結びつくプロパティメタデータがあるかどうかを返します。
+     *
+     * @param columnName カラム名
+     * @return プロパティメタデータがあるかどうか
+     */
+    public boolean hasColumnPropertyMeta(String columnName) {
+<span class="nc" id="L196">        return columnPropertyMetaMap.containsKey(columnName);</span>
+    }
+
+    /**
+     * 埋め込み用IDのプロパティメタ情報を取得します。
+     * @return 埋め込み用IDのプロパティメタ情報
+     */
+    public Optional&lt;PropertyMeta&gt; getEmbeddedIdPropertyMeta() {
+<span class="fc" id="L204">        return propertyMetaMap.values().stream()</span>
+<span class="fc" id="L205">                .filter(p -&gt; p.isEmbedded())</span>
+<span class="fc" id="L206">                .findFirst();</span>
+    }
+
+    /**
+     * バージョンを表すプロパティメタデータを持つかどうか。
+     * @return バージョンを表すプロパティメタデータがあれば {@literal true} を返します。
+     */
+    public boolean hasVersionPropertyMeta() {
+<span class="fc" id="L214">        return versionPropertyMeta.isPresent();</span>
+    }
+
+    /**
+     * 作成日時を表すプロパティのメタデータを持つかどうか。
+     * @return 作成日時を表すプロパティのメタデータがあれば {@literal true} を返す。
+     */
+    public boolean hasCreatedAtPropertyMeta() {
+<span class="nc" id="L222">        return createdAtPropertyMeta.isPresent();</span>
+    }
+
+    /**
+     * 作成者を表すプロパティのメタデータを持つかどうか。
+     * @return 作成者を表すプロパティのメタデータがあれば {@literal true} を返す。
+     */
+    public boolean hasCreatedByPropertyMeta() {
+<span class="nc" id="L230">        return createdByPropertyMeta.isPresent();</span>
+    }
+
+    /**
+     * 修正日時を表すプロパティのメタデータを持つかどうか。
+     * @return 修正日時を表すプロパティのメタデータがあれば {@literal true} を返す。
+     */
+    public boolean hasModifiedAtPropertyMeta() {
+<span class="nc" id="L238">        return modifiedAtPropertyMeta.isPresent();</span>
+    }
+
+    /**
+     * 修正者を表すプロパティのメタデータを持つかどうか。
+     * @return 修正者を表すプロパティのメタデータがあれば {@literal true} を返す。
+     */
+    public boolean hasModifiedByPropertyMeta() {
+<span class="nc" id="L246">        return modifiedByPropertyMeta.isPresent();</span>
+    }
+
+    /**
+     * 役割を持つプロパティを設定する
+     * @param propertyMeta 対象のプロパティメタ情報
+     */
+    private void setupRoleProperty(PropertyMeta propertyMeta) {
+
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        if(propertyMeta.isTransient()) {</span>
+<span class="fc" id="L256">            return;</span>
+        }
+
+<span class="fc bfc" id="L259" title="All 2 branches covered.">        if(propertyMeta.isId()) {</span>
+<span class="fc" id="L260">            this.idPropertyMetaList.add(propertyMeta);</span>
+        }
+
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        if(propertyMeta.isVersion()) {</span>
+<span class="fc" id="L264">            this.versionPropertyMeta = Optional.of(propertyMeta);</span>
+        }
+
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        if(propertyMeta.isCreatedAt()) {</span>
+<span class="fc" id="L268">            this.createdAtPropertyMeta = Optional.of(propertyMeta);</span>
+        }
+
+<span class="pc bpc" id="L271" title="1 of 2 branches missed.">        if(propertyMeta.isCreatedBy()) {</span>
+<span class="nc" id="L272">            this.createdByPropertyMeta = Optional.of(propertyMeta);</span>
+        }
+
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        if(propertyMeta.isModifiedAt()) {</span>
+<span class="fc" id="L276">            this.modifiedAtPropertyMeta = Optional.of(propertyMeta);</span>
+        }
+
+<span class="pc bpc" id="L279" title="1 of 2 branches missed.">        if(propertyMeta.isModifiedBy()) {</span>
+<span class="nc" id="L280">            this.modifiedByPropertyMeta = Optional.of(propertyMeta);</span>
+        }
+
+<span class="fc bfc" id="L283" title="All 2 branches covered.">        if(propertyMeta.getColumnMeta() != null) {</span>
+<span class="fc" id="L284">            this.columnPropertyMetaMap.put(propertyMeta.getColumnMeta().getName(), propertyMeta);</span>
+        }
+
+<span class="fc" id="L287">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

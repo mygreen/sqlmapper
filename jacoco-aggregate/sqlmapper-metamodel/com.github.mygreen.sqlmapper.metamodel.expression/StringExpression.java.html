@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>StringExpression.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel.expression</a> &gt; <span class="el_source">StringExpression.java</span></div><h1>StringExpression.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel.expression;
+
+import com.github.mygreen.sqlmapper.metamodel.operation.BooleanOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.StringOperation;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.LikeOp;
+
+/**
+ * 文字列型の式を表現します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public abstract class StringExpression extends ComparableExpression&lt;String&gt; {
+
+    public StringExpression(Expression&lt;String&gt; mixin) {
+<span class="fc" id="L18">        super(mixin);</span>
+<span class="fc" id="L19">    }</span>
+
+    /**
+     * {@literal 左辺 LIKE 右辺} として比較する式を作成します。
+     * @param str LIKE検索対象の文字列。特殊文字の挿入やエスケープは予め実施しておく必要があります。
+     * @return {@literal 左辺 LIKE 右辺}
+     */
+    public BooleanExpression like(String str) {
+<span class="nc" id="L27">        return like(Constant.createString(str));</span>
+    }
+
+    /**
+     * {@literal 左辺 LIKE 右辺} として比較する式を作成します。
+     * @param str LIKE検索対象の文字列。特殊文字の挿入やエスケープは予め実施しておく必要があります。
+     * @return {@literal 左辺 LIKE 右辺}
+     */
+    public BooleanExpression like(Expression&lt;String&gt; str) {
+<span class="nc" id="L36">        return new BooleanOperation(LikeOp.LIKE, mixin, str);</span>
+    }
+
+    /**
+     * 部分一致 {@literal 左辺 LIKE %右辺%} として比較する式を作成します。
+     * @param str 検索対象の文字列。
+     * @return {@literal 左辺 LIKE %右辺%}
+     */
+    public BooleanExpression contains(String str) {
+<span class="fc" id="L45">        return contains(Constant.createString(str));</span>
+    }
+
+    /**
+     * 部分一致 {@literal 左辺 LIKE %右辺%} として比較する式を作成します。
+     * @param str 検索対象の文字列。
+     * @return {@literal 左辺 LIKE %右辺%}
+     */
+    protected BooleanExpression contains(Expression&lt;String&gt; str) {
+<span class="fc" id="L54">        return new BooleanOperation(LikeOp.CONTAINS, mixin, str);</span>
+    }
+
+    /**
+     * 前方一致 {@literal 左辺 LIKE %右辺} として比較する式を作成します。
+     * @param str 検索対象の文字列。
+     * @return {@literal 左辺 LIKE %右辺}
+     */
+    public BooleanExpression starts(String str) {
+<span class="nc" id="L63">        return starts(Constant.createString(str));</span>
+    }
+
+    /**
+     * 前方一致 {@literal 左辺 LIKE %右辺} として比較する式を作成します。
+     * @param str 検索対象の文字列。
+     * @return {@literal 左辺 LIKE %右辺}
+     */
+    protected BooleanExpression starts(Expression&lt;String&gt; str) {
+<span class="nc" id="L72">        return new BooleanOperation(LikeOp.STARTS, mixin, str);</span>
+    }
+
+    /**
+     * 後方一致 {@literal 左辺 LIKE 右辺%} として比較する式を作成します。
+     * @param str 検索対象の文字列。
+     * @return {@literal 左辺 LIKE 右辺%}
+     */
+    public BooleanExpression ends(String str) {
+<span class="nc" id="L81">        return ends(Constant.createString(str));</span>
+    }
+
+    /**
+     * 後方一致 {@literal 左辺 LIKE 右辺%} として比較する式を作成します。
+     * @param str 検索対象の文字列。
+     * @return {@literal 左辺 LIKE 右辺%}
+     */
+    protected BooleanExpression ends(Expression&lt;String&gt; str) {
+<span class="nc" id="L90">        return new BooleanOperation(LikeOp.ENDS, mixin, str);</span>
+    }
+
+    /**
+     * 小文字に変換する関数 {@literal LOWER(左辺)} を返します。
+     * @return {@literal LOWER(左辺)}
+     */
+    public StringExpression lower() {
+<span class="fc" id="L98">        return new StringOperation(FunctionOp.LOWER, mixin);</span>
+    }
+
+    /**
+     * 大文字に変換する関数 {@literal UPPER(左辺)} を返します。
+     * @return {@literal UPPER(左辺)}
+     */
+    public StringExpression upper() {
+<span class="nc" id="L106">        return new StringOperation(FunctionOp.UPPER, mixin);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
