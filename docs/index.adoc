@@ -14,7 +14,7 @@
 :figure-caption: 図
 :source-highlighter: highlightjs
 
-SqlMapper は、Spring Framework　のJDBC機能を使って、「S2JDBC の再実装 + 機能追加」 を目指した O/R Mapperのライブラリです。
+SqlMapper は、Spring Framework のJDBC機能を使って、「S2JDBC の再実装 + 機能追加」 を目指した SQLマッピング用のライブラリです。
 
 // 各章のインポート
 include::setup/index.adoc[leveloffset=+1]
