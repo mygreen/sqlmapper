@@ -27,12 +27,6 @@
 		<module>sqlmapper-spring-boot</module>
 	</modules>
 
-	<repositories>
-	</repositories>
-
-	<pluginRepositories>
-	</pluginRepositories>
-
 	<build>
 		<resources>
 			<resource>
@@ -275,15 +269,7 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<configuration>
-					<skip>${maven-site-plugin.skip}</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.2.0</version>
 				<configuration>
 					<source>${java.version}</source>
 					<encoding>${project.build.sourceEncoding}</encoding>
@@ -298,7 +284,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-				<version>3.0.0</version>
 				<configuration>
 					<aggregate>true</aggregate>
 					<inputEncoding>UTF-8</inputEncoding>
