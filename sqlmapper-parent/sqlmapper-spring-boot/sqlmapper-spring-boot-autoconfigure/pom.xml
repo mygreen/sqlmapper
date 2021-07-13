@@ -18,9 +18,6 @@
 		<jacoco.include.package>com.github.mygreen.sqlmapper.boot.autoconfigure.*</jacoco.include.package>
 	</properties>
 
-	<build>
-	</build>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.github.mygreen.sqlmapper</groupId>

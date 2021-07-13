@@ -70,12 +70,6 @@
 		</developer>
 	</developers>
 
-	<repositories>
-	</repositories>
-
-	<pluginRepositories>
-	</pluginRepositories>
-
 	<profiles>
 		<profile>
 			<id>deploy</id>
@@ -249,7 +243,6 @@
 					<autoReleaseAfterClose>true</autoReleaseAfterClose>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 
@@ -275,7 +268,6 @@
 					<docencoding>UTF-8</docencoding>
 					<locale>ja_JP</locale>
 					<javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-					<aggregate>true</aggregate>
 					<sourcepath>
 						sqlmapper-parent/sqlmapper-core/target/generated-sources/delombok
 						;sqlmapper-parent/sqlmapper-metamodel/target/generated-sources/delombok

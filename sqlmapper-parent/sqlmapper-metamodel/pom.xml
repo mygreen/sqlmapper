@@ -18,12 +18,4 @@
 		<jacoco.include.package>com.github.mygreen.sqlmapper.metamodel.*</jacoco.include.package>
 	</properties>
 
-	<build>
-		<plugins>
-		</plugins>
-	</build>
-
-	<dependencies>
-	</dependencies>
-
 </project>

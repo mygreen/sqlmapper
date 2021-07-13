@@ -14,15 +14,6 @@
 	<packaging>pom</packaging>
 	<description><![CDATA[ 各モジュールのテストのカバレージ「JaCoCo」のレポートを集約するためのプロジェクトです。 ]]></description>
 
-	<properties>
-	</properties>
-
-	<repositories>
-	</repositories>
-
-	<pluginRepositories>
-	</pluginRepositories>
-
 	<build>
 		<pluginManagement>
 		</pluginManagement>
@@ -39,20 +30,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<argLine>${jacocoArgs}</argLine>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.junit.platform</groupId>
-						<artifactId>junit-platform-surefire-provider</artifactId>
-						<version>1.3.2</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
