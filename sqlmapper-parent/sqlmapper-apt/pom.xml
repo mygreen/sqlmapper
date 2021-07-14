@@ -48,7 +48,7 @@
 							<processors>
 								<processor>com.github.mygreen.sqlmapper.apt.EntityMetamodelProcessor</processor>
 							</processors>
-							<sourceEncoding>UTF-8</sourceEncoding>
+							<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
 							<options>
 								<sqlmapper.prefix>M</sqlmapper.prefix>
 							</options>
