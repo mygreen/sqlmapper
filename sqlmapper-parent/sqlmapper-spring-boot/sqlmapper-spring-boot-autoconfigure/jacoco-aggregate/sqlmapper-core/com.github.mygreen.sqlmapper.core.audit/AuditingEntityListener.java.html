@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AuditingEntityListener.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-spring-boot-autoconfigure</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.audit</a> &gt; <span class="el_source">AuditingEntityListener.java</span></div><h1>AuditingEntityListener.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.audit;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
+import java.util.Optional;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
+
+import com.github.mygreen.sqlmapper.core.event.PreBatchInsertEvent;
+import com.github.mygreen.sqlmapper.core.event.PreInsertEvent;
+import com.github.mygreen.sqlmapper.core.event.PreUpdateEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * エンティティの監査情報設定用のリスナー。
+ * 監査人情報を設定する場合は、{@link AuditorProvider} の実装をSpringBeanとして登録する必要があります。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L31">@Slf4j</span>
+<span class="fc" id="L32">public class AuditingEntityListener implements InitializingBean {</span>
+
+    /**
+     * 監査人情報を提供する。
+     */
+    @Setter
+    @Getter
+    @Autowired(required=false)
+    protected AuditorProvider&lt;?&gt; auditorProvider;
+
+    /**
+     * {@inheritDoc}
+     *
+     * &lt;p&gt;監査情報を提供する {@link AuditorProvider}がSpringのコンテナに登録されていない場合は、
+     *   デフォルトの空の情報を設定します。
+     */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if(auditorProvider == null) {</span>
+<span class="fc" id="L51">            this.auditorProvider = new AuditorProvider&lt;Object&gt;() {</span>
+
+                @Override
+                public Optional&lt;Object&gt; getCurrentAuditor() {
+<span class="nc" id="L55">                    log.warn(&quot;should be injecting spring bean of &quot; + AuditorProvider.class.getName());</span>
+<span class="nc" id="L56">                    return Optional.empty();</span>
+                }
+            };
+        }
+<span class="fc" id="L60">    }</span>
+
+    /**
+     * 挿入前にエンティティに監査情報を設定します。
+     * @param event イベント情報。
+     */
+    @EventListener
+    public void onPreInsert(final PreInsertEvent event) {
+
+<span class="fc" id="L69">        final EntityMeta entityMeta = event.getEntityMeta();</span>
+
+<span class="fc" id="L71">        entityMeta.getCreatedAtPropertyMeta().ifPresent(p -&gt; {</span>
+<span class="nc" id="L72">            Object value = getCurrentDateTime(p.getPropertyType());</span>
+<span class="nc" id="L73">            PropertyValueInvoker.setEmbeddedPropertyValue(p, event.getEntity(), value);</span>
+<span class="nc" id="L74">        });</span>
+
+<span class="fc" id="L76">        entityMeta.getModifiedAtPropertyMeta().ifPresent(p -&gt; {</span>
+<span class="nc" id="L77">            Object value = getCurrentDateTime(p.getPropertyType());</span>
+<span class="nc" id="L78">            PropertyValueInvoker.setPropertyValue(p, event.getEntity(), value);</span>
+<span class="nc" id="L79">        });</span>
+
+<span class="fc" id="L81">        entityMeta.getCreatedByPropertyMeta().ifPresent(p -&gt; {</span>
+<span class="nc" id="L82">            Optional&lt;?&gt; value = auditorProvider.getCurrentAuditor();</span>
+<span class="nc" id="L83">            value.ifPresent(v -&gt; PropertyValueInvoker.setEmbeddedPropertyValue(p, event.getEntity(), v));</span>
+<span class="nc" id="L84">        });</span>
+
+<span class="fc" id="L86">        entityMeta.getModifiedByPropertyMeta().ifPresent(p -&gt; {</span>
+<span class="nc" id="L87">            Optional&lt;?&gt; value = auditorProvider.getCurrentAuditor();</span>
+<span class="nc" id="L88">            value.ifPresent(v -&gt; PropertyValueInvoker.setEmbeddedPropertyValue(p, event.getEntity(), v));</span>
+<span class="nc" id="L89">        });</span>
+
+<span class="fc" id="L91">    }</span>
+
+    /**
+     * 更新前にエンティティに監査情報を設定します。
+     * @param event イベント情報。
+     */
+    @EventListener
+    public void onPreUpdate(final PreUpdateEvent event) {
+
+<span class="nc" id="L100">        final EntityMeta entityMeta = event.getEntityMeta();</span>
+
+<span class="nc" id="L102">        entityMeta.getModifiedAtPropertyMeta().ifPresent(p -&gt; {</span>
+<span class="nc" id="L103">            Object value = getCurrentDateTime(p.getPropertyType());</span>
+<span class="nc" id="L104">            PropertyValueInvoker.setPropertyValue(p, event.getEntity(), value);</span>
+<span class="nc" id="L105">        });</span>
+
+<span class="nc" id="L107">        entityMeta.getModifiedByPropertyMeta().ifPresent(p -&gt; {</span>
+<span class="nc" id="L108">            Optional&lt;?&gt; value = auditorProvider.getCurrentAuditor();</span>
+<span class="nc" id="L109">            value.ifPresent(v -&gt; PropertyValueInvoker.setPropertyValue(p, event.getEntity(), v));</span>
+<span class="nc" id="L110">        });</span>
+
+<span class="nc" id="L112">    }</span>
+
+    /**
+     * バッチ処理による挿入前にエンティティに監査情報を設定します。
+     * @param event イベント情報。
+     */
+    @EventListener
+    public void onPreBatchInsert(final PreBatchInsertEvent event) {
+
+<span class="nc" id="L121">        final EntityMeta entityMeta = event.getEntityMeta();</span>
+
+<span class="nc" id="L123">        entityMeta.getCreatedAtPropertyMeta().ifPresent(p -&gt; {</span>
+<span class="nc" id="L124">            Object value = getCurrentDateTime(p.getPropertyType());</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">            for(Object entity : event.getEntities()) {</span>
+<span class="nc" id="L126">                PropertyValueInvoker.setEmbeddedPropertyValue(p, entity, value);</span>
+            }
+<span class="nc" id="L128">        });</span>
+
+<span class="nc" id="L130">        entityMeta.getModifiedAtPropertyMeta().ifPresent(p -&gt; {</span>
+<span class="nc" id="L131">            Object value = getCurrentDateTime(p.getPropertyType());</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">            for(Object entity : event.getEntities()) {</span>
+<span class="nc" id="L133">                PropertyValueInvoker.setEmbeddedPropertyValue(p, entity, value);</span>
+            }
+<span class="nc" id="L135">        });</span>
+
+<span class="nc" id="L137">        entityMeta.getCreatedByPropertyMeta().ifPresent(p -&gt; {</span>
+<span class="nc" id="L138">            Optional&lt;?&gt; value = auditorProvider.getCurrentAuditor();</span>
+<span class="nc" id="L139">            value.ifPresent(v -&gt; {</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                for(Object entity : event.getEntities()) {</span>
+<span class="nc" id="L141">                    PropertyValueInvoker.setEmbeddedPropertyValue(p, entity, v);</span>
+                }
+<span class="nc" id="L143">            });</span>
+<span class="nc" id="L144">        });</span>
+
+<span class="nc" id="L146">        entityMeta.getModifiedByPropertyMeta().ifPresent(p -&gt; {</span>
+<span class="nc" id="L147">            Optional&lt;?&gt; value = auditorProvider.getCurrentAuditor();</span>
+<span class="nc" id="L148">            value.ifPresent(v -&gt; {</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">                for(Object entity : event.getEntities()) {</span>
+<span class="nc" id="L150">                    PropertyValueInvoker.setEmbeddedPropertyValue(p, entity, v);</span>
+                }
+<span class="nc" id="L152">            });</span>
+<span class="nc" id="L153">        });</span>
+
+<span class="nc" id="L155">    }</span>
+
+    /**
+     * バッチ処理による更新前にエンティティに監査情報を設定します。
+     * @param event イベント情報。
+     */
+    @EventListener
+    public void onPreBatchUpdate(final PreBatchInsertEvent event) {
+
+<span class="nc" id="L164">        final EntityMeta entityMeta = event.getEntityMeta();</span>
+
+<span class="nc" id="L166">        entityMeta.getModifiedAtPropertyMeta().ifPresent(p -&gt; {</span>
+<span class="nc" id="L167">            Object value = getCurrentDateTime(p.getPropertyType());</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">            for(Object entity : event.getEntities()) {</span>
+<span class="nc" id="L169">                PropertyValueInvoker.setEmbeddedPropertyValue(p, entity, value);</span>
+            }
+<span class="nc" id="L171">        });</span>
+
+<span class="nc" id="L173">        entityMeta.getModifiedByPropertyMeta().ifPresent(p -&gt; {</span>
+<span class="nc" id="L174">            Optional&lt;?&gt; value = auditorProvider.getCurrentAuditor();</span>
+<span class="nc" id="L175">            value.ifPresent(v -&gt; {</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">                for(Object entity : event.getEntities()) {</span>
+<span class="nc" id="L177">                    PropertyValueInvoker.setEmbeddedPropertyValue(p, entity, v);</span>
+                }
+<span class="nc" id="L179">            });</span>
+<span class="nc" id="L180">        });</span>
+<span class="nc" id="L181">    }</span>
+
+    /**
+     * 監査情報としての現在の日時を取得します。
+     * @param propertyType プロパティのクラスタイプ。
+     * @return プロパティのタイプに対応した現在の日時。
+     * @throws IllegalArgumentException 引数で指定した {@literal propertyType} がサポートしていない日時型の場合。
+     */
+    protected Object getCurrentDateTime(final Class&lt;?&gt; propertyType) {
+<span class="nc bnc" id="L190" title="All 2 branches missed.">        if(Date.class.isAssignableFrom(propertyType)) {</span>
+            // java.util.Date の子クラス(java.sql.XXXX) の場合
+<span class="nc" id="L192">            return new Date();</span>
+
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        } else if(LocalDate.class.isAssignableFrom(propertyType)) {</span>
+<span class="nc" id="L195">            return LocalDate.now();</span>
+
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        } else if(LocalTime.class.isAssignableFrom(propertyType)) {</span>
+<span class="nc" id="L198">            return LocalTime.now();</span>
+
+<span class="nc bnc" id="L200" title="All 2 branches missed.">        } else if(LocalDateTime.class.isAssignableFrom(propertyType)) {</span>
+<span class="nc" id="L201">            return LocalDateTime.now();</span>
+
+        }
+
+<span class="nc" id="L205">        throw new IllegalArgumentException(&quot;not support datetime type : &quot; + propertyType.getName());</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

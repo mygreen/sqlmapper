@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IdentityIdGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.id</a> &gt; <span class="el_source">IdentityIdGenerator.java</span></div><h1>IdentityIdGenerator.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.id;
+
+import java.text.NumberFormat;
+import java.util.List;
+
+import org.springframework.dao.DataIntegrityViolationException;
+
+import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
+
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+/**
+ * IDENTITYによる生成は、実際にはJdbcTemplateで行います。
+ * &lt;p&gt;このクラスでは、{@link #generateValue(Number)} による変換だけ行います。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+@RequiredArgsConstructor
+public class IdentityIdGenerator implements IdGenerator {
+
+    /**
+     * サポートしているクラスタイプ
+     */
+<span class="fc" id="L27">    private static final List&lt;Class&lt;?&gt;&gt; SUPPORTED_TYPE_LIST = List.of(</span>
+            long.class, Long.class, int.class, Integer.class, String.class);
+
+    /**
+     * 生成する識別子のタイプ
+     */
+    private final Class&lt;?&gt; requiredType;
+
+    /**
+     * 文字列にマッピングするときのフォーマッター
+     */
+    @Setter
+    private NumberFormat formatter;
+
+    @Override
+    public boolean isSupportedType(Class&lt;?&gt; type) {
+<span class="fc" id="L43">        return SUPPORTED_TYPE_LIST.contains(type);</span>
+    }
+
+    @Override
+    public Class&lt;?&gt;[] getSupportedTypes() {
+<span class="nc" id="L48">        return SUPPORTED_TYPE_LIST.toArray(new Class[SUPPORTED_TYPE_LIST.size()]);</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     * @throws UnsupportedOperationException このメソッドを呼び出したときに必ずスローされます。
+     */
+    @Override
+    public Object generateValue() {
+<span class="nc" id="L57">        throw new UnsupportedOperationException(&quot;this method is not supported.&quot;);</span>
+    }
+
+    /**
+     * 生成したIDをプロパティのクラス型に変換する。
+     * @param value 生成したID
+     * @return プロパティのクラス型に変換したID。
+     * @throws DataIntegrityViolationException サポート対象外のクラスタイプの場合にスローされます。
+     */
+    public Object generateValue(final Number value) {
+
+<span class="pc bpc" id="L68" title="6 of 8 branches missed.">        if(requiredType == long.class || requiredType == Long.class</span>
+                || requiredType == int.class || requiredType == Integer.class) {
+<span class="fc" id="L70">            return NumberConvertUtils.convertNumber(requiredType, value);</span>
+
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        } else if(requiredType == String.class) {</span>
+
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            if(formatter == null) {</span>
+<span class="nc" id="L75">                return value.toString();</span>
+            } else {
+<span class="nc" id="L77">                synchronized (formatter) {</span>
+<span class="nc" id="L78">                    return formatter.format(value);</span>
+                }
+            }
+
+        }
+
+<span class="nc" id="L84">        throw new DataIntegrityViolationException(&quot;not supported java type : &quot; + requiredType.getName());</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

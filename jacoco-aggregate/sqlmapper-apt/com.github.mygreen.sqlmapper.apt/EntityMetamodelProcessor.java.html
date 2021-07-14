@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>EntityMetamodelProcessor.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-apt</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.apt</a> &gt; <span class="el_source">EntityMetamodelProcessor.java</span></div><h1>EntityMetamodelProcessor.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.apt;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic.Kind;
+
+import com.github.mygreen.sqlmapper.apt.model.EntityMetamodel;
+import com.github.mygreen.sqlmapper.core.annotation.Embeddable;
+import com.github.mygreen.sqlmapper.core.annotation.Entity;
+import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
+
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * エンティティのメタモデルクラスを生成するアノテーションプロセッサ。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L37">@Slf4j</span>
+@SupportedAnnotationTypes({&quot;com.github.mygreen.sqlmapper.core.annotation.*&quot;})
+@SupportedSourceVersion(SourceVersion.RELEASE_11)
+<span class="fc" id="L40">public class EntityMetamodelProcessor extends AbstractProcessor {</span>
+
+    /**
+     * APT用のファイラー - 文字コード設定などはAPTの定義を採用
+     */
+    private Filer filer;
+
+    /**
+     * APT用のメッセージ出力
+     */
+    private Messager messager;
+
+    /**
+     * APTのオプション設定を扱うクラス。
+     */
+    private MetamodelConfig metamodelConfig;
+
+    /**
+     * エンティティのメタモデル情報の作成クラス
+     */
+    private EntityMetamodelFactory entityMetamodelFactory;
+
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+<span class="fc" id="L64">        super.init(processingEnv);</span>
+
+<span class="fc" id="L66">        this.filer = processingEnv.getFiler();</span>
+<span class="fc" id="L67">        this.messager = processingEnv.getMessager();</span>
+<span class="fc" id="L68">        this.metamodelConfig = new MetamodelConfig(processingEnv.getOptions());</span>
+<span class="fc" id="L69">        this.entityMetamodelFactory = new EntityMetamodelFactory(processingEnv.getTypeUtils());</span>
+<span class="fc" id="L70">    }</span>
+
+    @Override
+    public boolean process(final Set&lt;? extends TypeElement&gt; annotations, final RoundEnvironment roundEnv) {
+
+<span class="fc" id="L75">        messager.printMessage(Kind.NOTE, &quot;Running &quot;);</span>
+<span class="fc" id="L76">        log.info(&quot;Running {}&quot;, getClass().getSimpleName());</span>
+
+<span class="fc bfc" id="L78" title="All 4 branches covered.">        if(roundEnv.processingOver() || annotations.isEmpty()) {</span>
+<span class="fc" id="L79">            return false;</span>
+        }
+
+<span class="pc bpc" id="L82" title="2 of 4 branches missed.">        if(roundEnv.getRootElements() == null || roundEnv.getRootElements().isEmpty()) {</span>
+<span class="nc" id="L83">            log.info(&quot;No sources to process.&quot;);</span>
+<span class="nc" id="L84">            return false;</span>
+        }
+
+        // アノテーションからエンティティ情報を組み立てます
+<span class="fc" id="L88">        List&lt;EntityMetamodel&gt; entityModeles = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L89">        processEntityAnno(roundEnv, entityModeles);</span>
+
+        // ソースの生成
+<span class="fc" id="L92">        EntitySpecFactory specFactory = new EntitySpecFactory(messager, metamodelConfig);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        for(EntityMetamodel entityModel : entityModeles) {</span>
+<span class="fc" id="L94">            TypeSpec typeSpec = specFactory.create(entityModel);</span>
+<span class="fc" id="L95">            generateEntityMetaModel(typeSpec, entityModel);</span>
+<span class="fc" id="L96">        }</span>
+
+<span class="fc" id="L98">        return false;</span>
+    }
+
+    /**
+     * エンティティクラスとして処理する。
+     * @param roundEnv 環境情報
+     * @param entityModeles 今まで作成してきたエンティティのメタモデル情報
+     */
+    private void processEntityAnno(final RoundEnvironment roundEnv, final List&lt;EntityMetamodel&gt; entityModeles) {
+
+        // @Entityが付与されたクラスの処理
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        for(Element element : roundEnv.getElementsAnnotatedWith(Entity.class)) {</span>
+            try {
+<span class="fc" id="L111">                entityModeles.add(entityMetamodelFactory.create((TypeElement)element));</span>
+<span class="nc" id="L112">            } catch(ClassNotFoundException e) {</span>
+<span class="nc" id="L113">                messager.printMessage(Kind.ERROR, e.getMessage(), element);</span>
+<span class="nc" id="L114">                log.error(&quot;fail entity meta model for @Entity.&quot;, e);</span>
+<span class="fc" id="L115">            }</span>
+<span class="fc" id="L116">        }</span>
+
+        // @MappedSuperclassが付与されたクラスの処理
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        for(Element element : roundEnv.getElementsAnnotatedWith(MappedSuperclass.class)) {</span>
+            try {
+<span class="nc" id="L121">                entityModeles.add(entityMetamodelFactory.create((TypeElement)element));</span>
+<span class="nc" id="L122">            } catch(ClassNotFoundException e) {</span>
+<span class="nc" id="L123">                messager.printMessage(Kind.ERROR, e.getMessage(), element);</span>
+<span class="nc" id="L124">                log.error(&quot;fail entity meta model for @MappedSuperclass.&quot;, e);</span>
+<span class="nc" id="L125">            }</span>
+<span class="nc" id="L126">        }</span>
+
+        // @Embeddableが付与されたクラスの処理
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        for(Element element : roundEnv.getElementsAnnotatedWith(Embeddable.class)) {</span>
+            try {
+<span class="fc" id="L131">                entityModeles.add(entityMetamodelFactory.create((TypeElement)element));</span>
+<span class="nc" id="L132">            } catch(ClassNotFoundException e) {</span>
+<span class="nc" id="L133">                messager.printMessage(Kind.ERROR, e.getMessage(), element);</span>
+<span class="nc" id="L134">                log.error(&quot;fail entity meta model for @Embeddable.&quot;, e);</span>
+<span class="fc" id="L135">            }</span>
+<span class="fc" id="L136">        }</span>
+
+        // 内部クラスのとき、親クラスに付け替える。
+<span class="fc" id="L139">        List&lt;EntityMetamodel&gt; innerEntityModeles = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">        for(Iterator&lt;EntityMetamodel&gt; itr = entityModeles.iterator(); itr.hasNext(); ) {</span>
+<span class="fc" id="L141">            EntityMetamodel entityModel = itr.next();</span>
+
+            // static 内部クラスのモデル情報を抽出する。
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            if(entityModel.getType().isStaticInnerClass()) {</span>
+<span class="fc" id="L145">                innerEntityModeles.add(entityModel);</span>
+<span class="fc" id="L146">                itr.remove();</span>
+            }
+<span class="fc" id="L148">        }</span>
+
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        for(EntityMetamodel innerEntityModel : innerEntityModeles) {</span>
+            // 親のエンティティモデルに関連付けする。
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">            for(EntityMetamodel parentEntityModel : entityModeles) {</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">                if(innerEntityModel.getPackageName().equals(parentEntityModel.getFullName())) {</span>
+                    // パッケージ名が親のFQNと一致する場合
+<span class="fc" id="L155">                    parentEntityModel.add(innerEntityModel);</span>
+<span class="fc" id="L156">                    break;</span>
+                }
+<span class="nc" id="L158">            }</span>
+<span class="fc" id="L159">        }</span>
+
+<span class="fc" id="L161">    }</span>
+
+    /**
+     * エンティティのメタモデルクラスのソースを生成します。
+     * @param typeSpec 生成するメタモデルのクラス情報
+     * @param entityModel 生成するメタモデル情報
+     */
+    private void generateEntityMetaModel(final TypeSpec typeSpec, final EntityMetamodel entityModel) {
+<span class="fc" id="L169">        JavaFile javaFile = JavaFile.builder(entityModel.getPackageName(), typeSpec)</span>
+<span class="fc" id="L170">                .indent(metamodelConfig.getIndent())</span>
+<span class="fc" id="L171">                .build();</span>
+
+        try {
+<span class="fc" id="L174">            javaFile.writeTo(filer);</span>
+<span class="fc" id="L175">            log.info(&quot;generate Metamodel class - {}&quot;, entityModel.getFullName());</span>
+
+<span class="nc" id="L177">        } catch (IOException e) {</span>
+<span class="nc" id="L178">            messager.printMessage(Kind.ERROR, e.toString());</span>
+<span class="nc" id="L179">            log.error(&quot;fail write Metamodel class.&quot;, e);</span>
+<span class="fc" id="L180">        }</span>
+<span class="fc" id="L181">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>LocalTimeExpression.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel.expression</a> &gt; <span class="el_source">LocalTimeExpression.java</span></div><h1>LocalTimeExpression.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel.expression;
+
+import java.time.LocalTime;
+
+import com.github.mygreen.sqlmapper.metamodel.operation.LocalTimeOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.SqlTimeOperation;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
+
+/**
+ * {@link LocalTime} による式を表現します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public abstract class LocalTimeExpression extends TemporalExpressionBase&lt;LocalTime&gt; {
+
+    public LocalTimeExpression(Expression&lt;LocalTime&gt; mixin) {
+<span class="nc" id="L19">        super(mixin);</span>
+<span class="nc" id="L20">    }</span>
+
+    /**
+     * 現在の時刻を取得する関数 {@literal CURRENT_TIME} を返します。
+     * @return 関数 {@literal CURRENT_TIME}
+     */
+    public static LocalTimeExpression currentTime() {
+<span class="nc" id="L27">        return new LocalTimeOperation(FunctionOp.CURRENT_TIME);</span>
+    }
+
+    /**
+     * 精度を指定して、現在の時刻を取得する関数 {@literal CURRENT_TIME} を返します。
+     * @param precision 精度
+     * @return 関数 {@literal CURRENT_TIME}
+     */
+    public static SqlTimeExpression currentTime(int precision) {
+<span class="nc" id="L36">        return new SqlTimeOperation(FunctionOp.CURRENT_TIME, Constant.create(precision));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

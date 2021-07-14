@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>SimpleWhereVisitor.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.where.simple</a> &gt; <span class="el_source">SimpleWhereVisitor.java</span></div><h1>SimpleWhereVisitor.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.where.simple;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import com.github.mygreen.sqlmapper.core.where.Where;
+import com.github.mygreen.sqlmapper.core.where.WhereVisitor;
+
+/**
+ *
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L17">public class SimpleWhereVisitor implements WhereVisitor {</span>
+
+    /**
+     * SQL中のパラメータ変数。
+     *
+     */
+<span class="fc" id="L23">    private List&lt;Object&gt; paramValues = new ArrayList&lt;&gt;();</span>
+
+    /**
+     * 組み立てたクライテリア
+     */
+<span class="fc" id="L28">    private StringBuilder criteria = new StringBuilder();</span>
+
+    /**
+     * 組み立てたクライテリアを取得します。
+     * @return クライテリア
+     */
+    public String getCriteria() {
+<span class="fc" id="L35">        return criteria.toString();</span>
+    }
+
+    /**
+     * SQLのパラメータ変数を取得します。
+     * SQLのプレースホルダ―順に設定されています。
+     * @return SQL中のパラメータ変数。
+     */
+    public List&lt;Object&gt; getParamValues() {
+<span class="fc" id="L44">        return Collections.unmodifiableList(paramValues);</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IllegalArgumentException サポート対象外の引数を指定したときスローされます。
+     */
+    @Override
+    public void visit(Where where) {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if(where instanceof SimpleWhere) {</span>
+<span class="fc" id="L55">            visit((SimpleWhere) where);</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        } else if(where instanceof SimpleWhereBuilder) {</span>
+<span class="fc" id="L57">            visit((SimpleWhereBuilder) where);</span>
+        } else {
+<span class="nc" id="L59">            throw new IllegalArgumentException(&quot;unknown where class : &quot; + where.getClass().getName());</span>
+        }
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * {@link SimpleWhere} を処理します。
+     * &lt;p&gt;条件式を {@literal AND}でつなげます。&lt;/p&gt;
+     * @param where 条件式
+     */
+    public void visit(final SimpleWhere where) {
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        for(Term term : where.getTerms()) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">            if(criteria.length() &gt; 0) {</span>
+<span class="fc" id="L72">                criteria.append(&quot; and &quot;);</span>
+            }
+
+<span class="fc" id="L75">            term.accept(this);</span>
+<span class="fc" id="L76">        }</span>
+
+<span class="fc" id="L78">    }</span>
+
+    /**
+     * {@link SimpleWhereBuilder} を処理します。
+     * &lt;p&gt;条件式を {@literal OR}でつなげます。&lt;/p&gt;
+     * @param where 条件式
+     */
+    public void visit(final SimpleWhereBuilder where) {
+
+<span class="fc" id="L87">        List&lt;String&gt; result = new ArrayList&lt;&gt;();</span>
+
+        // 式の項がまだ持っているときは、子要素に追加する。
+<span class="fc" id="L90">        where.or();</span>
+
+        // 子要素の式を組み立てる。
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        if(!where.getChildrenWhere().isEmpty()) {</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">            for(Where subWhere : where.getChildrenWhere()) {</span>
+<span class="fc" id="L95">                SimpleWhereVisitor subVisitor = new SimpleWhereVisitor();</span>
+<span class="fc" id="L96">                subVisitor.visit(subWhere);</span>
+
+<span class="fc" id="L98">                String sql = subVisitor.getCriteria();</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">                if(!sql.isEmpty()) {</span>
+<span class="fc" id="L100">                    result.add(sql);</span>
+<span class="fc" id="L101">                    paramValues.addAll(subVisitor.getParamValues());</span>
+                }
+<span class="fc" id="L103">            }</span>
+        }
+
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if(result.size() == 1) {</span>
+            // 1つしかない場合は、そのまま設定する。
+<span class="fc" id="L108">            criteria.append(result.get(0));</span>
+        } else {
+<span class="fc bfc" id="L110" title="All 2 branches covered.">            for(String sql : result) {</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">                if(criteria.length() &gt; 0) {</span>
+<span class="fc" id="L112">                    criteria.append(&quot; or &quot;);</span>
+                }
+<span class="fc" id="L114">                criteria.append(&quot;(&quot;).append(sql).append(&quot;)&quot;);</span>
+<span class="fc" id="L115">            }</span>
+        }
+
+<span class="fc" id="L118">    }</span>
+
+    /**
+     * 式({@link Exp})を処理します。
+     * @param exp 処理対象の式。
+     */
+    public void visit(Exp exp) {
+
+<span class="fc" id="L126">        criteria.append(exp.getExp());</span>
+
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        for(int i=0; i &lt; exp.valuesSize(); i++) {</span>
+<span class="fc" id="L129">            paramValues.add(exp.getValueAt(i));</span>
+        }
+
+<span class="fc" id="L132">    }</span>
+
+    /**
+     * {@link WhereTerm}を処理します。
+     * SQL式は括弧{@literal (...)}で囲みます。
+     * @param whereTerm 処理対象のwhere句
+     */
+    public void visit(WhereTerm whereTerm) {
+
+<span class="fc" id="L141">        Where subWhere = whereTerm.getWhere();</span>
+
+<span class="fc" id="L143">        SimpleWhereVisitor subVisitor = new SimpleWhereVisitor();</span>
+<span class="fc" id="L144">        subVisitor.visit(subWhere);</span>
+
+<span class="fc" id="L146">        criteria.append(&quot;(&quot;)</span>
+<span class="fc" id="L147">            .append(subVisitor.getCriteria())</span>
+<span class="fc" id="L148">            .append(&quot;)&quot;);</span>
+
+<span class="fc" id="L150">        paramValues.addAll(subVisitor.getParamValues());</span>
+
+
+<span class="fc" id="L153">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

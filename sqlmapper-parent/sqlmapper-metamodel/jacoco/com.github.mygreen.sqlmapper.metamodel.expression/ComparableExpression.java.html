@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComparableExpression.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel.expression</a> &gt; <span class="el_source">ComparableExpression.java</span></div><h1>ComparableExpression.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel.expression;
+
+import com.github.mygreen.sqlmapper.metamodel.operation.BooleanOperation;
+import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
+
+/**
+ * 比較可能な型に対する式を表現するためのベースクラス。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param &lt;T&gt; 比較可能な式のクラスタイプ。
+ */
+@SuppressWarnings(&quot;rawtypes&quot;)
+public abstract class ComparableExpression&lt;T extends Comparable&gt; extends GeneralExpression&lt;T&gt; {
+
+    public ComparableExpression(Expression&lt;T&gt; mixin) {
+<span class="fc" id="L18">        super(mixin);</span>
+<span class="fc" id="L19">    }</span>
+
+    /**
+     * {@literal 左辺 BETEEN &lt;FROM値&gt; AND &lt;TO値&gt;} として比較する式を作成します。
+     * @param from FROM値
+     * @param to TO値
+     * @return {@literal 左辺 BETEEN &lt;FROM値&gt; AND &lt;TO値&gt;}
+     */
+    public BooleanExpression between(T from, T to) {
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        if(from == null) {</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">            if(to != null) {</span>
+<span class="nc" id="L30">                return loe(to);</span>
+            }
+<span class="nc" id="L32">            throw new IllegalArgumentException(&quot;Either from or to needs to be non-null.&quot;);</span>
+
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        } else if(to == null) {</span>
+<span class="nc" id="L35">            return goe(from);</span>
+
+        } else {
+<span class="nc" id="L38">            return new BooleanOperation(ComparisionOp.BETWEEN, mixin, Constant.create(from), Constant.create(to));</span>
+        }
+    }
+
+    /**
+     * {@literal 左辺 BETEEN &lt;FROM式&gt; AND &lt;TO式&gt;} として比較する式を作成します。
+     * @param from FROM式
+     * @param to TO式
+     * @return {@literal 左辺 BETEEN &lt;FROM式&gt; AND &lt;TO式&gt;}
+     */
+    public BooleanExpression between(Expression&lt;T&gt; from, Expression&lt;T&gt; to) {
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if(from == null) {</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            if(to != null) {</span>
+<span class="nc" id="L51">                return loe(to);</span>
+            }
+<span class="nc" id="L53">            throw new IllegalArgumentException(&quot;Either from or to needs to be non-null.&quot;);</span>
+
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        } else if(to == null) {</span>
+<span class="nc" id="L56">            return goe(from);</span>
+
+        } else {
+<span class="nc" id="L59">            return new BooleanOperation(ComparisionOp.BETWEEN, mixin, Constant.create(from), Constant.create(to));</span>
+        }
+    }
+
+    /**
+     * {@literal 左辺 &gt;= 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 &gt;= 右辺}
+     */
+    public BooleanExpression goe(T right) {
+<span class="fc" id="L69">        return goe(Constant.create(right));</span>
+    }
+
+    /**
+     * {@literal 左辺 &gt;= 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 &gt;= 右辺}
+     */
+    public BooleanExpression goe(Expression&lt;T&gt; right) {
+<span class="fc" id="L78">        return new BooleanOperation(ComparisionOp.GOE, mixin, right);</span>
+    }
+
+    /**
+     * {@literal 左辺 &gt; 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 &gt; 右辺}
+     */
+    public BooleanExpression gt(T right) {
+<span class="fc" id="L87">        return gt(Constant.create(right));</span>
+    }
+
+    /**
+     * {@literal 左辺 &gt; 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 &gt; 右辺}
+     */
+    public BooleanExpression gt(Expression&lt;T&gt; right) {
+<span class="fc" id="L96">        return new BooleanOperation(ComparisionOp.GT, mixin, right);</span>
+    }
+
+    /**
+     * {@literal 左辺 &lt;= 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 &lt;= 右辺}
+     */
+    public BooleanExpression loe(T right) {
+<span class="nc" id="L105">        return loe(Constant.create(right));</span>
+    }
+
+    /**
+     * {@literal 左辺 &lt;= 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 &lt;= 右辺}
+     */
+    public BooleanExpression loe(Expression&lt;T&gt; right) {
+<span class="nc" id="L114">        return new BooleanOperation(ComparisionOp.LOE, mixin, right);</span>
+    }
+
+    /**
+     * {@literal 左辺 &lt; 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 &lt; 右辺}
+     */
+    public BooleanExpression lt(T right) {
+<span class="nc" id="L123">        return lt(Constant.create(right));</span>
+    }
+
+    /**
+     * {@literal 左辺 &lt; 右辺} として比較する式を作成します。
+     * @param right 右辺
+     * @return {@literal 左辺 &lt; 右辺}
+     */
+    public BooleanExpression lt(Expression&lt;T&gt; right) {
+<span class="nc" id="L132">        return new BooleanOperation(ComparisionOp.LT, mixin, right);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
