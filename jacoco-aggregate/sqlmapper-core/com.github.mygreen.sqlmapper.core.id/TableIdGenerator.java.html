@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>TableIdGenerator.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.id</a> &gt; <span class="el_source">TableIdGenerator.java</span></div><h1>TableIdGenerator.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.id;
+
+import java.text.NumberFormat;
+import java.util.List;
+
+import org.springframework.dao.DataIntegrityViolationException;
+
+import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+
+/**
+ * {@link GenerationType#TABLE}方式でIDの値を自動生成するIDジェネレータです。
+ * &lt;p&gt;サポートするIDのクラスタイプは、{@code long/Long/int/Integer/String}です。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+@RequiredArgsConstructor
+public class TableIdGenerator implements IdGenerator {
+
+    private final TableIdIncrementer incrementer;
+
+    /**
+     * 生成するIDのタイプ
+     */
+    @Getter
+    private final Class&lt;?&gt; requiredType;
+
+    /**
+     * シーケンス名
+     */
+    @Getter
+    private final String sequenceName;
+
+    /**
+     * 文字列にマッピングするときのフォーマッター
+     */
+    @Setter
+    private NumberFormat formatter;
+
+    /**
+     * サポートしているクラスタイプ
+     */
+<span class="nc" id="L48">    private static List&lt;Class&lt;?&gt;&gt; SUPPORTED_TYPE_LIST = List.of(</span>
+            long.class, Long.class, int.class, Integer.class, String.class);
+
+    @Override
+    public boolean isSupportedType(Class&lt;?&gt; type) {
+<span class="nc" id="L53">        return SUPPORTED_TYPE_LIST.contains(type);</span>
+    }
+
+    @Override
+    public Class&lt;?&gt;[] getSupportedTypes() {
+<span class="nc" id="L58">        return SUPPORTED_TYPE_LIST.toArray(new Class[SUPPORTED_TYPE_LIST.size()]);</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws DataIntegrityViolationException コンストラクタで指定された引数 {@literal requiredType} がサポート対象外の場合。
+     */
+    @Override
+    public Object generateValue() {
+<span class="nc" id="L68">        long value = incrementer.nextValue(sequenceName);</span>
+
+<span class="nc bnc" id="L70" title="All 4 branches missed.">        if(requiredType == long.class || requiredType == Long.class) {</span>
+<span class="nc" id="L71">            return value;</span>
+
+<span class="nc bnc" id="L73" title="All 4 branches missed.">        } else if(requiredType == int.class || requiredType == Integer.class) {</span>
+<span class="nc" id="L74">            return Long.valueOf(value).intValue();</span>
+
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        } else if(requiredType == String.class) {</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">            if(formatter == null) {</span>
+<span class="nc" id="L78">                return String.valueOf(value);</span>
+            } else {
+<span class="nc" id="L80">                synchronized (formatter) {</span>
+<span class="nc" id="L81">                    return formatter.format(value);</span>
+                }
+            }
+
+        }
+
+<span class="nc" id="L87">        throw new DataIntegrityViolationException(&quot;not supported java type : &quot; + requiredType.getName());</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

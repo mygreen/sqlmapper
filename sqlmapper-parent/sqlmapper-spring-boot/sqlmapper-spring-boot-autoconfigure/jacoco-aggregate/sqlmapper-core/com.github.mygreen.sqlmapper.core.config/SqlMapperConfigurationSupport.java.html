@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>SqlMapperConfigurationSupport.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-spring-boot-autoconfigure</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.config</a> &gt; <span class="el_source">SqlMapperConfigurationSupport.java</span></div><h1>SqlMapperConfigurationSupport.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.config;
+
+import javax.sql.DataSource;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Description;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.support.lob.DefaultLobHandler;
+import org.springframework.jdbc.support.lob.LobHandler;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import com.github.mygreen.messageformatter.MessageFormatter;
+import com.github.mygreen.messageformatter.MessageInterpolator;
+import com.github.mygreen.messageformatter.expression.ExpressionEvaluator;
+import com.github.mygreen.messageformatter.expression.SpelExpressionEvaluator;
+import com.github.mygreen.splate.SqlTemplateEngine;
+import com.github.mygreen.sqlmapper.core.SqlMapper;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMetaFactory;
+import com.github.mygreen.sqlmapper.core.naming.DefaultNamingRule;
+import com.github.mygreen.sqlmapper.core.naming.NamingRule;
+import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
+
+/**
+ * SQLMapperのSpringBeanの設定サポート用クラス。
+ * 環境ごとに、このクラスを実装してください。
+ *
+ * @author T.TSUCHIE
+ *
+ */
+@PropertySource(&quot;classpath:/com/github/mygreen/sqlmapper/core/sqlmapper.properties&quot;)
+<span class="fc" id="L47">public abstract class SqlMapperConfigurationSupport implements ApplicationContextAware, ApplicationEventPublisherAware {</span>
+
+    /**
+     * Springのアプリケーションコンテキスト
+     */
+    protected ApplicationContext applicationContext;
+
+    /**
+     * イベントを配信する機能
+     */
+    protected ApplicationEventPublisher applicationEventPublisher;
+
+    /**
+     * Springのコンテナの環境設定
+     */
+    @Autowired
+    protected Environment env;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+<span class="fc" id="L67">       this.applicationContext = applicationContext;</span>
+<span class="fc" id="L68">    }</span>
+
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+<span class="fc" id="L72">        this.applicationEventPublisher = applicationEventPublisher;</span>
+<span class="fc" id="L73">    }</span>
+
+    @Bean
+    @Description(&quot;SQLMapperのクエリ実行用のBean。&quot;)
+    public SqlMapper sqlMapper() {
+<span class="fc" id="L78">        return new SqlMapper(sqlMapperContext());</span>
+    }
+
+    @Bean
+    @Description(&quot;SQLMapperの各設定を保持するBean。&quot;)
+    public SqlMapperContext sqlMapperContext() {
+
+<span class="fc" id="L85">        final SqlMapperContext context = new SqlMapperContext();</span>
+<span class="fc" id="L86">        context.setJdbcTemplate(jdbcTemplate());</span>
+<span class="fc" id="L87">        context.setNamingRule(namingRule());</span>
+<span class="fc" id="L88">        context.setMessageFormatter(messageFormatter());</span>
+<span class="fc" id="L89">        context.setDialect(dialect());</span>
+<span class="fc" id="L90">        context.setEntityMetaFactory(entityMetaFactory());</span>
+<span class="fc" id="L91">        context.setApplicationEventPublisher(applicationEventPublisher);</span>
+<span class="fc" id="L92">        context.setSqlTemplateEngine(sqlTemplateEngine());</span>
+<span class="fc" id="L93">        context.setValueTypeRegistry(valueTypeRegistry());</span>
+<span class="fc" id="L94">        context.setIdGeneratorTransactionTemplate(idGeneratorTransactionTemplate(transactionManager()));</span>
+
+<span class="fc" id="L96">        return context;</span>
+
+    }
+
+    @Bean
+    @Description(&quot;SQLテンプレートの設定値&quot;)
+    public SqlTemplateProperties sqlTemplateProperties() {
+<span class="fc" id="L103">        SqlTemplateProperties prop = new SqlTemplateProperties();</span>
+<span class="fc" id="L104">        prop.setCacheMode(env.getRequiredProperty(&quot;sqlmapper.sql-template.cache-mode&quot;, boolean.class));</span>
+<span class="fc" id="L105">        prop.setEncoding(env.getProperty(&quot;sqlmapper.sql-template.encoding&quot;));</span>
+
+<span class="fc" id="L107">        return prop;</span>
+    }
+
+    @Bean
+    @Description(&quot;テーブルによる自動採番の設定&quot;)
+    public TableIdGeneratorProperties tableIdGeneratorProperties() {
+
+<span class="fc" id="L114">        TableIdGeneratorProperties prop = new TableIdGeneratorProperties();</span>
+<span class="fc" id="L115">        prop.setTable(env.getProperty(&quot;sqlmapper.table-id-generator.table&quot;));</span>
+<span class="fc" id="L116">        prop.setSchema(env.getProperty(&quot;sqlmapper.table-id-generator.schema&quot;));</span>
+<span class="fc" id="L117">        prop.setCatalog(env.getProperty(&quot;sqlmapper.table-id-generator.catalog&quot;));</span>
+<span class="fc" id="L118">        prop.setPkColumn(env.getProperty(&quot;sqlmapper.table-id-generator.pk-column&quot;));</span>
+<span class="fc" id="L119">        prop.setValueColumn(env.getProperty(&quot;sqlmapper.table-id-generator.value-column&quot;));</span>
+<span class="fc" id="L120">        prop.setAllocationSize(Long.parseLong(env.getProperty(&quot;sqlmapper.table-id-generator.allocation-size&quot;)));</span>
+<span class="fc" id="L121">        prop.setInitialValue(Long.parseLong(env.getProperty(&quot;sqlmapper.table-id-generator.initial-value&quot;)));</span>
+
+<span class="fc" id="L123">        return prop;</span>
+    }
+
+    @Bean
+    @Description(&quot;エンティティの対応クラスからメタ情報を作成するBean。&quot;)
+    public EntityMetaFactory entityMetaFactory() {
+<span class="fc" id="L129">        return new EntityMetaFactory();</span>
+    }
+
+    @Bean
+    @Description(&quot;エンティティのプロパティからメタ情報を作成するBean。&quot;)
+    public PropertyMetaFactory propertyMetaFactory() {
+<span class="fc" id="L135">        return new PropertyMetaFactory();</span>
+    }
+
+    @Bean
+    @Description(&quot;テーブルやカラム名の命名規則を定義するBean。&quot;)
+    public NamingRule namingRule() {
+<span class="fc" id="L141">        return new DefaultNamingRule();</span>
+    }
+
+    @Bean
+    @Description(&quot;メッセージをフォーマットするBean。&quot;)
+    public MessageFormatter messageFormatter() {
+
+<span class="fc" id="L148">        final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();</span>
+<span class="fc" id="L149">        messageSource.addBasenames(&quot;com/github/mygreen/sqlmapper/core/messages&quot;);</span>
+<span class="fc" id="L150">        messageSource.setDefaultEncoding(&quot;UTF-8&quot;);</span>
+<span class="fc" id="L151">        messageSource.setUseCodeAsDefaultMessage(true);</span>
+<span class="fc" id="L152">        messageSource.setFallbackToSystemLocale(false);</span>
+
+        // SpELで処理する
+<span class="fc" id="L155">        final ExpressionEvaluator expressionEvaluator = new SpelExpressionEvaluator();</span>
+<span class="fc" id="L156">        final MessageInterpolator messageInterpolator = new MessageInterpolator(expressionEvaluator);</span>
+
+<span class="fc" id="L158">        return new MessageFormatter(messageSource, messageInterpolator);</span>
+
+    }
+
+    @Bean
+    @Description(&quot;ValueTypeを管理するBean&quot;)
+    public ValueTypeRegistry valueTypeRegistry() {
+<span class="fc" id="L165">        return new ValueTypeRegistry();</span>
+
+    }
+
+    /**
+     * SQLテンプレートエンジンのBean定義。
+     * 外部ライブラリ &lt;a href=&quot;https://github.com/mygreen/splate/&quot;&gt;splate&lt;/a&gt; を使用します。
+     * &lt;p&gt;キャッシュモードや文字コードの設定はプロパティファイルから取得します。
+     *
+     * @return SQLテンプレートを処理するエンジン
+     */
+    @Bean
+    @Description(&quot;SQLテンプレートを管理するBean&quot;)
+    public SqlTemplateEngine sqlTemplateEngine() {
+
+<span class="fc" id="L180">        final SqlTemplateEngine templateEngine = new SqlTemplateEngine();</span>
+<span class="fc" id="L181">        templateEngine.setCached(sqlTemplateProperties().isCacheMode());</span>
+<span class="fc" id="L182">        templateEngine.setEncoding(sqlTemplateProperties().getEncoding());</span>
+<span class="fc" id="L183">        templateEngine.setSuffixName(dialect().getName());</span>
+
+<span class="fc" id="L185">        return templateEngine;</span>
+
+    }
+
+    @Bean
+    @Description(&quot;LOBを処理するBean。&quot;)
+    public LobHandler lobHandler() {
+<span class="fc" id="L192">        return new DefaultLobHandler();</span>
+    }
+
+    @Bean
+    @Description(&quot;SQLクエリを発行するJDBCテンプレート&quot;)
+    public JdbcTemplate jdbcTemplate() {
+<span class="fc" id="L198">        return new JdbcTemplate(dataSource());</span>
+    }
+
+    @Bean
+    @Description(&quot;DB接続するためのデータソース&quot;)
+    public abstract DataSource dataSource();
+
+    @Bean
+    @Description(&quot;トランザクションマネージャ&quot;)
+    public PlatformTransactionManager transactionManager() {
+<span class="fc" id="L208">        return new DataSourceTransactionManager(dataSource());</span>
+    }
+
+    /**
+     * ID生成用のトランザクションテンプレートのBean定義。
+     * &lt;p&gt;デフォルトでは、トランザクションを独立されるため {@link TransactionDefinition#PROPAGATION_REQUIRES_NEW} を使用します。
+     *
+     * @param transactionManager トランザクションマネージャ
+     * @return トランザクションテンプレート
+     */
+    @Bean
+    @Description(&quot;ID生成用のトランザクションテンプレート&quot;)
+    public TransactionTemplate idGeneratorTransactionTemplate(PlatformTransactionManager transactionManager) {
+<span class="fc" id="L221">        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);</span>
+<span class="fc" id="L222">        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);</span>
+<span class="fc" id="L223">        return transactionTemplate;</span>
+    }
+
+    @Bean
+    @Description(&quot;SQLの方言を表現するBean。&quot;)
+    public abstract Dialect dialect();
+
+    @Bean
+    @Description(&quot;クエリ実行時のイベントを処理するBean。&quot;)
+    public AuditingEntityListener auditingEntityListener() {
+<span class="fc" id="L233">        return new AuditingEntityListener();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>NameUtils.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.util</a> &gt; <span class="el_source">NameUtils.java</span></div><h1>NameUtils.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.util;
+
+import org.springframework.util.StringUtils;
+
+/**
+ * 名前に関するユーティリティクラスです。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+<span class="nc" id="L12">public class NameUtils {</span>
+
+    /**
+     * 先頭の文字を大文字にする。
+     * &lt;pre&gt;
+     * Utils.capitalize(null)  = null
+     * Utils.capitalize(&quot;&quot;)    = &quot;&quot;
+     * Utils.capitalize(&quot;cat&quot;) = &quot;Cat&quot;
+     * Utils.capitalize(&quot;cAt&quot;) = &quot;CAt&quot;
+     * &lt;/pre&gt;
+     *
+     * @param str 処理対象の文字列
+     * @return 引数がnull、空文字の場合、そのまま返す。
+     */
+    public static String capitalize(final String str) {
+        final int strLen;
+<span class="nc bnc" id="L28" title="All 4 branches missed.">        if(str == null || (strLen = str.length()) == 0) {</span>
+<span class="nc" id="L29">            return str;</span>
+        }
+
+<span class="nc" id="L32">        return new StringBuilder(strLen)</span>
+<span class="nc" id="L33">            .append(String.valueOf(str.charAt(0)).toUpperCase())</span>
+<span class="nc" id="L34">            .append(str.substring(1))</span>
+<span class="nc" id="L35">            .toString();</span>
+    }
+
+    /**
+     * 先頭の文字を小文字にする。
+     *
+     * @param str 変換対象の文字
+     * @return 引数がnull、空文字の場合、そのまま返す。
+     */
+    public static String uncapitalize(final String str) {
+        final int strLen;
+<span class="pc bpc" id="L46" title="2 of 4 branches missed.">        if(str == null || (strLen = str.length()) == 0) {</span>
+<span class="nc" id="L47">            return str;</span>
+        }
+
+<span class="fc" id="L50">        return new StringBuilder(strLen)</span>
+<span class="fc" id="L51">            .append(String.valueOf(str.charAt(0)).toLowerCase())</span>
+<span class="fc" id="L52">            .append(str.substring(1))</span>
+<span class="fc" id="L53">            .toString();</span>
+    }
+
+    /**
+     * テーブルのカタログやスキーマを含んだ完全な名前を返します。
+     *
+     * @param table テーブル名
+     * @param catalog カタログ名(オプション)
+     * @param schema スキーマ名(オプション)
+     * @return テーブルの完全な名前
+     */
+    public static String tableFullName(String table, String catalog, String schema) {
+
+<span class="fc" id="L66">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">        if(StringUtils.hasLength(catalog)) {</span>
+<span class="nc" id="L69">            sb.append(catalog).append(&quot;.&quot;);</span>
+        }
+
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        if(StringUtils.hasLength(schema)) {</span>
+<span class="nc" id="L73">            sb.append(schema).append(&quot;.&quot;);</span>
+        }
+
+<span class="fc" id="L76">        return sb.append(table).toString();</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

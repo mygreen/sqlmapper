@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>SqlMapperException.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core</a> &gt; <span class="el_source">SqlMapperException.java</span></div><h1>SqlMapperException.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core;
+
+/**
+ * SqlMapperのルート例外。
+ * &lt;p&gt;Spring JDBCの例外はこのクラスには含まれません。&lt;/p&gt;
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class SqlMapperException extends RuntimeException {
+
+    /**
+     * メッセージと原因となるエラーを指定するコンストラクタです。
+     * @param message エラーメッセージ
+     * @param cause 原因となるエラー
+     */
+    public SqlMapperException(String message, Throwable cause) {
+<span class="nc" id="L19">        super(message, cause);</span>
+<span class="nc" id="L20">    }</span>
+
+    /**
+     * メッセージを指定するコンストラクタです。
+     * @param message エラーメッセージ
+     */
+    public SqlMapperException(String message) {
+<span class="nc" id="L27">        super(message);</span>
+<span class="nc" id="L28">    }</span>
+
+    /**
+     * 原因となるエラーを指定するコンストラクタです。
+     * @param cause 原因となるエラー
+     */
+    public SqlMapperException(Throwable cause) {
+<span class="nc" id="L35">        super(cause);</span>
+<span class="nc" id="L36">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

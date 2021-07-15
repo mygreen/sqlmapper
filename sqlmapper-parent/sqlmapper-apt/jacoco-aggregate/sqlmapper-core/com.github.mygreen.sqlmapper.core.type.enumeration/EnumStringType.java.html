@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>EnumStringType.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-apt</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.type.enumeration</a> &gt; <span class="el_source">EnumStringType.java</span></div><h1>EnumStringType.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.type.enumeration;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.github.mygreen.messageformatter.MessageFormatter;
+import com.github.mygreen.sqlmapper.core.type.SqlValueConversionException;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
+
+import lombok.Getter;
+import lombok.NonNull;
+
+/**
+ * 列挙型の名称とのマッピングを処理します。
+ * &lt;p&gt;JDBCの型としては、{@link String} 型として処理を行います。
+ *
+ * @author T.TSUCHIE
+ *
+ * @param &lt;T&gt; 列挙型のタイプ
+ */
+public class EnumStringType&lt;T extends Enum&lt;T&gt;&gt; implements ValueType&lt;T&gt; {
+
+    /**
+     * マッピング対象の列挙型のクラス
+     */
+    @Getter
+    private final Class&lt;T&gt; enumType;
+
+    /**
+     * メッセージフォーマッター
+     */
+    private final MessageFormatter messageFormatter;
+
+    /**
+     * キーが文字列、値が列挙型のマップ
+     */
+    private final Map&lt;String, Enum&lt;?&gt;&gt; toObjectMap;
+
+    /**
+     * マッピング対象の列挙型を指定してインスタンスを作成します。
+     * @param enumClass 列挙型のクラス
+     * @param messageFormatter メッセージフォーマッター
+     */
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">    public EnumStringType(@NonNull Class&lt;T&gt; enumClass, MessageFormatter messageFormatter) {</span>
+<span class="fc" id="L49">        this.enumType = enumClass;</span>
+<span class="fc" id="L50">        this.messageFormatter = messageFormatter;</span>
+<span class="fc" id="L51">        this.toObjectMap = createToObjectMap(enumClass);</span>
+<span class="fc" id="L52">    }</span>
+
+    private static &lt;T extends Enum&lt;T&gt;&gt; Map&lt;String, Enum&lt;?&gt;&gt; createToObjectMap(final Class&lt;T&gt; enumClass) {
+
+<span class="fc" id="L56">        final EnumSet&lt;T&gt; set = EnumSet.allOf(enumClass);</span>
+
+<span class="fc" id="L58">        final Map&lt;String, Enum&lt;?&gt;&gt; map = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for(T e : set) {</span>
+<span class="fc" id="L60">            final String key = e.name();</span>
+<span class="fc" id="L61">            map.put(key, e);</span>
+
+<span class="fc" id="L63">        }</span>
+
+<span class="fc" id="L65">        return Collections.unmodifiableMap(map);</span>
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    @Override
+    public T getValue(ResultSet rs, int columnIndex) throws SQLException {
+
+<span class="fc" id="L72">        String sqlValue = rs.getString(columnIndex);</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">        if(sqlValue == null) {</span>
+<span class="nc" id="L74">            return null;</span>
+        }
+
+<span class="fc" id="L77">        T value = (T)toObjectMap.get(sqlValue);</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        if(value == null) {</span>
+<span class="nc" id="L79">            throw new SqlValueConversionException(enumType, sqlValue, messageFormatter.create(&quot;typeValue.conversionFail&quot;)</span>
+<span class="nc" id="L80">                    .param(&quot;value&quot;, sqlValue)</span>
+<span class="nc" id="L81">                    .paramWithClass(&quot;classType&quot;, enumType)</span>
+<span class="nc" id="L82">                    .format());</span>
+        }
+
+<span class="fc" id="L85">        return value;</span>
+
+    }
+
+    @Override
+    public Object getSqlParameterValue(T value) {
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        return value != null ? value.name() : null;</span>
+
+    }
+
+    @Override
+    public String getEmbeddedValue(T value) {
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        return value != null ? value.name() : null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
