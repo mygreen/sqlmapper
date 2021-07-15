@@ -9,7 +9,7 @@ import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
-import com.github.mygreen.sqlmapper.core.annotation.ModifiedAt;
+import com.github.mygreen.sqlmapper.core.annotation.UpdatedAt;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
 
 import lombok.Data;
@@ -32,7 +32,7 @@ public class Customer {
     @CreatedAt
     private Timestamp createdAt;
 
-    @ModifiedAt
+    @UpdatedAt
     private Timestamp modifiedAt;
 
     @Version

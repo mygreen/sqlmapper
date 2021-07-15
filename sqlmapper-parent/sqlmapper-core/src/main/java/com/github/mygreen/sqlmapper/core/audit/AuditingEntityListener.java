@@ -73,7 +73,7 @@ public class AuditingEntityListener implements InitializingBean {
             PropertyValueInvoker.setEmbeddedPropertyValue(p, event.getEntity(), value);
         });
 
-        entityMeta.getModifiedAtPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedAtPropertyMeta().ifPresent(p -> {
             Object value = getCurrentDateTime(p.getPropertyType());
             PropertyValueInvoker.setPropertyValue(p, event.getEntity(), value);
         });
@@ -83,7 +83,7 @@ public class AuditingEntityListener implements InitializingBean {
             value.ifPresent(v -> PropertyValueInvoker.setEmbeddedPropertyValue(p, event.getEntity(), v));
         });
 
-        entityMeta.getModifiedByPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedByPropertyMeta().ifPresent(p -> {
             Optional<?> value = auditorProvider.getCurrentAuditor();
             value.ifPresent(v -> PropertyValueInvoker.setEmbeddedPropertyValue(p, event.getEntity(), v));
         });
@@ -99,12 +99,12 @@ public class AuditingEntityListener implements InitializingBean {
 
         final EntityMeta entityMeta = event.getEntityMeta();
 
-        entityMeta.getModifiedAtPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedAtPropertyMeta().ifPresent(p -> {
             Object value = getCurrentDateTime(p.getPropertyType());
             PropertyValueInvoker.setPropertyValue(p, event.getEntity(), value);
         });
 
-        entityMeta.getModifiedByPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedByPropertyMeta().ifPresent(p -> {
             Optional<?> value = auditorProvider.getCurrentAuditor();
             value.ifPresent(v -> PropertyValueInvoker.setPropertyValue(p, event.getEntity(), v));
         });
@@ -127,7 +127,7 @@ public class AuditingEntityListener implements InitializingBean {
             }
         });
 
-        entityMeta.getModifiedAtPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedAtPropertyMeta().ifPresent(p -> {
             Object value = getCurrentDateTime(p.getPropertyType());
             for(Object entity : event.getEntities()) {
                 PropertyValueInvoker.setEmbeddedPropertyValue(p, entity, value);
@@ -143,7 +143,7 @@ public class AuditingEntityListener implements InitializingBean {
             });
         });
 
-        entityMeta.getModifiedByPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedByPropertyMeta().ifPresent(p -> {
             Optional<?> value = auditorProvider.getCurrentAuditor();
             value.ifPresent(v -> {
                 for(Object entity : event.getEntities()) {
@@ -163,14 +163,14 @@ public class AuditingEntityListener implements InitializingBean {
 
         final EntityMeta entityMeta = event.getEntityMeta();
 
-        entityMeta.getModifiedAtPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedAtPropertyMeta().ifPresent(p -> {
             Object value = getCurrentDateTime(p.getPropertyType());
             for(Object entity : event.getEntities()) {
                 PropertyValueInvoker.setEmbeddedPropertyValue(p, entity, value);
             }
         });
 
-        entityMeta.getModifiedByPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedByPropertyMeta().ifPresent(p -> {
             Optional<?> value = auditorProvider.getCurrentAuditor();
             value.ifPresent(v -> {
                 for(Object entity : event.getEntities()) {
