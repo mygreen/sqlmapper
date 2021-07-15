@@ -18,8 +18,8 @@ import com.github.mygreen.sqlmapper.core.annotation.EmbeddedId;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
 import com.github.mygreen.sqlmapper.core.annotation.Lob;
-import com.github.mygreen.sqlmapper.core.annotation.ModifiedAt;
-import com.github.mygreen.sqlmapper.core.annotation.ModifiedBy;
+import com.github.mygreen.sqlmapper.core.annotation.UpdatedAt;
+import com.github.mygreen.sqlmapper.core.annotation.UpdatedBy;
 import com.github.mygreen.sqlmapper.core.annotation.Transient;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
@@ -389,16 +389,16 @@ public class PropertyMeta {
      * 修正日時用のプロパティがかどうか判定する。
      * @return 修正日時用のプロパティのとき {@literal true} を返す。
      */
-    public boolean isModifiedAt() {
-        return hasAnnotation(ModifiedAt.class);
+    public boolean isUpdatedAt() {
+        return hasAnnotation(UpdatedAt.class);
     }
 
     /**
      * 修正者用のプロパティがかどうか判定する。
      * @return 修正者用のプロパティのとき {@literal true} を返す。
      */
-    public boolean isModifiedBy() {
-        return hasAnnotation(ModifiedBy.class);
+    public boolean isUpdatedBy() {
+        return hasAnnotation(UpdatedBy.class);
     }
 
 

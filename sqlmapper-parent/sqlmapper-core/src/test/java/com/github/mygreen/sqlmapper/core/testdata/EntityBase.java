@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.github.mygreen.sqlmapper.core.annotation.CreatedAt;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
-import com.github.mygreen.sqlmapper.core.annotation.ModifiedAt;
+import com.github.mygreen.sqlmapper.core.annotation.UpdatedAt;
 import com.github.mygreen.sqlmapper.core.annotation.Temporal;
 import com.github.mygreen.sqlmapper.core.annotation.Temporal.TemporalType;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
@@ -29,7 +29,7 @@ public abstract class EntityBase {
 
     @Getter
     @Setter
-    @ModifiedAt
+    @UpdatedAt
     @Temporal(TemporalType.TIMESTAMP)
     protected Date updateAt;
 

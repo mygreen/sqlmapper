@@ -161,7 +161,7 @@ public class EntityMetaFactoryTest {
 
 
             } else if(propertyMeta.getName().equals("updateAt")) {
-                assertThat(propertyMeta.isModifiedAt()).isTrue();
+                assertThat(propertyMeta.isUpdatedAt()).isTrue();
                 assertThat(propertyMeta.getDeclaringClass()).isEqualTo(EntityBase.class);
 
                 assertCount++;
