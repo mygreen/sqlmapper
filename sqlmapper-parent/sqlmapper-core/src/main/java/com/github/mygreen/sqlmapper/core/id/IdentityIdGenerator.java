@@ -14,7 +14,7 @@ import lombok.Setter;
  * IDENTITYによる生成は、実際にはJdbcTemplateで行います。
  * <p>このクラスでは、{@link #generateValue(Number)} による変換だけ行います。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -53,7 +53,7 @@ public class IdentityIdGenerator implements IdGenerator {
      * @throws UnsupportedOperationException このメソッドを呼び出したときに必ずスローされます。
      */
     @Override
-    public Object generateValue() {
+    public Object generateValue(final IdGenerationContext context) {
         throw new UnsupportedOperationException("this method is not supported.");
     }
 

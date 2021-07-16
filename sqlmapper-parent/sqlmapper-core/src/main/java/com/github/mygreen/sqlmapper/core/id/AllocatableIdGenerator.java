@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
  * <p>大量にレコードを導入するときは効率的に処理を行うことができます。
  * <p>ただし、予めIDを生成してキャッシュしておくため、プロセスを再起動すると生成済みのキャッシュされたIDは使われず欠番となります。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -22,12 +22,12 @@ public abstract class AllocatableIdGenerator {
      * 割り当てサイズ
      */
     @Getter
-    private final long allocationSize;
+    protected final long allocationSize;
 
     /**
      * 割り当てているIDのキャッシュ。
      */
-    private Map<String, IdContext> idContextMap = new ConcurrentHashMap<>();
+    protected Map<String, AllocatedIdContext> allocatedIdCache = new ConcurrentHashMap<>();
 
     /**
      * 現在のカウンターの値を取得する。
@@ -50,28 +50,28 @@ public abstract class AllocatableIdGenerator {
      * @return 新たらしいID
      */
     public long nextValue(final String key) {
-        return idContextMap.computeIfAbsent(key, k -> new IdContext()).getNextValue(key);
+        return allocatedIdCache.computeIfAbsent(key, k -> new AllocatedIdContext()).getNextValue(key);
 
     }
 
     /**
-     * 自動生成されるIDの情報を保持する。
+     * 割り当てられたIDの情報を保持する。
      *
      *
      * @author T.TSUCHIE
      *
      */
-    public class IdContext {
+    public class AllocatedIdContext {
 
         /**
          * 現在値
          */
-        protected long currentValue = -1l;
+        private long currentValue = -1l;
 
         /**
          * 割り当て済みの値
          */
-        protected long allocated = -1L;
+        private long allocated = -1L;
 
         /**
          * 新しいIDを払い出します。

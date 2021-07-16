@@ -5,7 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 /**
  * IDを自動生成する処理のインタフェースです。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -26,20 +26,22 @@ public interface IdGenerator {
 
     /**
      * IDを新たに生成します。
+     * @param context 生成対象のIDの情報
      * @return 生成したID
      * @throws DataIntegrityViolationException IDの生成に失敗した場合にスローされます。
      */
-    Object generateValue();
+    Object generateValue(IdGenerationContext context);
 
     /**
      * 指定した個数分のIDを新たに生成します。
+     * @param context 生成対象のIDの情報
      * @param num 生成するIDの個数
      * @return DataIntegrityViolationException IDの生成に失敗した場合にスローされます。
      */
-    default Object[] generateValues(int num) {
+    default Object[] generateValues(final IdGenerationContext context, final int num) {
         Object[] values = new Object[num];
         for(int i=0; i < num; i++) {
-            values[i] = generateValue();
+            values[i] = generateValue(context);
         }
         return values;
     }

@@ -18,10 +18,11 @@ import com.github.mygreen.sqlmapper.core.annotation.EmbeddedId;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
 import com.github.mygreen.sqlmapper.core.annotation.Lob;
+import com.github.mygreen.sqlmapper.core.annotation.Transient;
 import com.github.mygreen.sqlmapper.core.annotation.UpdatedAt;
 import com.github.mygreen.sqlmapper.core.annotation.UpdatedBy;
-import com.github.mygreen.sqlmapper.core.annotation.Transient;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
+import com.github.mygreen.sqlmapper.core.id.IdGenerationContext;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
@@ -33,8 +34,8 @@ import lombok.Setter;
 /**
  * プロパティのメタ情報です。
  *
- *
  * @author T.TSUCHIE
+ * @version 0.3
  *
  */
 @RequiredArgsConstructor
@@ -103,16 +104,23 @@ public class PropertyMeta {
     private ValueType<?> valueType;
 
     /**
-     * 識別子の生成タイプ
+     * IDの生成タイプ
      */
     @Getter
     private Optional<GeneratedValue.GenerationType> idGenerationType = Optional.empty();
 
     /**
-     * 識別子の生成処理
+     * IDの生成処理
      */
     @Getter
     private Optional<IdGenerator> idGenerator = Optional.empty();
+
+    /**
+     * 生成対象の識別子の情報。
+     * <p>ID生成時に渡す際の情報として使用するので、効率化のためにここで事前に作成して保持しておく。
+     */
+    @Getter
+    private Optional<IdGenerationContext> idGenerationContext = Optional.empty();
 
     /**
      * プロパティが定義されているクラス情報を取得します。
@@ -342,6 +350,14 @@ public class PropertyMeta {
      */
     public void setIdGenerator(IdGenerator idGenerator) {
         this.idGenerator = Optional.ofNullable(idGenerator);
+    }
+
+    /**
+     * 生成対象の識別子の情報を設定する。
+     * @param idGenerationContext 生成対象の識別子の情報
+     */
+    public void setIdGenerationContext(IdGenerationContext idGenerationContext) {
+        this.idGenerationContext = Optional.ofNullable(idGenerationContext);
     }
 
     /**

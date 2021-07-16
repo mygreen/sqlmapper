@@ -1,0 +1,9 @@
+= ver.0.3 - 2021-xx-xx
+
+* https://github.com/mygreen/sqlmapper/pull/3[#3, window="_blank"] - 監査情報を記録するためのアノテーションの名称を変更。
+** ``@ModfiedAt`` -> ``UpdatedAt``
+** ``@ModfiedBy`` -> ``UpdatedBy``
+
+* https://github.com/mygreen/sqlmapper/pull/4[#4, window="_blank"] - <<custom_id_gnerarator,識別子の独自実装を指定できる機能>>を追加。
+
+

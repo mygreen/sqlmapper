@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.core.id.IdGenerationContext;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
@@ -25,6 +26,7 @@ import com.github.mygreen.sqlmapper.core.util.QueryUtils;
  * 挿入を行うSQLを自動生成するクエリを実行します。
  * {@link AutoInsertImpl}のクエリ実行処理の移譲先です。
  *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -116,7 +118,7 @@ public class AutoInsertExecutor {
                     usingIdentityKeyColumnNames.add(columnName);
                     continue;
                 } else {
-                    propertyValue = getNextVal(propertyMeta.getIdGenerator().get());
+                    propertyValue = getNextVal(propertyMeta);
                     PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, query.getEntity(), propertyValue);
                 }
             }
@@ -142,14 +144,17 @@ public class AutoInsertExecutor {
 
     /**
      * 主キーを生成する
-     * @param generator 主キーの生成処理
+     * @param propertyMeta 生成対象のIDプロパティのメタ情報
      * @return 生成した主キーの値
      */
-    private Object getNextVal(final IdGenerator generator) {
+    private Object getNextVal(final PropertyMeta propertyMeta) {
+
+        IdGenerator generator = propertyMeta.getIdGenerator().get();
+        IdGenerationContext generationContext = propertyMeta.getIdGenerationContext().get();
 
         // トランザクションは別にする。
         return context.getIdGeneratorTransactionTemplate().execute(action -> {
-            return generator.generateValue();
+            return generator.generateValue(generationContext);
         });
     }
 

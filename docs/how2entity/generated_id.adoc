@@ -56,9 +56,9 @@ public class User {
 |``java.util.UUID`` を使用しランダムなセキュアな値を生成します。
 
 |``@GeneratedValue(generator=<独自実装)``
-|独自の採番方式の実装クラスを指定します。
+|　<<custom_id_gnerarator,独自の採番方式>>として、Springコンテナに登録されているBean名を指定します。
 
-* インタフェース ``com.github.mygreen.sqlmapper.core.id.IdGenerator`` を実装する必要があります。
+* 指定するSpring Beanは、インタフェース ``com.github.mygreen.sqlmapper.core.id.IdGenerator`` を実装する必要があります。
 
 |===
 
@@ -161,7 +161,61 @@ public class User {
 
 |===
 
-
+[[custom_id_gnerarator]]
 == 独自実装による識別子（ID）の自動採番
 
-TODO
+独自の採番処理の実装を指定する方法を説明します。
+
+* ``@GeneratedValue`` の属性 ``generator`` として、Springのコンテナに登録されているBean名を指定します。
+* Spring Beanは、インタフェース ``com.github.mygreen.sqlmapper.core.id.IdGenerator`` を実装する必要があります。
+
+.独自の識別子の生成処理の指定
+[source,java]
+----
+@Entity
+public class User {
+    
+    @Id
+    @GeneratedValue(generator="myIdGenerator")
+    private long id;
+
+    private String name;
+
+    // setter/getterメソッドは省略
+}
+----
+
+.独自の識別子の生成処理の実装
+[source,java]
+----
+@Component
+public class MyIdGenerator implements IdGenerator {
+    
+    /**
+     * サポートしているクラスタイプ
+     */
+    private static final List<Class<?>> SUPPORTED_TYPE_LIST = List.of(Long.class, String.class);
+
+    /**
+     * 生成するIDのクラスタイプ
+     */
+    private final Class<?> requiredType;
+
+    @Override
+    public boolean isSupportedType(Class<?> type) {
+        return SUPPORTED_TYPE_LIST.contains(type);
+    }
+
+    @Override
+    public Class<?>[] getSupportedTypes() {
+        return SUPPORTED_TYPE_LIST.toArray(new Class[SUPPORTED_TYPE_LIST.size()]);
+    }
+
+    @Override
+    public Object generateValue(IdGenerationContext context) {
+
+        //TODO: 識別子の実装
+        return ...;
+    }
+}
+----
