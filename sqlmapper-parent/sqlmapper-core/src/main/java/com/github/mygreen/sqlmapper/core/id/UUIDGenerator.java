@@ -40,7 +40,7 @@ public class UUIDGenerator implements IdGenerator {
     }
 
     @Override
-    public Object generateValue() {
+    public Object generateValue(final IdGenerationContext context) {
 
         UUID value = UUID.randomUUID();
 

@@ -16,7 +16,7 @@ import lombok.Setter;
  * {@link GenerationType#SEQUENCE}方式でIDの値を自動生成するIDジェネレータです。
  * <p>サポートするIDのクラスタイプは、{@code long/Long/int/Integer/String}です。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -64,7 +64,7 @@ public class SequenceIdGenerator implements IdGenerator {
      * @throws DataIntegrityViolationException コンストラクタで指定された引数 {@literal requiredType} がサポート対象外の場合。
      */
     @Override
-    public Object generateValue() {
+    public Object generateValue(final IdGenerationContext context) {
         if(requiredType == long.class || requiredType == Long.class) {
             return incrementer.nextLongValue();
 
