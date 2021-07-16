@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.core.id.IdGenerationContext;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
@@ -26,7 +27,7 @@ import com.github.mygreen.sqlmapper.core.util.QueryUtils;
  * バッチ挿入を行うSQLを自動生成するクエリを実行します。
  * {@link AutoBatchInsertImpl}のクエリ実行処理の移譲先です。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -132,7 +133,7 @@ public class AutoBatchInsertExecutor {
                         }
                         continue;
                     } else {
-                        propertyValue = getNextVal(propertyMeta.getIdGenerator().get(), propertyMeta.getColumnMeta().getName(), i);
+                        propertyValue = getNextVal(propertyMeta, i);
                         PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, query.getEntity(i), propertyValue);
                     }
                 }
@@ -160,17 +161,21 @@ public class AutoBatchInsertExecutor {
 
     /**
      * 主キーを生成する
-     * @param generator 主キーの生成処理
+     * @param propertyMeta 生成対象のIDプロパティのメタ情報
      * @param columnName 生成対象のカラム名
      * @param index 生成対象のレコードのインデックス
      * @return 生成した主キーの値
      */
-    private Object getNextVal(final IdGenerator generator, final String columnName, final int index) {
+    private Object getNextVal(final PropertyMeta propertyMeta, final int index) {
+
+        IdGenerator generator = propertyMeta.getIdGenerator().get();
+        String columnName = propertyMeta.getColumnMeta().getName();
+        IdGenerationContext generationContext = propertyMeta.getIdGenerationContext().get();
 
         // 1レコードの主キーをまとめてキーを生成しておき、キャッシュしておく。
         Object[] generatedKeys = generatedKeysMap.computeIfAbsent(columnName, v ->
                 context.getIdGeneratorTransactionTemplate().execute(action -> {
-                    return generator.generateValues(query.getEntities().length);
+                    return generator.generateValues(generationContext, query.getEntities().length);
                 }));
 
          return generatedKeys[index];

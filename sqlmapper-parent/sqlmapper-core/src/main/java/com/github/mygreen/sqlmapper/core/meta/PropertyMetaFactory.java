@@ -10,9 +10,13 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.sqlmapper.core.annotation.Column;
@@ -26,6 +30,7 @@ import com.github.mygreen.sqlmapper.core.annotation.Temporal;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
 import com.github.mygreen.sqlmapper.core.config.TableIdGeneratorProperties;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.id.IdGenerationContext;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.core.id.SequenceIdGenerator;
@@ -45,7 +50,7 @@ import lombok.Setter;
 /**
  * プロパティのメタ情報を作成します。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -85,6 +90,11 @@ public class PropertyMetaFactory {
     @Setter
     @Autowired
     private TableIdGeneratorProperties tableIdGeneratorProperties;
+
+    @Getter
+    @Setter
+    @Autowired
+    private ApplicationContext applicationContext;
 
     /**
      * プロパティのメタ情報を作成します。
@@ -271,7 +281,37 @@ public class PropertyMetaFactory {
         }
 
         final IdGenerator idGenerator;
-        if(generationType == GenerationType.IDENTITY) {
+        if(StringUtils.hasLength(annoGeneratedValue.get().generator())) {
+            /*
+             * 属性「generator」が指定されている場合は、「strategy」の値は無視する。
+             * ただし、IDENTITYの場合はクエリ実行前に処理されてしまうので、
+             * Autoに補完して間違った処理をされないようにする。
+             */
+            generationType = GenerationType.AUTO;
+
+            final String generatorName = annoGeneratedValue.get().generator();
+            try {
+                idGenerator = applicationContext.getBean(generatorName, IdGenerator.class);
+
+            } catch(NoSuchBeanDefinitionException  e) {
+                throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.noSuchBeanDefinition")
+                        .paramWithClass("classType", entityMeta.getEntityType())
+                        .param("property", propertyMeta.getName())
+                        .paramWithAnno("anno", GeneratedValue.class)
+                        .param("attrName", "generator")
+                        .param("attrValue", generatorName)
+                        .format(), e);
+            } catch(BeanNotOfRequiredTypeException e) {
+                throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.beanNotOfRequiredType")
+                        .paramWithClass("classType", entityMeta.getEntityType())
+                        .param("property", propertyMeta.getName())
+                        .paramWithAnno("anno", GeneratedValue.class)
+                        .param("attrName", "generator")
+                        .param("attrValue", generatorName)
+                        .paramWithClass("requiredType", IdGenerator.class)
+                        .format(), e);
+            }
+        } else if(generationType == GenerationType.IDENTITY) {
             IdentityIdGenerator identityIdGenerator = new IdentityIdGenerator(propertyType);
             if(!annoGeneratedValue.get().format().isEmpty()) {
                 identityIdGenerator.setFormatter(new DecimalFormat(annoGeneratedValue.get().format()));
@@ -412,7 +452,14 @@ public class PropertyMetaFactory {
 
         propertyMeta.setIdGenerator(idGenerator);
         propertyMeta.setIdGeneratonType(generationType);
-        //TODO: SpringからBeanを取得するする
+
+        // 生成対象のIDの情報
+        final IdGenerationContext generationContext = new IdGenerationContext();
+        generationContext.setTableMeta(entityMeta.getTableMeta());
+        generationContext.setColumnMeta(propertyMeta.getColumnMeta());
+        generationContext.setEntityType(entityMeta.getEntityType());
+        generationContext.setPropertyType(propertyMeta.getPropertyType());
+        propertyMeta.setIdGenerationContext(generationContext);
 
     }
 
