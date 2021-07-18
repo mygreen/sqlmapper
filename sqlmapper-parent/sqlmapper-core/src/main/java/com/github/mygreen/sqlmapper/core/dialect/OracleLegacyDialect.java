@@ -19,7 +19,7 @@ public class OracleLegacyDialect extends OracleDialect {
      *  <li>{@link GenerationType#IDENTITY} : {@literal false}</li>
      *  <li>{@link GenerationType#SEQUENCE} : {@literal true}</li>
      *  <li>{@link GenerationType#TABLE} : {@literal true}</li>
-     *  <li>その他 : {@literal false}</li>
+     *  <li>{@link GenerationType#UUID} : {@literal true}</li>
      * </ul>
      */
     @Override
@@ -30,6 +30,8 @@ public class OracleLegacyDialect extends OracleDialect {
             case SEQUENCE:
                 return true;
             case TABLE:
+                return true;
+            case UUID:
                 return true;
             default:
                 return false;
