@@ -6,4 +6,8 @@
 
 * https://github.com/mygreen/sqlmapper/pull/4[#4, window="_blank"] - <<custom_id_gnerarator,識別子の独自実装を指定できる機能>>を追加。
 
+* https://github.com/mygreen/sqlmapper/pull/5[#5, window="_blank"] - 以下のメソッド名を変更。
+** ``Dialect#isSupportedGenerationType`` -> ``Dialect#supportsGenerationType``
+** ``Dialect#isSupportedSelectForUpdate`` -> ``Dialect#supportsSelectForUpdate``
 
+* https://github.com/mygreen/sqlmapper/pull/6[#6, window="_blank"] - 識別子の生成戦略を ``@GeneratedValue(strategy=...)`` で指定したとき、DBの方言ごとにサポートしているかチェックを追加しました。

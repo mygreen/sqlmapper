@@ -276,6 +276,18 @@ public class PropertyMetaFactory {
         final Class<?> propertyType = propertyMeta.getPropertyType();
 
         GenerationType generationType = annoGeneratedValue.get().strategy();
+        if(generationType != GenerationType.AUTO && !dialect.supportsGenerationType(generationType)) {
+            throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.notSupportForDialect")
+                    .paramWithClass("classType", entityMeta.getEntityType())
+                    .param("property", propertyMeta.getName())
+                    .paramWithAnno("anno", GeneratedValue.class)
+                    .param("attrName", "strategy")
+                    .param("attrValue", generationType)
+                    .param("dialectName", dialect.getName())
+                    .format());
+        }
+
+        // 生成戦略の補完
         if(generationType == GenerationType.AUTO) {
             generationType = dialect.getDefaultGenerationType();
         }
