@@ -363,7 +363,7 @@ public class PropertyMeta {
     /**
      * 永続化対象外かどうか判定する。
      * <p>永続化対象外とは、アノテーション {@link Transient}が付与されているか、
-     * または、フィールドに修飾子 {@code transient} が付与されているかどうかで判定します。
+     * または、フィールドに修飾子 {@literal transient} が付与されているかどうかで判定します。
      * @return 永続化対象外のとき {@literal true} を返す。
      */
     public boolean isTransient() {

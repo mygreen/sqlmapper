@@ -58,7 +58,7 @@ public class QueryUtils {
     /**
      * JdbcItemplate用のバッチ実行用のパラメータの形式に変換する。
      * @param batchParams 変換対象のパラメータ
-     * @return {@code List<Object[]>} の毛市域に変換したパラメータ。
+     * @return {@literal List<Object[]>} の形式に変換したパラメータ。
      */
     public static List<Object[]> convertBatchArgs(List<Object>[] batchParams) {
 

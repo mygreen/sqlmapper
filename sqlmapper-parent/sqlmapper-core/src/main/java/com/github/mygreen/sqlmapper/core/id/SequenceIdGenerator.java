@@ -14,7 +14,7 @@ import lombok.Setter;
 
 /**
  * {@link GenerationType#SEQUENCE}方式でIDの値を自動生成するIDジェネレータです。
- * <p>サポートするIDのクラスタイプは、{@code long/Long/int/Integer/String}です。
+ * <p>サポートするIDのクラスタイプは、{@literal long/Long/int/Integer/String}です。
  *
  * @version 0.3
  * @author T.TSUCHIE
