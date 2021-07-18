@@ -1,14 +1,40 @@
 package com.github.mygreen.sqlmapper.core.dialect;
 
+import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+
 /**
  * 古いOracleDBの方言です。
  * <p>Oracle11以前が対象です。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
 public class OracleLegacyDialect extends OracleDialect {
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return <ul>
+     *  <li>{@link GenerationType#IDENTITY} : {@literal false}</li>
+     *  <li>{@link GenerationType#SEQUENCE} : {@literal true}</li>
+     *  <li>{@link GenerationType#TABLE} : {@literal true}</li>
+     *  <li>その他 : {@literal false}</li>
+     * </ul>
+     */
+    @Override
+    public boolean supportsGenerationType(GenerationType generationType) {
+        switch(generationType) {
+            case IDENTITY:
+                return false;
+            case SEQUENCE:
+                return true;
+            case TABLE:
+                return true;
+            default:
+                return false;
+        }
+    }
 
     /**
      * {@inheritDoc}
