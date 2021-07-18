@@ -37,7 +37,7 @@ public interface Dialect {
      * @param generationType 主キーの生成戦略。
      * @return {@literal true}のときサポートします。
      */
-    boolean isSupportedGenerationType(GenerationType generationType);
+    boolean supportsGenerationType(GenerationType generationType);
 
     /**
      * シーケンスをインクリメントする処理を取得します。
@@ -86,7 +86,7 @@ public interface Dialect {
      * @param type SELECT ～ FOR UPDATEのタイプ
      * @return SELECT文で<code>FOR UPDATE</code>をサポートしていれば<code>true</code>
      */
-    boolean isSupportedSelectForUpdate(SelectForUpdateType type);
+    boolean supportsSelectForUpdate(SelectForUpdateType type);
 
     /**
      * SELECT文に付加する<code>FOR UPDATE NOWAIT</code>相当のSQLを返します。

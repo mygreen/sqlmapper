@@ -355,7 +355,7 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
     @Override
     public AutoSelectImpl<T> forUpdate() {
         final Dialect dialect = context.getDialect();
-        if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NORMAL)) {
+        if(!dialect.supportsSelectForUpdate(SelectForUpdateType.NORMAL)) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdate")
                     .paramWithClass("entityType", entityPath.getType())
                     .param("dialectName", dialect.getName())
@@ -370,7 +370,7 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
     public AutoSelectImpl<T> forUpdateNoWait() {
 
         final Dialect dialect = context.getDialect();
-        if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NOWAIT)) {
+        if(!dialect.supportsSelectForUpdate(SelectForUpdateType.NOWAIT)) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdateNowait")
                     .paramWithClass("entityType", entityPath.getType())
                     .param("dialectName", dialect.getName())
@@ -390,7 +390,7 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
     public AutoSelectImpl<T> forUpdateWait(final int seconds) {
 
         final Dialect dialect = context.getDialect();
-        if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.WAIT)) {
+        if(!dialect.supportsSelectForUpdate(SelectForUpdateType.WAIT)) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdateWait")
                     .paramWithClass("entityType", entityPath.getType())
                     .param("dialectName", dialect.getName())

@@ -32,7 +32,7 @@ public class OracleLegacyDialect extends OracleDialect {
      * </ul>
      */
     @Override
-    public boolean isSupportedGenerationType(GenerationType generationType) {
+    public boolean supportsGenerationType(GenerationType generationType) {
         switch(generationType) {
             case IDENTITY:
                 return false;

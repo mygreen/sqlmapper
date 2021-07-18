@@ -37,7 +37,7 @@ public class SqliteDialect extends DialectBase {
     * </ul>
     */
    @Override
-   public boolean isSupportedGenerationType(GenerationType generationType) {
+   public boolean supportsGenerationType(GenerationType generationType) {
        switch(generationType) {
            case IDENTITY:
                return true;
