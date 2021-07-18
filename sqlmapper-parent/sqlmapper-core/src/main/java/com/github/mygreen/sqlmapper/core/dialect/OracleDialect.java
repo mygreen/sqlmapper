@@ -4,18 +4,32 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
 import org.springframework.jdbc.support.incrementer.OracleSequenceMaxValueIncrementer;
+import org.springframework.lang.Nullable;
 
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
+import com.github.mygreen.sqlmapper.core.type.standard.BooleanType;
+import com.github.mygreen.sqlmapper.core.type.standard.NumberableBooleanType;
 
 /**
  * Oracle v12+用の方言の定義。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
 public class OracleDialect extends DialectBase {
+
+    /**
+     * DB側が整数型のとき、Javaのboolean型にマッピングします。
+     */
+    protected final NumberableBooleanType primitiveBooleanType = new NumberableBooleanType(true);
+
+    /**
+     * DB側が整数型のとき、JavaのラッパーのBoolean型にマッピングします。
+     */
+    protected final NumberableBooleanType objectiveBooleanType = new NumberableBooleanType(false);
 
     /**
      * {@inheritDoc}
@@ -65,11 +79,58 @@ public class OracleDialect extends DialectBase {
     /**
      * {@inheritDoc}
      *
+     * @return 与えられた値が {@literal boolean/Boolean}のとき、整数型に変換する {@link NumberableBooleanType} に変換します。
+     */
+    @Override
+    public ValueType<?> getValueType(@Nullable ValueType<?> valueType) {
+        if(valueType == null) {
+            return null;
+        }
+
+        if(valueType instanceof BooleanType) {
+            if(((BooleanType)valueType).isForPrimitive()) {
+                return primitiveBooleanType;
+            } else {
+                return objectiveBooleanType;
+            }
+        }
+        return valueType;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @return コメントの形式 /{@literal *}+ヒント{@literal *}/ の形式で返します。
      */
     @Override
     public String getHintComment(final String hint) {
         return "/*+ " + hint + " */ ";
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@literal OFFSET/FETCH} を使用して、LIMIT句を組み立てます。
+     */
+    @Override
+    public String convertLimitSql(String sql, int offset, int limit) {
+
+        StringBuilder buf = new StringBuilder(sql.length() + 20);
+        buf.append(sql);
+        if (offset > 0) {
+            buf.append(" offset ")
+                .append(offset)
+                .append(" fetch first ")
+                .append(limit)
+                .append(" rows only");
+        } else {
+            buf.append(" fetch first ")
+                .append(limit)
+                .append(" rows only");
+        }
+
+        return buf.toString();
+
     }
 
     /**
