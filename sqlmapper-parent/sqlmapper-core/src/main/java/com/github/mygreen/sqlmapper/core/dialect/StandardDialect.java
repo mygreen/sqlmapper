@@ -33,7 +33,7 @@ public class StandardDialect extends DialectBase {
      *  <li>{@link GenerationType#IDENTITY} : {@literal false}</li>
      *  <li>{@link GenerationType#SEQUENCE} : {@literal false}</li>
      *  <li>{@link GenerationType#TABLE} : {@literal true}</li>
-     *  <li>その他 : {@literal false}</li>
+     *  <li>{@link GenerationType#UUID} : {@literal true}</li>
      * </ul>
      */
     @Override
@@ -44,6 +44,8 @@ public class StandardDialect extends DialectBase {
             case SEQUENCE:
                 return false;
             case TABLE:
+                return true;
+            case UUID:
                 return true;
             default:
                 return false;
