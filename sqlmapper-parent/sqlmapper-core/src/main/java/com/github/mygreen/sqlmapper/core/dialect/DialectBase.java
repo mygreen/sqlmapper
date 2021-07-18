@@ -57,7 +57,7 @@ public abstract class DialectBase implements Dialect {
      * @return {@link SelectForUpdateType#NORMAL} を返します。
      */
     @Override
-    public boolean isSupportedSelectForUpdate(final SelectForUpdateType type) {
+    public boolean supportsSelectForUpdate(final SelectForUpdateType type) {
         return type == SelectForUpdateType.NORMAL;
     }
 

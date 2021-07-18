@@ -39,7 +39,7 @@ public class OracleDialect extends DialectBase {
      * </ul>
      */
     @Override
-    public boolean isSupportedGenerationType(GenerationType generationType) {
+    public boolean supportsGenerationType(GenerationType generationType) {
         switch(generationType) {
             case IDENTITY:
                 return true;
@@ -78,7 +78,7 @@ public class OracleDialect extends DialectBase {
      * @return 必ず{@literal true} を返します。
      */
     @Override
-    public boolean isSupportedSelectForUpdate(final SelectForUpdateType type) {
+    public boolean supportsSelectForUpdate(final SelectForUpdateType type) {
         // 全てのタイプをサポートする
         return true;
     }

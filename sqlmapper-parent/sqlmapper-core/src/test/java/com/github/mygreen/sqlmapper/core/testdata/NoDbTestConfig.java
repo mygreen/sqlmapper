@@ -46,7 +46,7 @@ public class NoDbTestConfig extends SqlMapperConfigurationSupport {
         }
 
         @Override
-        public boolean isSupportedGenerationType(GenerationType generationType) {
+        public boolean supportsGenerationType(GenerationType generationType) {
             return true;
         }
 
