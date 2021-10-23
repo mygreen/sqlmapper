@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.Getter;
@@ -54,5 +55,10 @@ public class UtilDateType implements ValueType<Date> {
     @Override
     public String getEmbeddedValue(Date value) {
         return temporalConverter.getEmbeddedValue(value);
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+        return temporalConverter.getSqlType(dialect);
     }
 }

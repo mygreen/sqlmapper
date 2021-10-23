@@ -47,6 +47,8 @@ import com.github.mygreen.sqlmapper.core.dialect.SqliteDialect;
 import com.github.mygreen.sqlmapper.core.dialect.StandardDialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.StoredParamMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.StoredPropertyMetaFactory;
 import com.github.mygreen.sqlmapper.core.naming.DefaultNamingRule;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
 import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
@@ -152,6 +154,18 @@ public class SqlMapperAutoConfiguration implements ApplicationContextAware, Appl
 
     @Bean
     @ConditionalOnMissingBean
+    public StoredParamMetaFactory storedParamMetaFactory() {
+        return new StoredParamMetaFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public StoredPropertyMetaFactory storedPropertyMetaFactory() {
+        return new StoredPropertyMetaFactory();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public NamingRule namingRule() {
         return new DefaultNamingRule();
     }
@@ -202,7 +216,9 @@ public class SqlMapperAutoConfiguration implements ApplicationContextAware, Appl
     @Bean
     @ConditionalOnMissingBean
     public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource);
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+        jdbcTemplate.setResultsMapCaseInsensitive(true);
+        return jdbcTemplate;
     }
 
     @Bean

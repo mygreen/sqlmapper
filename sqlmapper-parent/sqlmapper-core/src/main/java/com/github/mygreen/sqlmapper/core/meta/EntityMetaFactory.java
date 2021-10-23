@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -188,7 +189,7 @@ public class EntityMetaFactory {
 
             ReflectionUtils.makeAccessible(field);
 
-            propertyMetaList.add(propertyMetaFactory.create(field, entityMeta));
+            propertyMetaList.add(propertyMetaFactory.create(field, Optional.of(entityMeta)));
 
         }
     }

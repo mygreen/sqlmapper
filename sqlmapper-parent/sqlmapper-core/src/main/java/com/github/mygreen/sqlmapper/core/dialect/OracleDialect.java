@@ -175,4 +175,14 @@ public class OracleDialect extends DialectBase {
 
         return buf.toString();
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@literal true} を返します。
+     */
+    @Override
+    public boolean needsParameterForResultSet() {
+        return true;
+    }
 }

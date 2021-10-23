@@ -62,4 +62,14 @@ public class PostgresDialect extends DialectBase {
     public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
         return new PostgresSequenceMaxValueIncrementer(dataSource, sequenceName);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@literal true} を返します。
+     */
+    @Override
+    public boolean needsParameterForResultSet() {
+        return true;
+    }
 }

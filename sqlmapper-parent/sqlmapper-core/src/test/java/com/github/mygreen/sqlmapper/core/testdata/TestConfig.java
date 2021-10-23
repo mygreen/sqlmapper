@@ -13,7 +13,7 @@ import com.github.mygreen.sqlmapper.core.dialect.H2Dialect;
 
 
 /**
- * DB接続しない(NamedParameterJdbcTemplateがnull)ときの設定
+ * H2接続用の設定
  *
  *
  * @author T.TSUCHIE
@@ -31,6 +31,7 @@ public class TestConfig extends SqlMapperConfigurationSupport {
                 .setScriptEncoding("UTF-8")
                 .addScript("script/test_schema.sql")
                 .addScripts("script/test_data_customer.sql", "script/test_data_business.sql")
+                .addScript("script/h2-stored-procedures.sql")
                 .build();
     }
 

@@ -38,9 +38,16 @@ public class OrderByClause {
     public void addSql(final String... orderBys) {
         if(sql.length() == 0) {
             sql.append(" order by ");
+        } else {
+            sql.append(", ");
         }
         sql.append(String.join(", ", orderBys));
 
+    }
+
+    @Override
+    public String toString() {
+        return sql.toString();
     }
 
 }

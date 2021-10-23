@@ -2,7 +2,9 @@ package com.github.mygreen.sqlmapper.core.type.standard;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
@@ -41,5 +43,10 @@ public class ShortType implements ValueType<Short> {
         }
 
         return value;
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+        return Types.SMALLINT;
     }
 }

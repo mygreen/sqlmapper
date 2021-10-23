@@ -1,5 +1,7 @@
 package com.github.mygreen.sqlmapper.core.dialect;
 
+import java.sql.ResultSet;
+
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
@@ -96,4 +98,10 @@ public interface Dialect {
      * @return SELECT文に付加する<code>FOR UPDATE</code>句のSQL
      */
     String getForUpdateSql(SelectForUpdateType type, int waitSeconds);
+
+    /**
+     * プロシージャの呼び出しで {@link ResultSet} に対してパラメータが必要かどうかを判定します。
+     * @return {@literal true}のとき、{@link ResultSet} に対してパラメータが必要です。
+     */
+    boolean needsParameterForResultSet();
 }

@@ -14,8 +14,12 @@ import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchUpdate;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchUpdateImpl;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoDelete;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoDeleteImpl;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoFunctionCall;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoFunctionCallImpl;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoInsert;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoInsertImpl;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoProcedureCall;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoProcedureCallImpl;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoSelect;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoSelectImpl;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoUpdate;
@@ -293,6 +297,90 @@ public class SqlMapper {
      */
     public SqlUpdate updateBySql(@NonNull String sql, @NonNull SqlTemplateContext parameter) {
         return new SqlUpdateImpl(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);
+    }
+
+    /**
+     * 自動プロシージャ呼び出しを返します。
+     * @param procedureName 呼び出すストアドプロシージャの名前
+     * @return 自動プロシージャ呼び出し
+     */
+    public AutoProcedureCall call(@NonNull String procedureName) {
+        return call(new StoredName(procedureName));
+    }
+
+    /**
+     * 自動プロシージャ呼び出しを返します。
+     * @param procedureName 呼び出すストアドプロシージャの名前
+     * @return 自動プロシージャ呼び出し
+     */
+    public AutoProcedureCall call(@NonNull StoredName procedureName) {
+        return new AutoProcedureCallImpl(context, procedureName);
+    }
+
+    /**
+     * 自動プロシージャ呼び出しを返します。
+     * @param procedureName 呼び出すストアドプロシージャの名前
+     * @param パラメータです。
+     * @return 自動プロシージャ呼び出し
+     */
+    public AutoProcedureCall call(@NonNull String procedureName, @NonNull Object parameter) {
+        return call(new StoredName(procedureName), parameter);
+    }
+
+    /**
+     * 自動プロシージャ呼び出しを返します。
+     * @param procedureName 呼び出すストアドプロシージャの名前
+     * @param パラメータです。
+     * @return 自動プロシージャ呼び出し
+     */
+    public AutoProcedureCall call(@NonNull StoredName procedureName, @NonNull Object parameter) {
+        return new AutoProcedureCallImpl(context, procedureName, parameter);
+    }
+
+    /**
+     * 自動ファンクション呼び出しを返します。
+     * @param <T> ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param resultClass  ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param functionName 呼び出すストアドファンクションの名前。
+     * @return 自動ファンクション呼び出し。
+     */
+    public <T> AutoFunctionCall<T> call(@NonNull Class<T> resultClass, @NonNull String functionName) {
+        return call(resultClass, new StoredName(functionName));
+    }
+
+    /**
+     * 自動ファンクション呼び出しを返します。
+     * @param <T> ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param resultClass  ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param functionName 呼び出すストアドファンクションの名前。
+     * @return 自動ファンクション呼び出し。
+     */
+    public <T> AutoFunctionCall<T> call(@NonNull Class<T> resultClass, @NonNull StoredName functionName) {
+        return new AutoFunctionCallImpl<T>(context, resultClass, functionName);
+    }
+
+    /**
+     * 自動ファンクション呼び出しを返します。
+     * @param <T> ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param resultClass  ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param functionName 呼び出すストアドファンクションの名前。
+     * @param parameter パラメータです。
+     * @return 自動ファンクション呼び出し。
+     */
+    public <T> AutoFunctionCall<T> call(@NonNull Class<T> resultClass, @NonNull String functionName, @NonNull Object parameter) {
+        return call(resultClass, new StoredName(functionName), parameter);
+    }
+
+    /**
+     * 自動ファンクション呼び出しを返します。
+     * @param <T> ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param resultClass  ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param functionName 呼び出すストアドファンクションの名前。
+     * @param parameter パラメータです。
+     * @return 自動ファンクション呼び出し。
+     */
+    public <T> AutoFunctionCall<T> call(@NonNull Class<T> resultClass, @NonNull StoredName functionName, @NonNull Object parameter) {
+        return new AutoFunctionCallImpl<T>(context, resultClass, functionName, parameter);
     }
 
 }
