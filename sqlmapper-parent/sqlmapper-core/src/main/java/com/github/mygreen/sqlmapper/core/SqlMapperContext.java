@@ -8,6 +8,7 @@ import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.splate.SqlTemplateEngine;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.StoredParamMetaFactory;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
 import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
 
@@ -17,7 +18,7 @@ import lombok.Setter;
 /**
  * SqlMapperの設定情報を保持します。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -42,6 +43,10 @@ public class SqlMapperContext {
     @Getter
     @Setter
     private EntityMetaFactory entityMetaFactory;
+
+    @Getter
+    @Setter
+    private StoredParamMetaFactory storedParamMetaFactory;
 
     /**
      * 主キーの生成時用のトランザクションテンプレート。

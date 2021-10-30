@@ -23,6 +23,7 @@ import com.github.mygreen.sqlmapper.core.annotation.Convert;
 import com.github.mygreen.sqlmapper.core.annotation.Enumerated;
 import com.github.mygreen.sqlmapper.core.annotation.Temporal;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.meta.StoredPropertyMeta;
 import com.github.mygreen.sqlmapper.core.type.enumeration.EnumOrdinalType;
 import com.github.mygreen.sqlmapper.core.type.enumeration.EnumStringType;
 import com.github.mygreen.sqlmapper.core.type.lob.LobByteArrayType;
@@ -51,7 +52,7 @@ import lombok.Setter;
 /**
  * {@link ValueType} を管理します。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -130,9 +131,50 @@ public class ValueTypeRegistry implements InitializingBean {
     }
 
     /**
-     * プロパティメタ情報に対する値の変換処理を取得する。
+     * 登録済みのクラスタイプかどうか判定します。
+     * @param classType 判定対象のクラスタイプ。
+     * @return 登録済みのクラスタイプのとき {@literal true} を返します。
+     */
+    public boolean isRegisteredType(@NonNull Class<?> classType) {
+
+        //TODO: LOB/列挙型/java.util.Date型のときも判定できるようにする。
+        return typeMap.containsKey(classType);
+
+    }
+
+    /**
+     * 登録済みのクラスタイプ対する {@link ValueType} を取得します。
+     * @param classType クラスタイプ。
+     * @return {@link ValueType} を返します。ただし、登録済みでない場合は、{@literal null} を返します。
+     */
+    public ValueType<?> findValueType(@NonNull Class<?> classType) {
+        return typeMap.get(classType);
+    }
+
+    /**
+     * ストアドのプロパティ情報に対する {@link ValueType} を取得します。
+     * @param propertyMeta
+     * @return 対応する {@link ValueType}の実装を返します。
+     * @throws ValueTypeNotFoundException 対応する {@link ValueType} が見つからない場合。
+     */
+    public ValueType<?> findValueType(@NonNull StoredPropertyMeta propertyMeta) {
+        final Class<?> propertyType = propertyMeta.getPropertyType();
+        if(typeMap.containsKey(propertyType)) {
+            return typeMap.get(propertyType);
+        }
+
+        throw new ValueTypeNotFoundException(propertyMeta, messageFormatter.create("typeValue.notFound")
+                .paramWithClass("entityClass", propertyMeta.getDeclaringClass())
+                .param("property", propertyMeta.getName())
+                .paramWithClass("propertyType", propertyType)
+                .format());
+
+    }
+
+    /**
+     * エンティティのプロパティメタ情報に対する {@link ValueType} を取得します。
      * @param propertyMeta プロパティメタ情報
-     * @return 対応する {@link ValueType}の実装。
+     * @return 対応する {@link ValueType}の実装を返します。
      * @throws ValueTypeNotFoundException 対応する {@link ValueType} が見つからない場合。
      */
     public ValueType<?> findValueType(@NonNull PropertyMeta propertyMeta) {

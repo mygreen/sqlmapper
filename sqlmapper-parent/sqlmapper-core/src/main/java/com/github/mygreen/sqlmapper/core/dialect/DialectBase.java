@@ -90,4 +90,14 @@ public abstract class DialectBase implements Dialect {
 
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@literal false} を返します。
+     */
+    @Override
+    public boolean needsParameterForResultSet() {
+        return false;
+    }
+
 }

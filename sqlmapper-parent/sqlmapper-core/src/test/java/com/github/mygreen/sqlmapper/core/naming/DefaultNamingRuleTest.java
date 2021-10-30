@@ -34,4 +34,10 @@ class DefaultNamingRuleTest extends DefaultNamingRule {
         assertEquals("firstName", columnToProperty("first_name"));
 
     }
+
+    @Test
+    void testPropertyToStoredParam() {
+        assertEquals("id", propertyToStoredParam("id"));
+        assertEquals("first_name", propertyToStoredParam("firstName"));
+    }
 }

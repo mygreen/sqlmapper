@@ -2,21 +2,33 @@ package com.github.mygreen.sqlmapper.core.type;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import org.springframework.jdbc.core.SqlParameterValue;
 
 import com.github.mygreen.splate.type.SqlTemplateValueType;
 import com.github.mygreen.splate.type.SqlTypeConversionException;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 
 /**
  * SQL(JDBC)とマッピング先の型を表すインタフェースです。
  *
  *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  * @param <T> マッピング先の型
  */
 public interface ValueType<T> extends SqlTemplateValueType<T> {
+
+    /**
+     * {@link Types} に基づくSQLタイプを取得します。
+     *
+     * @since 0.3
+     * @param dialect DBの方言
+     * @return  {@link Types} に基づくSQLタイプ。
+     */
+    int getSqlType(Dialect dialect);
 
     /**
      * カラムの値を返します。

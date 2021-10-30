@@ -99,10 +99,10 @@ public class PropertyMetaFactory {
     /**
      * プロパティのメタ情報を作成します。
      * @param field フィールド
-     * @param entityMeta エンティティのメタ情報
+     * @param entityMeta エンティティのメタ情報。空の場合はID情報の処理をスキップします。
      * @return プロパティのメタ情報
      */
-    public PropertyMeta create(final Field field, final EntityMeta entityMeta) {
+    public PropertyMeta create(final Field field, final Optional<EntityMeta> entityMeta) {
 
         final Class<?> declaringClass = field.getDeclaringClass();
         final PropertyMeta propertyMeta = new PropertyMeta(field.getName(), field.getType());
@@ -129,7 +129,7 @@ public class PropertyMetaFactory {
         if(!propertyMeta.isEmbedded() && !propertyMeta.isTransient()) {
 
             doColumnMeta(propertyMeta);
-            doIdGenerator(propertyMeta, entityMeta);
+            entityMeta.ifPresent(em -> doIdGenerator(propertyMeta, em));
 
             // プロパティに対する型変換を設定します。
             ValueType<?> valueType = valueTypeRegistry.findValueType(propertyMeta);

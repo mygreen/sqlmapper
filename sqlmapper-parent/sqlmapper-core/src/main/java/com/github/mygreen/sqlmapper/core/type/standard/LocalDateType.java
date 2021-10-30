@@ -3,9 +3,11 @@ package com.github.mygreen.sqlmapper.core.type.standard;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.Getter;
@@ -72,5 +74,10 @@ public class LocalDateType implements ValueType<LocalDate> {
     @Override
     public String getEmbeddedValue(LocalDate value) {
         return value != null ? formatter.format(value) : null;
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+        return Types.DATE;
     }
 }

@@ -32,6 +32,8 @@ import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.StoredParamMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.StoredPropertyMetaFactory;
 import com.github.mygreen.sqlmapper.core.naming.DefaultNamingRule;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
 import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
@@ -88,6 +90,7 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
         context.setMessageFormatter(messageFormatter());
         context.setDialect(dialect());
         context.setEntityMetaFactory(entityMetaFactory());
+        context.setStoredParamMetaFactory(storedParamMetaFactory());
         context.setApplicationEventPublisher(applicationEventPublisher);
         context.setSqlTemplateEngine(sqlTemplateEngine());
         context.setValueTypeRegistry(valueTypeRegistry());
@@ -133,6 +136,18 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
     @Description("エンティティのプロパティからメタ情報を作成するBean。")
     public PropertyMetaFactory propertyMetaFactory() {
         return new PropertyMetaFactory();
+    }
+
+    @Bean
+    @Description("ストアドのパラメータのメタ情報を作成するBean。")
+    public StoredParamMetaFactory storedParamMetaFactory() {
+        return new StoredParamMetaFactory();
+    }
+
+    @Bean
+    @Description("ストアドのパラメータのプロパティかからメタ情報を作成するBean。")
+    public StoredPropertyMetaFactory storedPropertyMetaFactory() {
+        return new StoredPropertyMetaFactory();
     }
 
     @Bean
@@ -195,7 +210,9 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
     @Bean
     @Description("SQLクエリを発行するJDBCテンプレート")
     public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource());
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource());
+        jdbcTemplate.setResultsMapCaseInsensitive(true);
+        return jdbcTemplate;
     }
 
     @Bean

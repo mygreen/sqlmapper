@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.jdbc.core.SqlParameterValue;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 /**
@@ -26,5 +27,10 @@ public class UUIDType implements ValueType<UUID> {
     @Override
     public Object getSqlParameterValue(UUID value) {
         return new SqlParameterValue(Types.OTHER, value);
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+        return Types.OTHER;
     }
 }
