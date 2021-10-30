@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
  * ストアドプロシージャ／ストアドファンクションの名称を指定するためのクラス。
  * <p>スキーマ／カタログを指定する際に利用します。
  *
- *
+ * @since 0.3
  * @author T.TSUCHIE
  *
  */

@@ -19,9 +19,10 @@ import lombok.extern.slf4j.Slf4j;
  * ストアドプロシージャ／ファンクションのResultSetをBeanにマッピングします。
  *
  *
- * @author T.TSUCHIE
- *
+ * @since 0.3
  * @param <T> マッピング先のクラスタイプ
+ *
+ * @author T.TSUCHIE
  */
 @Slf4j
 @RequiredArgsConstructor
