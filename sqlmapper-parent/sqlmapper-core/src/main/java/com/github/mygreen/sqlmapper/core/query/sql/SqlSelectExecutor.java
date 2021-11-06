@@ -5,11 +5,13 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.github.mygreen.splate.ProcessResult;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
 import com.github.mygreen.sqlmapper.core.mapper.SqlEntityRowMapper;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 
 
 /**
@@ -80,7 +82,7 @@ public class SqlSelectExecutor<T> {
         prepare();
 
         SqlEntityRowMapper<T> rowMapper = new SqlEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
-        return context.getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues);
+        return getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues);
     }
 
     /**
@@ -93,7 +95,7 @@ public class SqlSelectExecutor<T> {
         prepare();
 
         SqlEntityRowMapper<T> rowMapper = new SqlEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
-        final List<T> ret = context.getJdbcTemplate().query(executedSql, rowMapper, paramValues);
+        final List<T> ret = getJdbcTemplate().query(executedSql, rowMapper, paramValues);
         if(ret.isEmpty()) {
             return Optional.empty();
         } else {
@@ -111,7 +113,7 @@ public class SqlSelectExecutor<T> {
         prepare();
 
         SqlEntityRowMapper<T> rowMapper = new SqlEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
-        return context.getJdbcTemplate().query(executedSql, rowMapper, paramValues);
+        return getJdbcTemplate().query(executedSql, rowMapper, paramValues);
     }
 
     /**
@@ -123,7 +125,19 @@ public class SqlSelectExecutor<T> {
         prepare();
 
         SqlEntityRowMapper<T> rowMapper = new SqlEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
-        return context.getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues);
+        return getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues);
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(query.getQueryTimeout())
+                .fetchSize(query.getFetchSize())
+                .maxRows(query.getMaxRows())
+                .build();
     }
 
 }

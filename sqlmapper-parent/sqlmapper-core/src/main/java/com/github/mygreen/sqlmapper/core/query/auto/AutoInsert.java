@@ -8,12 +8,22 @@ import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 /**
  * 挿入を行うSQLを自動生成するクエリです。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  * @param <T> 処理対象となるエンティティの型
  */
 public interface AutoInsert<T> {
+
+    /**
+     * クエリタイムアウトの秒数を設定します。
+     * <p>{@literal -1} を指定するとJDBC ドライバーのデフォルト値を使用します。
+     *
+     * @since 0.3
+     * @param seconds クエリタイムアウトの秒数
+     * @return 自身のインスタンス。
+     */
+    AutoInsert<T> queryTimeout(int seconds);
 
     /**
      * 指定のプロパティのみを挿入対象とします。

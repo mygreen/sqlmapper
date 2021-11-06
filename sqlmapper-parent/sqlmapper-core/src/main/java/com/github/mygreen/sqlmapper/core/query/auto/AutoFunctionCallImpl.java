@@ -3,12 +3,14 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.StoredName;
 import com.github.mygreen.sqlmapper.core.meta.StoredParamMeta;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 
 import lombok.Getter;
 
@@ -45,6 +47,9 @@ public class AutoFunctionCallImpl<T> extends AutoStoredExecutorSupport implement
      */
     private final StoredParamMeta paramMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
     public AutoFunctionCallImpl(SqlMapperContext context, final Class<T> resultClass, final StoredName functionName) {
         super(context);
         this.resultClass = resultClass;
@@ -62,9 +67,15 @@ public class AutoFunctionCallImpl<T> extends AutoStoredExecutorSupport implement
     }
 
     @Override
+    public AutoFunctionCallImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
+    }
+
+    @Override
     public T execute() {
 
-        final SimpleJdbcCall jdbcCall = new SimpleJdbcCall(context.getJdbcTemplate())
+        final SimpleJdbcCall jdbcCall = new SimpleJdbcCall(getJdbcTemplate())
                 .withFunctionName(functionName.getName());
 
         if(functionName.getCatalog() != null) {
@@ -100,6 +111,16 @@ public class AutoFunctionCallImpl<T> extends AutoStoredExecutorSupport implement
         }
 
 
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(queryTimeout)
+                .build();
     }
 
 

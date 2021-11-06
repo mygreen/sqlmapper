@@ -17,11 +17,49 @@ import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 /**
  * 抽出を行うSQLを自動生成するクエリです。
  *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  * @param <T> 処理対象となるエンティティの型
  */
 public interface AutoSelect<T> {
+
+    /**
+     * クエリタイムアウトの秒数を設定します。
+     * <p>{@literal -1} を指定するとJDBC ドライバーのデフォルト値を使用します。
+     *
+     * @since 0.3
+     * @param seconds クエリタイムアウトの秒数
+     * @return 自身のインスタンス。
+     */
+    AutoSelect<T> queryTimeout(int seconds);
+
+    /**
+     * フェッチ数を設定します。
+     * <p>これをデフォルト値よりも高く設定すると、大きな結果セットを処理する際に、メモリ消費を犠牲にして処理速度が向上します。
+     * <p>{@literal -1} を指定するとJDBC ドライバーのデフォルト値を使用します。
+     *
+     * @since 0.3
+     * @param fetchSize フェッチ数
+     * @return 自身のインスタンス。
+     */
+    AutoSelect<T> fetchSize(int fetchSize);
+
+    /**
+     * 最大行数を設定します。
+     * <p>JDBCのStatementレベルで、結果セットのオブジェクトが含むことのできる最大行数を制限します。
+     *  <br>制限値を超えた場合は通知なしの除外されます。
+     * </p>
+     * <p>RDMSでLIMIT句がサポートされていない場合に使用します。
+     *  <br>LIMIT句がサポートされている場合は、{@link #limit(int)} を使用します。
+     * </p>
+     * <p>{@literal -1} を指定するとJDBC ドライバーのデフォルト値を使用します。
+     *
+     * @since 0.3
+     * @param maxRows 最大行数
+     * @return 自身のインスタンス。
+     */
+    AutoSelect<T> maxRows(int maxRows);
 
     /**
      * ヒントを設定します。

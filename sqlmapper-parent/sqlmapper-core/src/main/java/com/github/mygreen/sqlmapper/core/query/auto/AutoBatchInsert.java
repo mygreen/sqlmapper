@@ -16,6 +16,15 @@ import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 public interface AutoBatchInsert<T> {
 
     /**
+     * クエリタイムアウトの秒数を設定します。
+     * <p>{@literal -1} を指定するとJDBC ドライバーのデフォルト値を使用します。
+     *
+     * @param seconds クエリタイムアウトの秒数
+     * @return 自身のインスタンス。
+     */
+    AutoBatchInsert<T> queryTimeout(int seconds);
+
+    /**
      * 指定のプロパティのみを挿入対象とします。
      * <p>アノテーション {@literal @Column(insertable = false)} が設定されているプロパティは対象外となります。</p>
      *

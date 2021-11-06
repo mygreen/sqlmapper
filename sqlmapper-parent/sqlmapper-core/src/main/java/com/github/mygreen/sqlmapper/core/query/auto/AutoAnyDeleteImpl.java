@@ -32,6 +32,9 @@ public class AutoAnyDeleteImpl<T> implements AutoAnyDelete<T> {
     @Getter
     private final EntityMeta entityMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
     /**
      * クライテリアです。
      */
@@ -45,6 +48,13 @@ public class AutoAnyDeleteImpl<T> implements AutoAnyDelete<T> {
         this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());
         this.baseClass = (Class<T>)entityMeta.getEntityType();
     }
+
+    @Override
+    public AutoAnyDeleteImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
+    }
+
 
     @Override
     public AutoAnyDeleteImpl<T> where(@NonNull Predicate where) {
