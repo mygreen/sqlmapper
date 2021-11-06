@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
@@ -22,6 +23,7 @@ import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.FromClause;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.query.JoinAssociation;
 import com.github.mygreen.sqlmapper.core.query.JoinCondition;
 import com.github.mygreen.sqlmapper.core.query.OrderByClause;
@@ -516,7 +518,7 @@ public class AutoSelectExecutor<T> {
     public long getCount() {
         prepare();
 
-        return context.getJdbcTemplate().queryForObject(executedSql, Long.class, paramValues.toArray());
+        return getJdbcTemplate().queryForObject(executedSql, Long.class, paramValues.toArray());
     }
 
     /**
@@ -531,7 +533,7 @@ public class AutoSelectExecutor<T> {
 
         AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
-        return context.getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues.toArray());
+        return getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues.toArray());
     }
 
     /**
@@ -545,7 +547,7 @@ public class AutoSelectExecutor<T> {
 
         AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
-        final List<T> ret = context.getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
+        final List<T> ret = getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
         if(ret.isEmpty()) {
             return Optional.empty();
         } else {
@@ -564,7 +566,7 @@ public class AutoSelectExecutor<T> {
 
         AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
-        return context.getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
+        return getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
     }
 
     /**
@@ -577,7 +579,19 @@ public class AutoSelectExecutor<T> {
 
         AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
-        return context.getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues.toArray());
+        return getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues.toArray());
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(query.getQueryTimeout())
+                .fetchSize(query.getFetchSize())
+                .maxRows(query.getMaxRows())
+                .build();
     }
 
 }

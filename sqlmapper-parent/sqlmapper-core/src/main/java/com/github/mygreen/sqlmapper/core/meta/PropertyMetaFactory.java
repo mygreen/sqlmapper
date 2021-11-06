@@ -28,6 +28,7 @@ import com.github.mygreen.sqlmapper.core.annotation.SequenceGenerator;
 import com.github.mygreen.sqlmapper.core.annotation.TableGenerator;
 import com.github.mygreen.sqlmapper.core.annotation.Temporal;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
+import com.github.mygreen.sqlmapper.core.config.JdbcTemplateProperties;
 import com.github.mygreen.sqlmapper.core.config.TableIdGeneratorProperties;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.id.IdGenerationContext;
@@ -39,6 +40,7 @@ import com.github.mygreen.sqlmapper.core.id.TableIdGenerator;
 import com.github.mygreen.sqlmapper.core.id.TableIdIncrementer;
 import com.github.mygreen.sqlmapper.core.id.UUIDGenerator;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
 import com.github.mygreen.sqlmapper.core.util.ClassUtils;
@@ -84,7 +86,7 @@ public class PropertyMetaFactory {
     @Getter
     @Setter
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private JdbcTemplateProperties jdbcTemplateProperties;
 
     @Getter
     @Setter
@@ -418,7 +420,7 @@ public class PropertyMetaFactory {
             }
 
             TableIdGenerator tableIdGenerator = new TableIdGenerator(
-                    new TableIdIncrementer(jdbcTemplate, tableIdContext),
+                    new TableIdIncrementer(getJdbcTemplate(), tableIdContext),
                     propertyMeta.getPropertyType(), sequenceName);
 
 
@@ -552,6 +554,15 @@ public class PropertyMetaFactory {
                     .format());
         }
 
+    }
+
+    /**
+     * {@link TableIdGenerator}用の {@link JdbcTemplate} を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(dataSource, jdbcTemplateProperties)
+                .build();
     }
 
 }

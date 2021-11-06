@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.KeyHolder;
@@ -17,6 +18,7 @@ import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
 import com.github.mygreen.sqlmapper.core.util.QueryUtils;
@@ -153,7 +155,7 @@ public class AutoInsertExecutor {
         IdGenerationContext generationContext = propertyMeta.getIdGenerationContext().get();
 
         // トランザクションは別にする。
-        return context.getIdGeneratorTransactionTemplate().execute(action -> {
+        return context.txRequiresNew().execute(action -> {
             return generator.generateValue(generationContext);
         });
     }
@@ -163,13 +165,23 @@ public class AutoInsertExecutor {
      */
     private void prepareInsertOperation() {
 
-        this.insertOperation = new SimpleJdbcInsert(context.getJdbcTemplate())
+        this.insertOperation = new SimpleJdbcInsert(getJdbcTemplate())
                 .withTableName(query.getEntityMeta().getTableMeta().getFullName())
                 .usingColumns(QueryUtils.toArray(usingColumnNames));
 
         if(!usingIdentityKeyColumnNames.isEmpty()) {
             insertOperation.usingGeneratedKeyColumns(QueryUtils.toArray(usingIdentityKeyColumnNames));
         }
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(query.getQueryTimeout())
+                .build();
     }
 
     /**

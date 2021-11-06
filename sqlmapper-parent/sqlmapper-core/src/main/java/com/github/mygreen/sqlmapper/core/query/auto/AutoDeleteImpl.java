@@ -38,6 +38,9 @@ public class AutoDeleteImpl<T> implements AutoDelete<T> {
     @Getter
     private final EntityMeta entityMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
     /**
      * バージョンプロパティを無視して削除するかどうか。
      */
@@ -66,6 +69,11 @@ public class AutoDeleteImpl<T> implements AutoDelete<T> {
                     .paramWithClass("entityType", entityMeta.getEntityType())
                     .format());
         }
+    }
+
+    public AutoDeleteImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
     }
 
     @Override

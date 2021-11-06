@@ -38,6 +38,9 @@ public class AutoBatchDeleteImpl<T> implements AutoBatchDelete<T> {
     @Getter
     private final EntityMeta entityMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
     /**
      * バージョンプロパティを無視して削除するかどうか。
      */
@@ -93,6 +96,12 @@ public class AutoBatchDeleteImpl<T> implements AutoBatchDelete<T> {
      */
     public int getEntitySize() {
         return entities.length;
+    }
+
+    @Override
+    public AutoBatchDeleteImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
     }
 
     @Override

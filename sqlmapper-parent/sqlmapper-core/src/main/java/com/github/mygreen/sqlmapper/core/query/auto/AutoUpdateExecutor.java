@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.query.SetClause;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
@@ -194,7 +196,7 @@ public class AutoUpdateExecutor {
 
     /**
      * 更新処理を実行します。
-     * 
+     *
      * @return 更新したレコード件数です。更新対象のプロパティ（カラム）がない場合は {@literal 0} を返します。
      * @throws OptimisticLockingFailureException 楽観的排他制御を行う場合に該当するレコードが存在しない場合にスローされます。
      */
@@ -206,7 +208,7 @@ public class AutoUpdateExecutor {
             return 0;
         }
 
-        final int rows = context.getJdbcTemplate().update(executedSql, paramValues.toArray());
+        final int rows = getJdbcTemplate().update(executedSql, paramValues.toArray());
         if(isOptimisticLock()) {
             validateRows(rows);
         }
@@ -217,6 +219,16 @@ public class AutoUpdateExecutor {
 
         return rows;
 
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(query.getQueryTimeout())
+                .build();
     }
 
     /**

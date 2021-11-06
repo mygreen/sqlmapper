@@ -20,13 +20,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.messageformatter.MessageInterpolator;
@@ -36,6 +33,7 @@ import com.github.mygreen.splate.SqlTemplateEngine;
 import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
+import com.github.mygreen.sqlmapper.core.config.JdbcTemplateProperties;
 import com.github.mygreen.sqlmapper.core.config.SqlTemplateProperties;
 import com.github.mygreen.sqlmapper.core.config.TableIdGeneratorProperties;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
@@ -58,13 +56,13 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * SqlMapperによるAuto-Configuration設定
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
 @Slf4j
 @Configuration
-@ConditionalOnClass({ DataSource.class, JdbcTemplate.class})
+@ConditionalOnClass({DataSource.class})
 @ConditionalOnSingleCandidate(DataSource.class)
 @PropertySource("classpath:/com/github/mygreen/sqlmapper/core/sqlmapper.properties")
 @EnableConfigurationProperties(SqlMapperProperties.class)
@@ -90,9 +88,6 @@ public class SqlMapperAutoConfiguration implements ApplicationContextAware, Appl
     @Autowired
     private DataSourceProperties dataSourceProperties;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
        this.applicationContext = applicationContext;
@@ -114,7 +109,7 @@ public class SqlMapperAutoConfiguration implements ApplicationContextAware, Appl
     public SqlMapperContext sqlMapperContext() {
 
         final SqlMapperContext context = new SqlMapperContext();
-        context.setJdbcTemplate(jdbcTemplate);
+
         context.setNamingRule(namingRule());
         context.setMessageFormatter(messageFormatter());
         context.setDialect(dialect());
@@ -122,10 +117,18 @@ public class SqlMapperAutoConfiguration implements ApplicationContextAware, Appl
         context.setApplicationEventPublisher(applicationEventPublisher);
         context.setSqlTemplateEngine(sqlTemplateEngine());
         context.setValueTypeRegistry(valueTypeRegistry());
-        context.setIdGeneratorTransactionTemplate(idGeneratorTransactionTemplate());
+        context.setDataSource(dataSource);
+        context.setJdbcTemplateProperties(jdbcTemplateProperties());
+        context.setTransactionManager(transactionManager());
 
         return context;
 
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public JdbcTemplateProperties jdbcTemplateProperties() {
+        return sqlMapperProperties.getJdbcTemplate();
     }
 
     @Bean
@@ -215,14 +218,6 @@ public class SqlMapperAutoConfiguration implements ApplicationContextAware, Appl
 
     @Bean
     @ConditionalOnMissingBean
-    public JdbcTemplate jdbcTemplate() {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-        jdbcTemplate.setResultsMapCaseInsensitive(true);
-        return jdbcTemplate;
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
     public Dialect dialect() {
 
         String url = dataSourceProperties.getUrl();
@@ -256,14 +251,6 @@ public class SqlMapperAutoConfiguration implements ApplicationContextAware, Appl
     @ConditionalOnMissingBean
     public PlatformTransactionManager transactionManager() {
         return new DataSourceTransactionManager(dataSource);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public TransactionTemplate idGeneratorTransactionTemplate() {
-        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager());
-        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        return transactionTemplate;
     }
 
     @Bean

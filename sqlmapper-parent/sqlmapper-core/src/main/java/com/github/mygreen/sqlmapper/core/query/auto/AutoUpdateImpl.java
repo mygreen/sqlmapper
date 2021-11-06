@@ -48,6 +48,9 @@ public class AutoUpdateImpl<T> implements AutoUpdate<T> {
     @Getter
     private final EntityMeta entityMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
     /**
      * バージョンプロパティを更新対象に含めるかどうか。
      */
@@ -103,6 +106,12 @@ public class AutoUpdateImpl<T> implements AutoUpdate<T> {
                     .paramWithClass("entityType", entityMeta.getEntityType())
                     .format());
         }
+    }
+
+    @Override
+    public AutoUpdateImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
     }
 
     @Override

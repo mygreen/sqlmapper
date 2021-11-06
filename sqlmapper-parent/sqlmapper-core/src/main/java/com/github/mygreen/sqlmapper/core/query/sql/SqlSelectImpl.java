@@ -46,6 +46,15 @@ public class SqlSelectImpl<T> implements SqlSelect<T> {
     @Getter
     private final EntityMeta entityMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
+    @Getter
+    private Integer fetchSize;
+
+    @Getter
+    private Integer maxRows;
+
     public SqlSelectImpl(@NonNull SqlMapperContext context, @NonNull Class<T> baseClass,
             @NonNull SqlTemplate template, @NonNull SqlTemplateContext parameter) {
 
@@ -55,6 +64,24 @@ public class SqlSelectImpl<T> implements SqlSelect<T> {
 
         this.baseClass = baseClass;
         this.entityMeta = context.getEntityMetaFactory().create(baseClass);
+    }
+
+    @Override
+    public SqlSelectImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
+    }
+
+    @Override
+    public SqlSelectImpl<T> fetchSize(int fetchSize) {
+        this.fetchSize = fetchSize;
+        return this;
+    }
+
+    @Override
+    public SqlSelectImpl<T> maxRows(int maxRows) {
+        this.maxRows = maxRows;
+        return this;
     }
 
     @Override

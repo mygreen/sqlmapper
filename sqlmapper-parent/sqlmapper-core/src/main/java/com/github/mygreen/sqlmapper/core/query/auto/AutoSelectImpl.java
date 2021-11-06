@@ -60,6 +60,15 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
     @Getter
     private final Map<Class<?>, EntityMeta> entityMetaMap = new HashMap<>();
 
+    @Getter
+    private Integer queryTimeout;
+
+    @Getter
+    private Integer fetchSize;
+
+    @Getter
+    private Integer maxRows;
+
     /**
      * SQLのヒントです。
      */
@@ -155,6 +164,24 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
         this.baseClass = (Class<T>)entityMeta.getEntityType();
 
         this.entityMetaMap.put(entityPath.getType(), context.getEntityMetaFactory().create(entityPath.getType()));
+    }
+
+    @Override
+    public AutoSelectImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
+    }
+
+    @Override
+    public AutoSelectImpl<T> fetchSize(int fetchSize) {
+        this.fetchSize = fetchSize;
+        return this;
+    }
+
+    @Override
+    public AutoSelectImpl<T> maxRows(int maxRows) {
+        this.maxRows = maxRows;
+        return this;
     }
 
     @Override

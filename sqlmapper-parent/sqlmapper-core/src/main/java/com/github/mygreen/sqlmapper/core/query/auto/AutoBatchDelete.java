@@ -5,12 +5,22 @@ import org.springframework.dao.OptimisticLockingFailureException;
 /**
  * バッチ削除を行うSQLを自動生成するクエリです。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  * @param <T> 処理対象となるエンティティの型
  */
 public interface AutoBatchDelete<T> {
+
+    /**
+     * クエリタイムアウトの秒数を設定します。
+     * <p>{@literal -1} を指定するとJDBC ドライバーのデフォルト値を使用します。
+     *
+     * @since 0.3
+     * @param seconds クエリタイムアウトの秒数
+     * @return 自身のインスタンス。
+     */
+    AutoBatchDelete<T> queryTimeout(int seconds);
 
     /**
      * バージョンプロパティを無視して削除します。

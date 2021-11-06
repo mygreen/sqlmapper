@@ -3,12 +3,14 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.StoredName;
 import com.github.mygreen.sqlmapper.core.meta.StoredParamMeta;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 
 import lombok.Getter;
 
@@ -39,6 +41,9 @@ public class AutoProcedureCallImpl extends AutoStoredExecutorSupport implements 
      */
     private final StoredParamMeta paramMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
     /**
      * パラメータなしのコンストラクタ
      *
@@ -60,9 +65,15 @@ public class AutoProcedureCallImpl extends AutoStoredExecutorSupport implements 
     }
 
     @Override
+    public AutoProcedureCallImpl queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
+    }
+
+    @Override
     public void execute() {
 
-        final SimpleJdbcCall jdbcCall = new SimpleJdbcCall(context.getJdbcTemplate())
+        final SimpleJdbcCall jdbcCall = new SimpleJdbcCall(getJdbcTemplate())
                 .withProcedureName(procedureName.getName());
 
         if(procedureName.getCatalog() != null) {
@@ -91,5 +102,15 @@ public class AutoProcedureCallImpl extends AutoStoredExecutorSupport implements 
             }
         }
 
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(queryTimeout)
+                .build();
     }
 }

@@ -39,6 +39,9 @@ public class AutoBatchUpdateImpl<T> implements AutoBatchUpdate<T> {
     @Getter
     private final EntityMeta entityMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
     /**
      * バージョンプロパティを更新対象に含めるかどうか。
      */
@@ -106,6 +109,12 @@ public class AutoBatchUpdateImpl<T> implements AutoBatchUpdate<T> {
      */
     public int getEntitySize() {
         return entities.length;
+    }
+
+    @Override
+    public AutoBatchUpdateImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
     }
 
     @Override
