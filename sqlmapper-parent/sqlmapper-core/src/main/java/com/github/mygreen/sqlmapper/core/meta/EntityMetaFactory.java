@@ -141,6 +141,8 @@ public class EntityMetaFactory {
                 tableMeta.setCatalog(annoTable.catalog());
             }
 
+            tableMeta.setReadOnly(annoTable.readOnly());
+
         } else {
             tableMeta.setName(defaultName);
         }
