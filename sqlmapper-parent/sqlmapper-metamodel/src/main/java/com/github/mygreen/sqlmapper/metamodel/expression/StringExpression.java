@@ -29,6 +29,7 @@ public abstract class StringExpression extends ComparableExpression<String> {
 
     /**
      * {@literal 左辺 LIKE 右辺} として比較する式を作成します。
+     * @since 0.3
      * @param str LIKE検索対象の文字列。特殊文字のエスケープは予め実施しておく必要があります。
      * @param escape エスケープ文字。
      * @return {@literal 左辺 LIKE 右辺}
@@ -48,6 +49,7 @@ public abstract class StringExpression extends ComparableExpression<String> {
 
     /**
      * {@literal 左辺 LIKE 右辺} として比較する式を作成します。
+     * @since 0.3
      * @param str LIKE検索対象の文字列。特殊文字のエスケープは予め実施しておく必要があります。
      * @param escape エスケープ文字。
      * @return {@literal 左辺 LIKE 右辺}
@@ -67,6 +69,7 @@ public abstract class StringExpression extends ComparableExpression<String> {
 
     /**
      * 部分一致 {@literal 左辺 LIKE %右辺%} として比較する式を作成します。
+     * @since 0.3
      * @param str 検索対象の文字列。
      * @param escape エスケープ文字。
      * @return {@literal 左辺 LIKE %右辺%}
@@ -86,6 +89,7 @@ public abstract class StringExpression extends ComparableExpression<String> {
 
     /**
      * 部分一致 {@literal 左辺 LIKE %右辺%} として比較する式を作成します。
+     * @since 0.3
      * @param str 検索対象の文字列。
      * @param escape エスケープ文字。
      * @return {@literal 左辺 LIKE %右辺%}
@@ -105,6 +109,7 @@ public abstract class StringExpression extends ComparableExpression<String> {
 
     /**
      * 前方一致 {@literal 左辺 LIKE %右辺} として比較する式を作成します。
+     * @since 0.3
      * @param str 検索対象の文字列。
      * @param escape エスケープ文字。
      * @return {@literal 左辺 LIKE %右辺}
@@ -124,6 +129,7 @@ public abstract class StringExpression extends ComparableExpression<String> {
 
     /**
      * 前方一致 {@literal 左辺 LIKE %右辺} として比較する式を作成します。
+     * @since 0.3
      * @param str 検索対象の文字列。
      * @param escape エスケープ文字。
      * @return {@literal 左辺 LIKE %右辺}
@@ -163,12 +169,13 @@ public abstract class StringExpression extends ComparableExpression<String> {
 
     /**
      * 後方一致 {@literal 左辺 LIKE 右辺%} として比較する式を作成します。
+     * @since 0.3
      * @param str 検索対象の文字列。
      * @param escape エスケープ文字。
      * @return {@literal 左辺 LIKE 右辺%}
      */
     protected BooleanExpression ends(Expression<String> str, char escape) {
-        return new BooleanOperation(LikeOp.ENDS, mixin, str,  Constant.createChar(escape));
+        return new BooleanOperation(LikeOp.ENDS, mixin, str, Constant.createChar(escape));
     }
 
     /**
@@ -185,5 +192,25 @@ public abstract class StringExpression extends ComparableExpression<String> {
      */
     public StringExpression upper() {
         return new StringOperation(FunctionOp.UPPER, mixin);
+    }
+
+    /**
+     * 文字列を結合します。
+     * @since 0.3
+     * @param str 結合する文字列。
+     * @return {@literal CONCAT(左辺, 右辺)}
+     */
+    public StringExpression concat(String str) {
+        return new StringOperation(FunctionOp.CONCAT, mixin, Constant.createString(str));
+    }
+
+    /**
+     * 文字列を結合します。
+     * @since 0.3
+     * @param str 結合する文字列。
+     * @return {@literal CONCAT(左辺, 右辺)}
+     */
+    public StringExpression concat(Expression<String> str) {
+        return new StringOperation(FunctionOp.CONCAT, mixin, str);
     }
 }

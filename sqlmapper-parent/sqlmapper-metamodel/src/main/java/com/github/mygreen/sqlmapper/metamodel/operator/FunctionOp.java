@@ -13,6 +13,7 @@ public enum FunctionOp implements Operator {
     // String
     LOWER(String.class, -1),
     UPPER(String.class, -1),
+    CONCAT(String.class, -1),
 
     // Date/Time
     CURRENT_DATE(Comparable.class, -1),
