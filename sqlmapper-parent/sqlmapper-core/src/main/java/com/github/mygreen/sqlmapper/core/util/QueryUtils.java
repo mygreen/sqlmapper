@@ -114,16 +114,26 @@ public class QueryUtils {
      *  <li>{@literal _} {@literal =>} {@literal \_}</li>
      * </ul>
      * @param str エスケープ対象の文字列
+     * @param escape エスケープ文字
      * @return エスケープ後の文字列
      */
-    public static String escapeLike(final String str) {
+    public static String escapeLike(final String str, final char escape) {
 
         if(!StringUtils.hasLength(str)) {
             return "";
         }
 
-        return str.replaceAll("%", "\\%")
-                .replaceAll("_", "\\_");
+        int length = str.length();
+        StringBuilder sb = new StringBuilder(length);
+        for(int i=0; i < length; i++) {
+            char c = str.charAt(i);
+            if(c == '%' || c == '_') {
+                sb.append(escape).append(c);
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
 }

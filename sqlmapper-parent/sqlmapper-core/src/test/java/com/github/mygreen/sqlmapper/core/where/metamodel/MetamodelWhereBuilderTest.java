@@ -65,6 +65,30 @@ public class MetamodelWhereBuilderTest {
     }
 
     @Test
+    void testLikeEscape() {
+
+        MCustomer entity = MCustomer.customer;
+        Predicate condition = entity.firstName.contains("t_ar%o", '$')
+                .and(entity.lastName.starts("Ya%ma_da", '@'));
+
+        EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
+
+        TableNameResolver tableNameResolver = new TableNameResolver();
+        tableNameResolver.prepareTableAlias(entity);
+
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta),
+                 dialect, entityMetaFactory, tableNameResolver);
+        visitor.visit(new MetamodelWhere(condition));
+
+        String sql = visitor.getCriteria();
+        assertThat(sql).isEqualTo("T1_.FIRST_NAME like ? escape '$' and T1_.LAST_NAME like ? escape '@'");
+
+        List<Object> params = visitor.getParamValues();
+        assertThat(params).containsExactly("%t$_ar$%o%", "Ya@%ma@_da%");
+
+    }
+
+    @Test
     void test_arithmetic() {
         MCustomer entity = MCustomer.customer;
         Predicate condition = entity.firstName.lower().contains("taro")

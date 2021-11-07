@@ -48,6 +48,15 @@ public class Constant<T> extends ImmutableExpression<T> {
     }
 
     /**
+     * char型の定数を作成します。
+     * @param value char型
+     * @return char型の定数
+     */
+    public static Constant<Character> createChar(char value) {
+        return new Constant<Character>(Character.class, value);
+    }
+
+    /**
      * ブーリアン型の定数を作成します。
      * @param value ブーリン案型
      * @return ブーリアン型の定数
