@@ -248,8 +248,7 @@ public class PropertyMetaFactory {
                 columnMeta.setName(defaultColumnName);
             }
 
-            columnMeta.setInsertable(annoColumn.get().insertable());
-            columnMeta.setUpdatable(annoColumn.get().insertable());
+            columnMeta.setUpdatable(annoColumn.get().updatable());
 
         } else {
             columnMeta.setName(defaultColumnName);
