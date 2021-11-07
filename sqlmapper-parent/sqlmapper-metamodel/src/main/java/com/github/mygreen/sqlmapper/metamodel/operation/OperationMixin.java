@@ -3,6 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.operation;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
@@ -38,6 +39,14 @@ public class OperationMixin<T> extends ImmutableExpression<T> implements Operati
     @Override
     public Expression<?> getArg(int index) {
        return args.get(index);
+    }
+
+    @Override
+    public Optional<Expression<?>> getOptArg(int index) {
+        if(index >= args.size()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(args.get(index));
     }
 
     @Override

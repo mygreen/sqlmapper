@@ -1,6 +1,7 @@
 package com.github.mygreen.sqlmapper.metamodel.operation;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
@@ -37,6 +38,11 @@ public class StringOperation extends StringExpression implements Operation<Strin
     @Override
     public Expression<?> getArg(int index) {
         return opMixin.getArg(index);
+    }
+
+    @Override
+    public Optional<Expression<?>> getOptArg(int index) {
+        return opMixin.getOptArg(index);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.github.mygreen.sqlmapper.metamodel.operation;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.EnumExpression;
@@ -41,6 +42,11 @@ public class EnumOperator<T extends Enum<T>> extends EnumExpression<T> implement
     }
 
     @Override
+    public Optional<Expression<?>> getOptArg(int index) {
+        return opMixin.getOptArg(index);
+    }
+
+    @Override
     public List<Expression<?>> getArgs() {
         return opMixin.getArgs();
     }
@@ -49,4 +55,5 @@ public class EnumOperator<T extends Enum<T>> extends EnumExpression<T> implement
     public <C> void accept(Visitor<C> visitor, C context) {
         visitor.visit(opMixin, context);
     }
+
 }
