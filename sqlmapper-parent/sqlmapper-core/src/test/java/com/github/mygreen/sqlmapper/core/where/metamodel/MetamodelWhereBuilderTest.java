@@ -89,6 +89,29 @@ public class MetamodelWhereBuilderTest {
     }
 
     @Test
+    void testStringConcat() {
+
+        MCustomer entity = MCustomer.customer;
+        Predicate condition = entity.firstName.concat(entity.lastName).like("yama");
+
+        EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
+
+        TableNameResolver tableNameResolver = new TableNameResolver();
+        tableNameResolver.prepareTableAlias(entity);
+
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta),
+                 dialect, entityMetaFactory, tableNameResolver);
+        visitor.visit(new MetamodelWhere(condition));
+
+        String sql = visitor.getCriteria();
+        assertThat(sql).isEqualTo("concat(T1_.FIRST_NAME, T1_.LAST_NAME) like ?");
+
+        List<Object> params = visitor.getParamValues();
+        assertThat(params).containsExactly("yama");
+
+    }
+
+    @Test
     void test_arithmetic() {
         MCustomer entity = MCustomer.customer;
         Predicate condition = entity.firstName.lower().contains("taro")

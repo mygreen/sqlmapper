@@ -2,13 +2,14 @@ package com.github.mygreen.sqlmapper.core.where.metamodel;
 
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
+import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
 import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 
 /**
  * 関数({@link FunctionOp})に対する処理を定義します。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -32,6 +33,9 @@ public class FuncOpHandler extends OperationHandler<FunctionOp>{
                 context.appendSql("upper(");
                 invoke(operator, expr.getArg(0), visitor, context);
                 context.appendSql(")");
+                break;
+            case CONCAT:
+                doConcat(operator, expr, visitor, context);
                 break;
             case CURRENT_DATE:
                 context.appendSql("current_date");
@@ -64,6 +68,30 @@ public class FuncOpHandler extends OperationHandler<FunctionOp>{
 
         int precision = (int)((Constant<Integer>)expr.getArg(0)).getValue();
         context.appendSql("(").append(precision).append(")");
+
+    }
+
+    private void doConcat(FunctionOp operator, Operation<?> expr, Visitor<VisitorContext> visitor, VisitorContext context) {
+
+        Expression<?> left = expr.getArg(0);
+        Expression<?> right = expr.getArg(1);
+
+        VisitorContext leftContext = new VisitorContext(context);
+        VisitorContext rightContext = new VisitorContext(context);
+
+        // 左辺の評価
+        invoke(operator, left, visitor, leftContext);
+        invoke(operator, right, visitor, rightContext);
+
+        // 評価した結果を親のコンテキストに追加する
+        context.appendSql("concat(")
+            .append(leftContext.getCriteria())
+            .append(", ")
+            .append(rightContext.getCriteria())
+            .append(")");
+
+        context.addParamValues(leftContext.getParamValues());
+        context.addParamValues(rightContext.getParamValues());
 
     }
 
