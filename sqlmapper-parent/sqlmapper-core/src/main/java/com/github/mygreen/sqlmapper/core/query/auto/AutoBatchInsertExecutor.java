@@ -107,9 +107,6 @@ public class AutoBatchInsertExecutor {
         for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
 
             final String propertyName = propertyMeta.getName();
-            if(!propertyMeta.getColumnMeta().isInsertable()) {
-                continue;
-            }
 
             if(query.getExcludesProperties().contains(propertyName)) {
                 continue;

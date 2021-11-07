@@ -25,11 +25,6 @@ public @interface Column {
     String name() default "";
 
     /**
-     * (オプション) 永続化プロバイダによって生成されたSQL INSERTステートメントにカラムが含まれるかどうか。
-     */
-    boolean insertable() default true;
-
-    /**
      * (オプション) 永続化プロバイダによって生成されたSQL UPDATEステートメントにカラムが含まれるかどうか。
      */
     boolean updatable() default true;

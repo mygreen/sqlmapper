@@ -100,6 +100,14 @@ public class AutoUpdateImpl<T> implements AutoUpdate<T> {
     }
 
     private void validateTarget() {
+
+        // 読み取り専用かどうかのチェック
+        if(entityMeta.getTableMeta().isReadOnly()) {
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.readOnlyEntity")
+                    .paramWithClass("entityType", entityMeta.getEntityType())
+                    .format());
+        }
+
         // 主キーを持つかどうかのチェック
         if(entityMeta.getIdPropertyMetaList().isEmpty()) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.requiredId")

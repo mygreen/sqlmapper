@@ -61,6 +61,19 @@ public class AutoInsertImpl<T> implements AutoInsert<T> {
         this.context = context;
         this.entity = entity;
         this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());
+
+        validateTarget();
+    }
+
+    private void validateTarget() {
+
+        // 読み取り専用かどうかのチェック
+        if(entityMeta.getTableMeta().isReadOnly()) {
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.readOnlyEntity")
+                    .paramWithClass("entityType", entityMeta.getEntityType())
+                    .format());
+        }
+
     }
 
     @Override

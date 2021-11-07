@@ -10,6 +10,7 @@ import java.lang.annotation.Target;
  * テーブル情報を指定します。
  * 本アノテーションが指定されていない場合は、デフォルト値が適用されます。
  *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -36,5 +37,13 @@ public @interface Table {
      * デフォルトの値はエンティティの名前です。
      */
     String name() default "";
+
+    /**
+     * (オプション) テーブルが読み取り専用かどうかを指定します。
+     * <p>この属性の値が {@literal true} のときに、挿入／更新／削除 操作が呼ばれたときエラーとなります。
+     *
+     * @since 0.3
+     */
+    boolean readOnly() default false;
 
 }
