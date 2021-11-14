@@ -54,10 +54,11 @@ public class FuncOpHandler extends OperationHandler<FunctionOp> {
     public void handle(FunctionOp operator, Operation<?> expr, Visitor<VisitorContext> visitor, VisitorContext context) {
 
         SqlFunction function = functionMap.get(operator);
-        if(function != null) {
-            function.handle(expr.getArgs(), visitor, context, new ExpressionEvaluator(operator, this));
-            return;
+        if(function == null) {
+            throw new IllegalArgumentException("not support operator=" + operator);
         }
+
+        function.handle(expr.getArgs(), visitor, context, new ExpressionEvaluator(operator, this));
 
     }
 
