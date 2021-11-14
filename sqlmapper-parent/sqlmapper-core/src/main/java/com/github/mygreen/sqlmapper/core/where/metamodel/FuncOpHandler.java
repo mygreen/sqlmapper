@@ -1,8 +1,15 @@
 package com.github.mygreen.sqlmapper.core.where.metamodel;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.github.mygreen.sqlmapper.core.where.metamodel.function.ConcatFunction;
+import com.github.mygreen.sqlmapper.core.where.metamodel.function.CurrentDateFunction;
+import com.github.mygreen.sqlmapper.core.where.metamodel.function.CurrentTimeFunction;
+import com.github.mygreen.sqlmapper.core.where.metamodel.function.CurrentTimestampFunction;
+import com.github.mygreen.sqlmapper.core.where.metamodel.function.LowerFunction;
+import com.github.mygreen.sqlmapper.core.where.metamodel.function.UpperFunction;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
-import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
-import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
 import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 
@@ -13,85 +20,44 @@ import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
  * @author T.TSUCHIE
  *
  */
-public class FuncOpHandler extends OperationHandler<FunctionOp>{
+public class FuncOpHandler extends OperationHandler<FunctionOp> {
+
+    /**
+     * SQL関数の各処理に対する実装
+     */
+    private Map<FunctionOp, SqlFunction> functionMap = new HashMap<>();
+
+    /**
+     * SQL関数の処理を登録します。
+     * @since 0.3
+     * @param operator SQL関数名
+     * @param function SQL関数の処理
+     */
+    public void register(FunctionOp operator, SqlFunction function) {
+        this.functionMap.put(operator, function);
+    }
 
     @Override
     protected void init() {
-        // 何もしない
+        this.functionMap.clear();
+        register(FunctionOp.LOWER, new LowerFunction());
+        register(FunctionOp.UPPER, new UpperFunction());
+
+        register(FunctionOp.CONCAT, new ConcatFunction());
+
+        register(FunctionOp.CURRENT_DATE, new CurrentDateFunction());
+        register(FunctionOp.CURRENT_TIME, new CurrentTimeFunction());
+        register(FunctionOp.CURRENT_TIMESTAMP, new CurrentTimestampFunction());
     }
 
     @Override
     public void handle(FunctionOp operator, Operation<?> expr, Visitor<VisitorContext> visitor, VisitorContext context) {
 
-        switch(operator) {
-            case LOWER:
-                context.appendSql("lower(");
-                invoke(operator, expr.getArg(0), visitor, context);
-                context.appendSql(")");
-                break;
-            case UPPER:
-                context.appendSql("upper(");
-                invoke(operator, expr.getArg(0), visitor, context);
-                context.appendSql(")");
-                break;
-            case CONCAT:
-                doConcat(operator, expr, visitor, context);
-                break;
-            case CURRENT_DATE:
-                context.appendSql("current_date");
-                doPrecision(expr, context);
-                break;
-            case CURRENT_TIME:
-                context.appendSql("current_time");
-                doPrecision(expr, context);
-                break;
-            case CURRENT_TIMESTAMP:
-                context.appendSql("current_timestamp");
-                doPrecision(expr, context);
-                break;
-            default:
-                throw new IllegalArgumentException("not support operator=" + operator);
-        }
-    }
-
-    /**
-     * 時間の制度が指定されていれば処理を行う。
-     * @param expr 演算子の式
-     * @param context コンテキスト
-     */
-    @SuppressWarnings("unchecked")
-    private void doPrecision(Operation<?> expr, VisitorContext context) {
-
-        if(expr.getArgs().isEmpty()) {
+        SqlFunction function = functionMap.get(operator);
+        if(function != null) {
+            function.handle(expr.getArgs(), visitor, context, new ExpressionEvaluator(operator, this));
             return;
         }
-
-        int precision = (int)((Constant<Integer>)expr.getArg(0)).getValue();
-        context.appendSql("(").append(precision).append(")");
-
-    }
-
-    private void doConcat(FunctionOp operator, Operation<?> expr, Visitor<VisitorContext> visitor, VisitorContext context) {
-
-        Expression<?> left = expr.getArg(0);
-        Expression<?> right = expr.getArg(1);
-
-        VisitorContext leftContext = new VisitorContext(context);
-        VisitorContext rightContext = new VisitorContext(context);
-
-        // 左辺の評価
-        invoke(operator, left, visitor, leftContext);
-        invoke(operator, right, visitor, rightContext);
-
-        // 評価した結果を親のコンテキストに追加する
-        context.appendSql("concat(")
-            .append(leftContext.getCriteria())
-            .append(", ")
-            .append(rightContext.getCriteria())
-            .append(")");
-
-        context.addParamValues(leftContext.getParamValues());
-        context.addParamValues(rightContext.getParamValues());
 
     }
 

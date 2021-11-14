@@ -1,6 +1,7 @@
 package com.github.mygreen.sqlmapper.core.dialect;
 
 import java.sql.ResultSet;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
@@ -10,11 +11,13 @@ import com.github.mygreen.splate.SqlTemplateEngine;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
+import com.github.mygreen.sqlmapper.core.where.metamodel.OperationHandler;
+import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 
 /**
  * SQLの方言を定義します。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -104,4 +107,13 @@ public interface Dialect {
      * @return {@literal true}のとき、{@link ResultSet} に対してパラメータが必要です。
      */
     boolean needsParameterForResultSet();
+
+    /**
+     * メタモデルの条件式を評価する処理のマップを返します。
+     * <p>デフォルトの実装から変更するものみ設定します。
+     *
+     * @since 0.3
+     * @return メタモデルの条件式を評価する処理のマップ
+     */
+    Map<Class<?>, OperationHandler<? extends Operator>> getOperationHandlerMap();
 }

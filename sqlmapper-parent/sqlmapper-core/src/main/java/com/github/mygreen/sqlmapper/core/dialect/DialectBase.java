@@ -1,10 +1,17 @@
 package com.github.mygreen.sqlmapper.core.dialect;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.lang.Nullable;
 
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
+import com.github.mygreen.sqlmapper.core.where.metamodel.OperationHandler;
+import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
+
+import lombok.Getter;
 
 /**
  * {@link Dialect}のベースとなるクラス。
@@ -15,6 +22,12 @@ import com.github.mygreen.sqlmapper.core.type.ValueType;
  *
  */
 public abstract class DialectBase implements Dialect {
+
+    /**
+     * メタモデルによる各演算子の処理のマップ。
+     */
+    @Getter
+    protected Map<Class<?>, OperationHandler<? extends Operator>> operationHandlerMap = new HashMap<>();
 
     /**
      * {@inheritDoc}
@@ -98,6 +111,19 @@ public abstract class DialectBase implements Dialect {
     @Override
     public boolean needsParameterForResultSet() {
         return false;
+    }
+
+    /**
+     * メタモデルに対する演算子に対する処理を登録します。
+     * <p>登録する際に、{@literal OperationHandler#init()}を実行します。
+     *
+     * @since 0.3
+     * @param <T> 演算子の種別
+     * @param operatorClass 演算子種別のクラス
+     * @param handler 演算子に対する処理
+     */
+    public <T extends Operator> void register(Class<T> operatorClass,  OperationHandler<T> handler) {
+        this.operationHandlerMap.put(operatorClass, handler);
     }
 
 }
