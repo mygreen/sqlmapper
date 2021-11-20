@@ -67,6 +67,7 @@ public class MetamodelWhereVisitor implements WhereVisitor {
 
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private synchronized void visit(MetamodelWhere where) {
 
         synchronized (visitorContext) {
@@ -76,6 +77,10 @@ public class MetamodelWhereVisitor implements WhereVisitor {
             // Metamodel用のVisitorに委譲する
             VisitorContext context = new VisitorContext(entityMetaMap, dialect, entityMetaFactory, tableNameResolver);
             ExpressionVisitor visitor = new ExpressionVisitor();
+
+            // DBごとにカスタマイズされた演算子の処理の登録
+            dialect.getOperationHandlerMap().forEach((k, v) -> visitor.register((Class)k, v));
+
             where.getPredicate().accept(visitor, context);
 
             // 結果を格納する

@@ -5,15 +5,26 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
 
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.core.where.metamodel.FuncOpHandler;
+import com.github.mygreen.sqlmapper.core.where.metamodel.function.OperatorConcatFunction;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 
 /**
  * SQLiteの方言の定義。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
 public class SqliteDialect extends DialectBase {
+
+    public SqliteDialect() {
+
+        // SQL関数のカスタマイズ
+        FuncOpHandler funcHandler = new FuncOpHandler();
+        funcHandler.register(FunctionOp.CONCAT, new OperatorConcatFunction());
+        register(FunctionOp.class, funcHandler);
+    }
 
     /**
      * {@inheritDoc}

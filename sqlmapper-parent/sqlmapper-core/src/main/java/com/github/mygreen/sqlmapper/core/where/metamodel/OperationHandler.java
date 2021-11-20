@@ -36,10 +36,6 @@ public abstract class OperationHandler<T extends Operator> {
      */
     protected Map<T, String> templateMap = new HashMap<>();
 
-    public OperationHandler() {
-        init();
-    }
-
     /**
      * 初期化処理
      */
