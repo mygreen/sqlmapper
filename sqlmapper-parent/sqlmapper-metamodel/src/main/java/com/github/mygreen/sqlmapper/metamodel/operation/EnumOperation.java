@@ -18,16 +18,16 @@ import lombok.NonNull;
  *
  * @param <T> 列挙型のクラスタイプ
  */
-public class EnumOperator<T extends Enum<T>> extends EnumExpression<T> implements Operation<T> {
+public class EnumOperation<T extends Enum<T>> extends EnumExpression<T> implements Operation<T> {
 
     private final OperationMixin<T> opMixin;
 
-    protected EnumOperator(OperationMixin<T> mixin) {
+    protected EnumOperation(OperationMixin<T> mixin) {
         super(mixin);
         this.opMixin = mixin;
     }
 
-    public EnumOperator(Class<? extends T> type, @NonNull Operator op, Expression<?>... args) {
+    public EnumOperation(Class<? extends T> type, @NonNull Operator op, Expression<?>... args) {
         this(new OperationMixin<>(type, op, args));
     }
 
