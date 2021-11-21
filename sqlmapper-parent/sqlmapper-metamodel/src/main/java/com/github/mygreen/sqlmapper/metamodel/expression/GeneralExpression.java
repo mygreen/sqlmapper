@@ -173,7 +173,7 @@ public abstract class GeneralExpression<T> extends DslExpression<T> {
      * <p>例：{@literal sample_func($this, ?, ?)}
      * @param query 関数の書式。
      * @param args 関数に渡すバインド変数を指定します。定数、{@literal Expression} を指定します。
-     * @return
+     * @return 関数式。
      */
     @SuppressWarnings("rawtypes")
     public CustomFuntionExpression function(String query, Object... args) {
