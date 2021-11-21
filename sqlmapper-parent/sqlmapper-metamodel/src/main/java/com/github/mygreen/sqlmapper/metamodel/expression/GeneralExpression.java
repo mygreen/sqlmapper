@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import com.github.mygreen.sqlmapper.metamodel.operation.BooleanOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.CustomFunctionOperation;
 import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
 
@@ -157,6 +158,26 @@ public abstract class GeneralExpression<T> extends DslExpression<T> {
      */
     public BooleanExpression notIn(SubQueryExpression<T> right) {
         return new BooleanOperation(ComparisionOp.NOT_IN, mixin, right);
+    }
+
+    /**
+     * 任意の関数の式を作成します。
+     * <p>関数中には変数が使用できます。
+     * <ul>
+     *  <li>{@literal $this} : この関数を適用する式。クエリ実行時には展開されます。</li>
+     *  <li>{@literal ?} : プレースホルダー。クエリ実行時に展開されます。
+     *   <br />引数{@literal args} の個数と一致させる必要があります。
+     *  </li>
+     * </ul>
+     *
+     * <p>例：{@literal sample_func($this, ?, ?)}
+     * @param query 関数の書式。
+     * @param args 関数に渡すバインド変数を指定します。定数、{@literal Expression} を指定します。
+     * @return
+     */
+    @SuppressWarnings("rawtypes")
+    public CustomFuntionExpression function(String query, Object... args) {
+        return new CustomFunctionOperation(mixin, query, args);
     }
 
  }

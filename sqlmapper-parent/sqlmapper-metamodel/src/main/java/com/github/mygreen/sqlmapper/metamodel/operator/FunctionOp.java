@@ -18,7 +18,10 @@ public enum FunctionOp implements Operator {
     // Date/Time
     CURRENT_DATE(Comparable.class, -1),
     CURRENT_TIME(Comparable.class, -1),
-    CURRENT_TIMESTAMP(Comparable.class, -1)
+    CURRENT_TIMESTAMP(Comparable.class, -1),
+
+    // 任意の関数
+    CUSTOM(Object.class, -1);
 
     ;
 

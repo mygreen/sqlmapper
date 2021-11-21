@@ -7,6 +7,7 @@ import com.github.mygreen.sqlmapper.core.where.metamodel.function.ConcatFunction
 import com.github.mygreen.sqlmapper.core.where.metamodel.function.CurrentDateFunction;
 import com.github.mygreen.sqlmapper.core.where.metamodel.function.CurrentTimeFunction;
 import com.github.mygreen.sqlmapper.core.where.metamodel.function.CurrentTimestampFunction;
+import com.github.mygreen.sqlmapper.core.where.metamodel.function.CustomFunction;
 import com.github.mygreen.sqlmapper.core.where.metamodel.function.LowerFunction;
 import com.github.mygreen.sqlmapper.core.where.metamodel.function.UpperFunction;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
@@ -48,6 +49,8 @@ public class FuncOpHandler extends OperationHandler<FunctionOp> {
         register(FunctionOp.CURRENT_DATE, new CurrentDateFunction());
         register(FunctionOp.CURRENT_TIME, new CurrentTimeFunction());
         register(FunctionOp.CURRENT_TIMESTAMP, new CurrentTimestampFunction());
+
+        register(FunctionOp.CUSTOM, new CustomFunction());
     }
 
     @Override
