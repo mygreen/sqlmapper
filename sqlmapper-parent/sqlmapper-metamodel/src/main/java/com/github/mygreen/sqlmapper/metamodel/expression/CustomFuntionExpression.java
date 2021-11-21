@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.github.mygreen.sqlmapper.metamodel.operation.BooleanOperation;
-import com.github.mygreen.sqlmapper.metamodel.operation.EnumOperation;
 import com.github.mygreen.sqlmapper.metamodel.operation.LocalDateOperation;
 import com.github.mygreen.sqlmapper.metamodel.operation.LocalDateTimeOperation;
 import com.github.mygreen.sqlmapper.metamodel.operation.LocalTimeOperation;
@@ -194,12 +193,12 @@ public abstract class CustomFuntionExpression<T> implements Expression<T> {
         return new UtilDateOperation(FunctionOp.CUSTOM, mixin, this);
     }
 
-    /**
-     * 関数の戻り値の型を返します。
-     * @return 列挙型を返します。
-     */
-    public <R extends Enum<R>> EnumExpression<R> returnEnum(Class<R> type) {
-        return new EnumOperation<R>(type, FunctionOp.CUSTOM, mixin, this);
-    }
+//    /**
+//     * 関数の戻り値の型を返します。
+//     * @return 列挙型を返します。
+//     */
+//    public <R extends Enum<R>> EnumExpression<R> returnEnum(Class<R> type) {
+//        return new EnumOperation<R>(type, FunctionOp.CUSTOM, mixin, this);
+//    }
 
 }
