@@ -7,7 +7,6 @@ import com.github.mygreen.sqlmapper.core.where.metamodel.SqlFunction;
 import com.github.mygreen.sqlmapper.core.where.metamodel.VisitorContext;
 import com.github.mygreen.sqlmapper.core.where.metamodel.function.SqlFunctionTokenizer.TokenType;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
-import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.operation.CustomFunctionOperation;
 
@@ -51,13 +50,7 @@ public class CustomFunction implements SqlFunction {
                 VisitorContext argContext = new VisitorContext(context);
                 evaluator.evaluate(arg, visitor, argContext);
 
-                if(arg instanceof Constant) {
-                    // 定数の場合はプレースホルダーとして変数として追加
-                    context.appendSql("?");
-                } else {
-                    context.appendSql(argContext.getCriteria());
-                }
-
+                context.appendSql(argContext.getCriteria());
                 context.addParamValues(argContext.getParamValues());
 
             } else {

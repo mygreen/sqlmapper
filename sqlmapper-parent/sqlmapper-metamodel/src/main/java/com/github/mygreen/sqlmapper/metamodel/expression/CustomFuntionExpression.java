@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -107,6 +108,8 @@ public abstract class CustomFuntionExpression<T> implements Expression<T> {
     private Expression<?> convertExpression(Object value) {
         if(value instanceof Expression) {
             return (Expression)value;
+        } else if(value instanceof Collection) {
+            return Constant.createCollection((Collection)value);
         } else {
             return Constant.create(value);
         }
