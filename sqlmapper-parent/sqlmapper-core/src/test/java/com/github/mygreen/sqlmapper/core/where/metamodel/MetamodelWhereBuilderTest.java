@@ -206,4 +206,27 @@ public class MetamodelWhereBuilderTest {
 
     }
 
+    @Test
+    void testCustomFunction() {
+        MCustomer entity = MCustomer.customer;
+        Predicate condition = entity.firstName.function("custom_format($this, 'yyyMMdd')").returnString()
+                .function("custom_is_valid($this, ?)", "TEST").returnBoolean();
+
+        EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
+
+        TableNameResolver tableNameResolver = new TableNameResolver();
+        tableNameResolver.prepareTableAlias(entity);
+
+        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta),
+                 dialect, entityMetaFactory, tableNameResolver);
+        visitor.visit(new MetamodelWhere(condition));
+
+        String sql = visitor.getCriteria();
+        assertThat(sql).isEqualTo("custom_is_valid(custom_format(T1_.FIRST_NAME, 'yyyMMdd'), ?)");
+
+        List<Object> params = visitor.getParamValues();
+        assertThat(params).containsExactly("TEST");
+
+    }
+
 }
