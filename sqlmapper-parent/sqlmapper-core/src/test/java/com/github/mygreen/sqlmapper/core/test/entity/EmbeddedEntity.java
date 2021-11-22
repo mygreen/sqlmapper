@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.core.testdata;
+package com.github.mygreen.sqlmapper.core.test.entity;
 
 import com.github.mygreen.sqlmapper.core.annotation.Embeddable;
 import com.github.mygreen.sqlmapper.core.annotation.EmbeddedId;

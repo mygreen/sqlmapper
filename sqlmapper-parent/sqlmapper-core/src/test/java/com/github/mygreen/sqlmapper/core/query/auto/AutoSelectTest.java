@@ -12,13 +12,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.SqlMapper;
-import com.github.mygreen.sqlmapper.core.testdata.Customer;
-import com.github.mygreen.sqlmapper.core.testdata.Employee;
-import com.github.mygreen.sqlmapper.core.testdata.MBusinessEstablishment;
-import com.github.mygreen.sqlmapper.core.testdata.MCustomer;
-import com.github.mygreen.sqlmapper.core.testdata.MEmployee;
-import com.github.mygreen.sqlmapper.core.testdata.MSection;
-import com.github.mygreen.sqlmapper.core.testdata.TestConfig;
+import com.github.mygreen.sqlmapper.core.test.config.TestConfig;
+import com.github.mygreen.sqlmapper.core.test.entity.Customer;
+import com.github.mygreen.sqlmapper.core.test.entity.Employee;
+import com.github.mygreen.sqlmapper.core.test.entity.MBusinessEstablishment;
+import com.github.mygreen.sqlmapper.core.test.entity.MCustomer;
+import com.github.mygreen.sqlmapper.core.test.entity.MEmployee;
+import com.github.mygreen.sqlmapper.core.test.entity.MSection;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes=TestConfig.class)

@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.core.testdata;
+package com.github.mygreen.sqlmapper.core.test.entity;
 
 import java.time.LocalDate;
 

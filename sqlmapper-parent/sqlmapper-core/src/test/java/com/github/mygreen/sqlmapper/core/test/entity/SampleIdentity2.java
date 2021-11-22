@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.core.testdata;
+package com.github.mygreen.sqlmapper.core.test.entity;
 
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
@@ -14,11 +14,15 @@ import lombok.Data;
  */
 @Data
 @Entity
-public class SampleSequence1 {
+public class SampleIdentity2 {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    public Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public Long id1;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY, format="00000")
+    public String id2;
 
     public String value;
 

@@ -1,10 +1,8 @@
-package com.github.mygreen.sqlmapper.core.testdata;
+package com.github.mygreen.sqlmapper.core.test.config;
 
 import javax.sql.DataSource;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
 
@@ -14,7 +12,9 @@ import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.dialect.DialectBase;
 
 /**
- * DB接続しない(NamedParameterJdbcTemplateがnull)ときの設定
+ * DB接続しないときのJavaConfig。
+ * <p>{@link Dialect}は何もしない。
+ * <p>{@link DataSource} は、設定なしの {@link SimpleDriverDataSource}。
  *
  *
  * @author T.TSUCHIE
@@ -22,11 +22,6 @@ import com.github.mygreen.sqlmapper.core.dialect.DialectBase;
  */
 @Configuration
 public class NoDbTestConfig extends SqlMapperConfigurationSupport {
-
-    @Bean
-    public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
-        return null;
-    }
 
     @Override
     public Dialect dialect() {

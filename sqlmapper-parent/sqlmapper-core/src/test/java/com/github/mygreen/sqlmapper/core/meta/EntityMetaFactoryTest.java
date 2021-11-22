@@ -18,8 +18,8 @@ import com.github.mygreen.sqlmapper.core.annotation.Id;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
 import com.github.mygreen.sqlmapper.core.annotation.Transient;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
-import com.github.mygreen.sqlmapper.core.testdata.EntityBase;
-import com.github.mygreen.sqlmapper.core.testdata.NoDbTestConfig;
+import com.github.mygreen.sqlmapper.core.test.config.NoDbTestConfig;
+import com.github.mygreen.sqlmapper.core.test.entity.EntityBase;
 
 import lombok.Data;
 import lombok.Getter;
