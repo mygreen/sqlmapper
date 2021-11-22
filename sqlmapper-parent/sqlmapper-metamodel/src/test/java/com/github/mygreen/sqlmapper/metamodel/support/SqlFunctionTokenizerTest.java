@@ -1,17 +1,17 @@
-package com.github.mygreen.sqlmapper.core.where.metamodel.function;
+package com.github.mygreen.sqlmapper.metamodel.support;
 
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import com.github.mygreen.sqlmapper.core.where.metamodel.function.SqlFunctionTokenizer.TokenType;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionTokenizer.TokenType;
 
 
 public class SqlFunctionTokenizerTest {
 
     @Test
     void testParse() {
-        SqlFunctionTokenizer tokenizer = new SqlFunctionTokenizer("custom_test($this, ?)");
+        SqlFunctionTokenizer tokenizer = new SqlFunctionTokenizer("custom_test($left, ?)");
 
         {
             TokenType type = tokenizer.next();
@@ -22,9 +22,9 @@ public class SqlFunctionTokenizerTest {
 
         {
             TokenType type = tokenizer.next();
-            assertThat(type).isEqualTo(TokenType.THIS_VARIABLE);
+            assertThat(type).isEqualTo(TokenType.LEFT_VARIABLE);
             String sql = tokenizer.getToken();
-            assertThat(sql).isEqualTo("$this");
+            assertThat(sql).isEqualTo("$left");
         }
 
         {

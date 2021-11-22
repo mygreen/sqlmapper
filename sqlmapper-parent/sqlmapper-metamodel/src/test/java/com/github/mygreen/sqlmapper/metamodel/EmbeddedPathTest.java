@@ -56,7 +56,7 @@ public class EmbeddedPathTest {
                 .and(entity.name.contains("Taro"));
         String resultString = exp.toString();
 
-        assertThat(resultString).isEqualTo("sampleEntity.id.key1 = 100 and contains(sampleEntity.name, Taro)");
+        assertThat(resultString).isEqualTo("sampleEntity.id.key1 = '100' and contains(sampleEntity.name, 'Taro')");
 
     }
 
