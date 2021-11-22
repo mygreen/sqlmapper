@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.core.where.metamodel.function;
+package com.github.mygreen.sqlmapper.metamodel.support;
 
 /**
  * SQL関数の字句解析処理。
@@ -15,7 +15,7 @@ public class SqlFunctionTokenizer {
      */
     public enum TokenType {
         SQL,
-        THIS_VARIABLE,
+        LEFT_VARIABLE,
         BIND_VARIABLE,
         EOF
     }
@@ -118,8 +118,8 @@ public class SqlFunctionTokenizer {
         case SQL:
             parseSql();
             break;
-        case THIS_VARIABLE:
-            parseThisVariable();
+        case LEFT_VARIABLE:
+            parseLeftVariable();
             break;
         case BIND_VARIABLE:
             parseBindVariable();
@@ -136,9 +136,9 @@ public class SqlFunctionTokenizer {
      */
     protected void parseSql() {
 
-        int thisVariableStartPos = sql.indexOf("$this", position);
+        int leftVariableStartPos = sql.indexOf("$left", position);
         int bindVariableStartPos = sql.indexOf("?", position);
-        int nextStartPos = getNextStartPos(thisVariableStartPos, bindVariableStartPos);
+        int nextStartPos = getNextStartPos(leftVariableStartPos, bindVariableStartPos);
 
         if (nextStartPos < 0) {
             // 特定のトークンでない場合は、すべてSQL区分する。
@@ -152,9 +152,9 @@ public class SqlFunctionTokenizer {
             tokenType = TokenType.SQL;
             boolean needNext = nextStartPos == position;
 
-            if (nextStartPos == thisVariableStartPos) {
-                nextTokenType = TokenType.THIS_VARIABLE;
-                position = thisVariableStartPos + 4;
+            if (nextStartPos == leftVariableStartPos) {
+                nextTokenType = TokenType.LEFT_VARIABLE;
+                position = leftVariableStartPos + 4;
 
             } else if (nextStartPos == bindVariableStartPos) {
                 nextTokenType = TokenType.BIND_VARIABLE;
@@ -170,15 +170,15 @@ public class SqlFunctionTokenizer {
     /**
      * 次のトークンの開始位置を返します。
      *
-     * @param thisVariableStartPos {@literal $this} 変数の開始位置
+     * @param leftVariableStartPos {@literal $left} 変数の開始位置
      * @param bindVariableStartPos {@literal ?} 変数の開始位置
      * @return 次のトークンの開始位置。特定のトークンでない場合は {@literal -1} を返します。
      */
-    protected int getNextStartPos(int thisVariableStartPos, int bindVariableStartPos) {
+    protected int getNextStartPos(int leftVariableStartPos, int bindVariableStartPos) {
 
         int nextStartPos = -1;
-        if (thisVariableStartPos >= 0) {
-            nextStartPos = thisVariableStartPos;
+        if (leftVariableStartPos >= 0) {
+            nextStartPos = leftVariableStartPos;
         }
 
         if (bindVariableStartPos >= 0
@@ -189,13 +189,13 @@ public class SqlFunctionTokenizer {
     }
 
     /**
-     * {@literal $this} 変数をパースします。
+     * {@literal $left} 変数をパースします。
      */
-    protected void parseThisVariable() {
-        token = "$this";
+    protected void parseLeftVariable() {
+        token = "$left";
         nextTokenType = TokenType.SQL;
         position += 1;
-        tokenType = TokenType.THIS_VARIABLE;
+        tokenType = TokenType.LEFT_VARIABLE;
     }
 
     /**

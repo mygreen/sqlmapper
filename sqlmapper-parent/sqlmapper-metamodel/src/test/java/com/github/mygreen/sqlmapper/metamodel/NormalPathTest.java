@@ -60,7 +60,7 @@ public class NormalPathTest {
                 ;
 
         String resultString = exp.toString();
-        assertThat(resultString).isEqualTo("contains(lower(sampleEntity.name), yamada) and (sampleEntity.age + 10) > 20 and sampleEntity.role in [Admin, Normal] and sampleEntity.updateAt > current_timestamp and sampleEntity.deleted = false and sampleEntity.salary >= 1000000");
+        assertThat(resultString).isEqualTo("contains(lower(sampleEntity.name), 'yamada') and (sampleEntity.age + 10) > 20 and sampleEntity.role in [Admin, Normal] and sampleEntity.updateAt > current_timestamp and sampleEntity.deleted = false and sampleEntity.salary >= 1000000");
 
     }
 
@@ -74,6 +74,18 @@ public class NormalPathTest {
                 .collect(Collectors.joining(", "));
 
         assertThat(resultString).isEqualTo("sampleEntity.name DESC, sampleEntity.role ASC");
+
+    }
+
+    @Test
+    void testCustomFunction() {
+        MSampleEntity entity = MSampleEntity.sampleEntity;
+
+        Predicate exp = entity.name.function("custom_format($left, 'yyyMMdd')").returnString()
+                .function("custom_is_valid($left, ?)", "TEST").returnBoolean();
+
+        String resultString = exp.toString();
+        assertThat(resultString).isEqualTo("custom_is_valid(custom_format(sampleEntity.name, 'yyyMMdd'), 'TEST')");
 
     }
 

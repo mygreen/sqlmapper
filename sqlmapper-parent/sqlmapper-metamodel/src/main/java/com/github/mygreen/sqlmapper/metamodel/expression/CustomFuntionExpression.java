@@ -23,6 +23,9 @@ import com.github.mygreen.sqlmapper.metamodel.operation.SqlTimestampOperation;
 import com.github.mygreen.sqlmapper.metamodel.operation.StringOperation;
 import com.github.mygreen.sqlmapper.metamodel.operation.UtilDateOperation;
 import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionParser;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionParser.Token;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionTokenizer.TokenType;
 
 import lombok.Getter;
 
@@ -50,6 +53,12 @@ public abstract class CustomFuntionExpression<T> implements Expression<T> {
     @Getter
     protected final List<Expression<?>> args;
 
+    /**
+     * SQL関数をパースしてトークンに分解した結果
+     */
+    @Getter
+    protected final List<Token> tokens;
+
     public CustomFuntionExpression(Expression<?> mixin, String query, Object... args) {
         if(query == null || query.isEmpty()) {
             throw new IllegalArgumentException("query should be not empty.");
@@ -60,7 +69,10 @@ public abstract class CustomFuntionExpression<T> implements Expression<T> {
          * プレースホルダーをカウントするときには、文字列句('abc')などを考慮する必要があるが、
          * そこまで複雑なことはしないと思うので実施しない。
          */
-        int countPlaceHolder = countPlaceHolder(query);
+        List<Token> tokens = new SqlFunctionParser().parse(query);
+        int countPlaceHolder = (int) tokens.stream()
+                .filter(t -> t.type == TokenType.BIND_VARIABLE)
+                .count();
         int sizeArgs = (args == null ? 0 : args.length);
         if(countPlaceHolder != sizeArgs) {
             throw new IllegalArgumentException(String.format("'%s' is not match place holder count '%d'. ", query, countPlaceHolder));
@@ -68,6 +80,8 @@ public abstract class CustomFuntionExpression<T> implements Expression<T> {
 
         this.mixin = mixin;
         this.query = query;
+        this.tokens = tokens;
+
         if(sizeArgs == 0) {
             this.args = Collections.emptyList();
         } else {
@@ -75,27 +89,6 @@ public abstract class CustomFuntionExpression<T> implements Expression<T> {
                     .map(this::convertExpression)
                     .collect(Collectors.toList());
         }
-
-    }
-
-    /**
-     * 文字列中のプレースホルダーの出現回数をカウントします。
-     * @param text
-     * @return 出現回数
-     */
-    private int countPlaceHolder(final String text) {
-
-        int count = 0;
-        int length = text.length();
-
-        for(int i=0; i < length; i++) {
-            char c = text.charAt(i);
-            if(c == '?') {
-                count++;
-            }
-        }
-
-        return count;
 
     }
 

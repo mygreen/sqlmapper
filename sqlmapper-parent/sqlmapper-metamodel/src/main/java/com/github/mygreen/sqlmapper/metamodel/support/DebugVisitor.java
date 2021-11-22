@@ -1,8 +1,16 @@
 package com.github.mygreen.sqlmapper.metamodel.support;
 
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +24,7 @@ import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.expression.SubQueryExpression;
+import com.github.mygreen.sqlmapper.metamodel.operation.CustomFunctionOperation;
 import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
 import com.github.mygreen.sqlmapper.metamodel.operation.SubQueryMeta;
 import com.github.mygreen.sqlmapper.metamodel.operator.ArithmeticOp;
@@ -25,6 +34,8 @@ import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.LikeOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
 import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionParser.Token;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionTokenizer.TokenType;
 
 /**
  * 式を文字列として評価するためのデバッグ用のVisitor。
@@ -34,6 +45,10 @@ import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
  *
  */
 public class DebugVisitor implements Visitor<DebugVisitorContext>{
+
+    private static final DateTimeFormatter FORMATTER_LOCAL_DATETIME = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter FORMATTER_LOCAL_DATE = DateTimeFormatter.ofPattern("uuuu-MM-dd");
+    private static final DateTimeFormatter FORMATTER_LOCAL_TIME = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     /**
      * 演算子に対する式テンプレートのマップ
@@ -78,9 +93,11 @@ public class DebugVisitor implements Visitor<DebugVisitorContext>{
         // FunctionOp
         operationTemplateMap.put(FunctionOp.LOWER, "lower({0})");
         operationTemplateMap.put(FunctionOp.UPPER, "upper({0})");
+        operationTemplateMap.put(FunctionOp.CONCAT, "concat({0}, {1})");
 //        operationTemplateMap.put(FunctionOp.CURRENT_DATE, "current_date");
 //        operationTemplateMap.put(FunctionOp.CURRENT_TIME, "current_time");
 //        operationTemplateMap.put(FunctionOp.CURRENT_TIMESTAMP, "current_timestamp");
+//        operationTemplateMap.put(FunctionOp.CUSTOM, "custom()");
 
         // LikeOp
         operationTemplateMap.put(LikeOp.LIKE, "{0} like {1}");
@@ -120,6 +137,39 @@ public class DebugVisitor implements Visitor<DebugVisitorContext>{
 
             }
 
+        } else if(operator == FunctionOp.CUSTOM) {
+
+            // 左辺の評価
+            Expression<?> left = expr.getArg(0);
+            DebugVisitorContext leftContext = new DebugVisitorContext();
+            invoke(operator, left, leftContext);
+
+            // トークンを置換していく
+            CustomFunctionOperation op = (CustomFunctionOperation) expr.getArg(1);
+            @SuppressWarnings("unchecked")
+            List<Token> tokens = op.getTokens();
+            for(Token token : tokens) {
+                if(token.type == TokenType.SQL) {
+                    context.append(token.value);
+
+                } else if(token.type == TokenType.LEFT_VARIABLE) {
+                    context.append(leftContext.getCriteria());
+
+                } else if(token.type == TokenType.BIND_VARIABLE) {
+                    int varIndex = token.bindBariableIndex;
+                    Expression<?> arg = op.getArg(varIndex);
+
+                    DebugVisitorContext argContext = new DebugVisitorContext();
+                    invoke(operator, arg, argContext);
+
+                    context.append(argContext.getCriteria());
+
+                } else {
+                    // unknown token
+                }
+
+            }
+
         }
     }
 
@@ -137,18 +187,46 @@ public class DebugVisitor implements Visitor<DebugVisitorContext>{
                 if(joined.length() > 0) {
                     joined.append(",");
                 }
-                if(value == null) {
-                    joined.append("null");
-                } else {
-                    joined.append(value.toString());
-                }
+                joined.append(formatConstantValue(value));
             }
             context.append(joined.toString());
 
         } else {
-            context.append(constant.toString());
+            context.append(formatConstantValue(constant));
         }
 
+    }
+
+    /**
+     * 定数の値をフォーマットします。
+     * @param value フォーマット対象の値
+     * @return フォーマットした値
+     */
+    private String formatConstantValue(final Object value) {
+        if(value == null) {
+            return "null";
+        }
+
+        if(value instanceof CharSequence) {
+            return "'" + value.toString() + "'";
+
+        } else if(value instanceof Date) {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(value);
+        } else if(value instanceof java.sql.Date) {
+            return new SimpleDateFormat("yyyy-MM-dd").format(value);
+        } else if(value instanceof Time) {
+            return new SimpleDateFormat("HH:mm:ss").format(value);
+        } else if(value instanceof Timestamp) {
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(value);
+        } else if(value instanceof LocalDateTime) {
+            return FORMATTER_LOCAL_DATETIME.format((LocalDateTime)value);
+        } else if(value instanceof LocalDate) {
+            return FORMATTER_LOCAL_DATE.format((LocalDate)value);
+        } else if(value instanceof LocalTime) {
+            return FORMATTER_LOCAL_TIME.format((LocalTime)value);
+        }
+
+        return value.toString();
     }
 
     @Override

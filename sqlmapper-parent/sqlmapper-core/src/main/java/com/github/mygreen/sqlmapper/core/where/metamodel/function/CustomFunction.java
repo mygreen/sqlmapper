@@ -5,10 +5,11 @@ import java.util.List;
 import com.github.mygreen.sqlmapper.core.where.metamodel.ExpressionEvaluator;
 import com.github.mygreen.sqlmapper.core.where.metamodel.SqlFunction;
 import com.github.mygreen.sqlmapper.core.where.metamodel.VisitorContext;
-import com.github.mygreen.sqlmapper.core.where.metamodel.function.SqlFunctionTokenizer.TokenType;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
 import com.github.mygreen.sqlmapper.metamodel.operation.CustomFunctionOperation;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionParser.Token;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionTokenizer.TokenType;
 
 /**
  * 任意の関数を処理します。
@@ -23,28 +24,26 @@ public class CustomFunction implements SqlFunction {
     public void handle(List<Expression<?>> args, Visitor<VisitorContext> visitor,
             VisitorContext context, ExpressionEvaluator evaluator) {
 
-        // 自身プロパティの評価
-        Expression<?> thisExp = args.get(0);
-        VisitorContext thisContext = new VisitorContext(context);
-        evaluator.evaluate(thisExp, visitor, thisContext);
+        // 左辺の評価
+        Expression<?> left = args.get(0);
+        VisitorContext leftContext = new VisitorContext(context);
+        evaluator.evaluate(left, visitor, leftContext);
 
         CustomFunctionOperation op = (CustomFunctionOperation) args.get(1);
 
-        String query = op.getQuery();
+        // トークンを置換していく
+        @SuppressWarnings("unchecked")
+        List<Token> tokens = op.getTokens();
+        for(Token token : tokens) {
+            if(token.type == TokenType.SQL) {
+                context.appendSql(token.value);
 
-        // クエリを軸解析して、置換していく。
-        SqlFunctionTokenizer tokenizer = new SqlFunctionTokenizer(query);
-        while(TokenType.EOF != tokenizer.next()) {
-            TokenType currentToken =tokenizer.getTokenType();
-            if(currentToken == TokenType.SQL) {
-                context.appendSql(tokenizer.getToken());
+            } else if(token.type == TokenType.LEFT_VARIABLE) {
+                context.appendSql(leftContext.getCriteria());
+                context.addParamValues(leftContext.getParamValues());
 
-            } else if(currentToken == TokenType.THIS_VARIABLE) {
-                context.appendSql(thisContext.getCriteria());
-                context.addParamValues(thisContext.getParamValues());
-
-            } else if(currentToken == TokenType.BIND_VARIABLE) {
-                int varIndex = tokenizer.getBindBariableNum() - 1;
+            } else if(token.type == TokenType.BIND_VARIABLE) {
+                int varIndex = token.bindBariableIndex;
                 Expression<?> arg = op.getArg(varIndex);
 
                 VisitorContext argContext = new VisitorContext(context);
@@ -54,8 +53,9 @@ public class CustomFunction implements SqlFunction {
                 context.addParamValues(argContext.getParamValues());
 
             } else {
-                // unknown
+                // unknown token
             }
+
         }
 
     }

@@ -209,8 +209,8 @@ public class MetamodelWhereBuilderTest {
     @Test
     void testCustomFunction() {
         MCustomer entity = MCustomer.customer;
-        Predicate condition = entity.firstName.function("custom_format($this, 'yyyMMdd')").returnString()
-                .function("custom_is_valid($this, ?)", "TEST").returnBoolean();
+        Predicate condition = entity.firstName.function("custom_format($left, 'yyyMMdd')").returnString()
+                .function("custom_is_valid($left, ?)", "TEST").returnBoolean();
 
         EntityMeta entityMeta = entityMetaFactory.create(Customer.class);
 
