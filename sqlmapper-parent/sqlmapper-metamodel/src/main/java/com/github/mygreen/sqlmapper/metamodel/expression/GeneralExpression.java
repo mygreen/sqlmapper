@@ -13,7 +13,7 @@ import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
  * 汎用的な型に対する式。
  * <p>{@literal byte[]} 型など専用の式の型がないときに用います。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  * @param <T> 式のタイプ
  *
@@ -171,6 +171,8 @@ public abstract class GeneralExpression<T> extends DslExpression<T> {
      * </ul>
      *
      * <p>例：{@literal sample_func($this, ?, ?)}
+     *
+     * @since 0.3
      * @param query 関数の書式。
      * @param args 関数に渡すバインド変数を指定します。定数、{@literal Expression} を指定します。
      * @return 関数式。
