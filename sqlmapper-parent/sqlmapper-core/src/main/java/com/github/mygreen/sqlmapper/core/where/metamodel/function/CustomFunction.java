@@ -13,7 +13,7 @@ import com.github.mygreen.sqlmapper.metamodel.operation.CustomFunctionOperation;
 /**
  * 任意の関数を処理します。
  *
- *
+ * @since 0.3
  * @author T.TSUCHIE
  *
  */
@@ -23,10 +23,10 @@ public class CustomFunction implements SqlFunction {
     public void handle(List<Expression<?>> args, Visitor<VisitorContext> visitor,
             VisitorContext context, ExpressionEvaluator evaluator) {
 
-        // 左辺の評価
-        Expression<?> left = args.get(0);
-        VisitorContext leftContext = new VisitorContext(context);
-        evaluator.evaluate(left, visitor, leftContext);
+        // 自身プロパティの評価
+        Expression<?> thisExp = args.get(0);
+        VisitorContext thisContext = new VisitorContext(context);
+        evaluator.evaluate(thisExp, visitor, thisContext);
 
         CustomFunctionOperation op = (CustomFunctionOperation) args.get(1);
 
@@ -40,8 +40,8 @@ public class CustomFunction implements SqlFunction {
                 context.appendSql(tokenizer.getToken());
 
             } else if(currentToken == TokenType.THIS_VARIABLE) {
-                context.appendSql(leftContext.getCriteria());
-                context.addParamValues(leftContext.getParamValues());
+                context.appendSql(thisContext.getCriteria());
+                context.addParamValues(thisContext.getParamValues());
 
             } else if(currentToken == TokenType.BIND_VARIABLE) {
                 int varIndex = tokenizer.getBindBariableNum() - 1;
