@@ -84,7 +84,7 @@ public abstract class NumberExpression<T extends Number & Comparable<T>> extends
      * @return {@literal 左辺 / 右辺}
      */
     public <N extends Number & Comparable<?>> NumberExpression<T> divide(N right) {
-        return new NumberOperation<T>(getType(), ArithmeticOp.DIV, Constant.create(right));
+        return new NumberOperation<T>(getType(), ArithmeticOp.DIV, mixin, Constant.create(right));
     }
 
     /**
