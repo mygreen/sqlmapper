@@ -35,7 +35,7 @@ public class Constant<T> extends ImmutableExpression<T> {
     public Constant(final Class<? extends T> type, final T value, boolean expandable) {
         super(type);
         this.value = value;
-        this.expandable = false;
+        this.expandable = expandable;
     }
 
     /**

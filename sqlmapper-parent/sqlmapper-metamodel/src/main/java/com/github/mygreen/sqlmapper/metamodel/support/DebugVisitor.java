@@ -182,14 +182,16 @@ public class DebugVisitor implements Visitor<DebugVisitorContext>{
             context.append("null");
 
         } else if(expr.isExpandable()) {
+            context.append("(");
             StringBuilder joined = new StringBuilder();
             for(Object value : (Collection<?>)constant) {
                 if(joined.length() > 0) {
-                    joined.append(",");
+                    joined.append(", ");
                 }
                 joined.append(formatConstantValue(value));
             }
-            context.append(joined.toString());
+            context.append(joined.toString())
+                .append(")");
 
         } else {
             context.append(formatConstantValue(constant));
