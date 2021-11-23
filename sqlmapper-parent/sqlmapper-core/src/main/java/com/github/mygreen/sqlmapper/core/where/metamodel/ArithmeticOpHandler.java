@@ -21,7 +21,7 @@ public class ArithmeticOpHandler extends OperationHandler<ArithmeticOp> {
         // 算術演算子
         addTemplate(ArithmeticOp.MULT, "{0} * {1}");
         addTemplate(ArithmeticOp.DIV, "{0} / {1}");
-        addTemplate(ArithmeticOp.MOD, "{0} % {1}");
+        addTemplate(ArithmeticOp.MOD, "mod({0}, {1})");
         addTemplate(ArithmeticOp.ADD, "{0} + {1}");
         addTemplate(ArithmeticOp.SUB, "{0} - {1}");
 
