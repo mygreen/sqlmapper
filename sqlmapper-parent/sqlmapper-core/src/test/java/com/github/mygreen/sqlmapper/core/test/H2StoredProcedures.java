@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.core.test.entity;
+package com.github.mygreen.sqlmapper.core.test;
 
 import java.math.BigInteger;
 import java.sql.Connection;
