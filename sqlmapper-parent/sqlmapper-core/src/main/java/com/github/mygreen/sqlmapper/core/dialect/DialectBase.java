@@ -84,19 +84,26 @@ public abstract class DialectBase implements Dialect {
         return " for update";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String convertLimitSql(String sql, int offset, int limit) {
 
+        if(offset < 0 && limit < 0) {
+            throw new IllegalArgumentException("Either offset or limit should be greather than 0.");
+        }
+
         StringBuilder buf = new StringBuilder(sql.length() + 20);
         buf.append(sql);
-        if (offset > 0) {
-            buf.append(" limit ")
-                .append(limit)
-                .append(" offset ")
-                .append(offset);
-        } else {
+        if (limit >= 0) {
             buf.append(" limit ")
                 .append(limit);
+        }
+
+        if (offset >= 0) {
+            buf.append(" offset ")
+                .append(offset);
         }
 
         return buf.toString();

@@ -82,6 +82,7 @@ public interface Dialect {
      * @param offset オフセット。省略する場合は {@literal -1}を指定します。
      * @param limit リミット。省略する場合は {@literal -1} を指定します。
      * @return LIMIT用SQL。
+     * @throws IllegalArgumentException 引数{@literal offset} と {@literal limit} の値の両方が 0より小さい場合にスローされます。
      */
     String convertLimitSql(String sql, int offset, int limit);
 

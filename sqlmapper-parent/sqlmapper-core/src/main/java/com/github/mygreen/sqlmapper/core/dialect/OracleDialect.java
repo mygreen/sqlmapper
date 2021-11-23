@@ -113,19 +113,26 @@ public class OracleDialect extends DialectBase {
      * {@inheritDoc}
      *
      * @return {@literal OFFSET/FETCH} を使用して、LIMIT句を組み立てます。
+     * @throws IllegalArgumentException 引数{@literal offset} または {@literal limit} の値の何れかが 0より小さい場合にスローされます。
      */
     @Override
     public String convertLimitSql(String sql, int offset, int limit) {
 
+        if(offset < 0 && limit < 0) {
+            throw new IllegalArgumentException("Either offset or limit should be greather than 0.");
+        }
+
         StringBuilder buf = new StringBuilder(sql.length() + 20);
         buf.append(sql);
-        if (offset > 0) {
+
+        if(offset >= 0) {
             buf.append(" offset ")
                 .append(offset)
-                .append(" fetch first ")
-                .append(limit)
-                .append(" rows only");
-        } else {
+                .append(" rows");
+
+        }
+
+        if(limit >= 0) {
             buf.append(" fetch first ")
                 .append(limit)
                 .append(" rows only");
