@@ -60,7 +60,7 @@ public class NormalPathTest {
                 ;
 
         String resultString = exp.toString();
-        assertThat(resultString).isEqualTo("contains(lower(sampleEntity.name), 'yamada') and (sampleEntity.age + 10) > 20 and sampleEntity.role in [Admin, Normal] and sampleEntity.updateAt > current_timestamp and sampleEntity.deleted = false and sampleEntity.salary >= 1000000");
+        assertThat(resultString).isEqualTo("contains(lower(sampleEntity.name), 'yamada') and (sampleEntity.age + 10) > 20 and sampleEntity.role in (Admin, Normal) and sampleEntity.updateAt > current_timestamp and sampleEntity.deleted = false and sampleEntity.salary >= 1000000");
 
     }
 

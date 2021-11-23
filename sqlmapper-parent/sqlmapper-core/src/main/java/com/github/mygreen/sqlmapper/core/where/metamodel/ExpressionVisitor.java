@@ -88,7 +88,7 @@ public class ExpressionVisitor implements Visitor<VisitorContext> {
             Collection<?> values = (Collection<?>)expr.getValue();
             context.addParamValues(values);
             context.appendSql("(")
-                .append(QueryUtils.repeat("?", ",", values.size()))
+                .append(QueryUtils.repeat("?", ", ", values.size()))
                 .append(")");
         } else {
             context.addParamValue(expr.getValue());
