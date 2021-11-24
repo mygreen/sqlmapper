@@ -107,7 +107,7 @@ public abstract class OperationHandler<T extends Operator> {
                 context.addParamValue(valueType.getSqlParameterValue(value));
             }
             context.appendSql("(")
-                .append(QueryUtils.repeat("?", ",", values.size()))
+                .append(QueryUtils.repeat("?", ", ", values.size()))
                 .append(")");
         } else {
             context.addParamValue(valueType.getSqlParameterValue(expr.getValue()));
