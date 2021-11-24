@@ -56,6 +56,42 @@ public class ArithmeticOpHandlerTest {
 
     }
 
+    @Entity
+    @Data
+    public static class TestEntity {
+
+        private long id;
+
+        private int count;
+
+        private BigDecimal price;
+
+        private BigDecimal taxRate;
+
+    }
+
+    public static class MTestEntity extends EntityPathBase<TestEntity> {
+
+        public static final MTestEntity test = new MTestEntity("test");
+
+        public MTestEntity(Class<? extends TestEntity> type, String name) {
+            super(type, name);
+        }
+
+        public MTestEntity(String name) {
+            super(TestEntity.class, name);
+        }
+
+        public final NumberPath<Long> id = createNumber("id", Long.class);
+
+        public final NumberPath<Integer> count = createNumber("count", Integer.class);
+
+        public final NumberPath<BigDecimal> price = createNumber("price", BigDecimal.class);
+
+        public final NumberPath<BigDecimal> taxRate = createNumber("taxRate", BigDecimal.class);
+
+    }
+
     @DisplayName("A + B")
     @Test
     void testAdd() {
@@ -201,39 +237,4 @@ public class ArithmeticOpHandlerTest {
 
     }
 
-    @Entity
-    @Data
-    public static class TestEntity {
-
-        private long id;
-
-        private int count;
-
-        private BigDecimal price;
-
-        private BigDecimal taxRate;
-
-    }
-
-    public static class MTestEntity extends EntityPathBase<TestEntity> {
-
-        public static final MTestEntity test = new MTestEntity("test");
-
-        public MTestEntity(Class<? extends TestEntity> type, String name) {
-            super(type, name);
-        }
-
-        public MTestEntity(String name) {
-            super(TestEntity.class, name);
-        }
-
-        public final NumberPath<Long> id = createNumber("id", Long.class);
-
-        public final NumberPath<Integer> count = createNumber("count", Integer.class);
-
-        public final NumberPath<BigDecimal> price = createNumber("price", BigDecimal.class);
-
-        public final NumberPath<BigDecimal> taxRate = createNumber("taxRate", BigDecimal.class);
-
-    }
 }

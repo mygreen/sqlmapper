@@ -60,6 +60,42 @@ public class BooleanOpHandlerTest {
 
     }
 
+    @Entity
+    @Data
+    public static class TestEntity {
+
+        private long id;
+
+        private String firstName;
+
+        private String lastName;
+
+        private LocalDateTime birthday;
+
+    }
+
+    public static class MTestEntity extends EntityPathBase<TestEntity> {
+
+        public static final MTestEntity test = new MTestEntity("test");
+
+        public MTestEntity(Class<? extends TestEntity> type, String name) {
+            super(type, name);
+        }
+
+        public MTestEntity(String name) {
+            super(TestEntity.class, name);
+        }
+
+        public final NumberPath<Long> id = createNumber("id", Long.class);
+
+        public final StringPath firstName = createString("firstName");
+
+        public final StringPath lastName = createString("lastName");
+
+        public final LocalDatePath birthday = createLocalDate("birthday");
+
+    }
+
     @DisplayName("A and B")
     @Test
     public void testAnd() {
@@ -192,42 +228,5 @@ public class BooleanOpHandlerTest {
         assertThat(params).containsExactly("%taro%", "Yamada", LocalDate.of(2000, 1, 2));
 
     }
-
-    @Entity
-    @Data
-    public static class TestEntity {
-
-        private long id;
-
-        private String firstName;
-
-        private String lastName;
-
-        private LocalDateTime birthday;
-
-    }
-
-    public static class MTestEntity extends EntityPathBase<TestEntity> {
-
-        public static final MTestEntity test = new MTestEntity("test");
-
-        public MTestEntity(Class<? extends TestEntity> type, String name) {
-            super(type, name);
-        }
-
-        public MTestEntity(String name) {
-            super(TestEntity.class, name);
-        }
-
-        public final NumberPath<Long> id = createNumber("id", Long.class);
-
-        public final StringPath firstName = createString("firstName");
-
-        public final StringPath lastName = createString("lastName");
-
-        public final LocalDatePath birthday = createLocalDate("birthday");
-
-    }
-
 
 }
