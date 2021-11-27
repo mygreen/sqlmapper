@@ -17,7 +17,7 @@ import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
-import com.github.mygreen.sqlmapper.core.test.config.TestConfig;
+import com.github.mygreen.sqlmapper.core.test.config.NoDbTestConfig;
 import com.github.mygreen.sqlmapper.core.test.entity.Customer;
 import com.github.mygreen.sqlmapper.core.test.entity.EmbeddedEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.EntityChild;
@@ -29,7 +29,7 @@ import com.github.mygreen.sqlmapper.metamodel.support.SubQueryHelper;
 
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes=TestConfig.class)
+@ContextConfiguration(classes=NoDbTestConfig.class)
 public class MetamodelWhereBuilderTest {
 
     @Autowired

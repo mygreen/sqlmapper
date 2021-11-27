@@ -19,7 +19,7 @@ import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
-import com.github.mygreen.sqlmapper.core.test.config.TestConfig;
+import com.github.mygreen.sqlmapper.core.test.config.NoDbTestConfig;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.EntityPathBase;
 import com.github.mygreen.sqlmapper.metamodel.LocalDatePath;
@@ -40,7 +40,7 @@ import lombok.Data;
  *
  */
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes=TestConfig.class)
+@ContextConfiguration(classes=NoDbTestConfig.class)
 public class ComparisionOpHandlerTest {
 
     @Autowired
