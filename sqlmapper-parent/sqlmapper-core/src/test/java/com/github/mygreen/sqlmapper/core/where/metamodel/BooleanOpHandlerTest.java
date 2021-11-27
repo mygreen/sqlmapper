@@ -5,22 +5,15 @@ import static org.assertj.core.api.Assertions.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
-import com.github.mygreen.sqlmapper.core.dialect.Dialect;
-import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
-import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.test.config.NoDbTestConfig;
-import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.EntityPathBase;
 import com.github.mygreen.sqlmapper.metamodel.LocalDatePath;
 import com.github.mygreen.sqlmapper.metamodel.NumberPath;
@@ -39,26 +32,7 @@ import lombok.Data;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes=NoDbTestConfig.class)
-public class BooleanOpHandlerTest {
-
-    @Autowired
-    private EntityMetaFactory entityMetaFactory;
-
-    @Autowired
-    private Dialect dialect;
-
-    private MetamodelWhereVisitor createVisitor(EntityPath<?> entityPath) {
-        EntityMeta entityMeta = entityMetaFactory.create(entityPath.getType());
-
-        TableNameResolver tableNameResolver = new TableNameResolver();
-        tableNameResolver.prepareTableAlias(entityPath);
-
-        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(Map.of(entityMeta.getEntityType(), entityMeta),
-                 dialect, entityMetaFactory, tableNameResolver);
-
-        return visitor;
-
-    }
+public class BooleanOpHandlerTest extends MetamodelTestSupport {
 
     @Entity
     @Data

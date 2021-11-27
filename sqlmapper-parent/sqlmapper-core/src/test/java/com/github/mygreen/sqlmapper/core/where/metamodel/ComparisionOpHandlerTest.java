@@ -3,24 +3,16 @@ package com.github.mygreen.sqlmapper.core.where.metamodel;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
-import com.github.mygreen.sqlmapper.core.dialect.Dialect;
-import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
-import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
-import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.test.config.NoDbTestConfig;
-import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.EntityPathBase;
 import com.github.mygreen.sqlmapper.metamodel.LocalDatePath;
 import com.github.mygreen.sqlmapper.metamodel.NumberPath;
@@ -41,29 +33,7 @@ import lombok.Data;
  */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes=NoDbTestConfig.class)
-public class ComparisionOpHandlerTest {
-
-    @Autowired
-    private EntityMetaFactory entityMetaFactory;
-
-    @Autowired
-    private Dialect dialect;
-
-    private MetamodelWhereVisitor createVisitor(EntityPath<?>... entityPaths) {
-        Map<Class<?>, EntityMeta> entityMetaMap = new HashMap<>();
-        TableNameResolver tableNameResolver = new TableNameResolver();
-
-        for(EntityPath<?> entityPath : entityPaths) {
-            EntityMeta entityMeta = entityMetaFactory.create(entityPath.getType());
-            tableNameResolver.prepareTableAlias(entityPath);
-            entityMetaMap.put(entityPath.getType(), entityMeta);
-        }
-
-        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(entityMetaMap, dialect, entityMetaFactory, tableNameResolver);
-
-        return visitor;
-
-    }
+public class ComparisionOpHandlerTest extends MetamodelTestSupport {
 
     @Entity
     @Data
