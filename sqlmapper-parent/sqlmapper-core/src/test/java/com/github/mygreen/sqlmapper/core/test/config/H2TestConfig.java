@@ -21,7 +21,7 @@ import com.github.mygreen.sqlmapper.core.dialect.H2Dialect;
  */
 @EnableTransactionManagement
 @Configuration
-public class TestConfig extends SqlMapperConfigurationSupport {
+public class H2TestConfig extends SqlMapperConfigurationSupport {
 
     @Override
     public DataSource dataSource() {
@@ -29,9 +29,7 @@ public class TestConfig extends SqlMapperConfigurationSupport {
                 .generateUniqueName(true)
                 .setType(EmbeddedDatabaseType.H2)
                 .setScriptEncoding("UTF-8")
-                .addScript("script/test_schema.sql")
-                .addScripts("script/test_data_customer.sql", "script/test_data_business.sql")
-                .addScript("script/h2-stored-procedures.sql")
+                .addScript("script/h2/create_schema.sql")
                 .build();
     }
 

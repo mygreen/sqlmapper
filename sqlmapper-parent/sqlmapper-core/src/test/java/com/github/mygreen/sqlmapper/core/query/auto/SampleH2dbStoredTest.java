@@ -25,10 +25,12 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.github.mygreen.sqlmapper.core.test.config.TestConfig;
+import com.github.mygreen.sqlmapper.core.test.config.H2TestConfig;
 
+
+@Disabled("サンプル用のためテスト対象外")
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes=TestConfig.class)
+@ContextConfiguration(classes=H2TestConfig.class)
 public class SampleH2dbStoredTest {
 
     @Autowired

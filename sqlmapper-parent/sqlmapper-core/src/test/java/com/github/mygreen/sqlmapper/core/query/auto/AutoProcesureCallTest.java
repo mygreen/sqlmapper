@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,17 +15,24 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.annotation.In;
 import com.github.mygreen.sqlmapper.core.annotation.ResultSet;
-import com.github.mygreen.sqlmapper.core.test.config.TestConfig;
+import com.github.mygreen.sqlmapper.core.query.QueryTestSupport;
+import com.github.mygreen.sqlmapper.core.test.config.H2TestConfig;
 import com.github.mygreen.sqlmapper.core.test.entity.Customer;
 
 import lombok.Data;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes=TestConfig.class)
-public class AutoProcesureCallTest {
+@ContextConfiguration(classes=H2TestConfig.class)
+public class AutoProcesureCallTest extends QueryTestSupport {
 
     @Autowired
     SqlMapper sqlMapper;
+
+    @BeforeEach
+    void beforeMethod() {
+        resetData();
+        executeSqlFileAndCommit("insert_data_customer.sql", "create_stored.sql");
+    }
 
     @DisplayName("戻り値が1つのカラムの場合")
     @Test
@@ -51,7 +59,6 @@ public class AutoProcesureCallTest {
             .execute();
 
         assertThat(param.result).hasSize(1);
-//        System.out.println(param.result);
 
     }
 

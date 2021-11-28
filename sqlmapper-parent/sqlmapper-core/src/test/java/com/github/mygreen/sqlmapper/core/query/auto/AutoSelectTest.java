@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.SqlMapper;
-import com.github.mygreen.sqlmapper.core.test.config.TestConfig;
+import com.github.mygreen.sqlmapper.core.query.QueryTestSupport;
+import com.github.mygreen.sqlmapper.core.test.config.H2TestConfig;
 import com.github.mygreen.sqlmapper.core.test.entity.Customer;
 import com.github.mygreen.sqlmapper.core.test.entity.Employee;
 import com.github.mygreen.sqlmapper.core.test.entity.MBusinessEstablishment;
@@ -21,11 +23,17 @@ import com.github.mygreen.sqlmapper.core.test.entity.MEmployee;
 import com.github.mygreen.sqlmapper.core.test.entity.MSection;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes=TestConfig.class)
-public class AutoSelectTest {
+@ContextConfiguration(classes=H2TestConfig.class)
+public class AutoSelectTest extends QueryTestSupport {
 
     @Autowired
     SqlMapper sqlMapper;
+
+    @BeforeEach
+    void beforeMethod() {
+        resetData();
+        executeSqlFileAndCommit("insert_data_customer.sql", "insert_data_business.sql");
+    }
 
     @Test
     void testSelectCount() {
