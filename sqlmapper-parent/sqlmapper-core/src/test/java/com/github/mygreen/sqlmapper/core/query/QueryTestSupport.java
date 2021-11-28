@@ -24,15 +24,13 @@ import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 
 import lombok.AccessLevel;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 /**
- * クエリ実行時のテストのサポート
+ * クエリ実行時のテストのサポートクラス。
  *
  * @author T.TSUCHIE
  *
  */
-@Slf4j
 public abstract class QueryTestSupport {
 
     @Autowired
@@ -67,7 +65,6 @@ public abstract class QueryTestSupport {
      * </ul>
      */
     protected void resetData() {
-        log.info("rest db data");
         executeSqlFileAndCommit("reset_data.sql");
     }
 
