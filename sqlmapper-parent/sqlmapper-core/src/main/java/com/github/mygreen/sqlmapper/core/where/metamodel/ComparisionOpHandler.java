@@ -1,5 +1,6 @@
 package com.github.mygreen.sqlmapper.core.where.metamodel;
 
+import com.github.mygreen.sqlmapper.metamodel.Path;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
@@ -51,8 +52,8 @@ public class ComparisionOpHandler extends OperationHandler<ComparisionOp> {
          * 比較演算子の場合、左変=プロパティパス、右辺=定数で構成される場合、
          * 定数をプロパティの変換規則に従い変換する。
          */
-        if(left instanceof PropertyPath && right instanceof Constant) {
-            visitConstantWithPropertyPath((PropertyPath<?>)left, (Constant<?>)right, rightContext);
+        if(isPropertyPath(left) && right instanceof Constant) {
+            visitConstantWithPropertyPath((Path<?>)left, (Constant<?>)right, rightContext);
         } else {
             invoke(operator, right, visitor, rightContext);
         }
@@ -83,13 +84,13 @@ public class ComparisionOpHandler extends OperationHandler<ComparisionOp> {
          * 比較演算子の場合、左変=プロパティパス、右辺=定数で構成される場合、
          * 定数をプロパティの変換規則に従い変換する。
          */
-        if(left instanceof PropertyPath && right1 instanceof Constant) {
-            visitConstantWithPropertyPath((PropertyPath<?>)left, (Constant<?>)right1, rightContext1);
+        if(isPropertyPath(left) && right1 instanceof Constant) {
+            visitConstantWithPropertyPath((Path<?>)left, (Constant<?>)right1, rightContext1);
         } else {
             invoke(operator, right1, visitor, rightContext1);
         }
 
-        if(left instanceof PropertyPath && right2 instanceof Constant) {
+        if(isPropertyPath(left) && right2 instanceof Constant) {
             visitConstantWithPropertyPath((PropertyPath<?>)left, (Constant<?>)right2, rightContext2);
         } else {
             invoke(operator, right2, visitor, rightContext2);
