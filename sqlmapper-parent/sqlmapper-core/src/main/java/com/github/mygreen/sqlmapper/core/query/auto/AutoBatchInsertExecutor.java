@@ -106,13 +106,7 @@ public class AutoBatchInsertExecutor {
 
         for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
 
-            final String propertyName = propertyMeta.getName();
-
-            if(query.getExcludesProperties().contains(propertyName)) {
-                continue;
-            }
-
-            if(!query.getIncludesProperties().isEmpty() && !query.getIncludesProperties().contains(propertyName)) {
+            if(!isTargetProperty(propertyMeta)) {
                 continue;
             }
 
@@ -156,6 +150,36 @@ public class AutoBatchInsertExecutor {
             }
 
         }
+    }
+
+    /**
+     * 挿入対象のプロパティか判定します。
+     * @param propertyMeta プロパティ情報
+     * @return 挿入対象のとき、{@literal true} を返します。
+     */
+    private boolean isTargetProperty(final PropertyMeta propertyMeta) {
+
+        if(propertyMeta.isId()) {
+            return true;
+        }
+
+        if(propertyMeta.isTransient()) {
+            return false;
+        }
+
+        final String propertyName = propertyMeta.getName();
+
+        if(query.getIncludesProperties().contains(propertyName)) {
+            return true;
+        }
+
+        if(query.getExcludesProperties().contains(propertyName)) {
+            return false;
+        }
+
+        // 挿入対象が指定されているときは、その他はすべて抽出対象外とする。
+        return query.getIncludesProperties().isEmpty();
+
     }
 
     /**

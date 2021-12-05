@@ -51,8 +51,9 @@ public interface AutoUpdate<T> {
     AutoUpdate<T> suppresOptimisticLockException();
 
     /**
-     * 指定のプロパティのみを挿入対象とします。
-     * <p>アノテーション {@literal @Column(updatable = false)} が設定されているプロパティは対象外となります。</p>
+     * 指定のプロパティのみを更新対象とします。
+     * <p>ID(主キー)は自動的に更新対象外となります。</p>
+     * <p>アノテーション {@literal @Column(updatable = false)} が設定されているプロパティは自動的に対象外となります。</p>
      *
      * @param properties 更新対象のプロパティ情報。
      * @return 自身のインスタンス。
@@ -62,6 +63,8 @@ public interface AutoUpdate<T> {
 
     /**
      * 指定のプロパティを更新対象から除外します。
+     * <p>ID(主キー)は自動的に更新対象外となります。</p>
+     * <p>アノテーション {@literal @Column(updatable = false)} が設定されているプロパティは自動的に対象外となります。</p>
      *
      * @param properties 除外対象のプロパティ名。
      * @return 自身のインスタンス。

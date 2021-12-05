@@ -27,7 +27,8 @@ public interface AutoInsert<T> {
 
     /**
      * 指定のプロパティのみを挿入対象とします。
-     * <p>アノテーション {@literal @Column(insertable = false)} が設定されているプロパティは対象外となります。</p>
+     * <p>ID(主キー)の場合は、必ず挿入対象となります。</p>
+     * <p>{@link #excludes(PropertyPath...)} と同時に指定した場合、{@link #includes(PropertyPath...)}が優先されます。</p>
      *
      * @param properties 挿入対象のプロパティ情報。
      * @return 自身のインスタンス。
@@ -37,6 +38,8 @@ public interface AutoInsert<T> {
 
     /**
      * 指定のプロパティを挿入対象から除外します。
+     * <p>ID(主キー)の場合は、必ず挿入対象となります。</p>
+     * <p>{@link #includes(PropertyPath...)} と同時に指定した場合、{@link #includes(PropertyPath...)}が優先されます。</p>
      *
      * @param properties 除外対象のプロパティ情報。
      * @return 自身のインスタンス。
