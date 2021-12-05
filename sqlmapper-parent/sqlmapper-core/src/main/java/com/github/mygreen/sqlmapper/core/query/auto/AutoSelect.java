@@ -77,7 +77,7 @@ public interface AutoSelect<T> {
 
     /**
      * 抽出するデータの開始位置を指定します。
-     * @param offset 開始位置。
+     * @param offset 開始位置。0から始まります。
      * @return このインスタンス自身
      */
     AutoSelect<T> offset(int offset);
