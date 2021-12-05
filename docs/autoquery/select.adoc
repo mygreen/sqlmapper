@@ -231,7 +231,7 @@ List<Employee> results = sqlMapper.selectFrom(e)
         .getResultList();
 ----
 
-NOTE: `includes(...)` と `excludes(...)` の両方で同じプロパティを指定した場合、`excludes(...)` が優先されます。
+NOTE: `includes(...)` と `excludes(...)` の両方で同じプロパティを指定した場合、`includes(...)` が優先されます。
 
 
 == 指定したプロパティを検索結果から除外する

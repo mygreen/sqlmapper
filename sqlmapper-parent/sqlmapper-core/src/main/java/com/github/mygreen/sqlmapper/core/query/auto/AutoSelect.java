@@ -83,8 +83,9 @@ public interface AutoSelect<T> {
     AutoSelect<T> offset(int offset);
 
     /**
-     * 指定のプロパティのみを挿入対象とします。
-     * <p>アノテーション {@literal @Column(insertable = false)} が設定されているプロパティは対象外となります。</p>
+     * 指定のプロパティのみを抽出対象とします。
+     * <p>ID(主キー)の場合は、必ず抽出対象となります。</p>
+     * <p>{@link #excludes(PropertyPath...)} と同時に指定した場合、{@link #includes(PropertyPath...)}が優先されます。</p>
      *
      * @param properties 挿入対象のプロパティ情報。
      * @return 自身のインスタンス。
@@ -93,7 +94,9 @@ public interface AutoSelect<T> {
     AutoSelect<T> includes(PropertyPath<?>... properties);
 
     /**
-     * 指定のプロパティを挿入対象から除外します。
+     * 指定のプロパティを抽出対象から除外します。
+     * <p>ID(主キー)の場合は、必ず抽出対象となります。</p>
+     * <p>{@link #includes(PropertyPath...)} と同時に指定した場合、{@link #includes(PropertyPath...)}が優先されます。</p>
      *
      * @param properties 除外対象のプロパティ情報。
      * @return 自身のインスタンス。
