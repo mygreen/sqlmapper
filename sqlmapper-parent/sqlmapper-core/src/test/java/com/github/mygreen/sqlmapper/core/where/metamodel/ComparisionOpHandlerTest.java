@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.core.where.metamodel;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -209,7 +210,7 @@ public class ComparisionOpHandlerTest extends MetamodelTestSupport {
         assertThat(sql).isEqualTo("T1_.NAME in (?, ?, ?) or T1_.POINT in (select T2_.POINT from TEST_ENTITY T2_ where T2_.BIRTHDAY > ?)");
 
         List<Object> params = visitor.getParamValues();
-        assertThat(params).containsExactly("Yamada", "Tanaka", "Suzuki", LocalDate.of(2020, 1, 1));
+        assertThat(params).containsExactly("Yamada", "Tanaka", "Suzuki", Date.valueOf(LocalDate.of(2020, 1, 1)));
 
     }
 
@@ -230,7 +231,7 @@ public class ComparisionOpHandlerTest extends MetamodelTestSupport {
         assertThat(sql).isEqualTo("T1_.NAME not in (?, ?, ?) or T1_.POINT not in (select T2_.POINT from TEST_ENTITY T2_ where T2_.BIRTHDAY > ?)");
 
         List<Object> params = visitor.getParamValues();
-        assertThat(params).containsExactly("Yamada", "Tanaka", "Suzuki", LocalDate.of(2020, 1, 1));
+        assertThat(params).containsExactly("Yamada", "Tanaka", "Suzuki", Date.valueOf(LocalDate.of(2020, 1, 1)));
 
     }
 

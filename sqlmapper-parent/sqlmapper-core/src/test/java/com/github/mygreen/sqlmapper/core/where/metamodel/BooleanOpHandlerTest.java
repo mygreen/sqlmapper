@@ -2,8 +2,8 @@ package com.github.mygreen.sqlmapper.core.where.metamodel;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.sql.Date;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -44,7 +44,7 @@ public class BooleanOpHandlerTest extends MetamodelTestSupport {
 
         private String lastName;
 
-        private LocalDateTime birthday;
+        private LocalDate birthday;
 
     }
 
@@ -105,7 +105,7 @@ public class BooleanOpHandlerTest extends MetamodelTestSupport {
         assertThat(sql).isEqualTo("T1_.FIRST_NAME like ? and T1_.LAST_NAME = ? and T1_.BIRTHDAY > ?");
 
         List<Object> params = visitor.getParamValues();
-        assertThat(params).containsExactly("%taro%", "Yamada", LocalDate.of(2000, 1, 2));
+        assertThat(params).containsExactly("%taro%", "Yamada", Date.valueOf(LocalDate.of(2000, 1, 2)));
 
     }
 
@@ -143,7 +143,7 @@ public class BooleanOpHandlerTest extends MetamodelTestSupport {
         assertThat(sql).isEqualTo("T1_.FIRST_NAME like ? or T1_.LAST_NAME = ? or T1_.BIRTHDAY > ?");
 
         List<Object> params = visitor.getParamValues();
-        assertThat(params).containsExactly("%taro%", "Yamada", LocalDate.of(2000, 1, 2));
+        assertThat(params).containsExactly("%taro%", "Yamada", Date.valueOf(LocalDate.of(2000, 1, 2)));
 
     }
 
@@ -163,7 +163,7 @@ public class BooleanOpHandlerTest extends MetamodelTestSupport {
         assertThat(sql).isEqualTo("(T1_.FIRST_NAME like ? and T1_.LAST_NAME = ?) or T1_.BIRTHDAY > ?");
 
         List<Object> params = visitor.getParamValues();
-        assertThat(params).containsExactly("%taro%", "Yamada", LocalDate.of(2000, 1, 2));
+        assertThat(params).containsExactly("%taro%", "Yamada", Date.valueOf(LocalDate.of(2000, 1, 2)));
 
     }
 
@@ -181,7 +181,7 @@ public class BooleanOpHandlerTest extends MetamodelTestSupport {
         assertThat(sql).isEqualTo("T1_.FIRST_NAME like ? and (T1_.LAST_NAME = ? or T1_.BIRTHDAY > ?)");
 
         List<Object> params = visitor.getParamValues();
-        assertThat(params).containsExactly("%taro%", "Yamada", LocalDate.of(2000, 1, 2));
+        assertThat(params).containsExactly("%taro%", "Yamada", Date.valueOf(LocalDate.of(2000, 1, 2)));
 
     }
 
@@ -199,7 +199,7 @@ public class BooleanOpHandlerTest extends MetamodelTestSupport {
         assertThat(sql).isEqualTo("T1_.FIRST_NAME like ? or (T1_.LAST_NAME = ? and T1_.BIRTHDAY > ?)");
 
         List<Object> params = visitor.getParamValues();
-        assertThat(params).containsExactly("%taro%", "Yamada", LocalDate.of(2000, 1, 2));
+        assertThat(params).containsExactly("%taro%", "Yamada", Date.valueOf(LocalDate.of(2000, 1, 2)));
 
     }
 

@@ -3,6 +3,7 @@ package com.github.mygreen.sqlmapper.core.where.metamodel;
 import static org.assertj.core.api.Assertions.*;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -86,7 +87,7 @@ public class UnaryOpHandlerTest extends MetamodelTestSupport {
         assertThat(sql).isEqualTo("not (T1_.NAME = ?) or not (not (T1_.BIRTHDAY > ?))");
 
         List<Object> params = visitor.getParamValues();
-        assertThat(params).containsExactly("Yamada", LocalDate.of(2000, 1, 1));
+        assertThat(params).containsExactly("Yamada", Date.valueOf(LocalDate.of(2000, 1, 1)));
 
     }
 
@@ -141,7 +142,7 @@ public class UnaryOpHandlerTest extends MetamodelTestSupport {
         assertThat(sql).isEqualTo("exists (select T1_.ID from TEST_ENTITY T1_ where T1_.BIRTHDAY > ?)");
 
         List<Object> params = visitor.getParamValues();
-        assertThat(params).containsExactly(LocalDate.of(2020, 1, 1));
+        assertThat(params).containsExactly(Date.valueOf(LocalDate.of(2020, 1, 1)));
 
     }
 
@@ -160,7 +161,7 @@ public class UnaryOpHandlerTest extends MetamodelTestSupport {
         assertThat(sql).isEqualTo("not exists (select T1_.ID from TEST_ENTITY T1_ where T1_.BIRTHDAY > ?)");
 
         List<Object> params = visitor.getParamValues();
-        assertThat(params).containsExactly(LocalDate.of(2020, 1, 1));
+        assertThat(params).containsExactly(Date.valueOf(LocalDate.of(2020, 1, 1)));
 
     }
 

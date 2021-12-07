@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.core.where.metamodel;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
@@ -49,7 +50,7 @@ public class MetamodelWhereBuilderTest extends MetamodelTestSupport {
         assertThat(sql).isEqualTo("(lower(T1_.FIRST_NAME) like ? and T1_.LAST_NAME = ?) or (T1_.BIRTHDAY > ? and (T1_.VERSION between ? and ?))");
 
         List<Object> params = visitor.getParamValues();
-        assertThat(params).containsExactly("%taro%", "Yamada", LocalDate.of(2000, 1, 1), 0L, 100L);
+        assertThat(params).containsExactly("%taro%", "Yamada", Date.valueOf(LocalDate.of(2000, 1, 1)), 0L, 100L);
 
     }
 
@@ -100,10 +101,10 @@ public class MetamodelWhereBuilderTest extends MetamodelTestSupport {
         visitor.visit(new MetamodelWhere(condition));
 
         String sql = visitor.getCriteria();
-        assertThat(sql).isEqualTo("T1_.FIRST_NAME like ? and exists (select T1_.customer_id, T1_.FIRST_NAME, T1_.LAST_NAME, T1_.BIRTHDAY, T1_.VERSION from CUSTOMER T1_ where T1_.BIRTHDAY > ?)");
+        assertThat(sql).isEqualTo("T1_.FIRST_NAME like ? and exists (select T1_.customer_id, T1_.FIRST_NAME, T1_.LAST_NAME, T1_.BIRTHDAY, T1_.GENDER_TYPE, T1_.VERSION from CUSTOMER T1_ where T1_.BIRTHDAY > ?)");
 
         List<Object> params = visitor.getParamValues();
-        assertThat(params).containsExactly("%taro%", LocalDate.of(2000, 1, 1));
+        assertThat(params).containsExactly("%taro%", Date.valueOf(LocalDate.of(2000, 1, 1)));
 
 
     }
