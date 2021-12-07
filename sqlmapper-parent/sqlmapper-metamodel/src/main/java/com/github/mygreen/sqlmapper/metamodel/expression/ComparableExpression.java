@@ -56,7 +56,7 @@ public abstract class ComparableExpression<T extends Comparable> extends General
             return goe(from);
 
         } else {
-            return new BooleanOperation(ComparisionOp.BETWEEN, mixin, Constant.create(from), Constant.create(to));
+            return new BooleanOperation(ComparisionOp.BETWEEN, mixin, from, to);
         }
     }
 
