@@ -48,6 +48,10 @@ int count = sqlMapper.insert(employee)
         .execute();
 ----
 
+
+NOTE: `includes(...)` と `excludes(...)` の両方で同じプロパティを指定した場合、`includes(...)` が優先されます。
+
+
 == 指定したプロパティを挿入対象から除外する
 
 指定したプロパティを挿入対象から除外する場合は、 `excludes()` を使用します。

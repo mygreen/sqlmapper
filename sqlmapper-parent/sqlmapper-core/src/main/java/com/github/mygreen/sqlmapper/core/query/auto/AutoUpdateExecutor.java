@@ -91,38 +91,10 @@ public class AutoUpdateExecutor {
     private void prepareSetClause() {
 
         for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
-            final String propertyName = propertyMeta.getName();
+
             final Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, query.getEntity());
-
-            // 主キーは検索条件に入れるので対象外
-            if(propertyMeta.isId() || !propertyMeta.getColumnMeta().isUpdatable()) {
+            if(!isTargetProperty(propertyMeta, propertyValue)) {
                 continue;
-            }
-
-            if (propertyMeta.isVersion() && !query.isIncludeVersion()) {
-                continue;
-            }
-
-            if(query.getExcludesProperties().contains(propertyName)) {
-                continue;
-            }
-
-            if(!query.getIncludesProperties().isEmpty() && !query.getIncludesProperties().contains(propertyName)) {
-                continue;
-            }
-
-            if (query.isExcludesNull() && propertyValue == null) {
-                continue;
-            }
-
-            if (query.getBeforeStates() != null) {
-                final Object oldValue = query.getBeforeStates().get(propertyName);
-                if (propertyValue == oldValue) {
-                    continue;
-                }
-                if (propertyValue != null && propertyValue.equals(oldValue)) {
-                    continue;
-                }
             }
 
             this.targetPropertyCount++;
@@ -141,6 +113,65 @@ public class AutoUpdateExecutor {
             final String columnName = propertyMeta.getColumnMeta().getName();
             setClause.addSql(columnName, columnName + " + 1");
         }
+    }
+
+    /**
+     * 更新対象のプロパティか判定します。
+     * @param propertyMeta プロパティ情報
+     * @param propertyValue 更新対象の値
+     * @return 更新対象のとき、{@literal true} を返します。
+     */
+    private boolean isTargetProperty(final PropertyMeta propertyMeta, final Object propertyValue) {
+
+        // 主キーは検索条件に入れるので対象外
+        if(propertyMeta.isId() || !propertyMeta.getColumnMeta().isUpdatable()) {
+            return false;
+        }
+
+        /*
+         * バージョンキーは通常は更新対象となるため、通常の条件では対象外。
+         * ただし、includeVersion = true のときは更新対象とする。
+         */
+        if(propertyMeta.isVersion() && !query.isIncludeVersion()) {
+            return false;
+        }
+
+        if(!propertyMeta.getColumnMeta().isUpdatable()) {
+            return false;
+        }
+
+        if(propertyMeta.isTransient()) {
+            return false;
+        }
+
+        final String propertyName = propertyMeta.getName();
+        if(query.getIncludesProperties().contains(propertyName)) {
+            return true;
+        }
+
+        if(query.getExcludesProperties().contains(propertyName)) {
+            return false;
+        }
+
+        // nullは対象外とするとき
+        if(query.isExcludesNull() && propertyValue == null) {
+            return false;
+        }
+
+        // 比較対象と同じ値は更新対象外
+        if(query.getBeforeStates() != null) {
+            final Object oldValue = query.getBeforeStates().get(propertyName);
+            if (propertyValue == oldValue) {
+                return false;
+            }
+            if (propertyValue != null && propertyValue.equals(oldValue)) {
+                return false;
+            }
+        }
+
+        // 更新対象が指定されているときは、その他はすべて更新対象外とする。
+        return query.getIncludesProperties().isEmpty();
+
     }
 
     /**

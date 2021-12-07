@@ -225,19 +225,9 @@ public class AutoSelectExecutor<T> {
 
             // ベースとなるエンティティのカラム指定の場合
             for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
-                final String propertyName = propertyMeta.getName();
-                final PropertyPath<?> propertyPath = query.getEntityPath().findPropertyPath(propertyName);
 
-                if(propertyMeta.isTransient()) {
-                    continue;
-                }
-
-                if(query.getExcludesProperties().contains(propertyPath)) {
-                    continue;
-                }
-
-                if(!query.getIncludesProperties().isEmpty()
-                        && !query.getIncludesProperties().contains(propertyPath)) {
+                if(!isTargetProperty(propertyMeta)) {
+                    // 抽出対象のプロパティでない場合はスキップします。
                     continue;
                 }
 
@@ -323,6 +313,41 @@ public class AutoSelectExecutor<T> {
             }
 
         }
+
+    }
+
+    /**
+     * 抽出対象のプロパティか判定します。
+     * @param propertyMeta プロパティ情報
+     * @return 抽出対象のとき、{@literal true} を返します。
+     */
+    private boolean isTargetProperty(final PropertyMeta propertyMeta) {
+
+        if(propertyMeta.isId()) {
+            return true;
+        }
+
+        if(propertyMeta.isTransient()) {
+            return false;
+        }
+
+        if(query.getIncludesProperties().isEmpty() && query.getExcludesProperties().isEmpty()) {
+            return true;
+        }
+
+        final String propertyName = propertyMeta.getName();
+        final PropertyPath<?> propertyPath = query.getEntityPath().findPropertyPath(propertyName);
+
+        if(query.getIncludesProperties().contains(propertyPath)) {
+            return true;
+        }
+
+        if(query.getExcludesProperties().contains(propertyPath)) {
+            return false;
+        }
+
+        // 抽出対象が指定されているときは、その他はすべて抽出対象外とする。
+        return query.getIncludesProperties().isEmpty();
 
     }
 

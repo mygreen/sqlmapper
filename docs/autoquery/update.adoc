@@ -76,6 +76,8 @@ int count = sqlMapper.update(employee)
         .execute();
 ----
 
+NOTE: `includes(...)` と `excludes(...)` の両方で同じプロパティを指定した場合、`includes(...)` が優先されます。
+
 
 == 指定したプロパティを更新対象から除外する
 
