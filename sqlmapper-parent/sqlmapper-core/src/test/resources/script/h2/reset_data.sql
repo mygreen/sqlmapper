@@ -5,6 +5,7 @@ TRUNCATE table employee;
 TRUNCATE table section;
 TRUNCATE table business_establishment;
 TRUNCATE table customer;
+TRUNCATE table customer_address;
 TRUNCATE table SAMPLE_IDENTITY2;
 TRUNCATE table SAMPLE_SEQUENCE1;
 TRUNCATE table SAMPLE_TABLE_ID1;

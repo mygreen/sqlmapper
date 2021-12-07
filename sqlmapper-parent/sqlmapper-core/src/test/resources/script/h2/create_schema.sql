@@ -27,14 +27,23 @@ CREATE TABLE IF NOT EXISTS business_establishment (
 	tel varchar
 );
 
+-- 顧客
 CREATE TABLE IF NOT EXISTS customer (
 	customer_id varchar primary key,
 	first_name varchar NOT NULL,
 	last_name varchar NOT NULL,
 	birthday date,
+	gender_type varchar NOT NULL,
 	version bigint NOT NULL
 );
 
+-- 顧客住所
+CREATE TABLE IF NOT EXISTS customer_address (
+	customer_id varchar primary key,
+	tel_number varchar,
+	address varchar,
+	version bigint NOT NULL
+);
 
 
 CREATE TABLE IF NOT EXISTS SAMPLE_IDENTITY2 (

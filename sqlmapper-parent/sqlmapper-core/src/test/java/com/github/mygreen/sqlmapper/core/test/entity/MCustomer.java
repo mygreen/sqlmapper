@@ -1,6 +1,9 @@
+
 package com.github.mygreen.sqlmapper.core.test.entity;
 
+import com.github.mygreen.sqlmapper.core.test.entity.type.GenderType;
 import com.github.mygreen.sqlmapper.metamodel.EntityPathBase;
+import com.github.mygreen.sqlmapper.metamodel.EnumPath;
 import com.github.mygreen.sqlmapper.metamodel.LocalDatePath;
 import com.github.mygreen.sqlmapper.metamodel.NumberPath;
 import com.github.mygreen.sqlmapper.metamodel.StringPath;
@@ -31,6 +34,8 @@ public class MCustomer extends EntityPathBase<Customer> {
     public final StringPath lastName = createString("lastName");
 
     public final LocalDatePath birthday = createLocalDate("birthday");
+
+    public final EnumPath<GenderType> genderType = createEnum("genderType", GenderType.class);
 
     public final NumberPath<Long> version = createNumber("version", Long.class);
 }
