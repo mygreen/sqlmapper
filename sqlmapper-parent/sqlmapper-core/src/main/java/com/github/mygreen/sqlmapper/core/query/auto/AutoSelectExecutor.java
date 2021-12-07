@@ -470,7 +470,7 @@ public class AutoSelectExecutor<T> {
         }
 
         // LIMIT句を指定していないかのチェック
-        if(query.getLimit() > 0 || query.getOffset() > 0) {
+        if(query.getLimit() > 0 || query.getOffset() >= 0) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportPaginationWithForUpdate")
                     .format());
         }
@@ -502,7 +502,7 @@ public class AutoSelectExecutor<T> {
                 + orderByClause.toSql()
                 + forUpdateClause;
 
-        if(query.getLimit() > 0 || query.getLimit() == 0 && query.getOffset() > 0) {
+        if(query.getLimit() > 0 || query.getOffset() >= 0) {
             sql = dialect.convertLimitSql(sql, query.getOffset(), query.getLimit());
         }
 
