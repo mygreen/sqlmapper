@@ -96,7 +96,7 @@ public class QueryUtils {
         StringBuilder result = new StringBuilder();
 
         for(int i=0; i < repeat; i++) {
-            if(result.length() > 0 && !StringUtils.hasLength(separator)) {
+            if(result.length() > 0 && StringUtils.hasLength(separator)) {
                 result.append(separator);
             }
 
