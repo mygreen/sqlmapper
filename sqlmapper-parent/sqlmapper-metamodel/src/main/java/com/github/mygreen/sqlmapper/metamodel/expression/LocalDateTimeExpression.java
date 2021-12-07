@@ -22,7 +22,7 @@ public abstract class LocalDateTimeExpression extends TemporalExpressionBase<Loc
      * 現在の日時を取得する関数 {@literal CURRENT_TIMESTAMP} を返します。
      * @return 関数 {@literal CURRENT_TIMESTAMP}
      */
-    public static LocalDateTimeExpression currentDateTime() {
+    public static LocalDateTimeExpression currentTimestamp() {
         return new LocalDateTimeOperation(FunctionOp.CURRENT_TIMESTAMP);
     }
 
