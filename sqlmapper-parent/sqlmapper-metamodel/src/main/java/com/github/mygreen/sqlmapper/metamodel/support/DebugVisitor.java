@@ -86,7 +86,7 @@ public class DebugVisitor implements Visitor<DebugVisitorContext>{
         // ArithmeticOp
         operationTemplateMap.put(ArithmeticOp.MULT, "{0} * {1}");
         operationTemplateMap.put(ArithmeticOp.DIV, "{0} / {1}");
-        operationTemplateMap.put(ArithmeticOp.MOD, "{0} % {1}");
+        operationTemplateMap.put(ArithmeticOp.MOD, "mod({0}, {1})");
         operationTemplateMap.put(ArithmeticOp.ADD, "{0} + {1}");
         operationTemplateMap.put(ArithmeticOp.SUB, "{0} - {1}");
 
