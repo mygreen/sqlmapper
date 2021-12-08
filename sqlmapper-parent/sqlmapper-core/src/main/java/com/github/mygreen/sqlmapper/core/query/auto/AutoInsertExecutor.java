@@ -37,7 +37,7 @@ public class AutoInsertExecutor {
     /**
      * バージョンプロパティの初期値
      */
-    public static final long INITIAL_VERSION = 1L;
+    public static final long INITIAL_VERSION = 0L;
 
     /**
      * クエリ情報
