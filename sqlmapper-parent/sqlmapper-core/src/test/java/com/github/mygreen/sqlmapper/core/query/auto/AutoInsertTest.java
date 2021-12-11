@@ -15,10 +15,13 @@ import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.test.QueryTestSupport;
 import com.github.mygreen.sqlmapper.core.test.config.H2TestConfig;
 import com.github.mygreen.sqlmapper.core.test.entity.Customer;
-import com.github.mygreen.sqlmapper.core.test.entity.Employee;
-import com.github.mygreen.sqlmapper.core.test.entity.Role;
+import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueIdentityTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueSequenceTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueTableTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MCustomer;
-import com.github.mygreen.sqlmapper.core.test.entity.meta.MEmployee;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueIdentityTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueSequenceTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueTableTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.type.GenderType;
 
 
@@ -164,27 +167,74 @@ public class AutoInsertTest extends QueryTestSupport {
     }
 
     @Test
-    void testInsertWithGenerateIdentity() {
+    void testGenerateValue_identity() {
 
-        Employee entity = new Employee();
-        entity.setName("Suzuki Hanako");
-        entity.setAge(20);
-        entity.setRole(Role.MANAGER);
-        entity.setHireDate(LocalDate.of(2021, 1, 1));
-        entity.setSectionCode("021");
-        entity.setBusinessEstablishmentCode(1);
+        MGeneratedValueIdentityTestEntity m_ = MGeneratedValueIdentityTestEntity.testIdentity;
 
-        int execCount = sqlMapper.insert(entity)
-            .execute();
+        for(int i=0; i < 5; i++) {
+            GeneratedValueIdentityTestEntity entity = new GeneratedValueIdentityTestEntity();
+            entity.setComment("test-identity" + i);
 
-        assertThat(execCount).isEqualTo(1);
+            int execCount = sqlMapper.insert(entity)
+                .execute();
 
-        Employee result = sqlMapper.selectFrom(MEmployee.employee)
-                .id(entity.getId())
-                .getSingleResult();
+            assertThat(execCount).isEqualTo(1);
 
-        assertThat(result.getId()).isEqualTo(1);
-        assertThat(result.getVersion()).isEqualTo(0L);
+            GeneratedValueIdentityTestEntity result = sqlMapper.selectFrom(m_)
+                    .id(entity.getId())
+                    .getSingleResult();
+
+            assertThat(result).hasFieldOrPropertyWithValue("id", (long)(i+1))
+                .hasFieldOrPropertyWithValue("comment", "test-identity" + i);
+        }
+
+    }
+
+    @Test
+    void testGenerateValue_sequence() {
+
+        MGeneratedValueSequenceTestEntity m_ = MGeneratedValueSequenceTestEntity.testSequence;
+
+        for(int i=0; i < 5; i++) {
+            GeneratedValueSequenceTestEntity entity = new GeneratedValueSequenceTestEntity();
+            entity.setComment("test-sequence" + i);
+
+            int execCount = sqlMapper.insert(entity)
+                .execute();
+
+            assertThat(execCount).isEqualTo(1);
+
+            GeneratedValueSequenceTestEntity result = sqlMapper.selectFrom(m_)
+                    .id(entity.getId())
+                    .getSingleResult();
+
+            assertThat(result).hasFieldOrPropertyWithValue("id", (long)(i+1))
+                .hasFieldOrPropertyWithValue("comment", "test-sequence" + i);
+        }
+
+    }
+
+    @Test
+    void testGenerateValue_table() {
+
+        MGeneratedValueTableTestEntity m_ = MGeneratedValueTableTestEntity.testTable;
+
+        for(int i=0; i < 5; i++) {
+            GeneratedValueTableTestEntity entity = new GeneratedValueTableTestEntity();
+            entity.setComment("test-table" + i);
+
+            int execCount = sqlMapper.insert(entity)
+                .execute();
+
+            assertThat(execCount).isEqualTo(1);
+
+            GeneratedValueTableTestEntity result = sqlMapper.selectFrom(m_)
+                    .id(entity.getId())
+                    .getSingleResult();
+
+            assertThat(result).hasFieldOrPropertyWithValue("id", (long)(i+1))
+                .hasFieldOrPropertyWithValue("comment", "test-table" + i);
+        }
 
     }
 }

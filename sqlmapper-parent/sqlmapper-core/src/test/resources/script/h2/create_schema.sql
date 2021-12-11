@@ -1,6 +1,6 @@
 -- 社員
 CREATE TABLE IF NOT EXISTS employee (
-	id bigint auto_increment,
+	id bigint auto_increment, -- ID : identity
 	name varchar NOT NULL,
 	age int,
 	role varchar,
@@ -29,11 +29,11 @@ CREATE TABLE IF NOT EXISTS business_establishment (
 
 -- 顧客
 CREATE TABLE IF NOT EXISTS customer (
-	customer_id varchar primary key,
+	customer_id varchar primary key, -- ID : 手動
 	first_name varchar NOT NULL,
 	last_name varchar NOT NULL,
 	birthday date,
-	gender_type varchar NOT NULL,
+	gender_type varchar,
 	version bigint NOT NULL
 );
 
@@ -45,23 +45,33 @@ CREATE TABLE IF NOT EXISTS customer_address (
 	version bigint NOT NULL
 );
 
+-- ID自動生成用のテスト用
+CREATE TABLE IF NOT EXISTS test_generated_value_identity (
+	id bigint auto_increment,
+	comment varchar NOT NULL
+);
 
-CREATE TABLE IF NOT EXISTS SAMPLE_IDENTITY2 (
+CREATE TABLE IF NOT EXISTS test_generated_value_identity2 (
 	id1 bigint auto_increment,
 	id2 bigint auto_increment,
-	value varchar NOT NULL
+	comment varchar NOT NULL
 );
 
-CREATE SEQUENCE SAMPLE_SEQUENCE1_ID start with 1;
+CREATE SEQUENCE test_sequence start with 1;
 
-CREATE TABLE IF NOT EXISTS SAMPLE_SEQUENCE1 (
+CREATE TABLE IF NOT EXISTS test_generated_value_sequence (
 	id bigint primary key,
-	value varchar NOT NULL
+	comment varchar NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS SAMPLE_TABLE_ID1 (
+CREATE TABLE IF NOT EXISTS id_sequence (
+	sequence_name varchar(255) primary key,
+	sequence_value bigint NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS test_generated_value_table (
 	id bigint primary key,
-	value varchar NOT NULL
+	comment varchar NOT NULL
 );
 
 /*
@@ -87,7 +97,4 @@ CREATE TABLE IF NOT EXISTS conv_xml (
 );
 */
 
-CREATE TABLE IF NOT EXISTS ID_SEQUENCE (
-	SEQUENCE_NAME varchar(255) primary key,
-	SEQUENCE_VALUE bigint NOT NULL
-);
+
