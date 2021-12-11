@@ -32,7 +32,7 @@ public class User {
 |データベースにより生成方法が自動手的に選択されます。 
 
 * 選択される方法は、DBダイアクレクト ``Dialect#getDefaultGenerationType()`` により決定されます。 
-* strateryを指定しなければ、``AUTO`` と解釈されます。 
+* strategyを指定しなければ、``AUTO`` と解釈されます。 
 
 |``@GeneratedValue(strategry=GenerationType.IDENTITY)``
 |IDENTITY列を使用して採番を行います。
