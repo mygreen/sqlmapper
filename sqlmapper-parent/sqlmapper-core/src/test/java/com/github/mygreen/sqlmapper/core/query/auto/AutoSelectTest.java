@@ -16,16 +16,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.SqlMapper;
-import com.github.mygreen.sqlmapper.core.query.QueryTestSupport;
+import com.github.mygreen.sqlmapper.core.test.QueryTestSupport;
 import com.github.mygreen.sqlmapper.core.test.config.H2TestConfig;
 import com.github.mygreen.sqlmapper.core.test.entity.Customer;
 import com.github.mygreen.sqlmapper.core.test.entity.CustomerAddress;
 import com.github.mygreen.sqlmapper.core.test.entity.Employee;
-import com.github.mygreen.sqlmapper.core.test.entity.MBusinessEstablishment;
-import com.github.mygreen.sqlmapper.core.test.entity.MCustomer;
-import com.github.mygreen.sqlmapper.core.test.entity.MCustomerAddress;
-import com.github.mygreen.sqlmapper.core.test.entity.MEmployee;
-import com.github.mygreen.sqlmapper.core.test.entity.MSection;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MBusinessEstablishment;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MCustomer;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MCustomerAddress;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MEmployee;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MSection;
 import com.github.mygreen.sqlmapper.core.test.entity.type.GenderType;
 
 

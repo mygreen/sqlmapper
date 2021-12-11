@@ -1,7 +1,8 @@
-package com.github.mygreen.sqlmapper.core.test.entity;
+package com.github.mygreen.sqlmapper.core.test.entity.meta;
 
 import java.util.UUID;
 
+import com.github.mygreen.sqlmapper.core.test.entity.LobData;
 import com.github.mygreen.sqlmapper.metamodel.EntityPathBase;
 import com.github.mygreen.sqlmapper.metamodel.GeneralPath;
 

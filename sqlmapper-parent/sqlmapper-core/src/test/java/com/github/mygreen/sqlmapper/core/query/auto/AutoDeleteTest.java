@@ -12,10 +12,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.SqlMapper;
-import com.github.mygreen.sqlmapper.core.query.QueryTestSupport;
+import com.github.mygreen.sqlmapper.core.test.QueryTestSupport;
 import com.github.mygreen.sqlmapper.core.test.config.H2TestConfig;
 import com.github.mygreen.sqlmapper.core.test.entity.Customer;
-import com.github.mygreen.sqlmapper.core.test.entity.MCustomer;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MCustomer;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes=H2TestConfig.class)

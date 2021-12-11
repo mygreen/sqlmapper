@@ -1,4 +1,4 @@
-package com.github.mygreen.sqlmapper.core.query;
+package com.github.mygreen.sqlmapper.core.test;
 
 import java.io.BufferedReader;
 import java.io.IOException;

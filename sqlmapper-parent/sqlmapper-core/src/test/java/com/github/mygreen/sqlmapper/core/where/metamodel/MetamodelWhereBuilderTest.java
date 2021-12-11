@@ -17,9 +17,9 @@ import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.test.config.NoDbTestConfig;
 import com.github.mygreen.sqlmapper.core.test.entity.Customer;
-import com.github.mygreen.sqlmapper.core.test.entity.MCustomer;
-import com.github.mygreen.sqlmapper.core.test.entity.MEmbeddedEntity;
-import com.github.mygreen.sqlmapper.core.test.entity.MEntityChild;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MCustomer;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MEmbeddedEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MEntityChild;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.support.SubQueryHelper;
 

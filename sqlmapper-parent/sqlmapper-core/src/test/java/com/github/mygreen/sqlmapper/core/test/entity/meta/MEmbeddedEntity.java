@@ -1,5 +1,6 @@
-package com.github.mygreen.sqlmapper.core.test.entity;
+package com.github.mygreen.sqlmapper.core.test.entity.meta;
 
+import com.github.mygreen.sqlmapper.core.test.entity.EmbeddedEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.EmbeddedEntity.PK;
 import com.github.mygreen.sqlmapper.metamodel.BooleanPath;
 import com.github.mygreen.sqlmapper.metamodel.EntityPathBase;

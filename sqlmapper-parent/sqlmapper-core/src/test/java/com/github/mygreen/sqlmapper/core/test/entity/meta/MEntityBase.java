@@ -1,5 +1,6 @@
-package com.github.mygreen.sqlmapper.core.test.entity;
+package com.github.mygreen.sqlmapper.core.test.entity.meta;
 
+import com.github.mygreen.sqlmapper.core.test.entity.EntityBase;
 import com.github.mygreen.sqlmapper.metamodel.EntityPathBase;
 import com.github.mygreen.sqlmapper.metamodel.NumberPath;
 import com.github.mygreen.sqlmapper.metamodel.UtilDatePath;
