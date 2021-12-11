@@ -26,7 +26,7 @@ public interface AutoBatchInsert<T> {
 
     /**
      * 指定のプロパティのみを挿入対象とします。
-     * <p>ID(主キー)の場合は、必ず挿入対象となります。</p>
+     * <p>ID(主キー)、バージョンキー（排他キー）の場合は、必ず挿入対象となります。</p>
      * <p>{@link #excludes(PropertyPath...)} と同時に指定した場合、{@link #includes(PropertyPath...)}が優先されます。</p>
      *
      * @param properties 挿入対象のプロパティ情報。
@@ -37,7 +37,7 @@ public interface AutoBatchInsert<T> {
 
     /**
      * 指定のプロパティを挿入対象から除外します。
-     * <p>ID(主キー)の場合は、必ず挿入対象となります。</p>
+     * <p>ID(主キー)、バージョンキー（排他キー）の場合は、必ず挿入対象となります。</p>
      * <p>{@link #includes(PropertyPath...)} と同時に指定した場合、{@link #includes(PropertyPath...)}が優先されます。</p>
      *
      * @param properties 除外対象のプロパティ情報。
