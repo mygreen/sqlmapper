@@ -147,6 +147,10 @@ public class AutoInsertExecutor {
             return true;
         }
 
+        if(propertyMeta.isVersion()) {
+            return true;
+        }
+
         if(propertyMeta.isTransient()) {
             return false;
         }
