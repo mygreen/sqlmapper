@@ -19,7 +19,16 @@ import com.github.mygreen.sqlmapper.core.test.entity.Employee;
 import com.github.mygreen.sqlmapper.core.test.entity.MCustomer;
 import com.github.mygreen.sqlmapper.core.test.entity.MEmployee;
 import com.github.mygreen.sqlmapper.core.test.entity.Role;
+import com.github.mygreen.sqlmapper.core.test.entity.type.GenderType;
 
+
+/**
+ * {@link AutoInsert} のテスタ
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes=H2TestConfig.class)
 public class AutoInsertTest extends QueryTestSupport {
@@ -36,10 +45,11 @@ public class AutoInsertTest extends QueryTestSupport {
     void testInsert() {
 
         Customer entity = new Customer();
-        entity.setId("00001");
+        entity.setId("test@001");
         entity.setFirstName("Taro");
         entity.setLastName("Yamada");
         entity.setBirthday(LocalDate.of(2010, 10, 1));
+        entity.setGenderType(GenderType.MALE);
 
         int count = sqlMapper.insert(entity)
             .execute();
@@ -50,8 +60,106 @@ public class AutoInsertTest extends QueryTestSupport {
                 .id(entity.getId())
                 .getSingleResult();
 
-        assertThat(result.getId()).isEqualTo("00001");
-        assertThat(result.getVersion()).isEqualTo(0L);
+        assertThat(result).hasFieldOrPropertyWithValue("id", "test@001")
+            .hasFieldOrPropertyWithValue("firstName", "Taro")
+            .hasFieldOrPropertyWithValue("lastName", "Yamada")
+            .hasFieldOrPropertyWithValue("birthday", LocalDate.of(2010, 10, 1))
+            .hasFieldOrPropertyWithValue("genderType", GenderType.MALE)
+            .hasFieldOrPropertyWithValue("version", 0l);
+
+    }
+
+    @Test
+    void testInclude() {
+
+        MCustomer m_ = MCustomer.customer;
+
+        Customer entity = new Customer();
+        entity.setId("test@001");
+        entity.setFirstName("Taro");
+        entity.setLastName("Yamada");
+        entity.setBirthday(LocalDate.of(2010, 10, 1));
+        entity.setGenderType(GenderType.MALE);
+
+        int count = sqlMapper.insert(entity)
+                .includes(m_.firstName, m_.lastName, m_.birthday)
+            .execute();
+
+        assertThat(count).isEqualTo(1);
+
+        Customer result = sqlMapper.selectFrom(m_)
+                .id(entity.getId())
+                .getSingleResult();
+
+        assertThat(result).hasFieldOrPropertyWithValue("id", "test@001")
+            .hasFieldOrPropertyWithValue("firstName", "Taro")
+            .hasFieldOrPropertyWithValue("lastName", "Yamada")
+            .hasFieldOrPropertyWithValue("birthday", LocalDate.of(2010, 10, 1))
+            .hasFieldOrPropertyWithValue("genderType", null)    // 挿入対象外
+            .hasFieldOrPropertyWithValue("version", 0l);
+
+    }
+
+    @Test
+    void testExclude() {
+
+        MCustomer m_ = MCustomer.customer;
+
+        Customer entity = new Customer();
+        entity.setId("test@001");
+        entity.setFirstName("Taro");
+        entity.setLastName("Yamada");
+        entity.setBirthday(LocalDate.of(2010, 10, 1));
+        entity.setGenderType(GenderType.MALE);
+
+        int count = sqlMapper.insert(entity)
+                .excludes(m_.genderType)
+            .execute();
+
+        assertThat(count).isEqualTo(1);
+
+        Customer result = sqlMapper.selectFrom(m_)
+                .id(entity.getId())
+                .getSingleResult();
+
+        assertThat(result).hasFieldOrPropertyWithValue("id", "test@001")
+            .hasFieldOrPropertyWithValue("firstName", "Taro")
+            .hasFieldOrPropertyWithValue("lastName", "Yamada")
+            .hasFieldOrPropertyWithValue("birthday", LocalDate.of(2010, 10, 1))
+            .hasFieldOrPropertyWithValue("genderType", null)    // 挿入対象外
+            .hasFieldOrPropertyWithValue("version", 0l);
+
+    }
+
+    @Test
+    void testIncludeAndExclude() {
+
+        MCustomer m_ = MCustomer.customer;
+
+        Customer entity = new Customer();
+        entity.setId("test@001");
+        entity.setFirstName("Taro");
+        entity.setLastName("Yamada");
+        entity.setBirthday(LocalDate.of(2010, 10, 1));
+        entity.setGenderType(GenderType.MALE);
+
+        int count = sqlMapper.insert(entity)
+                .includes(m_.firstName, m_.lastName, m_.birthday)
+                .excludes(m_.birthday)
+            .execute();
+
+        assertThat(count).isEqualTo(1);
+
+        Customer result = sqlMapper.selectFrom(m_)
+                .id(entity.getId())
+                .getSingleResult();
+
+        assertThat(result).hasFieldOrPropertyWithValue("id", "test@001")
+            .hasFieldOrPropertyWithValue("firstName", "Taro")
+            .hasFieldOrPropertyWithValue("lastName", "Yamada")
+            .hasFieldOrPropertyWithValue("birthday", LocalDate.of(2010, 10, 1))
+            .hasFieldOrPropertyWithValue("genderType", null)    // 挿入対象外
+            .hasFieldOrPropertyWithValue("version", 0l);
 
     }
 
