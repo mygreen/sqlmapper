@@ -38,6 +38,7 @@ public interface AutoDelete<T> {
     /**
      * クエリを実行します。
      * @return 削除したレコード件数を返します。
+     * @throws OptimisticLockingFailureException 楽観的排他制御を行っているときに該当するレコードが存在しないとスローされます。{@link #suppresOptimisticLockException} で制御できます。
      */
     int execute();
 
