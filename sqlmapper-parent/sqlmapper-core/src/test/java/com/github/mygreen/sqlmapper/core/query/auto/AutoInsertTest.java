@@ -51,6 +51,8 @@ public class AutoInsertTest extends QueryTestSupport {
     @Test
     void testInsert() {
 
+        MCustomer m_ = MCustomer.customer;
+
         Customer entity = new Customer();
         entity.setId("test@001");
         entity.setFirstName("Taro");
@@ -63,7 +65,7 @@ public class AutoInsertTest extends QueryTestSupport {
 
         assertThat(count).isEqualTo(1);
 
-        Customer result = sqlMapper.selectFrom(MCustomer.customer)
+        Customer result = sqlMapper.selectFrom(m_)
                 .id(entity.getId())
                 .getSingleResult();
 
