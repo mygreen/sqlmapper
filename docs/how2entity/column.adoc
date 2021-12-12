@@ -127,8 +127,8 @@ DBの型は、JDBCドライバがサポートしていれば、対応してい�
 |
 
 |java.util.UUID
-|UUID
-|
+|VARCHAR
+|UUID型をサポートしているDBも多くありますが、JDBCドライバーがそれぞれ対応方法が異なるため、SqlMapperではDB側は文字列型に変換して永続化します。もし、DB固有のUUIDを使用したい場合は、``@Convert`` で独自の型変換処理を実装して対応する必要があります。
 
 |列挙型
 |CHAR / VARCHAR / TINTYINT / SMALLINT / INTEGER
