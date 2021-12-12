@@ -74,6 +74,12 @@ CREATE TABLE IF NOT EXISTS test_generated_value_table (
 	comment varchar NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS test_generated_value_uuid (
+--	id uuid primary key,
+	id varchar primary key,
+	comment varchar NOT NULL
+);
+
 /*
 CREATE TABLE IF NOT EXISTS conv_lob (
 	lob_id bigint primary key,

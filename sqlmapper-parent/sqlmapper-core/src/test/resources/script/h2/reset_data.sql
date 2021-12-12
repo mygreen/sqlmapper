@@ -10,6 +10,7 @@ TRUNCATE table test_generated_value_identity;
 TRUNCATE table test_generated_value_identity2;
 TRUNCATE table test_generated_value_sequence;
 TRUNCATE table test_generated_value_table;
+TRUNCATE table test_generated_value_uuid;
 TRUNCATE table id_sequence;
 
 -- IDのリセット : ALTER TABLE <table_name> ALTER COLUMN <column_name> RESTART WITH 1

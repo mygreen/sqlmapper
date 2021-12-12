@@ -18,10 +18,12 @@ import com.github.mygreen.sqlmapper.core.test.entity.Customer;
 import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueIdentityTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueSequenceTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueTableTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueUUIDTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MCustomer;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueIdentityTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueSequenceTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueTableTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueUUIDTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.type.GenderType;
 
 
@@ -234,6 +236,30 @@ public class AutoInsertTest extends QueryTestSupport {
 
             assertThat(result).hasFieldOrPropertyWithValue("id", (long)(i+1))
                 .hasFieldOrPropertyWithValue("comment", "test-table" + i);
+        }
+
+    }
+
+    @Test
+    void testGenerateValue_uuid() {
+
+        MGeneratedValueUUIDTestEntity m_ = MGeneratedValueUUIDTestEntity.testUUID;
+
+        for(int i=0; i < 5; i++) {
+            GeneratedValueUUIDTestEntity entity = new GeneratedValueUUIDTestEntity();
+            entity.setComment("test-UUID" + i);
+
+            int execCount = sqlMapper.insert(entity)
+                .execute();
+
+            assertThat(execCount).isEqualTo(1);
+
+            GeneratedValueUUIDTestEntity result = sqlMapper.selectFrom(m_)
+                    .id(entity.getId())
+                    .getSingleResult();
+
+            assertThat(result).hasFieldOrPropertyWithValue("id", entity.getId())
+                .hasFieldOrPropertyWithValue("comment", "test-UUID" + i);
         }
 
     }
