@@ -73,14 +73,14 @@ public interface AutoUpdate<T> {
     AutoUpdate<T> excludes(PropertyPath<?>... properties);
 
     /**
-     * beforeから変更のあったプロパティだけを更新対象とします
+     * beforeEntityから変更のあったプロパティだけを更新対象とします
      * @param beforeEntity 変更前の状態を持つエンティティ
      * @return このインスタンス自身
      */
     AutoUpdate<T> changedFrom(T beforeEntity);
 
     /**
-     * beforeから変更のあったプロパティだけを更新対象とします。
+     * beforeStatesから変更のあったプロパティだけを更新対象とします。
      * <p>引数 {@literal beforeStates} のサイズが {@literal 0} のときは何もしません。
      * @param beforeStates 変更前の状態を持つマップ。（key=プロパティ名、value=プロパティ値）
      * @return このインスタンス自身。
