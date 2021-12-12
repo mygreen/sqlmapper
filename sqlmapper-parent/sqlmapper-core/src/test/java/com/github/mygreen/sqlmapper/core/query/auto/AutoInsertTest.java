@@ -15,11 +15,13 @@ import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.test.QueryTestSupport;
 import com.github.mygreen.sqlmapper.core.test.config.H2TestConfig;
 import com.github.mygreen.sqlmapper.core.test.entity.Customer;
+import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueIdentity2TestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueIdentityTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueSequenceTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueTableTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueUUIDTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MCustomer;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueIdentity2TestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueIdentityTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueSequenceTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueTableTestEntity;
@@ -191,6 +193,32 @@ public class AutoInsertTest extends QueryTestSupport {
         }
 
     }
+
+    @Test
+    void testGenerateValue_identity2() {
+
+        MGeneratedValueIdentity2TestEntity m_ = MGeneratedValueIdentity2TestEntity.testIdentity2;
+
+        for(int i=0; i < 5; i++) {
+            GeneratedValueIdentity2TestEntity entity = new GeneratedValueIdentity2TestEntity();
+            entity.setComment("test-identity2" + i);
+
+            int execCount = sqlMapper.insert(entity)
+                .execute();
+
+            assertThat(execCount).isEqualTo(1);
+
+            GeneratedValueIdentity2TestEntity result = sqlMapper.selectFrom(m_)
+                    .id(entity.getId1(), entity.getId2())
+                    .getSingleResult();
+
+            assertThat(result).hasFieldOrPropertyWithValue("id1", (long)(i+1))
+                .hasFieldOrPropertyWithValue("id2", "10" + i)
+                .hasFieldOrPropertyWithValue("comment", "test-identity2" + i);
+        }
+
+    }
+
 
     @Test
     void testGenerateValue_sequence() {

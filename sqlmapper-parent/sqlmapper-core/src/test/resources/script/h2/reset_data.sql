@@ -17,7 +17,7 @@ TRUNCATE table id_sequence;
 ALTER TABLE employee ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE test_generated_value_identity ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE test_generated_value_identity2 ALTER COLUMN id1 RESTART WITH 1;
---ALTER TABLE test_generated_value_identity2 ALTER COLUMN id2 RESTART WITH 1;
+ALTER TABLE test_generated_value_identity2 ALTER COLUMN id2 RESTART WITH 100;
 
 -- シーケンスのリセット : ALTER SEQUENCE <sequence_name> RESTART WITH 1;
 ALTER SEQUENCE test_sequence RESTART WITH 1;

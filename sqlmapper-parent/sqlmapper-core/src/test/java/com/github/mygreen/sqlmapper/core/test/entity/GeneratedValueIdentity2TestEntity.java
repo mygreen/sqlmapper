@@ -14,18 +14,18 @@ import lombok.Data;
  *
  */
 @Data
-@Table(name = "test_generated_id_identity2")
+@Table(name = "test_generated_value_identity2")
 @Entity
-public class TestGeneratedIdIdentity {
+public class GeneratedValueIdentity2TestEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id1;
+    private Long id1;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, format="00000")
-    public String id2;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String id2;
 
-    public String value;
+    private String comment;
 
 }
