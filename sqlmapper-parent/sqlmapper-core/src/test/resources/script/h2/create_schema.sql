@@ -64,6 +64,11 @@ CREATE TABLE IF NOT EXISTS test_generated_value_sequence (
 	comment varchar NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS test_generated_value_sequence_format (
+	id varchar primary key,
+	comment varchar NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS id_sequence (
 	sequence_name varchar(255) primary key,
 	sequence_value bigint NOT NULL
@@ -71,6 +76,11 @@ CREATE TABLE IF NOT EXISTS id_sequence (
 
 CREATE TABLE IF NOT EXISTS test_generated_value_table (
 	id bigint primary key,
+	comment varchar NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS test_generated_value_table_format (
+	id varchar primary key,
 	comment varchar NOT NULL
 );
 

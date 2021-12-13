@@ -17,13 +17,17 @@ import com.github.mygreen.sqlmapper.core.test.config.H2TestConfig;
 import com.github.mygreen.sqlmapper.core.test.entity.Customer;
 import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueIdentity2TestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueIdentityTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueSequenceFormatTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueSequenceTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueTableFormatTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueTableTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.GeneratedValueUUIDTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MCustomer;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueIdentity2TestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueIdentityTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueSequenceFormatTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueSequenceTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueTableFormatTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueTableTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MGeneratedValueUUIDTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.type.GenderType;
@@ -215,7 +219,7 @@ public class AutoInsertTest extends QueryTestSupport {
                     .getSingleResult();
 
             assertThat(result).hasFieldOrPropertyWithValue("id1", (long)(i+1))
-                .hasFieldOrPropertyWithValue("id2", "10" + i)
+                .hasFieldOrPropertyWithValue("id2", 100+i)
                 .hasFieldOrPropertyWithValue("comment", "test-identity2" + i);
         }
 
@@ -247,6 +251,30 @@ public class AutoInsertTest extends QueryTestSupport {
     }
 
     @Test
+    void testGenerateValue_sequence_format() {
+
+        MGeneratedValueSequenceFormatTestEntity m_ = MGeneratedValueSequenceFormatTestEntity.testSequenceFormat;
+
+        for(int i=0; i < 5; i++) {
+            GeneratedValueSequenceFormatTestEntity entity = new GeneratedValueSequenceFormatTestEntity();
+            entity.setComment("test-sequence-format" + i);
+
+            int execCount = sqlMapper.insert(entity)
+                .execute();
+
+            assertThat(execCount).isEqualTo(1);
+
+            GeneratedValueSequenceFormatTestEntity result = sqlMapper.selectFrom(m_)
+                    .id(entity.getId())
+                    .getSingleResult();
+
+            assertThat(result).hasFieldOrPropertyWithValue("id", "0000000" + (i+1))
+                .hasFieldOrPropertyWithValue("comment", "test-sequence-format" + i);
+        }
+
+    }
+
+    @Test
     void testGenerateValue_table() {
 
         MGeneratedValueTableTestEntity m_ = MGeneratedValueTableTestEntity.testTable;
@@ -266,6 +294,30 @@ public class AutoInsertTest extends QueryTestSupport {
 
             assertThat(result).hasFieldOrPropertyWithValue("id", (long)(i+1))
                 .hasFieldOrPropertyWithValue("comment", "test-table" + i);
+        }
+
+    }
+
+    @Test
+    void testGenerateValue_table_fomrat() {
+
+        MGeneratedValueTableFormatTestEntity m_ = MGeneratedValueTableFormatTestEntity.testTableFormat;
+
+        for(int i=0; i < 5; i++) {
+            GeneratedValueTableFormatTestEntity entity = new GeneratedValueTableFormatTestEntity();
+            entity.setComment("test-table-format" + i);
+
+            int execCount = sqlMapper.insert(entity)
+                .execute();
+
+            assertThat(execCount).isEqualTo(1);
+
+            GeneratedValueTableFormatTestEntity result = sqlMapper.selectFrom(m_)
+                    .id(entity.getId())
+                    .getSingleResult();
+
+            assertThat(result).hasFieldOrPropertyWithValue("id", "0000000" + (i+1))
+                .hasFieldOrPropertyWithValue("comment", "test-table-format" + i);
         }
 
     }

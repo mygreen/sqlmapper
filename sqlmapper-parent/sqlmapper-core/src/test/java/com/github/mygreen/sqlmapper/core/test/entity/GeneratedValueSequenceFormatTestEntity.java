@@ -4,28 +4,28 @@ import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
+import com.github.mygreen.sqlmapper.core.annotation.SequenceGenerator;
 import com.github.mygreen.sqlmapper.core.annotation.Table;
 
 import lombok.Data;
 
 /**
- * 自動生成の主キーが２つ
+ * {@literal GeneratedValue(strategy=SEQUENCE)}のテスト。
+ * <p>文字列型にフォーマット指定。
  *
+ *
+ * @author T.TSUCHIE
  *
  */
 @Data
-@Table(name = "test_generated_value_identity2")
+@Table(name = "test_generated_value_sequence_format")
 @Entity
-public class GeneratedValueIdentity2TestEntity {
+public class GeneratedValueSequenceFormatTestEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id1;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id2;
+    @SequenceGenerator(sequenceName = "test_sequence", format = "00000000")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private String id;
 
     private String comment;
-
 }

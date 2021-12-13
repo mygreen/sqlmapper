@@ -19,7 +19,7 @@ public class MGeneratedValueIdentity2TestEntity extends EntityPathBase<Generated
 
     public final NumberPath<Long> id1 = createNumber("id1", Long.class);
 
-    public final StringPath id2 = createString("id2");
+    public final NumberPath<Integer> id2 = createNumber("id2", Integer.class);
 
     public final StringPath comment = createString("comment");
 }

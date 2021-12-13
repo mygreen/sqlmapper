@@ -5,27 +5,26 @@ import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
 import com.github.mygreen.sqlmapper.core.annotation.Table;
+import com.github.mygreen.sqlmapper.core.annotation.TableGenerator;
 
 import lombok.Data;
 
 /**
- * 自動生成の主キーが２つ
+ * {@literal GeneratedValue(strategy=TABLE)}のテスト
  *
+ *
+ * @author T.TSUCHIE
  *
  */
 @Data
-@Table(name = "test_generated_value_identity2")
+@Table(name = "test_generated_value_table_format")
 @Entity
-public class GeneratedValueIdentity2TestEntity {
+public class GeneratedValueTableFormatTestEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id1;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id2;
+    @TableGenerator(format = "00000000")
+    @GeneratedValue(strategy = GenerationType.TABLE)
+    private String id;
 
     private String comment;
-
 }
