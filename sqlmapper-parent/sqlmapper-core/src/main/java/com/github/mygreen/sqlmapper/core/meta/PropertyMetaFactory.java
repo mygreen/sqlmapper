@@ -326,15 +326,12 @@ public class PropertyMetaFactory {
             }
         } else if(generationType == GenerationType.IDENTITY) {
             IdentityIdGenerator identityIdGenerator = new IdentityIdGenerator(propertyType);
-            if(!annoGeneratedValue.get().format().isEmpty()) {
-                identityIdGenerator.setFormatter(new DecimalFormat(annoGeneratedValue.get().format()));
-            }
             idGenerator = identityIdGenerator;
 
         } else if(generationType == GenerationType.SEQUENCE) {
             Optional<SequenceGenerator> annoSequenceGenerator = propertyMeta.getAnnotation(SequenceGenerator.class);
             final String sequenceName;
-            if(annoSequenceGenerator.isPresent()) {
+            if(annoSequenceGenerator.isPresent() && !annoSequenceGenerator.get().sequenceName().isEmpty()) {
                 sequenceName = NameUtils.tableFullName(annoSequenceGenerator.get().sequenceName(),
                         annoSequenceGenerator.get().catalog(),
                         annoSequenceGenerator.get().schema());
@@ -344,9 +341,19 @@ public class PropertyMetaFactory {
             SequenceIdGenerator sequenceIdGenerator = new SequenceIdGenerator(
                     dialect.getSequenceIncrementer(dataSource, sequenceName), propertyType);
 
-            if(!annoGeneratedValue.get().format().isEmpty()) {
-                sequenceIdGenerator.setFormatter(new DecimalFormat(annoGeneratedValue.get().format()));
-            }
+            annoSequenceGenerator.map(a -> a.format()).filter(f -> !f.isEmpty()).ifPresent(f -> {
+                try {
+                    sequenceIdGenerator.setFormatter(new DecimalFormat(f));
+                } catch(IllegalArgumentException e) {
+                    throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.wrongFormat")
+                            .paramWithClass("classType", entityMeta.getEntityType())
+                            .param("property", propertyMeta.getName())
+                            .paramWithAnno("anno", TableGenerator.class)
+                            .param("attrName", "format")
+                            .param("attrValue", f)
+                            .format(), e);
+                }
+            });
 
             idGenerator = sequenceIdGenerator;
 
@@ -423,19 +430,19 @@ public class PropertyMetaFactory {
                     propertyMeta.getPropertyType(), sequenceName);
 
 
-            if(!annoGeneratedValue.get().format().isEmpty()) {
+            annoTableGenerator.map(a -> a.format()).filter(f -> !f.isEmpty()).ifPresent(f -> {
                 try {
-                    tableIdGenerator.setFormatter(new DecimalFormat(annoGeneratedValue.get().format()));
+                    tableIdGenerator.setFormatter(new DecimalFormat(f));
                 } catch(IllegalArgumentException e) {
                     throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.wrongFormat")
                             .paramWithClass("classType", entityMeta.getEntityType())
                             .param("property", propertyMeta.getName())
                             .paramWithAnno("anno", TableGenerator.class)
                             .param("attrName", "format")
-                            .param("attrValue", annoGeneratedValue.get().format())
+                            .param("attrValue", f)
                             .format(), e);
                 }
-            }
+            });
 
             idGenerator = tableIdGenerator;
 

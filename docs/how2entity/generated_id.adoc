@@ -1,7 +1,7 @@
 [[anno_generated_id]]
 = 識別子（ID）の自動採番
 
-主キーなどの識別子（ID）の値をを自動生成したい場合は、フィールドにアノテーション ``@GeneratedId`` を付与します。
+主キーなどの識別子（ID）の値をを自動生成したい場合は、フィールドにアノテーション ``@GeneratedValue`` を付与します。
 
 * 属性 ``strategy`` にて生成方法を指定します。
 * 属性 ``generator`` にて、独自の生成方法を実装を指定することもできます。
@@ -32,7 +32,7 @@ public class User {
 |データベースにより生成方法が自動手的に選択されます。 
 
 * 選択される方法は、DBダイアクレクト ``Dialect#getDefaultGenerationType()`` により決定されます。 
-* strateryを指定しなければ、``AUTO`` と解釈されます。 
+* strategyを指定しなければ、``AUTO`` と解釈されます。 
 
 |``@GeneratedValue(strategry=GenerationType.IDENTITY)``
 |IDENTITY列を使用して採番を行います。
@@ -41,7 +41,7 @@ public class User {
 * IDENTITY列をサポートしているDBMSのみ利用できます。
 
 |``@GeneratedValue(strategy=GenerationType.SEQUENCE)``
-|DBのシーケンスを使用して採番を行います。
+|<<anno_sequence_gnerarator,シーケンスを使用して採番>>を行います。
 
 * アノテーション ``@SequenceGenerator``にて、詳細に定義することができます。
 * シーケンスをサポートしているDBMSのみ利用できます。
@@ -55,12 +55,61 @@ public class User {
 |``@GeneratedValue(strategy=GenerationType.UUID)``
 |``java.util.UUID`` を使用しランダムなセキュアな値を生成します。
 
-|``@GeneratedValue(generator=<独自実装)``
-|　<<custom_id_gnerarator,独自の採番方式>>として、Springコンテナに登録されているBean名を指定します。
+|``@GeneratedValue(generator=<独自実装>)``
+|<<custom_id_gnerarator,独自の採番方式>>として、Springコンテナに登録されているBean名を指定します。
 
 * 指定するSpring Beanは、インタフェース ``com.github.mygreen.sqlmapper.core.id.IdGenerator`` を実装する必要があります。
 
 |===
+
+[[anno_sequence_gnerarator]]
+== シーケンスによる識別子（ID）の自動採番
+
+* シーケンスをサポートしているDBMSで利用できます。
+
+* 利用する際には、事前に採番用のシーケンスを定義しておく必要があります。
+** シーケンス名は、アノテーション ``@SequenceGenerator`` でカスタマイズすることができます。
+** アノテーション ``@SequenceGenerator`` でシーケンス名を指定しない場合は、「``<テーブル名>_<カラム名>``」のシーケンス名を使用します。
+* 文字列にマッピングする際に、``@SequenceGenerator(format="xxx")`` でフォーマットを指定することができます。
+** フォーマットは、``java.text.DecimalFormat`` で解釈可能な書式を指定します。
+
+.採番用シーケンスのDDL
+[source,sql]
+----
+-- シーケンス名(<テーブル名>_<カラム名>)
+CREATE SEQUENCE USER_ID start with 1;
+----
+
+.標準的な使い方
+[source,java]
+----
+@Entity
+public class User {
+    
+    @Id
+    @GeneratedValue(strategry=GenerationType.SEQUENCE)
+    private long id;
+
+    private String name;
+    // setter/getterメソッドは省略
+}
+----
+
+.文字列型にフォーマット指定で採番する場合
+[source,java]
+----
+@Entity
+public class User {
+    
+    @Id
+    @SequenceGenerator(format="0000000000")
+    @GeneratedValue(strategry=GenerationType.SEQUENCE)
+    private String id;
+
+    private String name;
+    // setter/getterメソッドは省略
+}
+----
 
 
 [[anno_table_gnerarator]]
@@ -70,6 +119,8 @@ IDENTITYやシーケンスなどの機能を使わないで、テーブルを使
 
 * 利用する際には、事前に採番用のテーブルを定義しておく必要があります。
 ** テーブル名、カラム名などは、アノテーション ``@TableGenerator`` または、<<available_properties,プロパティ>> によってカスタマイズすることができます。
+* 文字列にマッピングする際に、``@TableGenerator(format="xxx")`` でフォーマットを指定することができます。
+** フォーマットは、``java.text.DecimalFormat`` で解釈可能な書式を指定します。
 
 .採番用テーブルのDDL
 [source,sql]
@@ -96,6 +147,23 @@ public class User {
     // setter/getterメソッドは省略
 }
 ----
+
+.文字列型にフォーマット指定で採番する場合
+[source,java]
+----
+@Entity
+public class User {
+    
+    @Id
+    @TableGenerator(format="0000000000")
+    @GeneratedValue(strategry=GenerationType.TABLE)
+    private String id;
+
+    private String name;
+    // setter/getterメソッドは省略
+}
+----
+
 
 === テーブルによる識別子の自動生成の設定
 

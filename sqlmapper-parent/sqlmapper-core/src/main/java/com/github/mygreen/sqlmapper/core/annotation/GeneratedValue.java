@@ -5,7 +5,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.text.DecimalFormat;
 
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
@@ -34,12 +33,6 @@ public @interface GeneratedValue {
      * <p>{@link IdGenerator} を実装している必要があります。
      */
     String generator() default "";
-
-    /**
-     * 識別子のクラスタイプが文字列のときに書式を設定することができます。
-     * @return {@link DecimalFormat}で指定できる書式です。
-     */
-    String format() default "";
 
     /**
      * 主キー生成戦略の種別を定義します。

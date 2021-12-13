@@ -5,10 +5,10 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.text.DecimalFormat;
 
 /**
  * 識別子(主キー)の値をシーケンスにより採番する設定をします。
- *
  *
  * @author T.TSUCHIE
  *
@@ -34,5 +34,11 @@ public @interface SequenceGenerator {
      * (オプション) 主キーの値を取得するデータベースのシーケンスオブジェクトの名前。
      */
     String sequenceName() default "";
+
+    /**
+     * 識別子のクラスタイプが文字列のときに書式を設定することができます。
+     * @return {@link DecimalFormat}で指定できる書式です。
+     */
+    String format() default "";
 
 }
