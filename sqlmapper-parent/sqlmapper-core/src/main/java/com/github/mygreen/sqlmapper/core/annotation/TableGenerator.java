@@ -5,11 +5,11 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.text.DecimalFormat;
 
 /**
  * 識別子(主キー)の値をテーブルにより採番する設定をします。
  * <p>このアノテーションは {@link Id}、{@link GeneratedValue} と併わせて使用しなければいけません。</p>
- *
  *
  * @author T.TSUCHIE
  *
@@ -67,5 +67,11 @@ public @interface TableGenerator {
      * @return
      */
     long initialValue() default 0L;
+
+    /**
+     * 識別子のクラスタイプが文字列のときに書式を設定することができます。
+     * @return {@link DecimalFormat}で指定できる書式です。
+     */
+    String format() default "";
 
 }

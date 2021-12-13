@@ -1,6 +1,5 @@
 package com.github.mygreen.sqlmapper.core.id;
 
-import java.text.NumberFormat;
 import java.util.List;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -8,7 +7,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 /**
  * IDENTITYによる生成は、実際にはJdbcTemplateで行います。
@@ -25,18 +23,12 @@ public class IdentityIdGenerator implements IdGenerator {
      * サポートしているクラスタイプ
      */
     private static final List<Class<?>> SUPPORTED_TYPE_LIST = List.of(
-            long.class, Long.class, int.class, Integer.class, String.class);
+            long.class, Long.class, int.class, Integer.class);
 
     /**
      * 生成する識別子のタイプ
      */
     private final Class<?> requiredType;
-
-    /**
-     * 文字列にマッピングするときのフォーマッター
-     */
-    @Setter
-    private NumberFormat formatter;
 
     @Override
     public boolean isSupportedType(Class<?> type) {
@@ -68,16 +60,6 @@ public class IdentityIdGenerator implements IdGenerator {
         if(requiredType == long.class || requiredType == Long.class
                 || requiredType == int.class || requiredType == Integer.class) {
             return NumberConvertUtils.convertNumber(requiredType, value);
-
-        } else if(requiredType == String.class) {
-
-            if(formatter == null) {
-                return value.toString();
-            } else {
-                synchronized (formatter) {
-                    return formatter.format(value);
-                }
-            }
 
         }
 
