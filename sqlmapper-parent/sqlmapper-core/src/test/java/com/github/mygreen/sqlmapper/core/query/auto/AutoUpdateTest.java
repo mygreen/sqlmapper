@@ -49,8 +49,11 @@ public class AutoUpdateTest extends QueryTestSupport {
 
         entity.setLastName("Yamamoto");
 
-        long count = sqlMapper.update(entity)
-                .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.update(entity)
+                    .execute();
+        });
+
         assertThat(count).isEqualTo(1);
 
         Customer result = sqlMapper.selectFrom(m_)
@@ -74,9 +77,11 @@ public class AutoUpdateTest extends QueryTestSupport {
         entity.setLastName("Yamamoto");
         entity.setVersion(10L); // versionを任意の値に更新
 
-        long count = sqlMapper.update(entity)
-                .includesVersion()
-                .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.update(entity)
+                    .includesVersion()
+                    .execute();
+        });
         assertThat(count).isEqualTo(1);
 
         Customer result = sqlMapper.selectFrom(m_)
@@ -100,9 +105,11 @@ public class AutoUpdateTest extends QueryTestSupport {
         entity.setLastName("Yamamoto");
         entity.setGenderType(null); // nullに更新
 
-        long count = sqlMapper.update(entity)
-                .excludesNull()
-                .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.update(entity)
+                    .excludesNull()
+                    .execute();
+        });
         assertThat(count).isEqualTo(1);
 
         Customer result = sqlMapper.selectFrom(m_)
@@ -144,9 +151,11 @@ public class AutoUpdateTest extends QueryTestSupport {
         entity.setLastName("Yamamoto");
         entity.setVersion(10L); // バージョンを存在しない値に更新
 
-        long count = sqlMapper.update(entity)
-                .suppresOptimisticLockException()
-                .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.update(entity)
+                    .suppresOptimisticLockException()
+                    .execute();
+        });
         assertThat(count).isEqualTo(0L);
 
         Customer result = sqlMapper.selectFrom(m_)
@@ -171,9 +180,11 @@ public class AutoUpdateTest extends QueryTestSupport {
         entity.setLastName("Yamamoto");
         entity.setBirthday(LocalDate.of(1980, 12, 10));
 
-        long count = sqlMapper.update(entity)
-                .includes(m_.firstName, m_.birthday)
-                .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.update(entity)
+                    .includes(m_.firstName, m_.birthday)
+                    .execute();
+        });
         assertThat(count).isEqualTo(1);
 
         Customer result = sqlMapper.selectFrom(m_)
@@ -200,9 +211,11 @@ public class AutoUpdateTest extends QueryTestSupport {
         entity.setLastName("Yamamoto");
         entity.setBirthday(LocalDate.of(1980, 12, 10));
 
-        long count = sqlMapper.update(entity)
-                .excludes(m_.lastName)
-                .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.update(entity)
+                    .excludes(m_.lastName)
+                    .execute();
+        });
         assertThat(count).isEqualTo(1);
 
         Customer result = sqlMapper.selectFrom(m_)
@@ -229,10 +242,12 @@ public class AutoUpdateTest extends QueryTestSupport {
         entity.setLastName("Yamamoto");
         entity.setBirthday(LocalDate.of(1980, 12, 10));
 
-        long count = sqlMapper.update(entity)
-            .includes(m_.firstName, m_.birthday)
-            .excludes(m_.birthday)
-            .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.update(entity)
+                    .includes(m_.firstName, m_.birthday)
+                    .excludes(m_.birthday)
+                    .execute();
+        });
         assertThat(count).isEqualTo(1);
 
         Customer result = sqlMapper.selectFrom(m_)
@@ -261,9 +276,12 @@ public class AutoUpdateTest extends QueryTestSupport {
 
         entity.setLastName("Yamamoto");
 
-        long count = sqlMapper.update(entity)
-                .changedFrom(before)
-                .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.update(entity)
+                    .changedFrom(before)
+                    .execute();
+        });
+
         assertThat(count).isEqualTo(1);
 
         Customer result = sqlMapper.selectFrom(m_)
@@ -293,9 +311,12 @@ public class AutoUpdateTest extends QueryTestSupport {
 
         entity.setLastName("Yamamoto");
 
-        long count = sqlMapper.update(entity)
-                .changedFrom(before)
-                .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.update(entity)
+                    .changedFrom(before)
+                    .execute();
+        });
+
         assertThat(count).isEqualTo(1);
 
         Customer result = sqlMapper.selectFrom(m_)

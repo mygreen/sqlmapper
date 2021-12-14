@@ -64,8 +64,10 @@ public class AutoInsertTest extends QueryTestSupport {
         entity.setBirthday(LocalDate.of(2010, 10, 1));
         entity.setGenderType(GenderType.MALE);
 
-        int count = sqlMapper.insert(entity)
-            .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.insert(entity)
+                    .execute();
+        });
 
         assertThat(count).isEqualTo(1);
 
@@ -94,9 +96,11 @@ public class AutoInsertTest extends QueryTestSupport {
         entity.setBirthday(LocalDate.of(2010, 10, 1));
         entity.setGenderType(GenderType.MALE);
 
-        int count = sqlMapper.insert(entity)
-                .includes(m_.firstName, m_.lastName, m_.birthday)
-            .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.insert(entity)
+                    .includes(m_.firstName, m_.lastName, m_.birthday)
+                    .execute();
+        });
 
         assertThat(count).isEqualTo(1);
 
@@ -125,9 +129,11 @@ public class AutoInsertTest extends QueryTestSupport {
         entity.setBirthday(LocalDate.of(2010, 10, 1));
         entity.setGenderType(GenderType.MALE);
 
-        int count = sqlMapper.insert(entity)
-                .excludes(m_.genderType)
-            .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.insert(entity)
+                    .excludes(m_.genderType)
+                    .execute();
+        });
 
         assertThat(count).isEqualTo(1);
 
@@ -156,10 +162,12 @@ public class AutoInsertTest extends QueryTestSupport {
         entity.setBirthday(LocalDate.of(2010, 10, 1));
         entity.setGenderType(GenderType.MALE);
 
-        int count = sqlMapper.insert(entity)
-                .includes(m_.firstName, m_.lastName, m_.birthday)
-                .excludes(m_.birthday)
-            .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.insert(entity)
+                    .includes(m_.firstName, m_.lastName, m_.birthday)
+                    .excludes(m_.id, m_.birthday)
+                    .execute();
+        });
 
         assertThat(count).isEqualTo(1);
 
@@ -185,10 +193,12 @@ public class AutoInsertTest extends QueryTestSupport {
             GeneratedValueIdentityTestEntity entity = new GeneratedValueIdentityTestEntity();
             entity.setComment("test-identity" + i);
 
-            int execCount = sqlMapper.insert(entity)
-                .execute();
+            int count = txNew().execute(action -> {
+                return sqlMapper.insert(entity)
+                        .execute();
+            });
 
-            assertThat(execCount).isEqualTo(1);
+            assertThat(count).isEqualTo(1);
 
             GeneratedValueIdentityTestEntity result = sqlMapper.selectFrom(m_)
                     .id(entity.getId())
@@ -209,10 +219,12 @@ public class AutoInsertTest extends QueryTestSupport {
             GeneratedValueIdentity2TestEntity entity = new GeneratedValueIdentity2TestEntity();
             entity.setComment("test-identity2" + i);
 
-            int execCount = sqlMapper.insert(entity)
-                .execute();
+            int count = txNew().execute(action -> {
+                return sqlMapper.insert(entity)
+                        .execute();
+            });
 
-            assertThat(execCount).isEqualTo(1);
+            assertThat(count).isEqualTo(1);
 
             GeneratedValueIdentity2TestEntity result = sqlMapper.selectFrom(m_)
                     .id(entity.getId1(), entity.getId2())
@@ -235,10 +247,12 @@ public class AutoInsertTest extends QueryTestSupport {
             GeneratedValueSequenceTestEntity entity = new GeneratedValueSequenceTestEntity();
             entity.setComment("test-sequence" + i);
 
-            int execCount = sqlMapper.insert(entity)
-                .execute();
+            int count = txNew().execute(action -> {
+                return sqlMapper.insert(entity)
+                        .execute();
+            });
 
-            assertThat(execCount).isEqualTo(1);
+            assertThat(count).isEqualTo(1);
 
             GeneratedValueSequenceTestEntity result = sqlMapper.selectFrom(m_)
                     .id(entity.getId())
@@ -259,10 +273,12 @@ public class AutoInsertTest extends QueryTestSupport {
             GeneratedValueSequenceFormatTestEntity entity = new GeneratedValueSequenceFormatTestEntity();
             entity.setComment("test-sequence-format" + i);
 
-            int execCount = sqlMapper.insert(entity)
-                .execute();
+            int count = txNew().execute(action -> {
+                return sqlMapper.insert(entity)
+                        .execute();
+            });
 
-            assertThat(execCount).isEqualTo(1);
+            assertThat(count).isEqualTo(1);
 
             GeneratedValueSequenceFormatTestEntity result = sqlMapper.selectFrom(m_)
                     .id(entity.getId())
@@ -283,10 +299,12 @@ public class AutoInsertTest extends QueryTestSupport {
             GeneratedValueTableTestEntity entity = new GeneratedValueTableTestEntity();
             entity.setComment("test-table" + i);
 
-            int execCount = sqlMapper.insert(entity)
-                .execute();
+            int count = txNew().execute(action -> {
+                return sqlMapper.insert(entity)
+                        .execute();
+            });
 
-            assertThat(execCount).isEqualTo(1);
+            assertThat(count).isEqualTo(1);
 
             GeneratedValueTableTestEntity result = sqlMapper.selectFrom(m_)
                     .id(entity.getId())
@@ -307,10 +325,12 @@ public class AutoInsertTest extends QueryTestSupport {
             GeneratedValueTableFormatTestEntity entity = new GeneratedValueTableFormatTestEntity();
             entity.setComment("test-table-format" + i);
 
-            int execCount = sqlMapper.insert(entity)
-                .execute();
+            int count = txNew().execute(action -> {
+                return sqlMapper.insert(entity)
+                        .execute();
+            });
 
-            assertThat(execCount).isEqualTo(1);
+            assertThat(count).isEqualTo(1);
 
             GeneratedValueTableFormatTestEntity result = sqlMapper.selectFrom(m_)
                     .id(entity.getId())
@@ -331,10 +351,12 @@ public class AutoInsertTest extends QueryTestSupport {
             GeneratedValueUUIDTestEntity entity = new GeneratedValueUUIDTestEntity();
             entity.setComment("test-UUID" + i);
 
-            int execCount = sqlMapper.insert(entity)
-                .execute();
+            int count = txNew().execute(action -> {
+                return sqlMapper.insert(entity)
+                        .execute();
+            });
 
-            assertThat(execCount).isEqualTo(1);
+            assertThat(count).isEqualTo(1);
 
             GeneratedValueUUIDTestEntity result = sqlMapper.selectFrom(m_)
                     .id(entity.getId())

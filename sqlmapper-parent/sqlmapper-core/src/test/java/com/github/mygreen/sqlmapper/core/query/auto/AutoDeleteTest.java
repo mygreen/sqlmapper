@@ -48,8 +48,11 @@ public class AutoDeleteTest extends QueryTestSupport {
                 .id("001")
                 .getSingleResult();
 
-        long count = sqlMapper.delete(entity)
-                .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.delete(entity)
+                    .execute();
+        });
+
         assertThat(count).isEqualTo(1L);
 
         Optional<Customer> result = sqlMapper.selectFrom(m_)
@@ -70,9 +73,12 @@ public class AutoDeleteTest extends QueryTestSupport {
 
         entity.setVersion(10L); // 存在しないバージョン
 
-        long count = sqlMapper.delete(entity)
-                .ignoreVersion()
-                .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.delete(entity)
+                    .ignoreVersion()
+                    .execute();
+        });
+
         assertThat(count).isEqualTo(1L);
 
         Optional<Customer> result = sqlMapper.selectFrom(m_)
@@ -109,9 +115,12 @@ public class AutoDeleteTest extends QueryTestSupport {
 
         entity.setVersion(10L); // 存在しないバージョン
 
-        long count = sqlMapper.delete(entity)
-                .suppresOptimisticLockException()
-                .execute();
+        int count = txNew().execute(action -> {
+            return sqlMapper.delete(entity)
+                    .suppresOptimisticLockException()
+                    .execute();
+        });
+
         assertThat(count).isEqualTo(0L);
 
         Optional<Customer> result = sqlMapper.selectFrom(m_)
