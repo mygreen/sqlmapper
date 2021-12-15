@@ -113,7 +113,7 @@ public class AutoBatchDeleteExecutor {
         where.accept(visitor);
 
         this.whereClause.addSql(visitor.getCriteria());
-        this.paramValues.add(visitor.getParamValues());
+        this.paramValues.addAll(visitor.getParamValues());
     }
 
     /**
