@@ -53,7 +53,7 @@ public class AutoDeleteTest extends QueryTestSupport {
                     .execute();
         });
 
-        assertThat(count).isEqualTo(1L);
+        assertThat(count).isEqualTo(1);
 
         Optional<Customer> result = sqlMapper.selectFrom(m_)
                 .id("001")
@@ -79,7 +79,7 @@ public class AutoDeleteTest extends QueryTestSupport {
                     .execute();
         });
 
-        assertThat(count).isEqualTo(1L);
+        assertThat(count).isEqualTo(1);
 
         Optional<Customer> result = sqlMapper.selectFrom(m_)
                 .id("001")
@@ -121,7 +121,7 @@ public class AutoDeleteTest extends QueryTestSupport {
                     .execute();
         });
 
-        assertThat(count).isEqualTo(0L);
+        assertThat(count).isEqualTo(0);
 
         Optional<Customer> result = sqlMapper.selectFrom(m_)
                 .id("001")
