@@ -8,6 +8,8 @@ import com.github.mygreen.splate.SqlTemplateContext;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoAnyDelete;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoAnyDeleteImpl;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchDelete;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchDeleteImpl;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchInsert;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchInsertImpl;
 import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchUpdate;
@@ -158,8 +160,8 @@ public class SqlMapper {
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
     @SuppressWarnings("unchecked")
-    public <T> AutoBatchUpdate<T> deleteBatch(T... entities) {
-        return new AutoBatchUpdateImpl<T>(context, entities);
+    public <T> AutoBatchDelete<T> deleteBatch(T... entities) {
+        return new AutoBatchDeleteImpl<T>(context, entities);
     }
 
     /**
@@ -169,8 +171,8 @@ public class SqlMapper {
      * @return バッチ削除を行うSQLを自動生成するクエリ
      * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
      */
-    public <T> AutoBatchUpdate<T> deleteBatch(Collection<T> entities) {
-        return new AutoBatchUpdateImpl<T>(context, entities);
+    public <T> AutoBatchDelete<T> deleteBatch(Collection<T> entities) {
+        return new AutoBatchDeleteImpl<T>(context, entities);
     }
 
     /**
