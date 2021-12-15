@@ -34,7 +34,8 @@ public class QueryUtils {
     public static MapSqlParameterSource get(MapSqlParameterSource[] paramSources, int index) {
         MapSqlParameterSource paramSource = paramSources[index];
         if(paramSource == null) {
-            paramSources[index] = new MapSqlParameterSource();
+            paramSource = new MapSqlParameterSource();
+            paramSources[index] = paramSource;
         }
 
         return paramSource;
@@ -50,7 +51,8 @@ public class QueryUtils {
     public static List<Object> get(List<Object>[] batchParams, int index) {
         List<Object> params = batchParams[index];
         if(params == null) {
-            batchParams[index] = new ArrayList<>();
+            params = new ArrayList<>();
+            batchParams[index] = params;
         }
         return params;
     }
