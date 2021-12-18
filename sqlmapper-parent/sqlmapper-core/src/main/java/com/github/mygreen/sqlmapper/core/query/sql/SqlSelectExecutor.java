@@ -90,6 +90,7 @@ public class SqlSelectExecutor<T> {
      *
      * @param callback エンティティマッピング後のコールバック処理。
      * @return エンティティのベースオブジェクト。1件も対象がないときは空を返します。
+     * @throws IncorrectResultSizeDataAccessException 2件以上見つかった場合にスローされます。
      */
     public Optional<T> getOptionalResult(EntityMappingCallback<T> callback) {
         prepare();
@@ -98,6 +99,8 @@ public class SqlSelectExecutor<T> {
         final List<T> ret = getJdbcTemplate().query(executedSql, rowMapper, paramValues);
         if(ret.isEmpty()) {
             return Optional.empty();
+        } else if(ret.size() > 1) {
+            throw new IncorrectResultSizeDataAccessException(1, ret.size());
         } else {
             return Optional.of(ret.get(0));
         }
