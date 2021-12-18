@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
@@ -52,6 +53,16 @@ public abstract class DialectBase implements Dialect {
     @Override
     public String getCountSql() {
         return "count(*)";
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@literal "select count(*) from (<sql>)"} を返します。
+     */
+    public String convertGetCountSql(final String sql) {
+        Assert.hasLength(sql, "sql should be not empty.");
+        return "select count(*) from ( " + sql + " )";
     }
 
     /**
