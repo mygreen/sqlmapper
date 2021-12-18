@@ -68,6 +68,14 @@ public interface Dialect {
     String getCountSql();
 
     /**
+     * 件数取得用のSQLに変換します。
+     * @param sql SQL
+     * @return 件数取得用SQL
+     * @throws IllegalArgumentException 引数{@literal sql}が空の場合にスローされます。
+     */
+    String convertGetCountSql(String sql);
+
+    /**
      * ヒントコメントを返します。
      * <p>ヒント句をサポートしていないDBの場合は空文字を返します。</p>
      *

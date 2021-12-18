@@ -55,6 +55,20 @@ public class SqlSelectImpl<T> implements SqlSelect<T> {
     @Getter
     private Integer maxRows;
 
+    /**
+     * 取得するレコード数の上限値です。
+     * <p>負の値の時は無視します。
+     */
+    @Getter
+    private int limit = -1;
+
+    /**
+     * 取得するレコード数の開始位置です。
+     * <p>負の値の時は無視します。
+     */
+    @Getter
+    private int offset = -1;
+
     public SqlSelectImpl(@NonNull SqlMapperContext context, @NonNull Class<T> baseClass,
             @NonNull SqlTemplate template, @NonNull SqlTemplateContext parameter) {
 
@@ -81,6 +95,18 @@ public class SqlSelectImpl<T> implements SqlSelect<T> {
     @Override
     public SqlSelectImpl<T> maxRows(int maxRows) {
         this.maxRows = maxRows;
+        return this;
+    }
+
+    @Override
+    public SqlSelectImpl<T> limit(int limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    @Override
+    public SqlSelectImpl<T> offset(int offset) {
+        this.offset = offset;
         return this;
     }
 

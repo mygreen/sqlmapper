@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.github.mygreen.splate.ProcessResult;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
 import com.github.mygreen.sqlmapper.core.mapper.SqlEntityRowMapper;
 import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
@@ -66,7 +67,14 @@ public class SqlSelectExecutor<T> {
     private void prepareSql() {
 
         final ProcessResult result = query.getTemplate().process(query.getParameter());
-        this.executedSql = result.getSql();
+        final Dialect dialect = context.getDialect();
+
+        String sql = result.getSql();
+        if(query.getLimit() > 0 || query.getOffset() >= 0) {
+            sql = dialect.convertLimitSql(sql, query.getOffset(), query.getLimit());
+        }
+        this.executedSql = sql;
+
         this.paramValues = result.getParameters().toArray();
 
     }
