@@ -10,7 +10,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 /**
  * SQLテンプレートによる抽出を行うクエリです。
  *
- * @version0 .3
+ * @version 0.3
  * @author T.TSUCHIE
  *
  * @param <T> 処理対象のエンティティの型
@@ -51,6 +51,24 @@ public interface SqlSelect<T> {
      * @return 自身のインスタンス。
      */
     SqlSelect<T> maxRows(int maxRows);
+
+    /**
+     * 抽出する行数を指定します。
+     *
+     * @since 0.3
+     * @param limit 行数
+     * @return このインスタンス自身
+     */
+    SqlSelect<T> limit(int limit);
+
+    /**
+     * 抽出するデータの開始位置を指定します。
+     *
+     * @since 0.3
+     * @param offset 開始位置。0から始まります。
+     * @return このインスタンス自身
+     */
+    SqlSelect<T> offset(int offset);
 
     /**
      * 検索してベースオブジェクトを返します。
