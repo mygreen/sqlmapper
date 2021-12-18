@@ -50,8 +50,19 @@ public abstract class AllocatableIdGenerator {
      * @return 新たらしいID
      */
     public long nextValue(final String key) {
-        return allocatedIdCache.computeIfAbsent(key, k -> new AllocatedIdContext()).getNextValue(key);
+        return allocatedIdCache.computeIfAbsent(key, k -> new AllocatedIdContext(key)).getNextValue();
 
+    }
+
+    /**
+     * IDのキャッシュ情報をクリアします。
+     * <p>クリアすることで、次回、{@link #nextValue(String)}を呼び出した時に、最新のDBの情報を反映した状態になります。
+     *
+     * @since 0.3
+     * @param key 割り当てるキーの名称
+     */
+    protected void clear(final String key) {
+        allocatedIdCache.remove(key);
     }
 
     /**
@@ -61,7 +72,13 @@ public abstract class AllocatableIdGenerator {
      * @author T.TSUCHIE
      *
      */
+    @RequiredArgsConstructor
     public class AllocatedIdContext {
+
+        /**
+         * 生成用のキー
+         */
+        private final String key;
 
         /**
          * 現在値
@@ -80,7 +97,7 @@ public abstract class AllocatableIdGenerator {
          * @param key キー名
          * @return 新しいIDを返します。
          */
-        public synchronized long getNextValue(final String key) {
+        public synchronized long getNextValue() {
 
             if(currentValue < 0l) {
                 this.currentValue = getCurrentValue(key);

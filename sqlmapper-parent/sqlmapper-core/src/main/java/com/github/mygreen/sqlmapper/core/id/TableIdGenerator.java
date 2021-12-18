@@ -87,4 +87,12 @@ public class TableIdGenerator implements IdGenerator {
         throw new DataIntegrityViolationException("not supported java type : " + requiredType.getName());
 
     }
+
+    /**
+     * IDのキャッシュ情報をクリアします。
+     * <p>クリアすることで、次回、{@link #generateValue(IdGenerationContext)}を呼び出した時に、最新のDBの情報を反映した状態になります。
+     */
+    public void clearCache() {
+        incrementer.clear(sequenceName);
+    }
 }

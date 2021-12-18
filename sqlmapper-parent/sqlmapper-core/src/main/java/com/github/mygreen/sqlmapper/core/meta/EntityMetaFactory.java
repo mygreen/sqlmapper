@@ -20,6 +20,7 @@ import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
 import com.github.mygreen.sqlmapper.core.annotation.Table;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
+import com.github.mygreen.sqlmapper.core.id.TableIdGenerator;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
 
 import lombok.Getter;
@@ -29,7 +30,7 @@ import lombok.Setter;
 /**
  * エンティティのメタ情報を作成します。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -73,6 +74,21 @@ public class EntityMetaFactory {
      */
     public void clear() {
         this.entityMetaMap.clear();
+    }
+
+    /**
+     * IDのテーブルによる自動採番のキャッシュ情報をクリアします。
+     * クリアすることで、次に採番するときに、最新のDBの情報を反映した状態になります。
+     * @since 0.3
+     */
+    public void refreshTableIdGenerator() {
+
+        entityMetaMap.values().stream()
+            .flatMap(e -> e.getIdPropertyMetaList().stream())
+            .filter(p -> p.getIdGenerator().isPresent() && (p.getIdGenerator().get() instanceof TableIdGenerator))
+            .map(p -> (TableIdGenerator)(p.getIdGenerator().get()))
+            .forEach(g -> g.clearCache());
+
     }
 
     /**
