@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -252,7 +253,7 @@ public class AutoSelectTest extends QueryTestSupport {
         assertThatThrownBy(() -> sqlMapper.selectFrom(m_)
                 .id("xxx")
                 .getSingleResult())
-            .isInstanceOf(IncorrectResultSizeDataAccessException.class);
+            .isInstanceOf(EmptyResultDataAccessException.class);
     }
 
     @Test
@@ -264,6 +265,44 @@ public class AutoSelectTest extends QueryTestSupport {
                 .where(m_.lastName.eq("Yamada"))
                 .getSingleResult())
             .isInstanceOf(IncorrectResultSizeDataAccessException.class);
+    }
+
+    @Test
+    void testOptionalResult_found1() {
+
+        MCustomer m_ = MCustomer.customer;
+
+        Optional<Customer> result = sqlMapper.selectFrom(m_)
+                .id("001")
+                .getOptionalResult();
+
+        assertThat(result).isNotEmpty();
+
+    }
+
+    @Test
+    void testOptionalResult_found0() {
+
+        MCustomer m_ = MCustomer.customer;
+
+        Optional<Customer> result = sqlMapper.selectFrom(m_)
+                .id("xxx")
+                .getOptionalResult();
+
+        assertThat(result).isEmpty();
+
+    }
+
+    @Test
+    void testOptionalResult_found2() {
+
+        MCustomer m_ = MCustomer.customer;
+
+        assertThatThrownBy(() -> sqlMapper.selectFrom(m_)
+                .where(m_.lastName.eq("Yamada"))
+                .getOptionalResult())
+            .isInstanceOf(IncorrectResultSizeDataAccessException.class);
+
     }
 
     @Test
