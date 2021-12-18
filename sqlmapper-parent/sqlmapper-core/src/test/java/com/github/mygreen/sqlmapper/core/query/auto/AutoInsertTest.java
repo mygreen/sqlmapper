@@ -50,6 +50,7 @@ public class AutoInsertTest extends QueryTestSupport {
     @BeforeEach
     void beforeMethod() {
         resetData();
+        sqlMapper.getContext().getEntityMetaFactory().refreshTableIdGenerator();
     }
 
     @Test

@@ -48,6 +48,7 @@ public class AutoBatchInsertTest extends QueryTestSupport {
     @BeforeEach
     void beforeMethod() {
         resetData();
+        sqlMapper.getContext().getEntityMetaFactory().refreshTableIdGenerator();
     }
 
     @Test
