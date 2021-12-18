@@ -267,6 +267,18 @@ public class AutoSelectTest extends QueryTestSupport {
     }
 
     @Test
+    void testCount() {
+        MCustomer m_ = MCustomer.customer;
+
+        long result = sqlMapper.selectFrom(m_)
+            .where(m_.lastName.eq("Yamada"))
+            .getCount();
+
+        assertThat(result).isEqualTo(2l);
+
+    }
+
+    @Test
     void testResultList() {
 
         MCustomer m_ = MCustomer.customer;
