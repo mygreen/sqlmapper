@@ -51,11 +51,11 @@ public class AutoSelectTest extends QueryTestSupport {
 
         MCustomer m_ = MCustomer.customer;
 
-        Customer resulst = sqlMapper.selectFrom(m_)
+        Customer result = sqlMapper.selectFrom(m_)
                 .id("001")
                 .getSingleResult();
 
-        assertThat(resulst).hasFieldOrPropertyWithValue("id", "001");
+        assertThat(result).hasFieldOrPropertyWithValue("id", "001");
 
     }
 
@@ -66,12 +66,12 @@ public class AutoSelectTest extends QueryTestSupport {
 
         // 存在するバージョンの場合
         {
-            Customer resulst = sqlMapper.selectFrom(m_)
+            Customer result = sqlMapper.selectFrom(m_)
                     .id("001")
                     .version(0L)
                     .getSingleResult();
 
-            assertThat(resulst).hasFieldOrPropertyWithValue("id", "001");
+            assertThat(result).hasFieldOrPropertyWithValue("id", "001");
         }
 
         // 存在しないバージョンの場合
