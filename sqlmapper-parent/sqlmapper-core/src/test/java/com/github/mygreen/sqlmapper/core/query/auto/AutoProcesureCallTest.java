@@ -58,7 +58,10 @@ public class AutoProcesureCallTest extends QueryTestSupport {
         sqlMapper.call("FIND_CUSTOMER_BY_NAME", param)
             .execute();
 
-        assertThat(param.result).hasSize(1);
+        assertThat(param.result).hasSize(2);
+        param.result.forEach(entity -> {
+            assertThat(entity).hasFieldOrPropertyWithValue("firstName", "Taro");
+        });
 
     }
 
