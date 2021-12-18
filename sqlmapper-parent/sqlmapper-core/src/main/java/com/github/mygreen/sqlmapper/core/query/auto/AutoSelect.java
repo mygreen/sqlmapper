@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
@@ -205,7 +206,8 @@ public interface AutoSelect<T> {
      * 検索してベースオブジェクトを返します。
      *
      * @return ベースオブジェクト。
-     * @throws IncorrectResultSizeDataAccessException 1件も見つからない場合、2件以上見つかった場合にスローされます。
+     * @throws EmptyResultDataAccessException 1件も見つからなかった場合にスローされます。
+     * @throws IncorrectResultSizeDataAccessException 2件以上見つかった場合にスローされます。
      */
     T getSingleResult();
 
@@ -213,6 +215,7 @@ public interface AutoSelect<T> {
      * 検索してベースオブジェクトを返します。
      *
      * @return ベースオブジェクト。1件も対象がないときは空を返します。
+     * @throws IncorrectResultSizeDataAccessException 2件以上見つかった場合にスローされます。
      */
     Optional<T> getOptionalResult();
 
