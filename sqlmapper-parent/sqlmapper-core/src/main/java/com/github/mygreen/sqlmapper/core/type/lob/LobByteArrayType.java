@@ -34,6 +34,9 @@ public class LobByteArrayType implements ValueType<byte[]> {
 
     @Override
     public Object getSqlParameterValue(byte[] value) {
+        if(value == null) {
+            return null;
+        }
         return new SqlParameterValue(Types.BLOB, new SqlLobValue(value, lobHandler));
     }
 
