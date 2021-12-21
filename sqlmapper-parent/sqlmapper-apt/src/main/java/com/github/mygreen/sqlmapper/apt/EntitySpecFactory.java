@@ -86,7 +86,14 @@ public class EntitySpecFactory {
         final AptType propertyType = propertyModel.getPropertyType();
 
         FieldSpec filedSpec;
-        if(propertyModel.isEmbedded()) {
+        if(propertyModel.isCustomType() || propertyModel.isLob()) {
+            // 対応できない型の場合、汎用的なGeneralPathにする
+            TypeName filedTypeName = ParameterizedTypeName.get(ClassName.get(GeneralPath.class), propertyType.getTypeName());
+            filedSpec = FieldSpec.builder(filedTypeName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)
+                    .initializer("createGeneral($S, $T.class)", propertyModel.getPropertyName(), propertyType.getTypeName())
+                    .build();
+
+        } else if(propertyModel.isEmbedded()) {
             // 埋め込み用のプロパティの場合
             // public final MPK id = new MPK(this, "id")
             String embeddedEntityMetamodelName = resolveEntityMetamodelName(propertyType.getSimpleName());

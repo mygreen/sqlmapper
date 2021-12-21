@@ -41,4 +41,14 @@ public class PropertyMetamodel {
      */
     private boolean embedded;
 
+    /**
+     * LOB（ラージオブジェクト）かどうか。
+     */
+    private boolean lob;
+
+    /**
+     * 独自のConverterが適用される場合
+     */
+    private boolean customType;
+
 }
