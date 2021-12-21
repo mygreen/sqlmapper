@@ -1,6 +1,8 @@
 package com.github.mygreen.sqlmapper.core.type;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -26,6 +28,8 @@ import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.StoredPropertyMeta;
 import com.github.mygreen.sqlmapper.core.type.enumeration.EnumOrdinalType;
 import com.github.mygreen.sqlmapper.core.type.enumeration.EnumStringType;
+import com.github.mygreen.sqlmapper.core.type.lob.BLobType;
+import com.github.mygreen.sqlmapper.core.type.lob.CLobType;
 import com.github.mygreen.sqlmapper.core.type.lob.LobByteArrayType;
 import com.github.mygreen.sqlmapper.core.type.lob.LobStringType;
 import com.github.mygreen.sqlmapper.core.type.standard.BigDecimalType;
@@ -127,6 +131,8 @@ public class ValueTypeRegistry implements InitializingBean {
 
         // その他の型の設定
         register(UUID.class, new UUIDType());
+        register(Blob.class, new BLobType());
+        register(Clob.class, new CLobType());
 
     }
 
@@ -233,7 +239,14 @@ public class ValueTypeRegistry implements InitializingBean {
     protected ValueType<?> getLobType(final PropertyMeta propertyMeta) {
 
         final Class<?> propertyType = propertyMeta.getPropertyType();
-        if(String.class.isAssignableFrom(propertyType)) {
+
+        if(Clob.class.isAssignableFrom(propertyType)) {
+            return new CLobType();
+
+        } else if(Blob.class.isAssignableFrom(propertyType)) {
+            return new BLobType();
+
+        } else if(String.class.isAssignableFrom(propertyType)) {
             return new LobStringType(lobHandler);
 
         } else if (byte[].class.isAssignableFrom(propertyType)) {
