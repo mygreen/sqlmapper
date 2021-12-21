@@ -16,6 +16,7 @@ import com.github.mygreen.sqlmapper.apt.model.PropertyMetamodel;
 import com.github.mygreen.sqlmapper.core.annotation.Embeddable;
 import com.github.mygreen.sqlmapper.core.annotation.EmbeddedId;
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
+import com.github.mygreen.sqlmapper.core.annotation.Lob;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
 import com.github.mygreen.sqlmapper.core.annotation.Transient;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
  * クラス情報からメタモデルの情報を作成します。
  * プロパティやクラスの仕様は、{@link EntityMetaFactory}に準拠します。
  *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -131,6 +133,9 @@ public class EntityMetamodelFactory {
 
         // 埋め込み用かどうか
         propertyModel.setEmbedded(fieldElement.getAnnotation(EmbeddedId.class) != null);
+
+        // LOBかどうか
+        propertyModel.setLob(fieldElement.getAnnotation(Lob.class) != null);
 
         return propertyModel;
 

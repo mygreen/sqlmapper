@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.KeyHolder;
@@ -130,7 +131,12 @@ public class AutoInsertExecutor {
 
             // クエリのパラメータの組み立て
             ValueType valueType = propertyMeta.getValueType();
-            paramSource.addValue(columnName, valueType.getSqlParameterValue(propertyValue));
+            Object paramValue = valueType.getSqlParameterValue(propertyValue);
+            if(paramValue instanceof SqlParameterValue) {
+                // SimpleJdbcInsert を使用する際は、テーブルのコンテキストを見るので、型情報は不要。
+                paramValue = ((SqlParameterValue)paramValue).getValue();
+            }
+            paramSource.addValue(columnName, paramValue);
 
         }
     }
