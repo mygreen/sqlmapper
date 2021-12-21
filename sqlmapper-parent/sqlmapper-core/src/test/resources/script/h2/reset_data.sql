@@ -14,6 +14,8 @@ TRUNCATE table test_generated_value_table;
 TRUNCATE table test_generated_value_table_format;
 TRUNCATE table test_generated_value_uuid;
 TRUNCATE table id_sequence;
+TRUNCATE table test_type_value_lob;
+
 
 -- IDのリセット : ALTER TABLE <table_name> ALTER COLUMN <column_name> RESTART WITH 1
 ALTER TABLE employee ALTER COLUMN id RESTART WITH 1;

@@ -90,6 +90,16 @@ CREATE TABLE IF NOT EXISTS test_generated_value_uuid (
 	comment varchar NOT NULL
 );
 
+-- 各クラスタイプのテスト
+CREATE TABLE IF NOT EXISTS test_type_value_lob (
+	id bigint primary key,
+	clob_data1 clob,
+	clob_data2 clob,
+	blob_data1 blob,
+	blob_data2 blob,
+	comment varchar NOT NULL
+);
+
 /*
 CREATE TABLE IF NOT EXISTS conv_lob (
 	lob_id bigint primary key,
