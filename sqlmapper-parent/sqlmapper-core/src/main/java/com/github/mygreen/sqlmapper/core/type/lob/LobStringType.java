@@ -34,6 +34,9 @@ public class LobStringType implements ValueType<String> {
 
     @Override
     public Object getSqlParameterValue(String value) {
+        if(value == null) {
+            return null;
+        }
         return new SqlParameterValue(Types.CLOB, new SqlLobValue(value, lobHandler));
     }
 
