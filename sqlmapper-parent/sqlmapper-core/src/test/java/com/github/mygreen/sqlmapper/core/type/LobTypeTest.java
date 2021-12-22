@@ -42,7 +42,7 @@ public class LobTypeTest extends QueryTestSupport {
     }
 
     @Test
-    void testInsertAndSelect() throws Exception {
+    void testAutoInsertAndSelect() throws Exception {
 
         MTypeValueLobTestEntity m_ = MTypeValueLobTestEntity.testLob;
 
@@ -75,7 +75,7 @@ public class LobTypeTest extends QueryTestSupport {
     }
 
     @Test
-    void testUpdate() throws Exception {
+    void testAutoUpdate() throws Exception {
 
         MTypeValueLobTestEntity m_ = MTypeValueLobTestEntity.testLob;
 
