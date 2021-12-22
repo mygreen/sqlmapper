@@ -100,6 +100,13 @@ CREATE TABLE IF NOT EXISTS test_type_value_lob (
 	comment varchar NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS test_type_value_enum (
+	id bigint primary key,
+	enum_ordinal_data int,
+	enum_name_data varchar,
+	comment varchar NOT NULL
+);
+
 /*
 CREATE TABLE IF NOT EXISTS conv_lob (
 	lob_id bigint primary key,
