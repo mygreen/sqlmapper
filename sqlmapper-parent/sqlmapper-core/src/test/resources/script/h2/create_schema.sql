@@ -157,3 +157,12 @@ CREATE TABLE IF NOT EXISTS test_type_value_primitive_number (
 	comment varchar NOT NULL
 );
 
+-- Auditのテスト
+CREATE TABLE IF NOT EXISTS test_audit (
+	id bigint primary key,
+	create_user varchar,
+	create_datetime timestamp,
+	update_user varchar,
+	update_datetime timestamp,
+	comment varchar NOT NULL
+);
