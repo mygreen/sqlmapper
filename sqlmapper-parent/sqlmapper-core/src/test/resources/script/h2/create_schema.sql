@@ -131,27 +131,29 @@ CREATE TABLE IF NOT EXISTS test_type_value_jsr310_date_time (
 	comment varchar NOT NULL
 );
 
-/*
-CREATE TABLE IF NOT EXISTS conv_lob (
-	lob_id bigint primary key,
-	text_data clob,
-	binary_data blob
-
+CREATE TABLE IF NOT EXISTS test_type_value_integer_number (
+	id bigint primary key,
+	short_data smallint,
+	int_data integer,
+	long_data bigint,
+	comment varchar NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS conv_enum (
-	enum_id bigint primary key,
-	enum_name varchar,
-	enum_ordinary int
-
+CREATE TABLE IF NOT EXISTS test_type_value_decimal_number (
+	id bigint primary key,
+	float_data real,
+	double_data double,
+	bigdecimal_data numeric(20,3),
+	comment varchar NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS conv_xml (
-	xml_id bigint primary key,
-	text_data text,
-	jaxb_data text,
-	x_stream_data text
+CREATE TABLE IF NOT EXISTS test_type_value_primitive_number (
+	id bigint primary key,
+	short_data smallint,
+	int_data integer,
+	long_data bigint,
+	float_data real,
+	double_data double,
+	comment varchar NOT NULL
 );
-*/
-
 

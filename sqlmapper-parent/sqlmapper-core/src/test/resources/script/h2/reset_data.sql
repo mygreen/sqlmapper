@@ -20,6 +20,9 @@ TRUNCATE table test_type_value_enum;
 TRUNCATE table test_type_value_sql_date_time;
 TRUNCATE table test_type_value_util_date_time;
 TRUNCATE table test_type_value_jsr310_date_time;
+TRUNCATE table test_type_value_integer_number;
+TRUNCATE table test_type_value_decimal_number;
+TRUNCATE table test_type_value_primitive_number;
 
 
 -- IDのリセット : ALTER TABLE <table_name> ALTER COLUMN <column_name> RESTART WITH 1
