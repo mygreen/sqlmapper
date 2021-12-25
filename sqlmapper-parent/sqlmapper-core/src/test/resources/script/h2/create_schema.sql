@@ -107,6 +107,30 @@ CREATE TABLE IF NOT EXISTS test_type_value_enum (
 	comment varchar NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS test_type_value_sql_date_time (
+	id bigint primary key,
+	date_data date,
+	time_data time,
+	timestamp_data timestamp,
+	comment varchar NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS test_type_value_util_date_time (
+	id bigint primary key,
+	date_data date,
+	time_data time,
+	timestamp_data timestamp,
+	comment varchar NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS test_type_value_jsr310_date_time (
+	id bigint primary key,
+	date_data date,
+	time_data time,
+	timestamp_data timestamp,
+	comment varchar NOT NULL
+);
+
 /*
 CREATE TABLE IF NOT EXISTS conv_lob (
 	lob_id bigint primary key,

@@ -17,6 +17,9 @@ TRUNCATE table id_sequence;
 
 TRUNCATE table test_type_value_lob;
 TRUNCATE table test_type_value_enum;
+TRUNCATE table test_type_value_sql_date_time;
+TRUNCATE table test_type_value_util_date_time;
+TRUNCATE table test_type_value_jsr310_date_time;
 
 
 -- IDのリセット : ALTER TABLE <table_name> ALTER COLUMN <column_name> RESTART WITH 1
