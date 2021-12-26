@@ -18,8 +18,8 @@ import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.test.config.NoDbTestConfig;
 import com.github.mygreen.sqlmapper.core.test.entity.Customer;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MCustomer;
-import com.github.mygreen.sqlmapper.core.test.entity.meta.MEmbeddedEntity;
-import com.github.mygreen.sqlmapper.core.test.entity.meta.MEntityChild;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MEmbeddedTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MInheritanceTestEntity;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.support.SubQueryHelper;
 
@@ -57,7 +57,7 @@ public class MetamodelWhereBuilderTest extends MetamodelTestSupport {
     @Test
     void testInheritance() {
 
-        MEntityChild entity = MEntityChild.entityChild;
+        MInheritanceTestEntity entity = MInheritanceTestEntity.testInheritance;
         Predicate condition = entity.name.contains("Yamada")
                 .and(entity.createAt.goe(Timestamp.valueOf("2021-01-01 12:13:14.123")));
 
@@ -75,7 +75,7 @@ public class MetamodelWhereBuilderTest extends MetamodelTestSupport {
     @Test
     void testEmbeddedId() {
 
-        MEmbeddedEntity entity = MEmbeddedEntity.embeddedEntity;
+        MEmbeddedTestEntity entity = MEmbeddedTestEntity.testEmbedded;
 
         Predicate condition = entity.id.key1.eq("1")
                 .and(entity.name.contains("Yamada"));

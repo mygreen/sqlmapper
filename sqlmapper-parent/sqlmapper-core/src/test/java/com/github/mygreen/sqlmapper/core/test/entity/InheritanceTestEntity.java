@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-public class EntityChild extends EntityBase {
+public class InheritanceTestEntity extends EntityBase {
 
     @Getter
     @Setter

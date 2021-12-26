@@ -1,15 +1,15 @@
 package com.github.mygreen.sqlmapper.core.test.entity.meta;
 
-import com.github.mygreen.sqlmapper.core.test.entity.EmbeddedEntity;
-import com.github.mygreen.sqlmapper.core.test.entity.EmbeddedEntity.PK;
+import com.github.mygreen.sqlmapper.core.test.entity.EmbeddedTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.EmbeddedTestEntity.PK;
 import com.github.mygreen.sqlmapper.metamodel.BooleanPath;
 import com.github.mygreen.sqlmapper.metamodel.EntityPathBase;
 import com.github.mygreen.sqlmapper.metamodel.NumberPath;
 import com.github.mygreen.sqlmapper.metamodel.StringPath;
 
-public class MEmbeddedEntity extends EntityPathBase<EmbeddedEntity> {
+public class MEmbeddedTestEntity extends EntityPathBase<EmbeddedTestEntity> {
 
-    public static final MEmbeddedEntity embeddedEntity = new MEmbeddedEntity("embeddedEntity");
+    public static final MEmbeddedTestEntity testEmbedded = new MEmbeddedTestEntity("embeddedEntity");
 
     public final MPK id = new MPK(this, "id");
 
@@ -17,12 +17,12 @@ public class MEmbeddedEntity extends EntityPathBase<EmbeddedEntity> {
 
     public final BooleanPath deleted = createBoolean("deleted");
 
-    public MEmbeddedEntity(Class<? extends EmbeddedEntity> type, String name) {
+    public MEmbeddedTestEntity(Class<? extends EmbeddedTestEntity> type, String name) {
         super(type, name);
     }
 
-    public MEmbeddedEntity(String name) {
-        super(EmbeddedEntity.class, name);
+    public MEmbeddedTestEntity(String name) {
+        super(EmbeddedTestEntity.class, name);
     }
 
     public static class MPK extends EntityPathBase<PK> {

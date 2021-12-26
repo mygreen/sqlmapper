@@ -14,7 +14,7 @@ import lombok.Data;
  */
 @Data
 @Entity
-public class EmbeddedEntity {
+public class EmbeddedTestEntity {
 
     @EmbeddedId
     private PK id;

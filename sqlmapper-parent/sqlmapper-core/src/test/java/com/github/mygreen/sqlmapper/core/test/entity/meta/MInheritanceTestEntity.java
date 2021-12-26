@@ -1,20 +1,20 @@
 package com.github.mygreen.sqlmapper.core.test.entity.meta;
 
-import com.github.mygreen.sqlmapper.core.test.entity.EntityChild;
+import com.github.mygreen.sqlmapper.core.test.entity.InheritanceTestEntity;
 import com.github.mygreen.sqlmapper.metamodel.LocalDatePath;
 import com.github.mygreen.sqlmapper.metamodel.NumberPath;
 import com.github.mygreen.sqlmapper.metamodel.StringPath;
 
-public class MEntityChild extends MEntityBase<EntityChild> {
+public class MInheritanceTestEntity extends MEntityBase<InheritanceTestEntity> {
 
-    public static final MEntityChild entityChild = new MEntityChild("entityChild");
+    public static final MInheritanceTestEntity testInheritance = new MInheritanceTestEntity("testInheritance");
 
-    public MEntityChild(Class<? extends EntityChild> type, String name) {
+    public MInheritanceTestEntity(Class<? extends InheritanceTestEntity> type, String name) {
         super(type, name);
     }
 
-    public MEntityChild(String name) {
-        super(EntityChild.class, name);
+    public MInheritanceTestEntity(String name) {
+        super(InheritanceTestEntity.class, name);
     }
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
