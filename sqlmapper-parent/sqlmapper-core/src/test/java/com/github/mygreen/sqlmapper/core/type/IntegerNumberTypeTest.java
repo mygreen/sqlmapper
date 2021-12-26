@@ -83,7 +83,7 @@ public class IntegerNumberTypeTest extends QueryTestSupport {
     }
 
     @Test
-    void testInsert() {
+    void testAutoInsert() {
 
         MTypeValueIntegerNumberTestEntity m_ = MTypeValueIntegerNumberTestEntity.testIntegerNumber;
 
@@ -105,7 +105,7 @@ public class IntegerNumberTypeTest extends QueryTestSupport {
     }
 
     @Test
-    void testUpdate() {
+    void testAutoUpdate() {
 
         MTypeValueIntegerNumberTestEntity m_ = MTypeValueIntegerNumberTestEntity.testIntegerNumber;
 

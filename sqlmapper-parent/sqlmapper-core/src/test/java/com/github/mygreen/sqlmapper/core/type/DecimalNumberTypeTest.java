@@ -85,7 +85,7 @@ public class DecimalNumberTypeTest extends QueryTestSupport {
     }
 
     @Test
-    void testInsert() {
+    void testAutoInsert() {
 
         MTypeValueDecimalNumberTestEntity m_ = MTypeValueDecimalNumberTestEntity.testDecimalNumber;
 
@@ -107,7 +107,7 @@ public class DecimalNumberTypeTest extends QueryTestSupport {
     }
 
     @Test
-    void testUpdate() {
+    void testAutoUpdate() {
 
         MTypeValueDecimalNumberTestEntity m_ = MTypeValueDecimalNumberTestEntity.testDecimalNumber;
 

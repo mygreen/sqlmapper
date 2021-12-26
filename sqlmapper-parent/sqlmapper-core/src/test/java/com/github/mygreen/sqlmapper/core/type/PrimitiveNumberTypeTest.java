@@ -111,7 +111,7 @@ public class PrimitiveNumberTypeTest extends QueryTestSupport {
     }
 
     @Test
-    void testInsert() {
+    void testAutoInsert() {
 
         MTypeValuePrimitiveNumberTestEntity m_ = MTypeValuePrimitiveNumberTestEntity.testPrimitiveNumber;
 
@@ -135,7 +135,7 @@ public class PrimitiveNumberTypeTest extends QueryTestSupport {
     }
 
     @Test
-    void testUpdate() {
+    void testAutoUpdate() {
 
         MTypeValuePrimitiveNumberTestEntity m_ = MTypeValuePrimitiveNumberTestEntity.testPrimitiveNumber;
 
