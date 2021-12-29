@@ -37,6 +37,7 @@ public class PropertyMeta extends PropertyBase {
     /**
      * 埋め込み型の主キーの子プロパティかどうか。
      */
+    @Setter
     private boolean embeddedableId = false;
 
     /**

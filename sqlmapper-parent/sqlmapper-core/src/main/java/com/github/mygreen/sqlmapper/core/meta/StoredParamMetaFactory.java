@@ -155,7 +155,7 @@ public class StoredParamMetaFactory {
             }
             ReflectionUtils.makeAccessible(field);
 
-            nestedPropertyMeataList.add(propertyMetaFactory.create(field, Optional.empty()));
+            nestedPropertyMeataList.add(propertyMetaFactory.create(field, Optional.empty(), false));
         }
 
         nestedPropertyMeataList.stream().forEach(p -> propertyMeta.addNestedPropertyMeta(p));
