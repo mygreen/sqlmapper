@@ -42,7 +42,10 @@ public class UtilDateType implements ValueType<Date> {
     @SuppressWarnings("unchecked")
     @Override
     public Object getSqlParameterValue(Date value) {
-        return  temporalConverter.getSqlParameterValue(value);
+        if(value == null) {
+            return null;
+        }
+        return  temporalConverter.getSqlParameterValue(temporalConverter.convertTo(value));
     }
 
     /**
@@ -54,7 +57,10 @@ public class UtilDateType implements ValueType<Date> {
     @SuppressWarnings("unchecked")
     @Override
     public String getEmbeddedValue(Date value) {
-        return temporalConverter.getEmbeddedValue(value);
+        if(value == null) {
+            return null;
+        }
+        return temporalConverter.getEmbeddedValue(temporalConverter.convertTo(value));
     }
 
     @Override
