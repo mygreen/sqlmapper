@@ -504,8 +504,8 @@ public class PropertyMetaFactory {
                 && propertyType != Long.class && propertyType != long.class) {
 
             throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.notSupportTypeList")
-                    .paramWithClass("entityType", declaringClass)
-                    .param("propperty", propertyMeta.getName())
+                    .paramWithClass("classType", declaringClass)
+                    .param("property", propertyMeta.getName())
                     .paramWithAnno("anno", Id.class)
                     .paramWithClass("actualType", propertyType)
                     .paramWithClass("expectedTypeList", String.class, Integer.class, int.class, Long.class, long.class)
@@ -516,8 +516,8 @@ public class PropertyMetaFactory {
         if(!propertyMeta.isId() && propertyMeta.hasAnnotation(GeneratedValue.class)) {
 
             throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.notIdWithGeneratedValue")
-                    .paramWithClass("entityType", declaringClass)
-                    .param("propperty", propertyMeta.getName())
+                    .paramWithClass("classType", declaringClass)
+                    .param("property", propertyMeta.getName())
                     .paramWithAnno("anno", GeneratedValue.class)
                     .format());
         }
@@ -527,8 +527,8 @@ public class PropertyMetaFactory {
         if(propertyMeta.hasAnnotation(Enumerated.class) && !propertyType.isEnum()) {
 
             throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.notSupportType")
-                    .paramWithClass("entityType", declaringClass)
-                    .param("propperty", propertyMeta.getName())
+                    .paramWithClass("classType", declaringClass)
+                    .param("property", propertyMeta.getName())
                     .paramWithAnno("anno", Enumerated.class)
                     .paramWithClass("actualType", propertyType)
                     .paramWithClass("expectedType", Enum.class)
@@ -541,8 +541,8 @@ public class PropertyMetaFactory {
                 && propertyType != Long.class && propertyType != long.class) {
 
             throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.notSupportTypeList")
-                    .paramWithClass("entityType", declaringClass)
-                    .param("propperty", propertyMeta.getName())
+                    .paramWithClass("classType", declaringClass)
+                    .param("property", propertyMeta.getName())
                     .paramWithAnno("anno", Version.class)
                     .paramWithClass("actualType", propertyType)
                     .paramWithClass("expectedTypeList", Integer.class, int.class, Long.class, long.class)
@@ -556,8 +556,8 @@ public class PropertyMetaFactory {
 
             // 時制の型が不明なプロパティに対して、@Temporalが付与されていない場合
             throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.requiredAnnoTemporal")
-                    .paramWithClass("entityType", declaringClass)
-                    .param("propperty", propertyMeta.getName())
+                    .paramWithClass("classType", declaringClass)
+                    .param("property", propertyMeta.getName())
                     .paramWithAnno("anno", Temporal.class)
                     .format());
         }
