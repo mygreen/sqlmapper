@@ -166,3 +166,15 @@ CREATE TABLE IF NOT EXISTS test_audit (
 	update_datetime timestamp,
 	comment varchar NOT NULL
 );
+
+-- 埋め込み形式のエンティティのテスト
+CREATE TABLE IF NOT EXISTS test_embedded (
+	key1 varchar NOT NULL,
+	key2 bigint NOT NULL,
+	name varchar,
+	deleted boolean,
+	primary key (key1, key2)
+);
+
+
+

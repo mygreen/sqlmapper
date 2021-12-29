@@ -3,8 +3,11 @@ package com.github.mygreen.sqlmapper.core.test.entity;
 import com.github.mygreen.sqlmapper.core.annotation.Embeddable;
 import com.github.mygreen.sqlmapper.core.annotation.EmbeddedId;
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
+import com.github.mygreen.sqlmapper.core.annotation.Table;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 埋め込み主キーを持つエンティティ
@@ -14,6 +17,7 @@ import lombok.Data;
  */
 @Data
 @Entity
+@Table(name="TEST_EMBEDDED")
 public class EmbeddedTestEntity {
 
     @EmbeddedId
@@ -24,6 +28,8 @@ public class EmbeddedTestEntity {
     private boolean deleted;
 
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Embeddable
     public static class PK {
 

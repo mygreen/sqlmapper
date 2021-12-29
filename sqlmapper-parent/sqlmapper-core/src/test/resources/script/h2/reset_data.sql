@@ -26,6 +26,8 @@ TRUNCATE table test_type_value_primitive_number;
 
 TRUNCATE table test_audit;
 
+TRUNCATE table test_embedded;
+
 
 -- IDのリセット : ALTER TABLE <table_name> ALTER COLUMN <column_name> RESTART WITH 1
 ALTER TABLE employee ALTER COLUMN id RESTART WITH 1;
