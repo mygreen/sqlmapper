@@ -317,7 +317,7 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
         Optional<PropertyMeta> embeddedIdPropertyMeta = entityMeta.getEmbeddedIdPropertyMeta();
         if(isEmbeddedProperty(idPropertyValues, embeddedIdPropertyMeta)) {
             // 埋め込みIDのとき
-            this.idPropertyValues = getEmbeddedIdValue(idPropertyValues, embeddedIdPropertyMeta.get().getEmbeddedablePopertyMetaList());
+            this.idPropertyValues = getEmbeddedIdValue(idPropertyValues[0], embeddedIdPropertyMeta.get().getEmbeddedablePopertyMetaList());
         } else {
             List<PropertyMeta> idPropertyMetaList = entityMeta.getIdPropertyMetaList();
             if(idPropertyMetaList.size() != idPropertyValues.length) {
@@ -341,7 +341,10 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
      * @return {@literal true}のとき埋め込みID。
      */
     private boolean isEmbeddedProperty(Object[] idPropertyValues, Optional<PropertyMeta> embeddedIdPropertyMeta) {
-        if(idPropertyValues.length != 0 || embeddedIdPropertyMeta.isEmpty()) {
+        if(idPropertyValues.length == 0 || embeddedIdPropertyMeta.isEmpty()) {
+            return false;
+        } else if(idPropertyValues.length >= 2) {
+            // IDの指定件数が複数ある時点で埋め込みIDではないので対象外とする。
             return false;
         }
 

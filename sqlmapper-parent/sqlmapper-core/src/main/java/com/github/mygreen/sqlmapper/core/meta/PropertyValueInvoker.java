@@ -155,8 +155,9 @@ public class PropertyValueInvoker {
             // 親のインスタンスがない場合は作成する
             if(parentPropertyValue == null) {
                 parentPropertyValue = BeanUtils.instantiateClass(parent.getPropertyType());
-                setPropertyValue(parent, parentObject, propertyValue);
+                setPropertyValue(parent, parentObject, parentPropertyValue);
             }
+
             parentObject = parentPropertyValue;
         }
 
@@ -167,16 +168,14 @@ public class PropertyValueInvoker {
     /**
      * 埋め込みプロパティの親をたどるためのスタックを設定する。
      * @param propertyMeta 子のプロパティ情報
-     * @param parentStack 親へのスタック（自身を含む）
+     * @param parentStack 親へのスタック
      */
     private static void setupParentStack(final PropertyMeta propertyMeta,
             final LinkedList<PropertyMeta> parentStack) {
 
-        parentStack.push(propertyMeta);
-
         if(propertyMeta.hasParent()) {
+            parentStack.push(propertyMeta.getParent());
             setupParentStack(propertyMeta.getParent(), parentStack);
-            return;
         }
 
     }
