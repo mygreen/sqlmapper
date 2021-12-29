@@ -176,6 +176,18 @@ CREATE TABLE IF NOT EXISTS test_embedded (
 	primary key (key1, key2)
 );
 
+CREATE TABLE IF NOT EXISTS test_embedded_generated_value (
+	key1 bigint auto_increment,
+	key2 varchar NOT NULL,
+	key3 varchar NOT NULL,
+	name varchar,
+	deleted boolean,
+	primary key (key1, key2)
+);
+
+CREATE SEQUENCE test_embedded_generated_value_key2 start with 1;
+
+
 -- 継承したエンティティのテスト
 CREATE TABLE IF NOT EXISTS test_inheritance (
 	id bigint primary key,

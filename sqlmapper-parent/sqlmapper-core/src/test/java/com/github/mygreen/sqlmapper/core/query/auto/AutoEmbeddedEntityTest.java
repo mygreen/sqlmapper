@@ -16,7 +16,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.test.QueryTestSupport;
 import com.github.mygreen.sqlmapper.core.test.config.H2TestConfig;
+import com.github.mygreen.sqlmapper.core.test.entity.EmbeddedGeneratedValueTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.EmbeddedTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.meta.MEmbeddedGeneratedValueTestEntity;
 import com.github.mygreen.sqlmapper.core.test.entity.meta.MEmbeddedTestEntity;
 
 /**
@@ -36,6 +38,7 @@ public class AutoEmbeddedEntityTest extends QueryTestSupport {
     @BeforeEach
     void beforeMethod() {
         resetData();
+        sqlMapper.getContext().getEntityMetaFactory().refreshTableIdGenerator();
         executeSqlFileAndCommit("insert_data_embedded.sql");
     }
 
@@ -84,6 +87,27 @@ public class AutoEmbeddedEntityTest extends QueryTestSupport {
 
         assertThat(result).hasFieldOrPropertyWithValue("id", new EmbeddedTestEntity.PK("010", 10l))
             .hasFieldOrPropertyWithValue("name", "010@insert");
+
+    }
+
+    @Test
+    void testAutoInsert_generatedValue() {
+
+        MEmbeddedGeneratedValueTestEntity m_ = MEmbeddedGeneratedValueTestEntity.testEmbeddedGeneratedValue;
+
+        EmbeddedGeneratedValueTestEntity entity = new EmbeddedGeneratedValueTestEntity();
+        entity.setDeleted(false);
+        entity.setName("001@insert");
+
+        int count = txNew().execute(action -> sqlMapper.insert(entity).execute());
+        assertThat(count).isEqualTo(1);
+
+        EmbeddedGeneratedValueTestEntity result = sqlMapper.selectFrom(m_)
+                .id(entity.getId())
+                .getSingleResult();
+
+        assertThat(result).hasFieldOrPropertyWithValue("id", new EmbeddedGeneratedValueTestEntity.PK(1, "001@key2", "001@key3"))
+                .hasFieldOrPropertyWithValue("name", "001@insert");
 
     }
 
@@ -157,6 +181,41 @@ public class AutoEmbeddedEntityTest extends QueryTestSupport {
                     .getSingleResult();
 
             assertThat(result).hasFieldOrPropertyWithValue("id", new EmbeddedTestEntity.PK(String.format("test@%05d", offset), offset))
+                .hasFieldOrPropertyWithValue("name", "name@" + offset);
+
+        }
+
+    }
+
+    @Test
+    void testAutoBatchInsert_generatedValue() {
+
+        MEmbeddedGeneratedValueTestEntity m_ = MEmbeddedGeneratedValueTestEntity.testEmbeddedGeneratedValue;
+
+        List<EmbeddedGeneratedValueTestEntity> entities = new ArrayList<>();
+        for(int i=0; i < 5; i++) {
+            int offset = i+1;
+            EmbeddedGeneratedValueTestEntity entity = new EmbeddedGeneratedValueTestEntity();
+            entity.setName("name@" + offset);
+
+            entities.add(entity);
+        }
+
+        int[] count = txNew().execute(action -> {
+            return sqlMapper.insertBatch(entities)
+                    .execute();
+        });
+
+        assertThat(count).containsExactly(1, 1, 1, 1, 1);
+
+        for(int i=0; i < 5; i++) {
+            int offset = i+1;
+            EmbeddedGeneratedValueTestEntity result = sqlMapper.selectFrom(m_)
+                    .id(entities.get(i).getId())
+                    .getSingleResult();
+
+            assertThat(result).hasFieldOrPropertyWithValue("id", new EmbeddedGeneratedValueTestEntity.PK(
+                    offset, String.format("%03d@key2", offset), String.format("%03d@key3", offset)))
                 .hasFieldOrPropertyWithValue("name", "name@" + offset);
 
         }

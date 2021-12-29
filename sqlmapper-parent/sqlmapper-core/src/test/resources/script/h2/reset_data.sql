@@ -27,6 +27,7 @@ TRUNCATE table test_type_value_primitive_number;
 TRUNCATE table test_audit;
 
 TRUNCATE table test_embedded;
+TRUNCATE table test_embedded_generated_value;
 
 TRUNCATE table test_inheritance;
 
@@ -36,7 +37,9 @@ ALTER TABLE employee ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE test_generated_value_identity ALTER COLUMN id RESTART WITH 1;
 ALTER TABLE test_generated_value_identity2 ALTER COLUMN id1 RESTART WITH 1;
 ALTER TABLE test_generated_value_identity2 ALTER COLUMN id2 RESTART WITH 100;
+ALTER TABLE test_embedded_generated_value ALTER COLUMN key1 RESTART WITH 1;
 
 -- シーケンスのリセット : ALTER SEQUENCE <sequence_name> RESTART WITH 1;
 ALTER SEQUENCE test_sequence RESTART WITH 1;
+ALTER SEQUENCE test_embedded_generated_value_key2 RESTART WITH 1;
 
