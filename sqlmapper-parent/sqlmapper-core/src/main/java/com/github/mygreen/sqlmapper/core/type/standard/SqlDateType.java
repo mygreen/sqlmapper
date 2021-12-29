@@ -53,6 +53,11 @@ public class SqlDateType implements SqlTemporalType<Date> {
     }
 
     @Override
+    public Date convertTo(java.util.Date utilDate) {
+        return new Date(utilDate.getTime());
+    }
+
+    @Override
     public Date getValue(ResultSet rs, int columnIndex) throws SQLException {
 
         Date value = rs.getDate(columnIndex);
