@@ -23,6 +23,7 @@ import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.FromClause;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.IllegalQueryException;
 import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.query.JoinAssociation;
 import com.github.mygreen.sqlmapper.core.query.JoinCondition;
@@ -37,6 +38,8 @@ import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
 import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
+import com.github.mygreen.sqlmapper.metamodel.Path;
+import com.github.mygreen.sqlmapper.metamodel.PathMeta;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
@@ -467,19 +470,23 @@ public class AutoSelectExecutor<T> {
         }
 
         for(OrderSpecifier order : query.getOrders()) {
-            String propertyName = order.getPath().getPathMeta().getElement();
+            PathMeta pathMeta = order.getPath().getPathMeta();
+            Path<?> rootPath = pathMeta.findRootPath();
+            String propertyName = pathMeta.getElement();
             Optional<PropertyMeta> propertyMeta = query.getEntityMeta().findPropertyMeta(propertyName);
-
-            String tableAlias = tableNameResolver.getTableAlias(order.getPath().getPathMeta().getParent());
-            if(!StringUtils.hasLength(tableAlias)) {
-                //TODO: 例外処理
-
+            if(propertyMeta.isEmpty()) {
+                throw new IllegalQueryException("unknwon property : " + propertyName);
             }
 
-            propertyMeta.ifPresent(p -> {
-                String orderBy = String.format("%s.%s %s", tableAlias, p.getColumnMeta().getName(), order.getOrder().name());
-                orderByClause.addSql(orderBy);
-            });
+            String tableName = tableNameResolver.getTableAlias(rootPath);
+            String columnName;
+            if(tableName != null) {
+                columnName = tableName + "." + propertyMeta.get().getColumnMeta().getName();
+            } else {
+                columnName = propertyMeta.get().getColumnMeta().getName();;
+            }
+
+            orderByClause.addSql(columnName + " " + order.getOrder().name());
         }
 
     }
