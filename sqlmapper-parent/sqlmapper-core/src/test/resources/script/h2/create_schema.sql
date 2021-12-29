@@ -176,5 +176,15 @@ CREATE TABLE IF NOT EXISTS test_embedded (
 	primary key (key1, key2)
 );
 
+-- 継承したエンティティのテスト
+CREATE TABLE IF NOT EXISTS test_inheritance (
+	id bigint primary key,
+	name varchar,
+	birthday date,
+	create_at timestamp,
+	update_at timestamp,
+	version bigint NOT NULL
+
+);
 
 

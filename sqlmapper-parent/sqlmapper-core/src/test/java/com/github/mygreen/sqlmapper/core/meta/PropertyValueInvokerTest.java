@@ -2,6 +2,9 @@ package com.github.mygreen.sqlmapper.core.meta;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.sql.Date;
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.mygreen.sqlmapper.core.test.config.NoDbTestConfig;
 import com.github.mygreen.sqlmapper.core.test.entity.EmbeddedTestEntity;
+import com.github.mygreen.sqlmapper.core.test.entity.InheritanceTestEntity;
 
 /**
  * {@link PropertyValueInvoker}のテスタ
@@ -126,6 +130,43 @@ public class PropertyValueInvokerTest {
         PropertyValueInvoker.setEmbeddedPropertyValue(entityMeta.getColumnPropertyMeta("key1").get(), entity, "001");
 
         assertThat(entity.getId()).hasFieldOrPropertyWithValue("key1", "001");
+    }
+
+    @Test
+    void testGetEmbeddedPropertyValue_inheritanceProperty() {
+
+        EntityMeta entityMeta = entityMetaFactory.create(InheritanceTestEntity.class);
+
+        InheritanceTestEntity entity = new InheritanceTestEntity();
+        entity.setId(1l);
+        entity.setBirthday(LocalDate.of(1990, 1, 10));
+        entity.setCreateAt(Date.valueOf("2021-12-29"));
+
+        {
+            Object result = PropertyValueInvoker.getEmbeddedPropertyValue(entityMeta.getColumnPropertyMeta("id").get(), entity);
+            assertThat(result).isEqualTo(1l);
+        }
+
+        {
+            Object result = PropertyValueInvoker.getEmbeddedPropertyValue(entityMeta.getColumnPropertyMeta("create_at").get(), entity);
+            assertThat(result).isEqualTo(Date.valueOf("2021-12-29"));
+        }
+
+    }
+
+    @Test
+    void testSetEmbeddedPropertyValue_inheritanceProperty() {
+
+        EntityMeta entityMeta = entityMetaFactory.create(InheritanceTestEntity.class);
+
+        InheritanceTestEntity entity = new InheritanceTestEntity();
+
+        PropertyValueInvoker.setEmbeddedPropertyValue(entityMeta.getColumnPropertyMeta("id").get(), entity, 1l);
+        PropertyValueInvoker.setEmbeddedPropertyValue(entityMeta.getColumnPropertyMeta("create_at").get(), entity, Date.valueOf("2021-12-29"));
+
+        assertThat(entity).hasFieldOrPropertyWithValue("id", 1l)
+            .hasFieldOrPropertyWithValue("createAt", Date.valueOf("2021-12-29"));
+
     }
 
 

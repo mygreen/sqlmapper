@@ -28,6 +28,8 @@ TRUNCATE table test_audit;
 
 TRUNCATE table test_embedded;
 
+TRUNCATE table test_inheritance;
+
 
 -- IDのリセット : ALTER TABLE <table_name> ALTER COLUMN <column_name> RESTART WITH 1
 ALTER TABLE employee ALTER COLUMN id RESTART WITH 1;

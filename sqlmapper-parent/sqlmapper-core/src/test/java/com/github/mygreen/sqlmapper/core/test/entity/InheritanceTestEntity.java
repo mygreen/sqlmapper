@@ -4,24 +4,30 @@ import java.time.LocalDate;
 
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
+import com.github.mygreen.sqlmapper.core.annotation.Table;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 継承したエンティティ
+ *
+ * @author T.TSUCHIE
+ *
+ */
+@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 @Entity
+@Table(name="TEST_INHERITANCE")
 public class InheritanceTestEntity extends EntityBase {
 
-    @Getter
-    @Setter
     @Id
     private long id;
 
-    @Getter
-    @Setter
     private String name;
 
-    @Getter
-    @Setter
     private LocalDate birthday;
 
 }
