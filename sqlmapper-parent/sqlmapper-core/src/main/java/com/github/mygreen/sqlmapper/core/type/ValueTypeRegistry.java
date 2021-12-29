@@ -276,8 +276,10 @@ public class ValueTypeRegistry implements InitializingBean {
             final Enumerated.EnumType enumType = enumeratedAnno.get().value();
             if(enumType == Enumerated.EnumType.ORDINAL) {
                 return new EnumOrdinalType(propertyType, messageFormatter);
+
             } else if(enumType == Enumerated.EnumType.STRING) {
                 return new EnumStringType(propertyType, messageFormatter);
+
             }
         }
 
@@ -299,6 +301,7 @@ public class ValueTypeRegistry implements InitializingBean {
             final Temporal.TemporalType temporalType = temporalAnno.get().value();
             if(temporalType == Temporal.TemporalType.TIMESTAMP) {
                 return new UtilDateType(new SqlTimestampType());
+
             } else if(temporalType == Temporal.TemporalType.DATE) {
                 return new UtilDateType(new SqlDateType());
 
