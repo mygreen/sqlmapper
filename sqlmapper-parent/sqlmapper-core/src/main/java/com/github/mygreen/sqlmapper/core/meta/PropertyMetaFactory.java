@@ -102,12 +102,14 @@ public class PropertyMetaFactory {
      * プロパティのメタ情報を作成します。
      * @param field フィールド
      * @param entityMeta エンティティのメタ情報。空の場合はID情報の処理をスキップします。
+     * @param embeddedId 埋め込み型のIDのプロパティかどうか。
      * @return プロパティのメタ情報
      */
-    public PropertyMeta create(final Field field, final Optional<EntityMeta> entityMeta) {
+    public PropertyMeta create(final Field field, final Optional<EntityMeta> entityMeta, final boolean embeddedId) {
 
         final Class<?> declaringClass = field.getDeclaringClass();
         final PropertyMeta propertyMeta = new PropertyMeta(field.getName(), field.getType());
+        propertyMeta.setEmbeddedableId(embeddedId);
         doField(propertyMeta, field);
 
         // フィールドに対するgetter/setterメソッドを設定します。
