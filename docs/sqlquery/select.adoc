@@ -20,7 +20,8 @@ List<Employee> results = sqlMapper.selectBySql(
 
 SQLを使って1件検索をする場合は、 `selectBySql(...)` と `getSingleResult()` を組み合わせます。
 
-* 1件も見つからない、または、2件以上見つかった場合、Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
+* 1件も見つからないときは、Springの例外 `EmptyResultDataAccessException` がスローされます。
+* 2件以上見つかった場合、Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
 
 [source,java]
 ----
@@ -34,9 +35,11 @@ Employee result = sqlMapper.sqlMapper.selectBySql(
         .getSingleResult();
 ----
 
-0件/複数件見つかったときに例外をスローされないようにするには、`getOptionalResult()` を使用します。
+1件も見つからなかったときに例外をスローされないようにするには、`getOptionalResult()` を使用します。
 
 * 戻り値を `java.util.Optinal` で受け取ることができます。
+* ただし、2件以上見つかったときは Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
+** 例外がスローされないようにするためにメソッド `limit(1)` による件数を指定することをお勧めします。
 
 [source,java]
 ----
