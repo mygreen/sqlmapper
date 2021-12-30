@@ -12,6 +12,13 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 
+/**
+ * ストアドのパラメータを表現します。
+ *
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
 @RequiredArgsConstructor
 public class StoredParamMeta {
 
@@ -40,6 +47,10 @@ public class StoredParamMeta {
      */
     private LinkedCaseInsensitiveMap<StoredPropertyMeta> propertyMetaMap = new LinkedCaseInsensitiveMap<>();
 
+    /**
+     * パラメータの値に対する {@link ValueType} を設定します。
+     * @param valueType パラメータの値に対する {@link ValueType} を設定しま
+     */
     public void setValueType(@NonNull ValueType<?> valueType) {
         this.valueType = Optional.of(valueType);
     }
@@ -49,9 +60,7 @@ public class StoredParamMeta {
      * @param propertyMeta プロパティ情報。
      */
     public void addPropertyMeta(@NonNull StoredPropertyMeta propertyMeta) {
-
         propertyMetaMap.put(propertyMeta.getName(), propertyMeta);
-
     }
 
     /**
@@ -60,9 +69,7 @@ public class StoredParamMeta {
      * @return プロパティメタ情報
      */
     public Optional<StoredPropertyMeta> getPropertyMeta(@NonNull String propertyName) {
-
         return Optional.ofNullable(propertyMetaMap.get(propertyName));
-
     }
 
     /**
