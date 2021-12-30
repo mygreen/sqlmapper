@@ -2,7 +2,9 @@
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 /**
@@ -12,16 +14,21 @@ import com.github.mygreen.sqlmapper.core.type.ValueType;
  * @author T.TSUCHIE
  *
  */
-<span class="fc" id="L15">public class StringType implements ValueType&lt;String&gt; {</span>
+<span class="fc" id="L17">public class StringType implements ValueType&lt;String&gt; {</span>
 
     @Override
     public String getValue(ResultSet rs, int columnIndex) throws SQLException {
-<span class="fc" id="L19">        return rs.getString(columnIndex);</span>
+<span class="fc" id="L21">        return rs.getString(columnIndex);</span>
     }
 
     @Override
     public Object getSqlParameterValue(String value) {
-<span class="fc" id="L24">        return value;</span>
+<span class="fc" id="L26">        return value;</span>
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+<span class="fc" id="L31">        return Types.VARCHAR;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

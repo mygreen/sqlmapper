@@ -2,7 +2,9 @@
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
@@ -25,22 +27,27 @@ public class ShortType implements ValueType&lt;Short&gt; {
     @Override
     public Short getValue(ResultSet rs, int columnIndex) throws SQLException {
 
-<span class="nc" id="L28">        Short value = rs.getShort(columnIndex);</span>
-<span class="nc bnc" id="L29" title="All 4 branches missed.">        if(rs.wasNull() &amp;&amp; !forPrimitive) {</span>
-<span class="nc" id="L30">            return null;</span>
+<span class="fc" id="L30">        Short value = rs.getShort(columnIndex);</span>
+<span class="fc bfc" id="L31" title="All 4 branches covered.">        if(rs.wasNull() &amp;&amp; !forPrimitive) {</span>
+<span class="fc" id="L32">            return null;</span>
         }
 
-<span class="nc" id="L33">        return value;</span>
+<span class="fc" id="L35">        return value;</span>
     }
 
     @Override
     public Object getSqlParameterValue(Short value) {
 
-<span class="nc bnc" id="L39" title="All 4 branches missed.">        if(value == null &amp;&amp; forPrimitive) {</span>
-<span class="nc" id="L40">            value = 0;</span>
+<span class="pc bpc" id="L41" title="3 of 4 branches missed.">        if(value == null &amp;&amp; forPrimitive) {</span>
+<span class="nc" id="L42">            value = 0;</span>
         }
 
-<span class="nc" id="L43">        return value;</span>
+<span class="fc" id="L45">        return value;</span>
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+<span class="nc" id="L50">        return Types.SMALLINT;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

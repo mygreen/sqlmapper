@@ -2,7 +2,9 @@
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
@@ -25,12 +27,12 @@ public class IntegerType implements ValueType&lt;Integer&gt; {
     @Override
     public Integer getValue(ResultSet rs, int columnIndex) throws SQLException {
 
-<span class="fc" id="L28">        Integer value = rs.getInt(columnIndex);</span>
-<span class="pc bpc" id="L29" title="3 of 4 branches missed.">        if(rs.wasNull() &amp;&amp; !forPrimitive) {</span>
-<span class="nc" id="L30">            return null;</span>
+<span class="fc" id="L30">        Integer value = rs.getInt(columnIndex);</span>
+<span class="fc bfc" id="L31" title="All 4 branches covered.">        if(rs.wasNull() &amp;&amp; !forPrimitive) {</span>
+<span class="fc" id="L32">            return null;</span>
         }
 
-<span class="fc" id="L33">        return value;</span>
+<span class="fc" id="L35">        return value;</span>
     }
 
     /**
@@ -40,11 +42,16 @@ public class IntegerType implements ValueType&lt;Integer&gt; {
     @Override
     public Object getSqlParameterValue(Integer value) {
 
-<span class="pc bpc" id="L43" title="3 of 4 branches missed.">        if(value == null &amp;&amp; forPrimitive) {</span>
-<span class="nc" id="L44">            value = 0;</span>
+<span class="pc bpc" id="L45" title="3 of 4 branches missed.">        if(value == null &amp;&amp; forPrimitive) {</span>
+<span class="nc" id="L46">            value = 0;</span>
         }
 
-<span class="fc" id="L47">        return value;</span>
+<span class="fc" id="L49">        return value;</span>
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+<span class="fc" id="L54">        return Types.INTEGER;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

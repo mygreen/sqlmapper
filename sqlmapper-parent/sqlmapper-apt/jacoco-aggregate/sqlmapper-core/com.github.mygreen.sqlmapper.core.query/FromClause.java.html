@@ -110,13 +110,13 @@ public class FromClause {
      */
     public void addSql(JoinType joinType, String tableName, String tableAlias, String condition) {
 
-<span class="pc bpc" id="L113" title="2 of 3 branches missed.">        switch(joinType) {</span>
+<span class="pc bpc" id="L113" title="1 of 3 branches missed.">        switch(joinType) {</span>
             case INNER:
 <span class="fc" id="L115">                sql.append(&quot; inner join &quot;);</span>
 <span class="fc" id="L116">                break;</span>
             case LEFT_OUTER:
-<span class="nc" id="L118">                sql.append(&quot; left outer join &quot;);</span>
-<span class="nc" id="L119">                break;</span>
+<span class="fc" id="L118">                sql.append(&quot; left outer join &quot;);</span>
+<span class="fc" id="L119">                break;</span>
             default:
 <span class="nc" id="L121">                throw new IllegalArgumentException(&quot;Not support joinType : &quot; + joinType.toString());</span>
         }

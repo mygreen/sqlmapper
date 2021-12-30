@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>ExpressionEvaluator.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-spring-boot-autoconfigure</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.where.metamodel</a> &gt; <span class="el_source">ExpressionEvaluator.java</span></div><h1>ExpressionEvaluator.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.where.metamodel;
+
+import com.github.mygreen.sqlmapper.metamodel.Visitor;
+import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
+
+import lombok.RequiredArgsConstructor;
+
+/**
+ * 演算子を評価するための処理。
+ * &lt;p&gt;SQL関数を評価する際にサブ式を評価するために使用します。
+ *
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
+@RequiredArgsConstructor
+public class ExpressionEvaluator {
+
+    private final FunctionOp operator;
+
+    private final OperationHandler&lt;?&gt; handler;
+
+    /**
+     * 式ノードを評価し、SQLを組み立てます。
+     *
+     * @param expr 評価対象の式
+     * @param visitor Visitor
+     * @param context コンテキスト
+     */
+    public void evaluate(Expression&lt;?&gt; expr, Visitor&lt;VisitorContext&gt; visitor, VisitorContext context) {
+<span class="fc" id="L32">        this.handler.invoke(operator, expr, visitor, context);</span>
+<span class="fc" id="L33">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

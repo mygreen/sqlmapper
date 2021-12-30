@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PropertyBase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.meta</a> &gt; <span class="el_source">PropertyBase.java</span></div><h1>PropertyBase.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.meta;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * JavaBeanのプロパティの基本的な機能を提供します。
+ *
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
+@RequiredArgsConstructor
+public abstract class PropertyBase {
+
+    /**
+     * プロパティ名
+     */
+    @Getter
+    protected final String name;
+
+    /**
+     * プロパティタイプ
+     */
+    @Getter
+    protected final Class&lt;?&gt; propertyType;
+
+    /**
+     * フィールド情報
+     */
+    protected Optional&lt;Field&gt; field = Optional.empty();
+
+    /**
+     * setterメソッド
+     */
+    protected Optional&lt;Method&gt; writeMethod = Optional.empty();
+
+    /**
+     * getterメソッド
+     */
+    protected Optional&lt;Method&gt; readMethod = Optional.empty();
+
+    /**
+     * アノテーションの情報
+     */
+    protected Map&lt;Class&lt;? extends Annotation&gt;, Annotation&gt; annotationMap = new HashMap&lt;&gt;();
+
+    /**
+     * プロパティが定義されているクラス情報を取得します。
+     * @return プロパティが定義されているクラス情報
+     * @throws IllegalStateException クラス情報を取得するための情報が不足している場合。
+     */
+    public Class&lt;?&gt; getDeclaringClass() {
+
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        if(field.isPresent()) {</span>
+<span class="fc" id="L65">            return field.get().getDeclaringClass();</span>
+        }
+
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        if(readMethod.isPresent()) {</span>
+<span class="nc" id="L69">            return readMethod.get().getDeclaringClass();</span>
+        }
+
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        if(writeMethod.isPresent()) {</span>
+<span class="nc" id="L73">            return writeMethod.get().getDeclaringClass();</span>
+        }
+
+<span class="nc" id="L76">        throw new IllegalStateException(&quot;not found availabeld info.&quot;);</span>
+
+    }
+
+    /**
+     * 読み込み可能なプロパティか判定する。
+     * &lt;p&gt;getterメソッドまたはpublicなフィールドが存在する場合&lt;/p&gt;
+     * @return {@literal true}のとき読み込み可能。
+     */
+    public boolean isReadable() {
+
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if(readMethod.isPresent()) {</span>
+<span class="nc" id="L88">            return true;</span>
+        }
+
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if(field.isPresent()) {</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">            if(Modifier.isPublic(field.get().getModifiers())) {</span>
+<span class="nc" id="L93">                return true;</span>
+            }
+        }
+
+<span class="nc" id="L97">        return false;</span>
+
+    }
+
+    /**
+     * 書込み可能なプロパティか判定する。
+     * &lt;p&gt;setterメソッドまたはpublicなフィールドが存在する場合&lt;/p&gt;
+     * @return {@literal true}のと書き込み可能。
+     */
+    public boolean isWritable() {
+
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if(writeMethod.isPresent()) {</span>
+<span class="nc" id="L109">            return true;</span>
+        }
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if(field.isPresent()) {</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            if(Modifier.isPublic(field.get().getModifiers())) {</span>
+<span class="nc" id="L114">                return true;</span>
+            }
+        }
+
+<span class="nc" id="L118">        return false;</span>
+
+    }
+
+    /**
+     * プロパティに対するフィールドを設定します。
+     * @param field フィールド（nullを許容します）
+     */
+    public void setField(Field field) {
+<span class="fc" id="L127">        this.field = Optional.ofNullable(field);</span>
+<span class="fc" id="L128">    }</span>
+
+    /**
+     * プロパティに対するフィールドを情報を取得します。
+     * @return プロパティに対するフィールド情報
+     */
+    public Optional&lt;Field&gt; getField() {
+<span class="nc" id="L135">        return field;</span>
+    }
+
+    /**
+     * プロパティに対するsetterメソッドを設定します。
+     * @param method setterメソッド（nullを許容します）
+     */
+    public void setWriteMethod(Method method) {
+<span class="fc" id="L143">        this.writeMethod = Optional.ofNullable(method);</span>
+<span class="fc" id="L144">    }</span>
+
+    /**
+     * プロパティに対するsetterメソッドを取得します。
+     * @return プロパティに対するsetterメソッド。
+     */
+    public Optional&lt;Method&gt; getWriteMethod() {
+<span class="fc" id="L151">        return writeMethod;</span>
+    }
+
+    /**
+     * プロパティに対するgetterメソッドを設定します。
+     * @param method getterメソッド（nullを許容します）
+     */
+    public void setReadMethod(Method method) {
+<span class="fc" id="L159">        this.readMethod = Optional.ofNullable(method);</span>
+<span class="fc" id="L160">    }</span>
+
+    /**
+     * プロパティに対するgetterメソッドを取得します。
+     * @return プロパティに対するgetterメソッド
+     */
+    public Optional&lt;Method&gt; getReadMethod() {
+<span class="fc" id="L167">        return readMethod;</span>
+    }
+
+    /**
+     * アノテーションを追加します。
+     * @param annoClass アノテーションのタイプ
+     * @param anno 追加するアノテーション
+     */
+<span class="pc bpc" id="L175" title="2 of 4 branches missed.">    public void addAnnotation(@NonNull Class&lt;? extends Annotation&gt; annoClass, @NonNull Annotation anno) {</span>
+<span class="fc" id="L176">        this.annotationMap.put(annoClass, anno);</span>
+<span class="fc" id="L177">    }</span>
+
+    /**
+     * 指定したアノテーションを持つか判定します。
+     * @param &lt;A&gt; アノテーションのタイプ。
+     * @param annoClass アノテーションのクラスタイプ。
+     * @return trueの場合、アノテーションを持ちます。
+     */
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">    public &lt;A extends Annotation&gt; boolean hasAnnotation(@NonNull Class&lt;A&gt; annoClass) {</span>
+<span class="fc" id="L186">        return annotationMap.containsKey(annoClass);</span>
+    }
+
+    /**
+     * タイプを指定して、アノテーションを取得する。
+     * @param &lt;A&gt; アノテーションのタイプ。
+     * @param annoClass アノテーションのクラスタイプ。
+     * @return 存在しない場合、空を返します。
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public &lt;A extends Annotation&gt; Optional&lt;A&gt; getAnnotation(Class&lt;A&gt; annoClass) {
+<span class="fc" id="L197">        return Optional.ofNullable((A)annotationMap.get(annoClass));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

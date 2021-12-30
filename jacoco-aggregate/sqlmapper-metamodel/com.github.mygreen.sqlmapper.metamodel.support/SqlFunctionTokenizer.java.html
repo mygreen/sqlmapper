@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>SqlFunctionTokenizer.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel.support</a> &gt; <span class="el_source">SqlFunctionTokenizer.java</span></div><h1>SqlFunctionTokenizer.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel.support;
+
+/**
+ * SQL関数の字句解析処理。
+ *
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
+public class SqlFunctionTokenizer {
+
+    /**
+     * トークンの種類
+     *
+     */
+<span class="fc" id="L16">    public enum TokenType {</span>
+<span class="fc" id="L17">        SQL,</span>
+<span class="fc" id="L18">        LEFT_VARIABLE,</span>
+<span class="fc" id="L19">        BIND_VARIABLE,</span>
+<span class="fc" id="L20">        EOF</span>
+    }
+
+    /**
+     * 解析対象のSQL
+     */
+    private String sql;
+
+    /**
+     * 現在解析しているポジション
+     */
+<span class="fc" id="L31">    private int position = 0;</span>
+
+    /**
+     * トークン
+     */
+    private String token;
+
+    /**
+     * 現在のトークン種別
+     */
+<span class="fc" id="L41">    private TokenType tokenType = TokenType.SQL;</span>
+
+    /**
+     * 次のトークン種別
+     */
+<span class="fc" id="L46">    private TokenType nextTokenType = TokenType.SQL;</span>
+
+    /**
+     * 現在まで出現したバイド変数の個数
+     */
+<span class="fc" id="L51">    private int bindVariableNum = 0;</span>
+
+<span class="fc" id="L53">    public SqlFunctionTokenizer(String sql) {</span>
+<span class="fc" id="L54">        this.sql = sql;</span>
+<span class="fc" id="L55">    }</span>
+
+    /**
+     * @return SQLを返します。
+     */
+    public String getSql() {
+<span class="nc" id="L61">        return sql;</span>
+    }
+
+    /**
+     * @return 現在解析しているポジションを返します。
+     */
+    public int getPosition() {
+<span class="nc" id="L68">        return position;</span>
+    }
+
+    /**
+     * @return トークンを返します。
+     */
+    public String getToken() {
+<span class="fc" id="L75">        return token;</span>
+    }
+
+    /**
+     * @return 現在解析しているポジションより前のSQLを返します。
+     */
+    public String getBefore() {
+<span class="nc" id="L82">        return sql.substring(0, position);</span>
+    }
+
+    /**
+     * @return 現在解析しているポジションより後ろのSQLを返します。
+     */
+    public String getAfter() {
+<span class="nc" id="L89">        return sql.substring(position);</span>
+    }
+
+    /**
+     * @return 現在のトークン種別を返します。
+     */
+    public TokenType getTokenType() {
+<span class="fc" id="L96">        return tokenType;</span>
+    }
+
+    /**
+     * @return 次のトークン種別を返します。
+     */
+    public TokenType getNextTokenType() {
+<span class="nc" id="L103">        return nextTokenType;</span>
+    }
+
+
+    /**
+     * @return 次のトークンに進みます。
+     */
+    public TokenType next() {
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (position &gt;= sql.length()) {</span>
+<span class="fc" id="L112">            token = null;</span>
+<span class="fc" id="L113">            tokenType = TokenType.EOF;</span>
+<span class="fc" id="L114">            nextTokenType = TokenType.EOF;</span>
+<span class="fc" id="L115">            return tokenType;</span>
+        }
+<span class="pc bpc" id="L117" title="1 of 4 branches missed.">        switch (nextTokenType) {</span>
+        case SQL:
+<span class="fc" id="L119">            parseSql();</span>
+<span class="fc" id="L120">            break;</span>
+        case LEFT_VARIABLE:
+<span class="fc" id="L122">            parseLeftVariable();</span>
+<span class="fc" id="L123">            break;</span>
+        case BIND_VARIABLE:
+<span class="fc" id="L125">            parseBindVariable();</span>
+<span class="fc" id="L126">            break;</span>
+        default:
+<span class="nc" id="L128">            parseEof();</span>
+            break;
+        }
+<span class="fc" id="L131">        return tokenType;</span>
+    }
+
+    /**
+     * Parse the SQL.
+     */
+    protected void parseSql() {
+
+<span class="fc" id="L139">        int leftVariableStartPos = sql.indexOf(&quot;$left&quot;, position);</span>
+<span class="fc" id="L140">        int bindVariableStartPos = sql.indexOf(&quot;?&quot;, position);</span>
+<span class="fc" id="L141">        int nextStartPos = getNextStartPos(leftVariableStartPos, bindVariableStartPos);</span>
+
+<span class="fc bfc" id="L143" title="All 2 branches covered.">        if (nextStartPos &lt; 0) {</span>
+            // 特定のトークンでない場合は、すべてSQL区分する。
+<span class="fc" id="L145">            token = sql.substring(position);</span>
+<span class="fc" id="L146">            nextTokenType = TokenType.EOF;</span>
+<span class="fc" id="L147">            position = sql.length();</span>
+<span class="fc" id="L148">            tokenType = TokenType.SQL;</span>
+
+        } else {
+<span class="fc" id="L151">            token = sql.substring(position, nextStartPos);</span>
+<span class="fc" id="L152">            tokenType = TokenType.SQL;</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">            boolean needNext = nextStartPos == position;</span>
+
+<span class="fc bfc" id="L155" title="All 2 branches covered.">            if (nextStartPos == leftVariableStartPos) {</span>
+<span class="fc" id="L156">                nextTokenType = TokenType.LEFT_VARIABLE;</span>
+<span class="fc" id="L157">                position = leftVariableStartPos + 4;</span>
+
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">            } else if (nextStartPos == bindVariableStartPos) {</span>
+<span class="fc" id="L160">                nextTokenType = TokenType.BIND_VARIABLE;</span>
+<span class="fc" id="L161">                position = bindVariableStartPos;</span>
+            }
+
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">            if (needNext) {</span>
+<span class="nc" id="L165">                next();</span>
+            }
+        }
+<span class="fc" id="L168">    }</span>
+
+    /**
+     * 次のトークンの開始位置を返します。
+     *
+     * @param leftVariableStartPos {@literal $left} 変数の開始位置
+     * @param bindVariableStartPos {@literal ?} 変数の開始位置
+     * @return 次のトークンの開始位置。特定のトークンでない場合は {@literal -1} を返します。
+     */
+    protected int getNextStartPos(int leftVariableStartPos, int bindVariableStartPos) {
+
+<span class="fc" id="L179">        int nextStartPos = -1;</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">        if (leftVariableStartPos &gt;= 0) {</span>
+<span class="fc" id="L181">            nextStartPos = leftVariableStartPos;</span>
+        }
+
+<span class="pc bpc" id="L184" title="1 of 6 branches missed.">        if (bindVariableStartPos &gt;= 0</span>
+                &amp;&amp; (nextStartPos &lt; 0 || bindVariableStartPos &lt; nextStartPos)) {
+<span class="fc" id="L186">            nextStartPos = bindVariableStartPos;</span>
+        }
+<span class="fc" id="L188">        return nextStartPos;</span>
+    }
+
+    /**
+     * {@literal $left} 変数をパースします。
+     */
+    protected void parseLeftVariable() {
+<span class="fc" id="L195">        token = &quot;$left&quot;;</span>
+<span class="fc" id="L196">        nextTokenType = TokenType.SQL;</span>
+<span class="fc" id="L197">        position += 1;</span>
+<span class="fc" id="L198">        tokenType = TokenType.LEFT_VARIABLE;</span>
+<span class="fc" id="L199">    }</span>
+
+    /**
+     * Parse the bind variable.
+     */
+    protected void parseBindVariable() {
+<span class="fc" id="L205">        token = &quot;?&quot;;</span>
+<span class="fc" id="L206">        bindVariableNum++;</span>
+<span class="fc" id="L207">        nextTokenType = TokenType.SQL;</span>
+<span class="fc" id="L208">        position += 1;</span>
+<span class="fc" id="L209">        tokenType = TokenType.BIND_VARIABLE;</span>
+<span class="fc" id="L210">    }</span>
+
+    /**
+     * Parse the end of the SQL.
+     */
+    protected void parseEof() {
+<span class="nc" id="L216">        token = null;</span>
+<span class="nc" id="L217">        tokenType = TokenType.EOF;</span>
+<span class="nc" id="L218">        nextTokenType = TokenType.EOF;</span>
+<span class="nc" id="L219">    }</span>
+
+    /**
+     * バインド変数の現在までの出現回数を取得します。
+     * @return バインド変数の現在までの出現回
+     */
+    public int getBindBariableNum() {
+<span class="fc" id="L226">        return bindVariableNum;</span>
+    }
+
+    /**
+     * トークンをスキップします。
+     *
+     * @return スキップしたトークン
+     */
+    public String skipToken() {
+<span class="nc" id="L235">        int index = sql.length();</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        char quote = position &lt; sql.length() ? sql.charAt(position) : '\0';</span>
+<span class="nc bnc" id="L237" title="All 4 branches missed.">        boolean quoting = quote == '\'' || quote == '(';</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">        if (quote == '(') {</span>
+<span class="nc" id="L239">            quote = ')';</span>
+        }
+<span class="nc bnc" id="L241" title="All 4 branches missed.">        for (int i = quoting ? position + 1 : position; i &lt; sql.length(); ++i) {</span>
+<span class="nc" id="L242">            char c = sql.charAt(i);</span>
+<span class="nc bnc" id="L243" title="All 10 branches missed.">            if ((Character.isWhitespace(c) || c == ',' || c == ')' || c == '(')</span>
+                    &amp;&amp; !quoting) {
+<span class="nc" id="L245">                index = i;</span>
+<span class="nc" id="L246">                break;</span>
+<span class="nc bnc" id="L247" title="All 4 branches missed.">            } else if (c == '/' &amp;&amp; i + 1 &lt; sql.length()</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">                    &amp;&amp; sql.charAt(i + 1) == '*') {</span>
+<span class="nc" id="L249">                index = i;</span>
+<span class="nc" id="L250">                break;</span>
+<span class="nc bnc" id="L251" title="All 4 branches missed.">            } else if (c == '-' &amp;&amp; i + 1 &lt; sql.length()</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">                    &amp;&amp; sql.charAt(i + 1) == '-') {</span>
+<span class="nc" id="L253">                index = i;</span>
+<span class="nc" id="L254">                break;</span>
+<span class="nc bnc" id="L255" title="All 6 branches missed.">            } else if (quoting &amp;&amp; quote == '\'' &amp;&amp; c == '\''</span>
+<span class="nc bnc" id="L256" title="All 4 branches missed.">                    &amp;&amp; (i + 1 &gt;= sql.length() || sql.charAt(i + 1) != '\'')) {</span>
+<span class="nc" id="L257">                index = i + 1;</span>
+<span class="nc" id="L258">                break;</span>
+<span class="nc bnc" id="L259" title="All 4 branches missed.">            } else if (quoting &amp;&amp; c == quote) {</span>
+<span class="nc" id="L260">                index = i + 1;</span>
+<span class="nc" id="L261">                break;</span>
+            }
+        }
+<span class="nc" id="L264">        token = sql.substring(position, index);</span>
+<span class="nc" id="L265">        tokenType = TokenType.SQL;</span>
+<span class="nc" id="L266">        nextTokenType = TokenType.SQL;</span>
+<span class="nc" id="L267">        position = index;</span>
+<span class="nc" id="L268">        return token;</span>
+    }
+
+    /**
+     * ホワイトスペースをスキップします。
+     *
+     * @return スキップしたホワイストスペース
+     */
+    public String skipWhitespace() {
+<span class="nc" id="L277">        int index = skipWhitespace(position);</span>
+<span class="nc" id="L278">        token = sql.substring(position, index);</span>
+<span class="nc" id="L279">        position = index;</span>
+<span class="nc" id="L280">        return token;</span>
+    }
+
+    private int skipWhitespace(int position) {
+<span class="nc" id="L284">        int index = sql.length();</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">        for (int i = position; i &lt; sql.length(); ++i) {</span>
+<span class="nc" id="L286">            char c = sql.charAt(i);</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">            if (!Character.isWhitespace(c)) {</span>
+<span class="nc" id="L288">                index = i;</span>
+<span class="nc" id="L289">                break;</span>
+            }
+        }
+<span class="nc" id="L292">        return index;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

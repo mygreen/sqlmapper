@@ -48,6 +48,9 @@ public class AutoUpdateImpl&lt;T&gt; implements AutoUpdate&lt;T&gt; {
     @Getter
     private final EntityMeta entityMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
     /**
      * バージョンプロパティを更新対象に含めるかどうか。
      */
@@ -63,19 +66,19 @@ public class AutoUpdateImpl&lt;T&gt; implements AutoUpdate&lt;T&gt; {
     /**
      * バージョンチェックを行った場合に、更新行数が0行でも{@link OptimisticLockingFailureException}スローしないなら&lt;code&gt;true&lt;/code&gt;
      */
-<span class="nc" id="L66">    @Getter</span>
+<span class="fc" id="L69">    @Getter</span>
     private boolean suppresOptimisticLockException = false;
 
     /**
      * 更新対象とするプロパティ
      */
-<span class="nc" id="L72">    @Getter</span>
+<span class="fc" id="L75">    @Getter</span>
     private final Set&lt;String&gt; includesProperties = new LinkedHashSet&lt;&gt;();
 
     /**
      * 更新対象から除外するプロパティ
      */
-<span class="nc" id="L78">    @Getter</span>
+<span class="fc" id="L81">    @Getter</span>
     private final Set&lt;String&gt; excludesProperties = new LinkedHashSet&lt;&gt;();
 
     /**
@@ -84,121 +87,135 @@ public class AutoUpdateImpl&lt;T&gt; implements AutoUpdate&lt;T&gt; {
      * key=プロパティ名、value=プロパティの値。
      * &lt;/p&gt;
      */
-<span class="nc" id="L87">    @Getter</span>
-<span class="nc" id="L88">    private Map&lt;String, Object&gt; beforeStates = Collections.emptyMap();</span>
+<span class="fc" id="L90">    @Getter</span>
+<span class="fc" id="L91">    private Map&lt;String, Object&gt; beforeStates = Collections.emptyMap();</span>
 
-<span class="nc" id="L90">    public AutoUpdateImpl(SqlMapperContext context, T entity) {</span>
-<span class="nc" id="L91">        this.context = context;</span>
-<span class="nc" id="L92">        this.entity = entity;</span>
-<span class="nc" id="L93">        this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());</span>
+<span class="fc" id="L93">    public AutoUpdateImpl(SqlMapperContext context, T entity) {</span>
+<span class="fc" id="L94">        this.context = context;</span>
+<span class="fc" id="L95">        this.entity = entity;</span>
+<span class="fc" id="L96">        this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());</span>
 
         // 処理対象の情報の整合性などのチェックを行う
-<span class="nc" id="L96">        validateTarget();</span>
-<span class="nc" id="L97">    }</span>
+<span class="fc" id="L99">        validateTarget();</span>
+<span class="fc" id="L100">    }</span>
 
     private void validateTarget() {
-        // 主キーを持つかどうかのチェック
-<span class="nc bnc" id="L101" title="All 2 branches missed.">        if(entityMeta.getIdPropertyMetaList().isEmpty()) {</span>
-<span class="nc" id="L102">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.requiredId&quot;)</span>
-<span class="nc" id="L103">                    .paramWithClass(&quot;entityType&quot;, entityMeta.getEntityType())</span>
-<span class="nc" id="L104">                    .format());</span>
+
+        // 読み取り専用かどうかのチェック
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        if(entityMeta.getTableMeta().isReadOnly()) {</span>
+<span class="nc" id="L106">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.readOnlyEntity&quot;)</span>
+<span class="nc" id="L107">                    .paramWithClass(&quot;entityType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L108">                    .format());</span>
         }
-<span class="nc" id="L106">    }</span>
+
+        // 主キーを持つかどうかのチェック
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if(entityMeta.getIdPropertyMetaList().isEmpty()) {</span>
+<span class="nc" id="L113">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.requiredId&quot;)</span>
+<span class="nc" id="L114">                    .paramWithClass(&quot;entityType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L115">                    .format());</span>
+        }
+<span class="fc" id="L117">    }</span>
+
+    @Override
+    public AutoUpdateImpl&lt;T&gt; queryTimeout(int seconds) {
+<span class="nc" id="L121">        this.queryTimeout = seconds;</span>
+<span class="nc" id="L122">        return this;</span>
+    }
 
     @Override
     public AutoUpdateImpl&lt;T&gt; includesVersion() {
-<span class="nc" id="L110">        this.includeVersion = true;</span>
-<span class="nc" id="L111">        return this;</span>
+<span class="fc" id="L127">        this.includeVersion = true;</span>
+<span class="fc" id="L128">        return this;</span>
     }
 
     @Override
     public AutoUpdateImpl&lt;T&gt; excludesNull() {
-<span class="nc" id="L116">        this.excludesNull = true;</span>
-<span class="nc" id="L117">        return this;</span>
+<span class="fc" id="L133">        this.excludesNull = true;</span>
+<span class="fc" id="L134">        return this;</span>
     }
 
     @Override
     public AutoUpdateImpl&lt;T&gt; suppresOptimisticLockException() {
-<span class="nc" id="L122">        this.suppresOptimisticLockException = true;</span>
-<span class="nc" id="L123">        return this;</span>
+<span class="fc" id="L139">        this.suppresOptimisticLockException = true;</span>
+<span class="fc" id="L140">        return this;</span>
     }
 
     @Override
     public AutoUpdateImpl&lt;T&gt; includes(final PropertyPath&lt;?&gt;... properties) {
 
-<span class="nc bnc" id="L129" title="All 2 branches missed.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
-<span class="nc" id="L130">            String propertyName = prop.getPathMeta().getElement();</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
+<span class="fc" id="L147">            String propertyName = prop.getPathMeta().getElement();</span>
 
             // 挿入対象のプロパティの親のチェック
-<span class="nc" id="L133">            EntityPath&lt;?&gt; parentPath = (EntityPath&lt;?&gt;)prop.getPathMeta().getParent();</span>
-<span class="nc bnc" id="L134" title="All 2 branches missed.">            if(!entityMeta.getEntityType().equals(parentPath.getType())) {</span>
-<span class="nc" id="L135">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noIncludeProperty&quot;)</span>
-<span class="nc" id="L136">                        .paramWithClass(&quot;classType&quot;, entityMeta.getEntityType())</span>
-<span class="nc" id="L137">                        .param(&quot;properyName&quot;, propertyName)</span>
-<span class="nc" id="L138">                        .format());</span>
+<span class="fc" id="L150">            EntityPath&lt;?&gt; parentPath = (EntityPath&lt;?&gt;)prop.getPathMeta().getParent();</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">            if(!entityMeta.getEntityType().equals(parentPath.getType())) {</span>
+<span class="nc" id="L152">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noIncludeProperty&quot;)</span>
+<span class="nc" id="L153">                        .paramWithClass(&quot;classType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L154">                        .param(&quot;properyName&quot;, propertyName)</span>
+<span class="nc" id="L155">                        .format());</span>
             }
 
-<span class="nc" id="L141">            this.includesProperties.add(propertyName);</span>
+<span class="fc" id="L158">            this.includesProperties.add(propertyName);</span>
         }
 
-<span class="nc" id="L144">        return this;</span>
+<span class="fc" id="L161">        return this;</span>
     }
 
     @Override
     public AutoUpdateImpl&lt;T&gt; excludes(final PropertyPath&lt;?&gt;... properties) {
 
-<span class="nc bnc" id="L150" title="All 2 branches missed.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
-<span class="nc" id="L151">            String propertyName = prop.getPathMeta().getElement();</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
+<span class="fc" id="L168">            String propertyName = prop.getPathMeta().getElement();</span>
 
             // 除外対象のプロパティの親のチェック
-<span class="nc" id="L154">            EntityPath&lt;?&gt; parentPath = (EntityPath&lt;?&gt;)prop.getPathMeta().getParent();</span>
-<span class="nc bnc" id="L155" title="All 2 branches missed.">            if(!entityMeta.getEntityType().equals(parentPath.getType())) {</span>
-<span class="nc" id="L156">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noIncludeProperty&quot;)</span>
-<span class="nc" id="L157">                        .paramWithClass(&quot;classType&quot;, entityMeta.getEntityType())</span>
-<span class="nc" id="L158">                        .param(&quot;properyName&quot;, propertyName)</span>
-<span class="nc" id="L159">                        .format());</span>
+<span class="fc" id="L171">            EntityPath&lt;?&gt; parentPath = (EntityPath&lt;?&gt;)prop.getPathMeta().getParent();</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">            if(!entityMeta.getEntityType().equals(parentPath.getType())) {</span>
+<span class="nc" id="L173">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noIncludeProperty&quot;)</span>
+<span class="nc" id="L174">                        .paramWithClass(&quot;classType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L175">                        .param(&quot;properyName&quot;, propertyName)</span>
+<span class="nc" id="L176">                        .format());</span>
 
             }
 
-<span class="nc" id="L163">            this.excludesProperties.add(propertyName);</span>
+<span class="fc" id="L180">            this.excludesProperties.add(propertyName);</span>
         }
 
-<span class="nc" id="L166">        return this;</span>
+<span class="fc" id="L183">        return this;</span>
     }
 
     @Override
-<span class="nc bnc" id="L170" title="All 2 branches missed.">    public AutoUpdateImpl&lt;T&gt; changedFrom(@NonNull final T beforeEntity) {</span>
-<span class="nc" id="L171">        this.beforeStates = new HashMap&lt;String, Object&gt;(entityMeta.getPropertyMetaSize());</span>
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">    public AutoUpdateImpl&lt;T&gt; changedFrom(@NonNull final T beforeEntity) {</span>
+<span class="fc" id="L188">        this.beforeStates = new HashMap&lt;String, Object&gt;(entityMeta.getPropertyMetaSize());</span>
 
-<span class="nc bnc" id="L173" title="All 2 branches missed.">        for(PropertyMeta propertyMeta : entityMeta.getAllColumnPropertyMeta()) {</span>
-<span class="nc" id="L174">            final String propertyName = propertyMeta.getName();</span>
-<span class="nc" id="L175">            final Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, beforeEntity);</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        for(PropertyMeta propertyMeta : entityMeta.getAllColumnPropertyMeta()) {</span>
+<span class="fc" id="L191">            final String propertyName = propertyMeta.getName();</span>
+<span class="fc" id="L192">            final Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, beforeEntity);</span>
 
-<span class="nc" id="L177">            this.beforeStates.put(propertyName, propertyValue);</span>
-<span class="nc" id="L178">        }</span>
+<span class="fc" id="L194">            this.beforeStates.put(propertyName, propertyValue);</span>
+<span class="fc" id="L195">        }</span>
 
-<span class="nc" id="L180">        return this;</span>
+<span class="fc" id="L197">        return this;</span>
     }
 
     @Override
     public AutoUpdateImpl&lt;T&gt; changedFrom(final Map&lt;String, Object&gt; beforeStates) {
-<span class="nc bnc" id="L185" title="All 2 branches missed.">        if(!beforeStates.isEmpty()) {</span>
-<span class="nc" id="L186">            this.beforeStates = Map.copyOf(beforeStates);</span>
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">        if(!beforeStates.isEmpty()) {</span>
+<span class="fc" id="L203">            this.beforeStates = Map.copyOf(beforeStates);</span>
         }
 
-<span class="nc" id="L189">        return this;</span>
+<span class="fc" id="L206">        return this;</span>
     }
 
     @Override
     public int execute() {
 
-<span class="nc" id="L195">        context.getApplicationEventPublisher().publishEvent(new PreUpdateEvent(this, entityMeta, entity));</span>
+<span class="fc" id="L212">        context.getApplicationEventPublisher().publishEvent(new PreUpdateEvent(this, entityMeta, entity));</span>
 
-<span class="nc" id="L197">        final int result = new AutoUpdateExecutor(this)</span>
-<span class="nc" id="L198">                .execute();</span>
+<span class="fc" id="L214">        final int result = new AutoUpdateExecutor(this)</span>
+<span class="fc" id="L215">                .execute();</span>
 
-<span class="nc" id="L200">        context.getApplicationEventPublisher().publishEvent(new PostUpdateEvent(this, entityMeta, entity));</span>
-<span class="nc" id="L201">        return result;</span>
+<span class="fc" id="L217">        context.getApplicationEventPublisher().publishEvent(new PostUpdateEvent(this, entityMeta, entity));</span>
+<span class="fc" id="L218">        return result;</span>
 
     }
 

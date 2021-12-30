@@ -14,7 +14,7 @@ import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationTyp
  * @author T.TSUCHIE
  *
  */
-<span class="nc" id="L17">public class HsqlDialect extends DialectBase {</span>
+<span class="fc" id="L17">public class HsqlDialect extends DialectBase {</span>
 
     /**
      * {@inheritDoc}
@@ -23,7 +23,7 @@ import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationTyp
      */
     @Override
     public String getName() {
-<span class="nc" id="L26">        return &quot;hsql&quot;;</span>
+<span class="fc" id="L26">        return &quot;hsql&quot;;</span>
     }
 
     /**
@@ -33,20 +33,22 @@ import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationTyp
      *  &lt;li&gt;{@link GenerationType#IDENTITY} : {@literal true}&lt;/li&gt;
      *  &lt;li&gt;{@link GenerationType#SEQUENCE} : {@literal true}&lt;/li&gt;
      *  &lt;li&gt;{@link GenerationType#TABLE} : {@literal true}&lt;/li&gt;
-     *  &lt;li&gt;その他 : {@literal false}&lt;/li&gt;
+     *  &lt;li&gt;{@link GenerationType#UUID} : {@literal true}&lt;/li&gt;
      * &lt;/ul&gt;
      */
     @Override
-    public boolean isSupportedGenerationType(GenerationType generationType) {
-<span class="nc bnc" id="L41" title="All 4 branches missed.">        switch(generationType) {</span>
+    public boolean supportsGenerationType(GenerationType generationType) {
+<span class="pc bpc" id="L41" title="1 of 5 branches missed.">        switch(generationType) {</span>
             case IDENTITY:
-<span class="nc" id="L43">                return true;</span>
+<span class="fc" id="L43">                return true;</span>
             case SEQUENCE:
-<span class="nc" id="L45">                return true;</span>
+<span class="fc" id="L45">                return true;</span>
             case TABLE:
-<span class="nc" id="L47">                return true;</span>
+<span class="fc" id="L47">                return true;</span>
+            case UUID:
+<span class="fc" id="L49">                return true;</span>
             default:
-<span class="nc" id="L49">                return false;</span>
+<span class="nc" id="L51">                return false;</span>
         }
     }
 
@@ -57,7 +59,7 @@ import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationTyp
      */
     @Override
     public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
-<span class="nc" id="L60">        return new HsqlSequenceMaxValueIncrementer(dataSource, sequenceName);</span>
+<span class="fc" id="L62">        return new HsqlSequenceMaxValueIncrementer(dataSource, sequenceName);</span>
     }
 
 }

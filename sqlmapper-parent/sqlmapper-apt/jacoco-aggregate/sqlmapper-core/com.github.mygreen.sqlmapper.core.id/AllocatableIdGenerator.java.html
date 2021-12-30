@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
  * &lt;p&gt;大量にレコードを導入するときは効率的に処理を行うことができます。
  * &lt;p&gt;ただし、予めIDを生成してキャッシュしておくため、プロセスを再起動すると生成済みのキャッシュされたIDは使われず欠番となります。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -22,12 +22,12 @@ public abstract class AllocatableIdGenerator {
      * 割り当てサイズ
      */
     @Getter
-    private final long allocationSize;
+    protected final long allocationSize;
 
     /**
      * 割り当てているIDのキャッシュ。
      */
-    private Map&lt;String, IdContext&gt; idContextMap = new ConcurrentHashMap&lt;&gt;();
+    protected Map&lt;String, AllocatedIdContext&gt; allocatedIdCache = new ConcurrentHashMap&lt;&gt;();
 
     /**
      * 現在のカウンターの値を取得する。
@@ -50,52 +50,68 @@ public abstract class AllocatableIdGenerator {
      * @return 新たらしいID
      */
     public long nextValue(final String key) {
-<span class="nc" id="L53">        return idContextMap.computeIfAbsent(key, k -&gt; new IdContext()).getNextValue(key);</span>
+<span class="fc" id="L53">        return allocatedIdCache.computeIfAbsent(key, k -&gt; new AllocatedIdContext(key)).getNextValue();</span>
 
     }
 
     /**
-     * 自動生成されるIDの情報を保持する。
+     * IDのキャッシュ情報をクリアします。
+     * &lt;p&gt;クリアすることで、次回、{@link #nextValue(String)}を呼び出した時に、最新のDBの情報を反映した状態になります。
+     *
+     * @since 0.3
+     * @param key 割り当てるキーの名称
+     */
+    protected void clear(final String key) {
+<span class="fc" id="L65">        allocatedIdCache.remove(key);</span>
+<span class="fc" id="L66">    }</span>
+
+    /**
+     * 割り当てられたIDの情報を保持する。
      *
      *
      * @author T.TSUCHIE
      *
      */
-<span class="nc" id="L64">    public class IdContext {</span>
+    @RequiredArgsConstructor
+    public class AllocatedIdContext {
+
+        /**
+         * 生成用のキー
+         */
+        private final String key;
 
         /**
          * 現在値
          */
-<span class="nc" id="L69">        protected long currentValue = -1l;</span>
+        private long currentValue = -1l;
 
         /**
          * 割り当て済みの値
          */
-<span class="nc" id="L74">        protected long allocated = -1L;</span>
+        private long allocated = -1L;
 
         /**
          * 新しいIDを払い出します。
          * &lt;p&gt;未割当のキャッシュしているIDがあれば、そちらを払い出します。
          *
-         * @param key キー名
          * @return 新しいIDを返します。
          */
-        public synchronized long getNextValue(final String key) {
+        public synchronized long getNextValue() {
 
-<span class="nc bnc" id="L85" title="All 2 branches missed.">            if(currentValue &lt; 0l) {</span>
-<span class="nc" id="L86">                this.currentValue = getCurrentValue(key);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">            if(currentValue &lt; 0l) {</span>
+<span class="fc" id="L102">                this.currentValue = getCurrentValue(key);</span>
             }
 
-<span class="nc bnc" id="L89" title="All 4 branches missed.">            if(allocated &lt; 0l || allocated &gt;= allocationSize) {</span>
-<span class="nc" id="L90">                currentValue = allocateValue(key, allocationSize) - allocationSize;</span>
-<span class="nc" id="L91">                this.allocated = 1l;</span>
+<span class="pc bpc" id="L105" title="1 of 4 branches missed.">            if(allocated &lt; 0l || allocated &gt;= allocationSize) {</span>
+<span class="fc" id="L106">                currentValue = allocateValue(key, allocationSize) - allocationSize;</span>
+<span class="fc" id="L107">                this.allocated = 1l;</span>
             }
 
-<span class="nc bnc" id="L94" title="All 2 branches missed.">            if(allocated &lt; allocationSize) {</span>
-<span class="nc" id="L95">                return currentValue + allocated++;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">            if(allocated &lt; allocationSize) {</span>
+<span class="fc" id="L111">                return currentValue + allocated++;</span>
             }
 
-<span class="nc" id="L98">            return currentValue;</span>
+<span class="nc" id="L114">            return currentValue;</span>
 
         }
 

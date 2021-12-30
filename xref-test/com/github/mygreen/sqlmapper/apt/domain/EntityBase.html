@@ -13,7 +13,7 @@
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.annotation.CreatedAt;
 <a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.annotation.ModifiedAt;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.annotation.UpdatedAt;
 <a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.annotation.Temporal;
 <a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.annotation.Temporal.TemporalType;
 <a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.annotation.Version;
@@ -38,7 +38,7 @@
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  
 <a class="jxr_linenumber" name="L31" href="#L31">31</a>      @Getter
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>      @Setter
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>      @ModifiedAt
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>      @UpdatedAt
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>      @Temporal(TemporalType.TIMESTAMP)
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>      <strong class="jxr_keyword">protected</strong> Date updateAt;
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  

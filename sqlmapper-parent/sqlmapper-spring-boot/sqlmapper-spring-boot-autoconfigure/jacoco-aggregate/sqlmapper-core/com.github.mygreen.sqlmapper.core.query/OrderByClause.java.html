@@ -38,10 +38,17 @@ public class OrderByClause {
     public void addSql(final String... orderBys) {
 <span class="fc bfc" id="L39" title="All 2 branches covered.">        if(sql.length() == 0) {</span>
 <span class="fc" id="L40">            sql.append(&quot; order by &quot;);</span>
+        } else {
+<span class="fc" id="L42">            sql.append(&quot;, &quot;);</span>
         }
-<span class="fc" id="L42">        sql.append(String.join(&quot;, &quot;, orderBys));</span>
+<span class="fc" id="L44">        sql.append(String.join(&quot;, &quot;, orderBys));</span>
 
-<span class="fc" id="L44">    }</span>
+<span class="fc" id="L46">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L50">        return sql.toString();</span>
+    }
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

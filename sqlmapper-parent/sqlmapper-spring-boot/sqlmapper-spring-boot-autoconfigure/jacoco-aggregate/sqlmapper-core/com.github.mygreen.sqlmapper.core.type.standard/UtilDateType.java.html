@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.Getter;
@@ -29,19 +30,22 @@ public class UtilDateType implements ValueType&lt;Date&gt; {
      * @param temporalConverter 実際のマッピングを行う各時制の実装処理。
      */
     @SuppressWarnings(&quot;rawtypes&quot;)
-<span class="fc" id="L32">    public UtilDateType(final SqlTemporalType temporalConverter) {</span>
-<span class="fc" id="L33">        this.temporalConverter = temporalConverter;</span>
-<span class="fc" id="L34">    }</span>
+<span class="fc" id="L33">    public UtilDateType(final SqlTemporalType temporalConverter) {</span>
+<span class="fc" id="L34">        this.temporalConverter = temporalConverter;</span>
+<span class="fc" id="L35">    }</span>
 
     @Override
     public Date getValue(ResultSet rs, int columnIndex) throws SQLException {
-<span class="nc" id="L38">        return (Date)temporalConverter.getValue(rs, columnIndex);</span>
+<span class="fc" id="L39">        return (Date)temporalConverter.getValue(rs, columnIndex);</span>
     }
 
     @SuppressWarnings(&quot;unchecked&quot;)
     @Override
     public Object getSqlParameterValue(Date value) {
-<span class="nc" id="L44">        return  temporalConverter.getSqlParameterValue(value);</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        if(value == null) {</span>
+<span class="nc" id="L46">            return null;</span>
+        }
+<span class="fc" id="L48">        return  temporalConverter.getSqlParameterValue(temporalConverter.convertTo(value));</span>
     }
 
     /**
@@ -53,7 +57,15 @@ public class UtilDateType implements ValueType&lt;Date&gt; {
     @SuppressWarnings(&quot;unchecked&quot;)
     @Override
     public String getEmbeddedValue(Date value) {
-<span class="nc" id="L56">        return temporalConverter.getEmbeddedValue(value);</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if(value == null) {</span>
+<span class="nc" id="L61">            return null;</span>
+        }
+<span class="nc" id="L63">        return temporalConverter.getEmbeddedValue(temporalConverter.convertTo(value));</span>
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+<span class="nc" id="L68">        return temporalConverter.getSqlType(dialect);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

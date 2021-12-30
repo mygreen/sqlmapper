@@ -5,11 +5,14 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.github.mygreen.splate.ProcessResult;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.mapper.EntityMappingCallback;
 import com.github.mygreen.sqlmapper.core.mapper.SqlEntityRowMapper;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 
 
 /**
@@ -46,28 +49,35 @@ public class SqlSelectExecutor&lt;T&gt; {
      * 組み立てたクエリ情報を指定するコンストラクタ。
      * @param query クエリ情報
      */
-<span class="nc" id="L49">    public SqlSelectExecutor(SqlSelectImpl&lt;T&gt; query) {</span>
-<span class="nc" id="L50">        this.query = query;</span>
-<span class="nc" id="L51">        this.context = query.getContext();</span>
-<span class="nc" id="L52">    }</span>
+<span class="fc" id="L52">    public SqlSelectExecutor(SqlSelectImpl&lt;T&gt; query) {</span>
+<span class="fc" id="L53">        this.query = query;</span>
+<span class="fc" id="L54">        this.context = query.getContext();</span>
+<span class="fc" id="L55">    }</span>
 
     /**
      * クエリ実行の準備を行います。
      */
     private void prepare() {
-<span class="nc" id="L58">        prepareSql();</span>
-<span class="nc" id="L59">    }</span>
+<span class="fc" id="L61">        prepareSql();</span>
+<span class="fc" id="L62">    }</span>
 
     /**
      * 実行するSQLを準備します。
      */
     private void prepareSql() {
 
-<span class="nc" id="L66">        final ProcessResult result = query.getTemplate().process(query.getParameter());</span>
-<span class="nc" id="L67">        this.executedSql = result.getSql();</span>
-<span class="nc" id="L68">        this.paramValues = result.getParameters().toArray();</span>
+<span class="fc" id="L69">        final ProcessResult result = query.getTemplate().process(query.getParameter());</span>
+<span class="fc" id="L70">        final Dialect dialect = context.getDialect();</span>
 
-<span class="nc" id="L70">    }</span>
+<span class="fc" id="L72">        String sql = result.getSql();</span>
+<span class="fc bfc" id="L73" title="All 4 branches covered.">        if(query.getLimit() &gt; 0 || query.getOffset() &gt;= 0) {</span>
+<span class="fc" id="L74">            sql = dialect.convertLimitSql(sql, query.getOffset(), query.getLimit());</span>
+        }
+<span class="fc" id="L76">        this.executedSql = sql;</span>
+
+<span class="fc" id="L78">        this.paramValues = result.getParameters().toArray();</span>
+
+<span class="fc" id="L80">    }</span>
 
     /**
      * 1件だけヒットすることを前提として検索クエリを実行します。
@@ -77,10 +87,10 @@ public class SqlSelectExecutor&lt;T&gt; {
      * @throws IncorrectResultSizeDataAccessException 1件も見つからない場合、2件以上見つかった場合にスローされます。
      */
     public T getSingleResult(EntityMappingCallback&lt;T&gt; callback) {
-<span class="nc" id="L80">        prepare();</span>
+<span class="fc" id="L90">        prepare();</span>
 
-<span class="nc" id="L82">        SqlEntityRowMapper&lt;T&gt; rowMapper = new SqlEntityRowMapper&lt;T&gt;(query.getEntityMeta(), Optional.ofNullable(callback));</span>
-<span class="nc" id="L83">        return context.getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues);</span>
+<span class="fc" id="L92">        SqlEntityRowMapper&lt;T&gt; rowMapper = new SqlEntityRowMapper&lt;T&gt;(query.getEntityMeta(), Optional.ofNullable(callback));</span>
+<span class="fc" id="L93">        return getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues);</span>
     }
 
     /**
@@ -88,16 +98,19 @@ public class SqlSelectExecutor&lt;T&gt; {
      *
      * @param callback エンティティマッピング後のコールバック処理。
      * @return エンティティのベースオブジェクト。1件も対象がないときは空を返します。
+     * @throws IncorrectResultSizeDataAccessException 2件以上見つかった場合にスローされます。
      */
     public Optional&lt;T&gt; getOptionalResult(EntityMappingCallback&lt;T&gt; callback) {
-<span class="nc" id="L93">        prepare();</span>
+<span class="fc" id="L104">        prepare();</span>
 
-<span class="nc" id="L95">        SqlEntityRowMapper&lt;T&gt; rowMapper = new SqlEntityRowMapper&lt;T&gt;(query.getEntityMeta(), Optional.ofNullable(callback));</span>
-<span class="nc" id="L96">        final List&lt;T&gt; ret = context.getJdbcTemplate().query(executedSql, rowMapper, paramValues);</span>
-<span class="nc bnc" id="L97" title="All 2 branches missed.">        if(ret.isEmpty()) {</span>
-<span class="nc" id="L98">            return Optional.empty();</span>
+<span class="fc" id="L106">        SqlEntityRowMapper&lt;T&gt; rowMapper = new SqlEntityRowMapper&lt;T&gt;(query.getEntityMeta(), Optional.ofNullable(callback));</span>
+<span class="fc" id="L107">        final List&lt;T&gt; ret = getJdbcTemplate().query(executedSql, rowMapper, paramValues);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        if(ret.isEmpty()) {</span>
+<span class="fc" id="L109">            return Optional.empty();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        } else if(ret.size() &gt; 1) {</span>
+<span class="fc" id="L111">            throw new IncorrectResultSizeDataAccessException(1, ret.size());</span>
         } else {
-<span class="nc" id="L100">            return Optional.of(ret.get(0));</span>
+<span class="fc" id="L113">            return Optional.of(ret.get(0));</span>
         }
     }
 
@@ -108,10 +121,10 @@ public class SqlSelectExecutor&lt;T&gt; {
      * @return 検索してヒットした複数のベースオブジェクト。1件も対象がないときは空のリストを返します。
      */
     public List&lt;T&gt; getResultList(EntityMappingCallback&lt;T&gt; callback) {
-<span class="nc" id="L111">        prepare();</span>
+<span class="fc" id="L124">        prepare();</span>
 
-<span class="nc" id="L113">        SqlEntityRowMapper&lt;T&gt; rowMapper = new SqlEntityRowMapper&lt;T&gt;(query.getEntityMeta(), Optional.ofNullable(callback));</span>
-<span class="nc" id="L114">        return context.getJdbcTemplate().query(executedSql, rowMapper, paramValues);</span>
+<span class="fc" id="L126">        SqlEntityRowMapper&lt;T&gt; rowMapper = new SqlEntityRowMapper&lt;T&gt;(query.getEntityMeta(), Optional.ofNullable(callback));</span>
+<span class="fc" id="L127">        return getJdbcTemplate().query(executedSql, rowMapper, paramValues);</span>
     }
 
     /**
@@ -120,10 +133,22 @@ public class SqlSelectExecutor&lt;T&gt; {
      * @return 問い合わせの結果
      */
     public Stream&lt;T&gt; getResultStream(EntityMappingCallback&lt;T&gt; callback) {
-<span class="nc" id="L123">        prepare();</span>
+<span class="fc" id="L136">        prepare();</span>
 
-<span class="nc" id="L125">        SqlEntityRowMapper&lt;T&gt; rowMapper = new SqlEntityRowMapper&lt;T&gt;(query.getEntityMeta(), Optional.ofNullable(callback));</span>
-<span class="nc" id="L126">        return context.getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues);</span>
+<span class="fc" id="L138">        SqlEntityRowMapper&lt;T&gt; rowMapper = new SqlEntityRowMapper&lt;T&gt;(query.getEntityMeta(), Optional.ofNullable(callback));</span>
+<span class="fc" id="L139">        return getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues);</span>
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+<span class="fc" id="L147">        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())</span>
+<span class="fc" id="L148">                .queryTimeout(query.getQueryTimeout())</span>
+<span class="fc" id="L149">                .fetchSize(query.getFetchSize())</span>
+<span class="fc" id="L150">                .maxRows(query.getMaxRows())</span>
+<span class="fc" id="L151">                .build();</span>
     }
 
 }

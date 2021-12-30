@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StoredParamMetaFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.meta</a> &gt; <span class="el_source">StoredParamMetaFactory.java</span></div><h1>StoredParamMetaFactory.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.meta;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ReflectionUtils;
+
+import com.github.mygreen.messageformatter.MessageFormatter;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
+import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
+
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+
+/**
+ * ストアドプロシージャ／ストアドファンクションのパラメータのメタ情報を作成します。
+ *
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L29">public class StoredParamMetaFactory {</span>
+
+    /**
+     * メッセージフォーマッタです。
+     * Springのインジェクション対象です。
+     */
+    @Getter
+    @Setter
+    @Autowired
+    private MessageFormatter messageFormatter;
+
+    @Getter
+    @Setter
+    @Autowired
+    private ValueTypeRegistry valueTypeRegistry;
+
+    @Getter
+    @Setter
+    @Autowired
+    private StoredPropertyMetaFactory storedPropertyMetaFactory;
+
+    @Getter
+    @Setter
+    @Autowired
+    private PropertyMetaFactory propertyMetaFactory;
+
+    /**
+     * パラメータのメタ情報のキャッシュ用マップです。
+     * &lt;p&gt;key=エンティティのFQN, value=StoredParamMeta&lt;/p&gt;
+     */
+<span class="fc" id="L59">    private ConcurrentHashMap&lt;String, StoredParamMeta&gt; paramMetaMap = new ConcurrentHashMap&lt;&gt;(100);</span>
+
+    /**
+     * 作成したパラメータのメタ情報をクリアします。
+     */
+    public void clear() {
+<span class="nc" id="L65">        this.paramMetaMap.clear();</span>
+<span class="nc" id="L66">    }</span>
+
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">    public StoredParamMeta create(@NonNull final Class&lt;?&gt; paramClass) {</span>
+
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if(valueTypeRegistry.isRegisteredType(paramClass)) {</span>
+<span class="nc" id="L71">            return createAnonymounseParamMeta(paramClass);</span>
+        }
+
+<span class="fc" id="L74">        return paramMetaMap.computeIfAbsent(paramClass.getName(), s -&gt; doParamMeta(paramClass));</span>
+
+    }
+
+    public StoredParamMeta createAnonymounseParamMeta(final Class&lt;?&gt; paramClass) {
+
+<span class="nc" id="L80">        StoredParamMeta paramMeta = new StoredParamMeta(paramClass, true);</span>
+
+        // プロパティに対する型変換を設定します。
+<span class="nc" id="L83">        ValueType&lt;?&gt; valueType = valueTypeRegistry.findValueType(paramClass);</span>
+
+        //TODO:
+//        // OracleなどBoolean型を純粋にサポートしていない場合は、int型に変換するタイプに変換する。
+//        valueType = dialect.getValueType(valueType);
+<span class="nc" id="L88">        paramMeta.setValueType(valueType);</span>
+
+<span class="nc" id="L90">        return paramMeta;</span>
+    }
+
+    private StoredParamMeta doParamMeta(final Class&lt;?&gt; paramClass) {
+
+<span class="fc" id="L95">        final StoredParamMeta paramMeta = new StoredParamMeta(paramClass, false);</span>
+
+<span class="fc" id="L97">        doPropertyMeta(paramMeta, paramClass);</span>
+
+<span class="fc" id="L99">        return paramMeta;</span>
+
+    }
+
+    private void doPropertyMeta(final StoredParamMeta paramMeta, final Class&lt;?&gt; paramClass) {
+
+<span class="fc" id="L105">        List&lt;StoredPropertyMeta&gt; propertyMeataList = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L106">        extractProperty(paramClass, propertyMeataList);</span>
+
+        // ネストしたプロパティを抽出する
+<span class="fc" id="L109">        propertyMeataList.stream()</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">            .filter(p -&gt; !p.isSingleValue())</span>
+<span class="fc" id="L111">            .forEach(p -&gt; doNestedPropertyMeta(p));</span>
+
+<span class="fc" id="L113">        propertyMeataList.stream().forEach(p -&gt; paramMeta.addPropertyMeta(p));</span>
+
+
+<span class="fc" id="L116">    }</span>
+
+    private void extractProperty(final Class&lt;?&gt; targetClass, final List&lt;StoredPropertyMeta&gt; propertyMeataList) {
+
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        for(Field field : targetClass.getDeclaredFields()) {</span>
+
+<span class="fc" id="L122">            int modifiers = field.getModifiers();</span>
+<span class="pc bpc" id="L123" title="2 of 4 branches missed.">            if(Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {</span>
+<span class="nc" id="L124">                continue;</span>
+            }
+<span class="fc" id="L126">            ReflectionUtils.makeAccessible(field);</span>
+
+<span class="fc" id="L128">            propertyMeataList.add(storedPropertyMetaFactory.create(field));</span>
+        }
+<span class="fc" id="L130">    }</span>
+
+    private void doNestedPropertyMeta(final StoredPropertyMeta propertyMeta) {
+
+<span class="fc" id="L134">        final Class&lt;?&gt; propertyType = propertyMeta.getPropertyType();</span>
+
+        final Class&lt;?&gt; beanType;
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        if(Collection.class.isAssignableFrom(propertyType)) {</span>
+<span class="fc" id="L138">            beanType = propertyMeta.getComponentType()</span>
+<span class="pc" id="L139">                    .orElseThrow(() -&gt; new InvalidStoredParamException(propertyMeta.getDeclaringClass(),</span>
+<span class="nc" id="L140">                            messageFormatter.create(&quot;storedParam.notDeclaredComponentType&quot;)</span>
+<span class="nc" id="L141">                            .paramWithClass(&quot;paramType&quot;, propertyMeta.getDeclaringClass())</span>
+<span class="nc" id="L142">                            .param(&quot;property&quot;, propertyMeta.getName())</span>
+<span class="nc" id="L143">                            .format()));</span>
+        } else {
+<span class="fc" id="L145">            beanType = propertyType;</span>
+        }
+
+        // プロパティを抽出する
+<span class="fc" id="L149">        List&lt;PropertyMeta&gt; nestedPropertyMeataList = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">        for(Field field : beanType.getDeclaredFields()) {</span>
+
+<span class="fc" id="L152">            int modifiers = field.getModifiers();</span>
+<span class="pc bpc" id="L153" title="2 of 4 branches missed.">            if(Modifier.isStatic(modifiers) || Modifier.isFinal(modifiers)) {</span>
+<span class="nc" id="L154">                continue;</span>
+            }
+<span class="fc" id="L156">            ReflectionUtils.makeAccessible(field);</span>
+
+<span class="fc" id="L158">            nestedPropertyMeataList.add(propertyMetaFactory.create(field, Optional.empty(), false));</span>
+        }
+
+<span class="fc" id="L161">        nestedPropertyMeataList.stream().forEach(p -&gt; propertyMeta.addNestedPropertyMeta(p));</span>
+
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">        if(propertyMeta.getAllNestedColumnPropertyMeta().isEmpty()) {</span>
+            /*
+             * マッピング対象のカラムプロパティが存在しない場合は、JavaBean形式として不正としてエラーとする。
+             * または、Mapなどのサポート対象外の形式と判断する。
+             */
+<span class="nc" id="L168">            throw new InvalidStoredParamException(propertyMeta.getDeclaringClass(), messageFormatter.create(&quot;storedParam.notFoundColumnProperty&quot;)</span>
+<span class="nc" id="L169">                    .paramWithClass(&quot;paramType&quot;, propertyMeta.getDeclaringClass())</span>
+<span class="nc" id="L170">                    .param(&quot;property&quot;, propertyMeta.getName())</span>
+<span class="nc" id="L171">                    .paramWithClass(&quot;propertyType&quot;, propertyType)</span>
+<span class="nc" id="L172">                    .format());</span>
+        }
+<span class="fc" id="L174">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

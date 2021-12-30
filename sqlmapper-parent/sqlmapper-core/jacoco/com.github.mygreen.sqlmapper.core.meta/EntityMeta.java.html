@@ -72,13 +72,13 @@ public class EntityMeta {
      * 修正日時用のカラムプロパティ
      */
     @Getter
-    private Optional&lt;PropertyMeta&gt; modifiedAtPropertyMeta = Optional.empty();
+    private Optional&lt;PropertyMeta&gt; updatedAtPropertyMeta = Optional.empty();
 
     /**
      * 修正者用のカラムプロパティ
      */
     @Getter
-    private Optional&lt;PropertyMeta&gt; modifiedByPropertyMeta = Optional.empty();
+    private Optional&lt;PropertyMeta&gt; updatedByPropertyMeta = Optional.empty();
 
     /**
      * カラム用のプロパティ情報
@@ -128,17 +128,17 @@ public class EntityMeta {
 <span class="fc" id="L128">            return Optional.of(foundPropertyMeta);</span>
         }
 
-<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        for(PropertyMeta propertyMeta : getAllPropertyMeta()) {</span>
-<span class="pc bpc" id="L132" title="1 of 2 branches missed.">            if(propertyMeta.isEmbedded()) {</span>
-<span class="pc bpc" id="L133" title="1 of 2 branches missed.">                for(PropertyMeta embeddedPropertyMeta : propertyMeta.getEmbeddedablePopertyMetaList()) {</span>
-<span class="pc bpc" id="L134" title="1 of 2 branches missed.">                    if(embeddedPropertyMeta.getName().equals(propertyName)) {</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        for(PropertyMeta propertyMeta : getAllPropertyMeta()) {</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">            if(propertyMeta.isEmbedded()) {</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">                for(PropertyMeta embeddedPropertyMeta : propertyMeta.getEmbeddedablePopertyMetaList()) {</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">                    if(embeddedPropertyMeta.getName().equals(propertyName)) {</span>
 <span class="fc" id="L135">                        return Optional.of(embeddedPropertyMeta);</span>
                     }
-<span class="nc" id="L137">                }</span>
+<span class="fc" id="L137">                }</span>
             }
-<span class="nc" id="L139">        }</span>
+<span class="fc" id="L139">        }</span>
 
-<span class="nc" id="L141">        return Optional.empty();</span>
+<span class="fc" id="L141">        return Optional.empty();</span>
 
 
     }
@@ -156,7 +156,7 @@ public class EntityMeta {
      * @return プロパティメタ情報のサイズ
      */
     public int getPropertyMetaSize() {
-<span class="nc" id="L159">        return propertyMetaMap.size();</span>
+<span class="fc" id="L159">        return propertyMetaMap.size();</span>
     }
 
     /**
@@ -231,19 +231,19 @@ public class EntityMeta {
     }
 
     /**
-     * 修正日時を表すプロパティのメタデータを持つかどうか。
+     * 更新日時を表すプロパティのメタデータを持つかどうか。
      * @return 修正日時を表すプロパティのメタデータがあれば {@literal true} を返す。
      */
-    public boolean hasModifiedAtPropertyMeta() {
-<span class="nc" id="L238">        return modifiedAtPropertyMeta.isPresent();</span>
+    public boolean hasUpdatedAtPropertyMeta() {
+<span class="nc" id="L238">        return updatedAtPropertyMeta.isPresent();</span>
     }
 
     /**
-     * 修正者を表すプロパティのメタデータを持つかどうか。
+     * 更新者を表すプロパティのメタデータを持つかどうか。
      * @return 修正者を表すプロパティのメタデータがあれば {@literal true} を返す。
      */
-    public boolean hasModifiedByPropertyMeta() {
-<span class="nc" id="L246">        return modifiedByPropertyMeta.isPresent();</span>
+    public boolean hasUpdatedByPropertyMeta() {
+<span class="nc" id="L246">        return updatedByPropertyMeta.isPresent();</span>
     }
 
     /**
@@ -268,16 +268,16 @@ public class EntityMeta {
 <span class="fc" id="L268">            this.createdAtPropertyMeta = Optional.of(propertyMeta);</span>
         }
 
-<span class="pc bpc" id="L271" title="1 of 2 branches missed.">        if(propertyMeta.isCreatedBy()) {</span>
-<span class="nc" id="L272">            this.createdByPropertyMeta = Optional.of(propertyMeta);</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">        if(propertyMeta.isCreatedBy()) {</span>
+<span class="fc" id="L272">            this.createdByPropertyMeta = Optional.of(propertyMeta);</span>
         }
 
-<span class="fc bfc" id="L275" title="All 2 branches covered.">        if(propertyMeta.isModifiedAt()) {</span>
-<span class="fc" id="L276">            this.modifiedAtPropertyMeta = Optional.of(propertyMeta);</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        if(propertyMeta.isUpdatedAt()) {</span>
+<span class="fc" id="L276">            this.updatedAtPropertyMeta = Optional.of(propertyMeta);</span>
         }
 
-<span class="pc bpc" id="L279" title="1 of 2 branches missed.">        if(propertyMeta.isModifiedBy()) {</span>
-<span class="nc" id="L280">            this.modifiedByPropertyMeta = Optional.of(propertyMeta);</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">        if(propertyMeta.isUpdatedBy()) {</span>
+<span class="fc" id="L280">            this.updatedByPropertyMeta = Optional.of(propertyMeta);</span>
         }
 
 <span class="fc bfc" id="L283" title="All 2 branches covered.">        if(propertyMeta.getColumnMeta() != null) {</span>

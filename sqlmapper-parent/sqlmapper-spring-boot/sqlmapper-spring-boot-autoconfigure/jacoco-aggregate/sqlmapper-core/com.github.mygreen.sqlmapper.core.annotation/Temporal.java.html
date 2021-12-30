@@ -20,33 +20,34 @@ import java.lang.annotation.Target;
 public @interface Temporal {
 
     /**
-     * 時制の型を指定します。
+     * 時制の種別を指定します。
+     * @return 時制の種別。
      */
     TemporalType value();
 
     /**
-     * 時制の型を定義します。
+     * 時制の種別を定義します。
      *
      *
      * @author T.TSUCHIE
      *
      */
-<span class="fc" id="L34">    enum TemporalType {</span>
+<span class="fc" id="L35">    enum TemporalType {</span>
 
         /**
          * {@literal java.sql.Date}と同じ意味です。
          */
-<span class="fc" id="L39">        DATE,</span>
+<span class="fc" id="L40">        DATE,</span>
 
         /**
          * {@literal java.sql.Time}と同じ意味です。
          */
-<span class="fc" id="L44">        TIME,</span>
+<span class="fc" id="L45">        TIME,</span>
 
         /**
          * {@literal java.sql.Timestamp}と同じです。
          */
-<span class="fc" id="L49">        TIMESTAMP;</span>
+<span class="fc" id="L50">        TIMESTAMP;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -28,7 +28,7 @@ public class AutoEntityRowMapper&lt;T&gt; implements RowMapper&lt;T&gt; {
     private final Class&lt;T&gt; baseEntityClass;
 
     /**
-     * 抽出対象のプロパティと所属するエンティティの暮らすタイプのマップ情報です。
+     * 抽出対象のプロパティと所属するエンティティのクラスタイプのマップ情報です。
      */
     private final Map&lt;PropertyMeta, Class&lt;?&gt;&gt; propertyMetaEntityTypeMap;
 
@@ -90,11 +90,11 @@ public class AutoEntityRowMapper&lt;T&gt; implements RowMapper&lt;T&gt; {
         }
 
         // 結合テーブルの構成定義の呼び出し
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        for(JoinAssociation association : joinAssociations) {</span>
-<span class="nc" id="L94">            Object entityObject1 = entityInstanceMap.get(association.getEntity1().getType());</span>
-<span class="nc" id="L95">            Object entityObject2 = entityInstanceMap.get(association.getEntity2().getType());</span>
-<span class="nc" id="L96">            association.getAssociator().associate(entityObject1, entityObject2);</span>
-<span class="nc" id="L97">        }</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        for(JoinAssociation association : joinAssociations) {</span>
+<span class="fc" id="L94">            Object entityObject1 = entityInstanceMap.get(association.getEntity1().getType());</span>
+<span class="fc" id="L95">            Object entityObject2 = entityInstanceMap.get(association.getEntity2().getType());</span>
+<span class="fc" id="L96">            association.getAssociator().associate(entityObject1, entityObject2);</span>
+<span class="fc" id="L97">        }</span>
 
 <span class="fc" id="L99">        final T baseEntity = (T)entityInstanceMap.get(baseEntityClass);</span>
 

@@ -13,9 +13,9 @@ import lombok.Setter;
 
 /**
  * {@link GenerationType#TABLE}方式でIDの値を自動生成するIDジェネレータです。
- * &lt;p&gt;サポートするIDのクラスタイプは、{@code long/Long/int/Integer/String}です。
+ * &lt;p&gt;サポートするIDのクラスタイプは、{@literal long/Long/int/Integer/String}です。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -45,12 +45,12 @@ public class TableIdGenerator implements IdGenerator {
     /**
      * サポートしているクラスタイプ
      */
-<span class="nc" id="L48">    private static List&lt;Class&lt;?&gt;&gt; SUPPORTED_TYPE_LIST = List.of(</span>
+<span class="fc" id="L48">    private static List&lt;Class&lt;?&gt;&gt; SUPPORTED_TYPE_LIST = List.of(</span>
             long.class, Long.class, int.class, Integer.class, String.class);
 
     @Override
     public boolean isSupportedType(Class&lt;?&gt; type) {
-<span class="nc" id="L53">        return SUPPORTED_TYPE_LIST.contains(type);</span>
+<span class="fc" id="L53">        return SUPPORTED_TYPE_LIST.contains(type);</span>
     }
 
     @Override
@@ -64,21 +64,21 @@ public class TableIdGenerator implements IdGenerator {
      * @throws DataIntegrityViolationException コンストラクタで指定された引数 {@literal requiredType} がサポート対象外の場合。
      */
     @Override
-    public Object generateValue() {
-<span class="nc" id="L68">        long value = incrementer.nextValue(sequenceName);</span>
+    public Object generateValue(final IdGenerationContext context) {
+<span class="fc" id="L68">        long value = incrementer.nextValue(sequenceName);</span>
 
-<span class="nc bnc" id="L70" title="All 4 branches missed.">        if(requiredType == long.class || requiredType == Long.class) {</span>
-<span class="nc" id="L71">            return value;</span>
+<span class="pc bpc" id="L70" title="1 of 4 branches missed.">        if(requiredType == long.class || requiredType == Long.class) {</span>
+<span class="fc" id="L71">            return value;</span>
 
-<span class="nc bnc" id="L73" title="All 4 branches missed.">        } else if(requiredType == int.class || requiredType == Integer.class) {</span>
+<span class="pc bpc" id="L73" title="2 of 4 branches missed.">        } else if(requiredType == int.class || requiredType == Integer.class) {</span>
 <span class="nc" id="L74">            return Long.valueOf(value).intValue();</span>
 
-<span class="nc bnc" id="L76" title="All 2 branches missed.">        } else if(requiredType == String.class) {</span>
-<span class="nc bnc" id="L77" title="All 2 branches missed.">            if(formatter == null) {</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        } else if(requiredType == String.class) {</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">            if(formatter == null) {</span>
 <span class="nc" id="L78">                return String.valueOf(value);</span>
             } else {
-<span class="nc" id="L80">                synchronized (formatter) {</span>
-<span class="nc" id="L81">                    return formatter.format(value);</span>
+<span class="fc" id="L80">                synchronized (formatter) {</span>
+<span class="fc" id="L81">                    return formatter.format(value);</span>
                 }
             }
 
@@ -87,5 +87,13 @@ public class TableIdGenerator implements IdGenerator {
 <span class="nc" id="L87">        throw new DataIntegrityViolationException(&quot;not supported java type : &quot; + requiredType.getName());</span>
 
     }
+
+    /**
+     * IDのキャッシュ情報をクリアします。
+     * &lt;p&gt;クリアすることで、次回、{@link #generateValue(IdGenerationContext)}を呼び出した時に、最新のDBの情報を反映した状態になります。
+     */
+    public void clearCache() {
+<span class="fc" id="L96">        incrementer.clear(sequenceName);</span>
+<span class="fc" id="L97">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -3,9 +3,11 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.sql.Types;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.Getter;
@@ -31,26 +33,26 @@ public class LocalTimeType implements ValueType&lt;LocalTime&gt; {
      * &lt;p&gt;SQLに直接埋め込む時にフォーマットする書式は、{@literal HH:mm:ss} が指定されます。
      */
     public LocalTimeType() {
-<span class="fc" id="L34">        this(&quot;HH:mm:ss&quot;);</span>
-<span class="fc" id="L35">    }</span>
+<span class="fc" id="L36">        this(&quot;HH:mm:ss&quot;);</span>
+<span class="fc" id="L37">    }</span>
 
     /**
      * 書式を指定してインスタンスを作成します。
      * @param pattern SQLに直接埋め込む時にフォーマットする書式。
      */
-<span class="fc" id="L41">    public LocalTimeType(final String pattern) {</span>
-<span class="fc" id="L42">        this.formatter = DateTimeFormatter.ofPattern(pattern);</span>
-<span class="fc" id="L43">    }</span>
+<span class="fc" id="L43">    public LocalTimeType(final String pattern) {</span>
+<span class="fc" id="L44">        this.formatter = DateTimeFormatter.ofPattern(pattern);</span>
+<span class="fc" id="L45">    }</span>
 
     @Override
     public LocalTime getValue(ResultSet rs, int columnIndex) throws SQLException {
 
-<span class="nc" id="L48">        Time value = rs.getTime(columnIndex);</span>
-<span class="nc bnc" id="L49" title="All 2 branches missed.">        if(value == null) {</span>
-<span class="nc" id="L50">            return null;</span>
+<span class="fc" id="L50">        Time value = rs.getTime(columnIndex);</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        if(value == null) {</span>
+<span class="nc" id="L52">            return null;</span>
         }
 
-<span class="nc" id="L53">        return value.toLocalTime();</span>
+<span class="fc" id="L55">        return value.toLocalTime();</span>
     }
 
     /**
@@ -60,8 +62,8 @@ public class LocalTimeType implements ValueType&lt;LocalTime&gt; {
      */
     @Override
     public Object getSqlParameterValue(LocalTime value) {
-<span class="nc bnc" id="L63" title="All 2 branches missed.">        Time sqlValue = (value != null ? Time.valueOf(value) : null);</span>
-<span class="nc" id="L64">        return sqlValue;</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        Time sqlValue = (value != null ? Time.valueOf(value) : null);</span>
+<span class="fc" id="L66">        return sqlValue;</span>
     }
 
     /**
@@ -72,7 +74,12 @@ public class LocalTimeType implements ValueType&lt;LocalTime&gt; {
      */
     @Override
     public String getEmbeddedValue(LocalTime value) {
-<span class="nc bnc" id="L75" title="All 2 branches missed.">        return value != null ? formatter.format(value) : null;</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        return value != null ? formatter.format(value) : null;</span>
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+<span class="nc" id="L82">        return Types.TIME;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

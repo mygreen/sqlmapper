@@ -8,7 +8,7 @@
 <div id="overview"><a href="../../../../../../../../apidocs/com/github/mygreen/sqlmapper/core/where/metamodel/ComparisionOpHandler.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> com.github.mygreen.sqlmapper.core.where.metamodel;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.metamodel.PropertyPath;
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.metamodel.Path;
 <a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.metamodel.Visitor;
 <a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 <a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.metamodel.expression.Expression;
@@ -59,8 +59,8 @@
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_comment">         * 比較演算子の場合、左変=プロパティパス、右辺=定数で構成される場合、</em>
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_comment">         * 定数をプロパティの変換規則に従い変換する。</em>
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>  <em class="jxr_comment">         */</em>
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>          <strong class="jxr_keyword">if</strong>(left instanceof PropertyPath &amp;&amp; right instanceof Constant) {
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>              visitConstantWithPropertyPath((PropertyPath&lt;?&gt;)left, (Constant&lt;?&gt;)right, rightContext);
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>          <strong class="jxr_keyword">if</strong>(isPropertyPath(left) &amp;&amp; right instanceof Constant) {
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>              visitConstantWithPropertyPath((Path&lt;?&gt;)left, (Constant&lt;?&gt;)right, rightContext);
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>          } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>              invoke(<strong class="jxr_keyword">operator</strong>, right, visitor, rightContext);
 <a class="jxr_linenumber" name="L58" href="#L58">58</a>          }
@@ -91,14 +91,14 @@
 <a class="jxr_linenumber" name="L83" href="#L83">83</a>  <em class="jxr_comment">         * 比較演算子の場合、左変=プロパティパス、右辺=定数で構成される場合、</em>
 <a class="jxr_linenumber" name="L84" href="#L84">84</a>  <em class="jxr_comment">         * 定数をプロパティの変換規則に従い変換する。</em>
 <a class="jxr_linenumber" name="L85" href="#L85">85</a>  <em class="jxr_comment">         */</em>
-<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <strong class="jxr_keyword">if</strong>(left instanceof PropertyPath &amp;&amp; right1 instanceof Constant) {
-<a class="jxr_linenumber" name="L87" href="#L87">87</a>              visitConstantWithPropertyPath((PropertyPath&lt;?&gt;)left, (Constant&lt;?&gt;)right1, rightContext1);
+<a class="jxr_linenumber" name="L86" href="#L86">86</a>          <strong class="jxr_keyword">if</strong>(isPropertyPath(left) &amp;&amp; right1 instanceof Constant) {
+<a class="jxr_linenumber" name="L87" href="#L87">87</a>              visitConstantWithPropertyPath((Path&lt;?&gt;)left, (Constant&lt;?&gt;)right1, rightContext1);
 <a class="jxr_linenumber" name="L88" href="#L88">88</a>          } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L89" href="#L89">89</a>              invoke(<strong class="jxr_keyword">operator</strong>, right1, visitor, rightContext1);
 <a class="jxr_linenumber" name="L90" href="#L90">90</a>          }
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>  
-<a class="jxr_linenumber" name="L92" href="#L92">92</a>          <strong class="jxr_keyword">if</strong>(left instanceof PropertyPath &amp;&amp; right2 instanceof Constant) {
-<a class="jxr_linenumber" name="L93" href="#L93">93</a>              visitConstantWithPropertyPath((PropertyPath&lt;?&gt;)left, (Constant&lt;?&gt;)right2, rightContext2);
+<a class="jxr_linenumber" name="L92" href="#L92">92</a>          <strong class="jxr_keyword">if</strong>(isPropertyPath(left) &amp;&amp; right2 instanceof Constant) {
+<a class="jxr_linenumber" name="L93" href="#L93">93</a>              visitConstantWithPropertyPath((Path&lt;?&gt;)left, (Constant&lt;?&gt;)right2, rightContext2);
 <a class="jxr_linenumber" name="L94" href="#L94">94</a>          } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>              invoke(<strong class="jxr_keyword">operator</strong>, right2, visitor, rightContext2);
 <a class="jxr_linenumber" name="L96" href="#L96">96</a>          }

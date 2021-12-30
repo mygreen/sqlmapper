@@ -13,11 +13,15 @@ import lombok.Getter;
     // String
 <span class="fc" id="L14">    LOWER(String.class, -1),</span>
 <span class="fc" id="L15">    UPPER(String.class, -1),</span>
+<span class="fc" id="L16">    CONCAT(String.class, -1),</span>
 
     // Date/Time
-<span class="fc" id="L18">    CURRENT_DATE(Comparable.class, -1),</span>
-<span class="fc" id="L19">    CURRENT_TIME(Comparable.class, -1),</span>
-<span class="fc" id="L20">    CURRENT_TIMESTAMP(Comparable.class, -1)</span>
+<span class="fc" id="L19">    CURRENT_DATE(Comparable.class, -1),</span>
+<span class="fc" id="L20">    CURRENT_TIME(Comparable.class, -1),</span>
+<span class="fc" id="L21">    CURRENT_TIMESTAMP(Comparable.class, -1),</span>
+
+    // 任意の関数
+<span class="fc" id="L24">    CUSTOM(Object.class, -1);</span>
 
     ;
 
@@ -33,9 +37,9 @@ import lombok.Getter;
     @Getter
     private final int priority;
 
-<span class="fc" id="L36">    private FunctionOp(Class&lt;?&gt; resultType, int priority) {</span>
-<span class="fc" id="L37">        this.resultType = resultType;</span>
-<span class="fc" id="L38">        this.priority = priority;</span>
-<span class="fc" id="L39">    }</span>
+<span class="fc" id="L40">    private FunctionOp(Class&lt;?&gt; resultType, int priority) {</span>
+<span class="fc" id="L41">        this.resultType = resultType;</span>
+<span class="fc" id="L42">        this.priority = priority;</span>
+<span class="fc" id="L43">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

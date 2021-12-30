@@ -3,9 +3,12 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import com.github.mygreen.sqlmapper.core.annotation.Temporal.TemporalType;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 
 import lombok.Getter;
 
@@ -29,16 +32,16 @@ public class SqlTimestampType implements SqlTemporalType&lt;Timestamp&gt; {
      * &lt;p&gt;SQLに直接埋め込む時にフォーマットする書式は、{@literal yyyy-MM-dd HH:mm:ss.SSS} が指定されます。
      */
     public SqlTimestampType() {
-<span class="fc" id="L32">        this(&quot;yyyy-MM-dd HH:mm:ss.SSS&quot;);</span>
-<span class="fc" id="L33">    }</span>
+<span class="fc" id="L35">        this(&quot;yyyy-MM-dd HH:mm:ss.SSS&quot;);</span>
+<span class="fc" id="L36">    }</span>
 
     /**
      * 書式を指定してインスタンスを作成します。
      * @param pattern SQLに直接埋め込む時にフォーマットする書式。
      */
-<span class="fc" id="L39">    public SqlTimestampType(final String pattern) {</span>
-<span class="fc" id="L40">        this.pattern = pattern;</span>
-<span class="fc" id="L41">    }</span>
+<span class="fc" id="L42">    public SqlTimestampType(final String pattern) {</span>
+<span class="fc" id="L43">        this.pattern = pattern;</span>
+<span class="fc" id="L44">    }</span>
 
     /**
      * {@inheritDoc}
@@ -47,23 +50,28 @@ public class SqlTimestampType implements SqlTemporalType&lt;Timestamp&gt; {
      */
     @Override
     public TemporalType getTemporalType() {
-<span class="nc" id="L50">        return TemporalType.TIMESTAMP;</span>
+<span class="nc" id="L53">        return TemporalType.TIMESTAMP;</span>
+    }
+
+    @Override
+    public Timestamp convertTo(Date utilDate) {
+<span class="fc" id="L58">        return new Timestamp(utilDate.getTime());</span>
     }
 
     @Override
     public Timestamp getValue(ResultSet rs, int columnIndex) throws SQLException {
 
-<span class="nc" id="L56">        Timestamp value = rs.getTimestamp(columnIndex);</span>
-<span class="nc bnc" id="L57" title="All 2 branches missed.">        if(rs.wasNull()) {</span>
-<span class="nc" id="L58">            return null;</span>
+<span class="fc" id="L64">        Timestamp value = rs.getTimestamp(columnIndex);</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if(rs.wasNull()) {</span>
+<span class="nc" id="L66">            return null;</span>
         }
 
-<span class="nc" id="L61">        return value;</span>
+<span class="fc" id="L69">        return value;</span>
     }
 
     @Override
     public Object getSqlParameterValue(Timestamp value) {
-<span class="nc" id="L66">        return value;</span>
+<span class="fc" id="L74">        return value;</span>
     }
 
     /**
@@ -74,7 +82,13 @@ public class SqlTimestampType implements SqlTemporalType&lt;Timestamp&gt; {
      */
     @Override
     public String getEmbeddedValue(Timestamp value) {
-<span class="nc bnc" id="L77" title="All 2 branches missed.">        return value != null ? new SimpleDateFormat(pattern).format(value) : null;</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        return value != null ? new SimpleDateFormat(pattern).format(value) : null;</span>
     }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+<span class="nc" id="L90">        return Types.TIMESTAMP;</span>
+    }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

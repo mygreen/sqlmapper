@@ -2,21 +2,33 @@
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
 import org.springframework.jdbc.core.SqlParameterValue;
 
 import com.github.mygreen.splate.type.SqlTemplateValueType;
 import com.github.mygreen.splate.type.SqlTypeConversionException;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 
 /**
  * SQL(JDBC)とマッピング先の型を表すインタフェースです。
  *
  *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  * @param &lt;T&gt; マッピング先の型
  */
 public interface ValueType&lt;T&gt; extends SqlTemplateValueType&lt;T&gt; {
+
+    /**
+     * {@link Types} に基づくSQLタイプを取得します。
+     *
+     * @since 0.3
+     * @param dialect DBの方言
+     * @return  {@link Types} に基づくSQLタイプ。
+     */
+    int getSqlType(Dialect dialect);
 
     /**
      * カラムの値を返します。
@@ -46,7 +58,7 @@ public interface ValueType&lt;T&gt; extends SqlTemplateValueType&lt;T&gt; {
      */
     @Override
     default Object getBindVariableValue(T value) throws SqlTypeConversionException {
-<span class="nc" id="L49">        return getSqlParameterValue(value);</span>
+<span class="nc" id="L61">        return getSqlParameterValue(value);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

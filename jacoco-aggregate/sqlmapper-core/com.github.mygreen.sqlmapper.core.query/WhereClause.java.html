@@ -72,13 +72,13 @@ public class WhereClause {
      * @return 追加したwhere句の長さを返します。
      */
     public int addAndSql(String condition) {
-<span class="nc" id="L75">        int length = sql.length();</span>
-<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (length == 0) {</span>
-<span class="nc" id="L77">            sql.append(KEYWORD_WHERE).append(condition);</span>
+<span class="fc" id="L75">        int length = sql.length();</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (length == 0) {</span>
+<span class="fc" id="L77">            sql.append(KEYWORD_WHERE).append(condition);</span>
         } else {
-<span class="nc" id="L79">            sql.append(KEYWORD_AND).append(condition);</span>
+<span class="fc" id="L79">            sql.append(KEYWORD_AND).append(condition);</span>
         }
-<span class="nc" id="L81">        return sql.length() - length;</span>
+<span class="fc" id="L81">        return sql.length() - length;</span>
     }
 
     /**

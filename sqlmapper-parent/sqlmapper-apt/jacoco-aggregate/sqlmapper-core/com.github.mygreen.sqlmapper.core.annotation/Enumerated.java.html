@@ -20,6 +20,7 @@ public @interface Enumerated {
 
     /**
      * (オプション) {@link Enum} 型のマッピング種別。
+     * @return 列挙型のマッピング種別。
      */
     EnumType value();
 
@@ -32,16 +33,16 @@ public @interface Enumerated {
      * @author T.TSUCHIE
      *
      */
-<span class="fc" id="L35">    enum EnumType {</span>
+<span class="fc" id="L36">    enum EnumType {</span>
 
         /**
          * 列挙型の序数({@link Enum#ordinal()})を永続化します。
          */
-<span class="fc" id="L40">        ORDINAL,</span>
+<span class="fc" id="L41">        ORDINAL,</span>
         /**
          * 列挙型の名称({@link Enum#name()})を永続化します。
          */
-<span class="fc" id="L44">        STRING/*,</span>
+<span class="fc" id="L45">        STRING/*,</span>
 
         ALIAS_METHOD*/;
 

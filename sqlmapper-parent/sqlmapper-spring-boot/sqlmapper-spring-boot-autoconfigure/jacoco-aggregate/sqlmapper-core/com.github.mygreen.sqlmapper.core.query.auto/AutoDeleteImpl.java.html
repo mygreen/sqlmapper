@@ -21,7 +21,7 @@ import lombok.NonNull;
 public class AutoDeleteImpl&lt;T&gt; implements AutoDelete&lt;T&gt; {
 
     /**
-     * SqlMapperの設定情報。
+     * SqlMapperの設定情報
      */
     @Getter
     private final SqlMapperContext context;
@@ -39,57 +39,77 @@ public class AutoDeleteImpl&lt;T&gt; implements AutoDelete&lt;T&gt; {
     private final EntityMeta entityMeta;
 
     /**
+     * クエリのタイムアウト時間 [msec]
+     */
+    @Getter
+    private Integer queryTimeout;
+
+    /**
      * バージョンプロパティを無視して削除するかどうか。
      */
-<span class="fc" id="L44">    @Getter</span>
+<span class="fc" id="L50">    @Getter</span>
     private boolean ignoreVersion = false;
 
     /**
      * バージョンチェックを行った場合に、削除行数が0行でも{@link OptimisticLockingFailureException}スローしないなら&lt;code&gt;true&lt;/code&gt;
      */
-<span class="fc" id="L50">    @Getter</span>
+<span class="fc" id="L56">    @Getter</span>
     private boolean suppresOptimisticLockException = false;
 
-<span class="pc bpc" id="L53" title="2 of 4 branches missed.">    public AutoDeleteImpl(@NonNull SqlMapperContext context, @NonNull T entity) {</span>
-<span class="fc" id="L54">        this.context = context;</span>
-<span class="fc" id="L55">        this.entity = entity;</span>
-<span class="fc" id="L56">        this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());</span>
+<span class="pc bpc" id="L59" title="2 of 4 branches missed.">    public AutoDeleteImpl(@NonNull SqlMapperContext context, @NonNull T entity) {</span>
+<span class="fc" id="L60">        this.context = context;</span>
+<span class="fc" id="L61">        this.entity = entity;</span>
+<span class="fc" id="L62">        this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());</span>
 
         // 処理対象の情報の整合性などのチェックを行う
-<span class="fc" id="L59">        validateTarget();</span>
-<span class="fc" id="L60">    }</span>
+<span class="fc" id="L65">        validateTarget();</span>
+<span class="fc" id="L66">    }</span>
 
     private void validateTarget() {
-        // 主キーを持つかどうかのチェック
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        if(entityMeta.getIdPropertyMetaList().isEmpty()) {</span>
-<span class="nc" id="L65">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.requiredId&quot;)</span>
-<span class="nc" id="L66">                    .paramWithClass(&quot;entityType&quot;, entityMeta.getEntityType())</span>
-<span class="nc" id="L67">                    .format());</span>
+
+        // 読み取り専用かどうかのチェック
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        if(entityMeta.getTableMeta().isReadOnly()) {</span>
+<span class="nc" id="L72">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.readOnlyEntity&quot;)</span>
+<span class="nc" id="L73">                    .paramWithClass(&quot;entityType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L74">                    .format());</span>
         }
-<span class="fc" id="L69">    }</span>
+
+        // 主キーを持つかどうかのチェック
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        if(entityMeta.getIdPropertyMetaList().isEmpty()) {</span>
+<span class="nc" id="L79">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.requiredId&quot;)</span>
+<span class="nc" id="L80">                    .paramWithClass(&quot;entityType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L81">                    .format());</span>
+        }
+<span class="fc" id="L83">    }</span>
+
+    @Override
+    public AutoDeleteImpl&lt;T&gt; queryTimeout(int seconds) {
+<span class="nc" id="L87">        this.queryTimeout = seconds;</span>
+<span class="nc" id="L88">        return this;</span>
+    }
 
     @Override
     public AutoDeleteImpl&lt;T&gt; ignoreVersion() {
-<span class="nc" id="L73">        this.ignoreVersion = true;</span>
-<span class="nc" id="L74">        return this;</span>
+<span class="fc" id="L93">        this.ignoreVersion = true;</span>
+<span class="fc" id="L94">        return this;</span>
     }
 
     @Override
     public AutoDeleteImpl&lt;T&gt; suppresOptimisticLockException() {
-<span class="nc" id="L79">        this.suppresOptimisticLockException = true;</span>
-<span class="nc" id="L80">        return this;</span>
+<span class="fc" id="L99">        this.suppresOptimisticLockException = true;</span>
+<span class="fc" id="L100">        return this;</span>
     }
 
     @Override
     public int execute() {
 
-<span class="fc" id="L86">        context.getApplicationEventPublisher().publishEvent(new PreDeleteEvent(this, entityMeta, entity));</span>
+<span class="fc" id="L106">        context.getApplicationEventPublisher().publishEvent(new PreDeleteEvent(this, entityMeta, entity));</span>
 
-<span class="fc" id="L88">        final int result = new AutoDeleteExecutor(this)</span>
-<span class="fc" id="L89">                .execute();</span>
+<span class="fc" id="L108">        final int result = new AutoDeleteExecutor(this)</span>
+<span class="fc" id="L109">                .execute();</span>
 
-<span class="fc" id="L91">        context.getApplicationEventPublisher().publishEvent(new PostDeleteEvent(this, entityMeta, entity));</span>
-<span class="fc" id="L92">        return result;</span>
+<span class="fc" id="L111">        context.getApplicationEventPublisher().publishEvent(new PostDeleteEvent(this, entityMeta, entity));</span>
+<span class="fc" id="L112">        return result;</span>
 
     }
 

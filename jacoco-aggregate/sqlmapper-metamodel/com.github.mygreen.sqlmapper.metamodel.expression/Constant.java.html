@@ -35,7 +35,7 @@ public class Constant&lt;T&gt; extends ImmutableExpression&lt;T&gt; {
     public Constant(final Class&lt;? extends T&gt; type, final T value, boolean expandable) {
 <span class="fc" id="L36">        super(type);</span>
 <span class="fc" id="L37">        this.value = value;</span>
-<span class="fc" id="L38">        this.expandable = false;</span>
+<span class="fc" id="L38">        this.expandable = expandable;</span>
 <span class="fc" id="L39">    }</span>
 
     /**
@@ -48,12 +48,21 @@ public class Constant&lt;T&gt; extends ImmutableExpression&lt;T&gt; {
     }
 
     /**
+     * char型の定数を作成します。
+     * @param value char型
+     * @return char型の定数
+     */
+    public static Constant&lt;Character&gt; createChar(char value) {
+<span class="nc" id="L56">        return new Constant&lt;Character&gt;(Character.class, value);</span>
+    }
+
+    /**
      * ブーリアン型の定数を作成します。
      * @param value ブーリン案型
      * @return ブーリアン型の定数
      */
     public static Constant&lt;Boolean&gt; createBoolean(Boolean value) {
-<span class="fc" id="L56">        return new Constant&lt;Boolean&gt;(Boolean.class, value);</span>
+<span class="fc" id="L65">        return new Constant&lt;Boolean&gt;(Boolean.class, value);</span>
     }
 
     /**
@@ -64,7 +73,7 @@ public class Constant&lt;T&gt; extends ImmutableExpression&lt;T&gt; {
      */
     @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
     public static &lt;T&gt; Constant&lt;T&gt; create(T value) {
-<span class="fc" id="L67">        return new Constant&lt;T&gt;((Class)value.getClass(), value);</span>
+<span class="fc" id="L76">        return new Constant&lt;T&gt;((Class)value.getClass(), value);</span>
     }
 
     /**
@@ -75,13 +84,13 @@ public class Constant&lt;T&gt; extends ImmutableExpression&lt;T&gt; {
      */
     @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
     public static &lt;T extends Collection&gt; Constant&lt;T&gt; createCollection(T value) {
-<span class="fc" id="L78">        return new Constant&lt;T&gt;((Class)value.getClass(), value, true);</span>
+<span class="fc" id="L87">        return new Constant&lt;T&gt;((Class)value.getClass(), value, true);</span>
     }
 
     @Override
     public &lt;C&gt; void accept(Visitor&lt;C&gt; visitor, C context) {
-<span class="nc" id="L83">        visitor.visit(this, context);</span>
-<span class="nc" id="L84">    }</span>
+<span class="nc" id="L92">        visitor.visit(this, context);</span>
+<span class="nc" id="L93">    }</span>
 
     /**
      * {@inheritDoc}
@@ -89,7 +98,7 @@ public class Constant&lt;T&gt; extends ImmutableExpression&lt;T&gt; {
      */
     @Override
     public String toString() {
-<span class="nc" id="L92">        return OperationUtils.toDebugString(this);</span>
+<span class="nc" id="L101">        return OperationUtils.toDebugString(this);</span>
     }
 
 }

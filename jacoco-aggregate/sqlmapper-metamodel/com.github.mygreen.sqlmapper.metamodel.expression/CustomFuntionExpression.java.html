@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>CustomFuntionExpression.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel.expression</a> &gt; <span class="el_source">CustomFuntionExpression.java</span></div><h1>CustomFuntionExpression.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel.expression;
+
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.github.mygreen.sqlmapper.metamodel.operation.BooleanOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.LocalDateOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.LocalDateTimeOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.LocalTimeOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.NumberOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.SqlDateOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.SqlTimeOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.SqlTimestampOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.StringOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.UtilDateOperation;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionParser;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionParser.Token;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionTokenizer.TokenType;
+
+import lombok.Getter;
+
+
+/**
+ * 任意の関数式を表現します。
+ *
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
+public abstract class CustomFuntionExpression&lt;T&gt; implements Expression&lt;T&gt; {
+
+    protected final Expression&lt;?&gt; mixin;
+
+    /**
+     * 関数のクエリ
+     */
+    @Getter
+    protected final String query;
+
+    /**
+     * 関数の引数
+     */
+    @Getter
+    protected final List&lt;Expression&lt;?&gt;&gt; args;
+
+    /**
+     * SQL関数をパースしてトークンに分解した結果
+     */
+    @Getter
+    protected final List&lt;Token&gt; tokens;
+
+<span class="fc" id="L62">    public CustomFuntionExpression(Expression&lt;?&gt; mixin, String query, Object... args) {</span>
+<span class="pc bpc" id="L63" title="2 of 4 branches missed.">        if(query == null || query.isEmpty()) {</span>
+<span class="nc" id="L64">            throw new IllegalArgumentException(&quot;query should be not empty.&quot;);</span>
+        }
+
+        /*
+         * クエリ中のプレースホルダーと引数の個数を比較する。
+         * プレースホルダーをカウントするときには、文字列句('abc')などを考慮する必要があるが、
+         * そこまで複雑なことはしないと思うので実施しない。
+         */
+<span class="fc" id="L72">        List&lt;Token&gt; tokens = new SqlFunctionParser().parse(query);</span>
+<span class="fc" id="L73">        int countPlaceHolder = (int) tokens.stream()</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">                .filter(t -&gt; t.type == TokenType.BIND_VARIABLE)</span>
+<span class="fc" id="L75">                .count();</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        int sizeArgs = (args == null ? 0 : args.length);</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if(countPlaceHolder != sizeArgs) {</span>
+<span class="nc" id="L78">            throw new IllegalArgumentException(String.format(&quot;'%s' is not match place holder count '%d'. &quot;, query, countPlaceHolder));</span>
+        }
+
+<span class="fc" id="L81">        this.mixin = mixin;</span>
+<span class="fc" id="L82">        this.query = query;</span>
+<span class="fc" id="L83">        this.tokens = tokens;</span>
+
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if(sizeArgs == 0) {</span>
+<span class="fc" id="L86">            this.args = Collections.emptyList();</span>
+        } else {
+<span class="fc" id="L88">            this.args = Arrays.stream(args)</span>
+<span class="fc" id="L89">                    .map(this::convertExpression)</span>
+<span class="fc" id="L90">                    .collect(Collectors.toList());</span>
+        }
+
+<span class="fc" id="L93">    }</span>
+
+    /**
+     * 値を式オブジェクトに変換する。
+     * @param value 値
+     * @return 変換した値
+     */
+    @SuppressWarnings(&quot;rawtypes&quot;)
+    private Expression&lt;?&gt; convertExpression(Object value) {
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">        if(value instanceof Expression) {</span>
+<span class="nc" id="L103">            return (Expression)value;</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        } else if(value instanceof Collection) {</span>
+<span class="nc" id="L105">            return Constant.createCollection((Collection)value);</span>
+        } else {
+<span class="fc" id="L107">            return Constant.create(value);</span>
+        }
+    }
+
+    /**
+     * 関数の戻り値の型を返します。
+     * @return ブーリアン型を返します。
+     */
+    public BooleanExpression returnBoolean() {
+<span class="fc" id="L116">        return new BooleanOperation(FunctionOp.CUSTOM, mixin, this);</span>
+    }
+
+    /**
+     * 関数の戻り値の型を返します。
+     * @return 文字列型を返します。
+     */
+    public StringExpression returnString() {
+<span class="fc" id="L124">        return new StringOperation(FunctionOp.CUSTOM, mixin, this);</span>
+    }
+
+    /**
+     * 関数の戻り値の型を返します。
+     * @param type 数値の具象クラスを指定します。
+     * @return 数値型を返します。
+     */
+    public &lt;R extends Number &amp; Comparable&lt;R&gt;&gt; NumberExpression&lt;R&gt; returnNumber(Class&lt;R&gt; type) {
+<span class="nc" id="L133">        return new NumberOperation&lt;R&gt;(type, FunctionOp.CUSTOM, mixin, this);</span>
+    }
+
+    /**
+     * 関数の戻り値の型を返します。
+     * @return {@link LocalDate}型を返します。
+     */
+    public LocalDateExpression returnLocalDate() {
+<span class="nc" id="L141">        return new LocalDateOperation(FunctionOp.CUSTOM, mixin, this);</span>
+    }
+
+    /**
+     * 関数の戻り値の型を返します。
+     * @return {@link LocalTime}型を返します。
+     */
+    public LocalTimeExpression returnLocalTime() {
+<span class="nc" id="L149">        return new LocalTimeOperation(FunctionOp.CUSTOM, mixin, this);</span>
+    }
+
+    /**
+     * 関数の戻り値の型を返します。
+     * @return {@link LocalDateTime}型を返します。
+     */
+    public LocalDateTimeExpression returnLocalDateTime() {
+<span class="nc" id="L157">        return new LocalDateTimeOperation(FunctionOp.CUSTOM, mixin, this);</span>
+    }
+
+    /**
+     * 関数の戻り値の型を返します。
+     * @return {@link Date}型を返します。
+     */
+    public SqlDateExpression returnSqlDate() {
+<span class="nc" id="L165">        return new SqlDateOperation(FunctionOp.CUSTOM, mixin, this);</span>
+    }
+
+    /**
+     * 関数の戻り値の型を返します。
+     * @return {@link Time}型を返します。
+     */
+    public SqlTimeExpression returnSqlTime() {
+<span class="nc" id="L173">        return new SqlTimeOperation(FunctionOp.CUSTOM, mixin, this);</span>
+    }
+
+    /**
+     * 関数の戻り値の型を返します。
+     * @return {@link Timestamp}型を返します。
+     */
+    public SqlTimestampExpression returnSqlTimeStamp() {
+<span class="nc" id="L181">        return new SqlTimestampOperation(FunctionOp.CUSTOM, mixin, this);</span>
+    }
+
+    /**
+     * 関数の戻り値の型を返します。
+     * @return {@link java.util.Date}型を返します。
+     */
+    public UtilDateExpression returnUtilDate() {
+<span class="nc" id="L189">        return new UtilDateOperation(FunctionOp.CUSTOM, mixin, this);</span>
+    }
+
+//    /**
+//     * 関数の戻り値の型を返します。
+//     * @return 列挙型を返します。
+//     */
+//    public &lt;R extends Enum&lt;R&gt;&gt; EnumExpression&lt;R&gt; returnEnum(Class&lt;R&gt; type) {
+//        return new EnumOperation&lt;R&gt;(type, FunctionOp.CUSTOM, mixin, this);
+//    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

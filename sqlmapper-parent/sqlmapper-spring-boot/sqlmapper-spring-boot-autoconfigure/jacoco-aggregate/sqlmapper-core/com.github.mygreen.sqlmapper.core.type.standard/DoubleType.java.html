@@ -2,7 +2,9 @@
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
@@ -25,12 +27,12 @@ public class DoubleType implements ValueType&lt;Double&gt; {
     @Override
     public Double getValue(ResultSet rs, int columnIndex) throws SQLException {
 
-<span class="nc" id="L28">        Double value = rs.getDouble(columnIndex);</span>
-<span class="nc bnc" id="L29" title="All 4 branches missed.">        if(rs.wasNull() &amp;&amp; !forPrimitive) {</span>
-<span class="nc" id="L30">            return null;</span>
+<span class="fc" id="L30">        Double value = rs.getDouble(columnIndex);</span>
+<span class="fc bfc" id="L31" title="All 4 branches covered.">        if(rs.wasNull() &amp;&amp; !forPrimitive) {</span>
+<span class="fc" id="L32">            return null;</span>
         }
 
-<span class="nc" id="L33">        return value;</span>
+<span class="fc" id="L35">        return value;</span>
     }
 
     /**
@@ -40,11 +42,16 @@ public class DoubleType implements ValueType&lt;Double&gt; {
     @Override
     public Object getSqlParameterValue(Double value) {
 
-<span class="nc bnc" id="L43" title="All 4 branches missed.">        if(value == null &amp;&amp; forPrimitive) {</span>
-<span class="nc" id="L44">            value = 0.0d;</span>
+<span class="pc bpc" id="L45" title="3 of 4 branches missed.">        if(value == null &amp;&amp; forPrimitive) {</span>
+<span class="nc" id="L46">            value = 0.0d;</span>
         }
 
-<span class="nc" id="L47">        return value;</span>
+<span class="fc" id="L49">        return value;</span>
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+<span class="nc" id="L54">        return Types.DOUBLE;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

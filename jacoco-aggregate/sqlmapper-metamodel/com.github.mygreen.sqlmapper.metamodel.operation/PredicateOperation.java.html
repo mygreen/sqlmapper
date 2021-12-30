@@ -3,6 +3,7 @@
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
@@ -32,40 +33,48 @@ public class PredicateOperation implements Operation&lt;Boolean&gt;, Predicate {
      */
     private final List&lt;Expression&lt;?&gt;&gt; args;
 
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">    public PredicateOperation(@NonNull Operator operator, Expression&lt;?&gt;... args) {</span>
-<span class="fc" id="L36">        this.operator = operator;</span>
-<span class="fc" id="L37">        this.args = Collections.unmodifiableList(Arrays.asList(args));</span>
-<span class="fc" id="L38">    }</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">    public PredicateOperation(@NonNull Operator operator, Expression&lt;?&gt;... args) {</span>
+<span class="fc" id="L37">        this.operator = operator;</span>
+<span class="fc" id="L38">        this.args = Collections.unmodifiableList(Arrays.asList(args));</span>
+<span class="fc" id="L39">    }</span>
 
     @Override
     public Class&lt;? extends Boolean&gt; getType() {
-<span class="nc" id="L42">        return Boolean.class;</span>
+<span class="nc" id="L43">        return Boolean.class;</span>
     }
 
     @Override
     public Predicate not() {
-<span class="nc" id="L47">        return new PredicateOperation(UnaryOp.NOT, this);</span>
+<span class="nc" id="L48">        return new PredicateOperation(UnaryOp.NOT, this);</span>
     }
 
     @Override
     public Operator getOperator() {
-<span class="fc" id="L52">        return operator;</span>
+<span class="fc" id="L53">        return operator;</span>
     }
 
     @Override
     public Expression&lt;?&gt; getArg(int index) {
-<span class="nc" id="L57">        return args.get(index);</span>
+<span class="fc" id="L58">        return args.get(index);</span>
+    }
+
+    @Override
+    public Optional&lt;Expression&lt;?&gt;&gt; getOptArg(int index) {
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if(index &gt;= args.size()) {</span>
+<span class="nc" id="L64">            return Optional.empty();</span>
+        }
+<span class="nc" id="L66">        return Optional.ofNullable(args.get(index));</span>
     }
 
     @Override
     public List&lt;Expression&lt;?&gt;&gt; getArgs() {
-<span class="fc" id="L62">        return args;</span>
+<span class="fc" id="L71">        return args;</span>
     }
 
     @Override
     public &lt;C&gt; void accept(Visitor&lt;C&gt; visitor, C context) {
-<span class="nc" id="L67">        visitor.visit((Operation&lt;?&gt;)this, context);</span>
-<span class="nc" id="L68">    }</span>
+<span class="nc" id="L76">        visitor.visit((Operation&lt;?&gt;)this, context);</span>
+<span class="nc" id="L77">    }</span>
 
     /**
      * {@inheritDoc}
@@ -73,7 +82,8 @@ public class PredicateOperation implements Operation&lt;Boolean&gt;, Predicate {
      */
     @Override
     public String toString() {
-<span class="nc" id="L76">        return OperationUtils.toDebugString(this);</span>
+<span class="nc" id="L85">        return OperationUtils.toDebugString(this);</span>
     }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -2,6 +2,7 @@
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
@@ -22,32 +23,37 @@ public class UtilDateOperation extends UtilDateExpression implements Operation&l
     private final OperationMixin&lt;Date&gt; opMixin;
 
     public UtilDateOperation(OperationMixin&lt;Date&gt; mixin) {
-<span class="nc" id="L25">        super(mixin);</span>
-<span class="nc" id="L26">        this.opMixin = mixin;</span>
-<span class="nc" id="L27">    }</span>
+<span class="nc" id="L26">        super(mixin);</span>
+<span class="nc" id="L27">        this.opMixin = mixin;</span>
+<span class="nc" id="L28">    }</span>
 
-<span class="nc bnc" id="L29" title="All 2 branches missed.">    public UtilDateOperation(@NonNull Operator op, Expression&lt;?&gt;... args) {</span>
-<span class="nc" id="L30">        this(new OperationMixin&lt;&gt;(Date.class, op, args));</span>
-<span class="nc" id="L31">    }</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">    public UtilDateOperation(@NonNull Operator op, Expression&lt;?&gt;... args) {</span>
+<span class="nc" id="L31">        this(new OperationMixin&lt;&gt;(Date.class, op, args));</span>
+<span class="nc" id="L32">    }</span>
 
     @Override
     public &lt;C&gt; void accept(Visitor&lt;C&gt; visitor, C context) {
-<span class="nc" id="L35">        visitor.visit(opMixin, context);</span>
-<span class="nc" id="L36">    }</span>
+<span class="nc" id="L36">        visitor.visit(opMixin, context);</span>
+<span class="nc" id="L37">    }</span>
 
     @Override
     public Operator getOperator() {
-<span class="nc" id="L40">        return opMixin.getOperator();</span>
+<span class="nc" id="L41">        return opMixin.getOperator();</span>
     }
 
     @Override
     public Expression&lt;?&gt; getArg(int index) {
-<span class="nc" id="L45">        return opMixin.getArg(index);</span>
+<span class="nc" id="L46">        return opMixin.getArg(index);</span>
+    }
+
+    @Override
+    public Optional&lt;Expression&lt;?&gt;&gt; getOptArg(int index) {
+<span class="nc" id="L51">        return opMixin.getOptArg(index);</span>
     }
 
     @Override
     public List&lt;Expression&lt;?&gt;&gt; getArgs() {
-<span class="nc" id="L50">        return opMixin.getArgs();</span>
+<span class="nc" id="L56">        return opMixin.getArgs();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

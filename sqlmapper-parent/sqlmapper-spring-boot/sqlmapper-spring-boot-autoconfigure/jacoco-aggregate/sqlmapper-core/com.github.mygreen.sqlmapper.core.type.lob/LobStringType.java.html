@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.jdbc.support.lob.LobHandler;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
@@ -28,12 +29,22 @@ public class LobStringType implements ValueType&lt;String&gt; {
 
     @Override
     public String getValue(ResultSet rs, int columnIndex) throws SQLException {
-<span class="nc" id="L31">        return lobHandler.getClobAsString(rs, columnIndex);</span>
+<span class="fc" id="L32">        return lobHandler.getClobAsString(rs, columnIndex);</span>
     }
 
     @Override
     public Object getSqlParameterValue(String value) {
-<span class="nc" id="L36">        return new SqlParameterValue(Types.CLOB, new SqlLobValue(value, lobHandler));</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if(value == null) {</span>
+<span class="fc" id="L38">            return null;</span>
+        }
+<span class="fc" id="L40">        return new SqlParameterValue(Types.CLOB, new SqlLobValue(value, lobHandler));</span>
     }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+<span class="nc" id="L45">        return Types.CLOB;</span>
+    }
+
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

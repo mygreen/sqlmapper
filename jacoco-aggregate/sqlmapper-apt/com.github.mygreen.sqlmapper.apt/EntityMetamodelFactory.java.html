@@ -16,6 +16,7 @@ import com.github.mygreen.sqlmapper.apt.model.PropertyMetamodel;
 import com.github.mygreen.sqlmapper.core.annotation.Embeddable;
 import com.github.mygreen.sqlmapper.core.annotation.EmbeddedId;
 import com.github.mygreen.sqlmapper.core.annotation.Entity;
+import com.github.mygreen.sqlmapper.core.annotation.Lob;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
 import com.github.mygreen.sqlmapper.core.annotation.Transient;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
  * クラス情報からメタモデルの情報を作成します。
  * プロパティやクラスの仕様は、{@link EntityMetaFactory}に準拠します。
  *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -43,28 +45,28 @@ public class EntityMetamodelFactory {
      */
     public EntityMetamodel create(final TypeElement entityElement) throws ClassNotFoundException {
 
-<span class="fc" id="L46">        final EntityMetamodel entityModel = new EntityMetamodel();</span>
-<span class="fc" id="L47">        entityModel.setClassName(entityElement.getSimpleName().toString());</span>
+<span class="fc" id="L48">        final EntityMetamodel entityModel = new EntityMetamodel();</span>
+<span class="fc" id="L49">        entityModel.setClassName(entityElement.getSimpleName().toString());</span>
 
         // パッケージ情報の取得
-<span class="fc" id="L50">        Element enclosing = entityElement.getEnclosingElement();</span>
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        if(enclosing != null) {</span>
-<span class="fc" id="L52">            entityModel.setPackageName(enclosing.toString());</span>
+<span class="fc" id="L52">        Element enclosing = entityElement.getEnclosingElement();</span>
+<span class="pc bpc" id="L53" title="1 of 2 branches missed.">        if(enclosing != null) {</span>
+<span class="fc" id="L54">            entityModel.setPackageName(enclosing.toString());</span>
         }
-<span class="fc" id="L54">        entityModel.setType(createAptType(entityElement.asType()));</span>
+<span class="fc" id="L56">        entityModel.setType(createAptType(entityElement.asType()));</span>
 
         // 自身のクラス情報の取得
-<span class="fc" id="L57">        entityModel.setEntityAnno(entityElement.getAnnotation(Entity.class));</span>
-<span class="fc" id="L58">        entityModel.setMappedSuperclassAnno(entityElement.getAnnotation(MappedSuperclass.class));</span>
-<span class="fc" id="L59">        entityModel.setEmbeddableAnno(entityElement.getAnnotation(Embeddable.class));</span>
+<span class="fc" id="L59">        entityModel.setEntityAnno(entityElement.getAnnotation(Entity.class));</span>
+<span class="fc" id="L60">        entityModel.setMappedSuperclassAnno(entityElement.getAnnotation(MappedSuperclass.class));</span>
+<span class="fc" id="L61">        entityModel.setEmbeddableAnno(entityElement.getAnnotation(Embeddable.class));</span>
 
         // 親クラスの取得
-<span class="fc" id="L62">        doSuperclass(entityModel, entityElement);</span>
+<span class="fc" id="L64">        doSuperclass(entityModel, entityElement);</span>
 
         // プロパティ情報の取得
-<span class="fc" id="L65">        doPropety(entityModel, entityElement);</span>
+<span class="fc" id="L67">        doPropety(entityModel, entityElement);</span>
 
-<span class="fc" id="L67">        return entityModel;</span>
+<span class="fc" id="L69">        return entityModel;</span>
     }
 
     /**
@@ -74,24 +76,24 @@ public class EntityMetamodelFactory {
      */
     private void doSuperclass(final EntityMetamodel entityModel, final TypeElement entityElement) {
 
-<span class="fc" id="L77">        final TypeMirror superclassType = entityElement.getSuperclass();</span>
-<span class="pc bpc" id="L78" title="1 of 2 branches missed.">        if(superclassType.toString().equals(Object.class.getCanonicalName())) {</span>
+<span class="fc" id="L79">        final TypeMirror superclassType = entityElement.getSuperclass();</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if(superclassType.toString().equals(Object.class.getCanonicalName())) {</span>
             // 継承していない場合
-<span class="fc" id="L80">            return;</span>
+<span class="fc" id="L82">            return;</span>
         }
 
-<span class="nc" id="L83">        Element superclassElement = typeUtils.asElement(superclassType);</span>
-<span class="nc bnc" id="L84" title="All 4 branches missed.">        if(superclassElement == null || !(superclassElement instanceof TypeElement)) {</span>
+<span class="nc" id="L85">        Element superclassElement = typeUtils.asElement(superclassType);</span>
+<span class="nc bnc" id="L86" title="All 4 branches missed.">        if(superclassElement == null || !(superclassElement instanceof TypeElement)) {</span>
             // 親クラスがタイプ情報でない場合
-<span class="nc" id="L86">            return;</span>
+<span class="nc" id="L88">            return;</span>
         }
 
-<span class="nc" id="L89">        TypeElement superTypeElement = (TypeElement) superclassElement;</span>
-<span class="nc bnc" id="L90" title="All 2 branches missed.">        if(superTypeElement.getAnnotation(MappedSuperclass.class) != null) {</span>
-<span class="nc" id="L91">            entityModel.setSuperClassType(createAptType(superclassType));</span>
+<span class="nc" id="L91">        TypeElement superTypeElement = (TypeElement) superclassElement;</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        if(superTypeElement.getAnnotation(MappedSuperclass.class) != null) {</span>
+<span class="nc" id="L93">            entityModel.setSuperClassType(createAptType(superclassType));</span>
         }
 
-<span class="nc" id="L94">    }</span>
+<span class="nc" id="L96">    }</span>
 
     /**
      * エンティティタイプを元にエンティティのメタ情報を作成する。
@@ -100,20 +102,20 @@ public class EntityMetamodelFactory {
      */
     private void doPropety(final EntityMetamodel entityModel, final TypeElement entityElement) {
 
-<span class="fc bfc" id="L103" title="All 2 branches covered.">        for(Element enclosedElement : entityElement.getEnclosedElements()) {</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">            if(!AptUtils.isInstanceField(enclosedElement)) {</span>
-<span class="fc" id="L105">                continue;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        for(Element enclosedElement : entityElement.getEnclosedElements()) {</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">            if(!AptUtils.isInstanceField(enclosedElement)) {</span>
+<span class="fc" id="L107">                continue;</span>
             }
 
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">            if(enclosedElement.getAnnotation(Transient.class) != null) {</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">            if(enclosedElement.getAnnotation(Transient.class) != null) {</span>
                 // 永続化対象外は除外
-<span class="nc" id="L110">                continue;</span>
+<span class="nc" id="L112">                continue;</span>
             }
 
-<span class="fc" id="L113">            entityModel.add(createPropertyModel((VariableElement)enclosedElement));</span>
-<span class="fc" id="L114">        }</span>
+<span class="fc" id="L115">            entityModel.add(createPropertyModel((VariableElement)enclosedElement));</span>
+<span class="fc" id="L116">        }</span>
 
-<span class="fc" id="L116">    }</span>
+<span class="fc" id="L118">    }</span>
 
     /**
      * フィールド情報を元にプロパティのメタ情報を作成する。
@@ -122,17 +124,20 @@ public class EntityMetamodelFactory {
      */
     private PropertyMetamodel createPropertyModel(final VariableElement fieldElement) {
 
-<span class="fc" id="L125">        PropertyMetamodel propertyModel = new PropertyMetamodel();</span>
+<span class="fc" id="L127">        PropertyMetamodel propertyModel = new PropertyMetamodel();</span>
 
-<span class="fc" id="L127">        propertyModel.setPropertyName(fieldElement.getSimpleName().toString());</span>
+<span class="fc" id="L129">        propertyModel.setPropertyName(fieldElement.getSimpleName().toString());</span>
 
-<span class="fc" id="L129">        TypeMirror type = fieldElement.asType();</span>
-<span class="fc" id="L130">        propertyModel.setPropertyType(createAptType(type));</span>
+<span class="fc" id="L131">        TypeMirror type = fieldElement.asType();</span>
+<span class="fc" id="L132">        propertyModel.setPropertyType(createAptType(type));</span>
 
         // 埋め込み用かどうか
-<span class="fc bfc" id="L133" title="All 2 branches covered.">        propertyModel.setEmbedded(fieldElement.getAnnotation(EmbeddedId.class) != null);</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        propertyModel.setEmbedded(fieldElement.getAnnotation(EmbeddedId.class) != null);</span>
 
-<span class="fc" id="L135">        return propertyModel;</span>
+        // LOBかどうか
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">        propertyModel.setLob(fieldElement.getAnnotation(Lob.class) != null);</span>
+
+<span class="fc" id="L140">        return propertyModel;</span>
 
     }
 
@@ -143,14 +148,14 @@ public class EntityMetamodelFactory {
      */
     private AptType createAptType(final TypeMirror typeMirror) {
 
-<span class="fc" id="L146">        AptType aptType = new AptType(typeMirror, Optional.ofNullable(typeUtils.asElement(typeMirror)));</span>
+<span class="fc" id="L151">        AptType aptType = new AptType(typeMirror, Optional.ofNullable(typeUtils.asElement(typeMirror)));</span>
 
         // 継承クラスの抽出
-<span class="fc" id="L149">        List&lt;TypeMirror&gt; superTypes = new ArrayList&lt;TypeMirror&gt;();</span>
-<span class="fc" id="L150">        AptUtils.extractSuperClassTypes(typeMirror, typeUtils, superTypes);</span>
-<span class="fc" id="L151">        aptType.setSuperTypes(superTypes);</span>
+<span class="fc" id="L154">        List&lt;TypeMirror&gt; superTypes = new ArrayList&lt;TypeMirror&gt;();</span>
+<span class="fc" id="L155">        AptUtils.extractSuperClassTypes(typeMirror, typeUtils, superTypes);</span>
+<span class="fc" id="L156">        aptType.setSuperTypes(superTypes);</span>
 
-<span class="fc" id="L153">        return aptType;</span>
+<span class="fc" id="L158">        return aptType;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>PropertyMeta.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-spring-boot-autoconfigure</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.meta</a> &gt; <span class="el_source">PropertyMeta.java</span></div><h1>PropertyMeta.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.meta;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -18,75 +13,43 @@ import com.github.mygreen.sqlmapper.core.annotation.EmbeddedId;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
 import com.github.mygreen.sqlmapper.core.annotation.Lob;
-import com.github.mygreen.sqlmapper.core.annotation.ModifiedAt;
-import com.github.mygreen.sqlmapper.core.annotation.ModifiedBy;
 import com.github.mygreen.sqlmapper.core.annotation.Transient;
+import com.github.mygreen.sqlmapper.core.annotation.UpdatedAt;
+import com.github.mygreen.sqlmapper.core.annotation.UpdatedBy;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
+import com.github.mygreen.sqlmapper.core.id.IdGenerationContext;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
  * プロパティのメタ情報です。
  *
- *
  * @author T.TSUCHIE
+ * @version 0.3
  *
  */
-@RequiredArgsConstructor
-public class PropertyMeta {
-
-    /**
-     * プロパティ名
-     */
-    @Getter
-    private final String name;
-
-    /**
-     * プロパティタイプ
-     */
-    @Getter
-    private final Class&lt;?&gt; propertyType;
-
-    /**
-     * フィールド情報
-     */
-    private Optional&lt;Field&gt; field = Optional.empty();
-
-    /**
-     * setterメソッド
-     */
-    private Optional&lt;Method&gt; writeMethod = Optional.empty();
-
-    /**
-     * getterメソッド
-     */
-    private Optional&lt;Method&gt; readMethod = Optional.empty();
-
-    /**
-     * アノテーションの情報
-     */
-    private Map&lt;Class&lt;? extends Annotation&gt;, Annotation&gt; annotationMap = new HashMap&lt;&gt;();
+public class PropertyMeta extends PropertyBase {
 
     /**
      * 埋め込み型の主キーの子プロパティかどうか。
      */
+<span class="fc" id="L40">    @Setter</span>
     private boolean embeddedableId = false;
 
     /**
      * 埋め込みプロパティの情報
      * &lt;p&gt;key=プロパティ名&lt;/p&gt;
      */
-    private LinkedCaseInsensitiveMap&lt;PropertyMeta&gt; embeddedablePropertyMetaMap = new LinkedCaseInsensitiveMap&lt;&gt;();
+<span class="fc" id="L47">    private LinkedCaseInsensitiveMap&lt;PropertyMeta&gt; embeddedablePropertyMetaMap = new LinkedCaseInsensitiveMap&lt;&gt;();</span>
 
     /**
      * 埋め込みのときの親のプロパティ情報
      */
-    private Optional&lt;PropertyMeta&gt; parent = Optional.empty();
+<span class="fc" id="L52">    private Optional&lt;PropertyMeta&gt; parent = Optional.empty();</span>
 
     /**
      * カラムのメタ情報
@@ -103,191 +66,64 @@ public class PropertyMeta {
     private ValueType&lt;?&gt; valueType;
 
     /**
-     * 識別子の生成タイプ
+     * IDの生成タイプ
      */
-    @Getter
-    private Optional&lt;GeneratedValue.GenerationType&gt; idGenerationType = Optional.empty();
+<span class="fc" id="L71">    @Getter</span>
+<span class="fc" id="L72">    private Optional&lt;GeneratedValue.GenerationType&gt; idGenerationType = Optional.empty();</span>
 
     /**
-     * 識別子の生成処理
+     * IDの生成処理
      */
-    @Getter
-    private Optional&lt;IdGenerator&gt; idGenerator = Optional.empty();
+<span class="fc" id="L77">    @Getter</span>
+<span class="fc" id="L78">    private Optional&lt;IdGenerator&gt; idGenerator = Optional.empty();</span>
 
     /**
-     * プロパティが定義されているクラス情報を取得します。
-     * @return プロパティが定義されているクラス情報
-     * @throws IllegalStateException クラス情報を取得するための情報が不足している場合。
+     * 生成対象の識別子の情報。
+     * &lt;p&gt;ID生成時に渡す際の情報として使用するので、効率化のためにここで事前に作成して保持しておく。
      */
-    public Class&lt;?&gt; getDeclaringClass() {
-
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">        if(field.isPresent()) {</span>
-<span class="fc" id="L125">            return field.get().getDeclaringClass();</span>
-        }
-
-<span class="nc bnc" id="L128" title="All 2 branches missed.">        if(readMethod.isPresent()) {</span>
-<span class="nc" id="L129">            return readMethod.get().getDeclaringClass();</span>
-        }
-
-<span class="nc bnc" id="L132" title="All 2 branches missed.">        if(writeMethod.isPresent()) {</span>
-<span class="nc" id="L133">            return writeMethod.get().getDeclaringClass();</span>
-        }
-
-<span class="nc" id="L136">        throw new IllegalStateException(&quot;not found availabeld info.&quot;);</span>
-
-    }
+<span class="fc" id="L84">    @Getter</span>
+<span class="fc" id="L85">    private Optional&lt;IdGenerationContext&gt; idGenerationContext = Optional.empty();</span>
 
     /**
-     * 読み込み可能なプロパティか判定する。
-     * &lt;p&gt;getterメソッドまたはpublicなフィールドが存在する場合&lt;/p&gt;
-     * @return {@literal true}のとき読み込み可能。
+     * プロパティのインスタンス情報を作成します。
+     * @param name プロパティ名
+     * @param propertyType プロパティのクラスタイプ
      */
-    public boolean isReadable() {
-
-<span class="nc bnc" id="L147" title="All 2 branches missed.">        if(readMethod.isPresent()) {</span>
-<span class="nc" id="L148">            return true;</span>
-        }
-
-<span class="nc bnc" id="L151" title="All 2 branches missed.">        if(field.isPresent()) {</span>
-<span class="nc bnc" id="L152" title="All 2 branches missed.">            if(Modifier.isPublic(field.get().getModifiers())) {</span>
-<span class="nc" id="L153">                return true;</span>
-            }
-        }
-
-<span class="nc" id="L157">        return false;</span>
-
-    }
-
-    /**
-     * 書込み可能なプロパティか判定する。
-     * &lt;p&gt;setterメソッドまたはpublicなフィールドが存在する場合&lt;/p&gt;
-     * @return {@literal true}のと書き込み可能。
-     */
-    public boolean isWritable() {
-
-<span class="nc bnc" id="L168" title="All 2 branches missed.">        if(writeMethod.isPresent()) {</span>
-<span class="nc" id="L169">            return true;</span>
-        }
-
-<span class="nc bnc" id="L172" title="All 2 branches missed.">        if(field.isPresent()) {</span>
-<span class="nc bnc" id="L173" title="All 2 branches missed.">            if(Modifier.isPublic(field.get().getModifiers())) {</span>
-<span class="nc" id="L174">                return true;</span>
-            }
-        }
-
-<span class="nc" id="L178">        return false;</span>
-
-    }
-
-    /**
-     * プロパティに対するフィールドを設定します。
-     * @param field フィールド（nullを許容します）
-     */
-    public void setField(Field field) {
-<span class="fc" id="L187">        this.field = Optional.ofNullable(field);</span>
-<span class="fc" id="L188">    }</span>
-
-    /**
-     * プロパティに対するフィールドを情報を取得します。
-     * @return プロパティに対するフィールド情報
-     */
-    public Optional&lt;Field&gt; getField() {
-<span class="nc" id="L195">        return field;</span>
-    }
-
-    /**
-     * プロパティに対するsetterメソッドを設定します。
-     * @param method setterメソッド（nullを許容します）
-     */
-    public void setWriteMethod(Method method) {
-<span class="fc" id="L203">        this.writeMethod = Optional.ofNullable(method);</span>
-<span class="fc" id="L204">    }</span>
-
-    /**
-     * プロパティに対するsetterメソッドを取得します。
-     * @return プロパティに対するsetterメソッド。
-     */
-    public Optional&lt;Method&gt; getWriteMethod() {
-<span class="fc" id="L211">        return writeMethod;</span>
-    }
-
-    /**
-     * プロパティに対するgetterメソッドを設定します。
-     * @param method getterメソッド（nullを許容します）
-     */
-    public void setReadMethod(Method method) {
-<span class="fc" id="L219">        this.readMethod = Optional.ofNullable(method);</span>
-<span class="fc" id="L220">    }</span>
-
-    /**
-     * プロパティに対するgetterメソッドを取得します。
-     * @return プロパティに対するgetterメソッド
-     */
-    public Optional&lt;Method&gt; getReadMethod() {
-<span class="fc" id="L227">        return readMethod;</span>
-    }
-
-    /**
-     * アノテーションを追加します。
-     * @param annoClass アノテーションのタイプ
-     * @param anno 追加するアノテーション
-     */
-<span class="pc bpc" id="L235" title="2 of 4 branches missed.">    public void addAnnotation(@NonNull Class&lt;? extends Annotation&gt; annoClass, @NonNull Annotation anno) {</span>
-<span class="fc" id="L236">        this.annotationMap.put(annoClass, anno);</span>
-<span class="fc" id="L237">    }</span>
-
-    /**
-     * 指定したアノテーションを持つか判定します。
-     * @param &lt;A&gt; アノテーションのタイプ。
-     * @param annoClass アノテーションのクラスタイプ。
-     * @return trueの場合、アノテーションを持ちます。
-     */
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">    public &lt;A extends Annotation&gt; boolean hasAnnotation(@NonNull Class&lt;A&gt; annoClass) {</span>
-<span class="fc" id="L246">        return annotationMap.containsKey(annoClass);</span>
-    }
-
-    /**
-     * タイプを指定して、アノテーションを取得する。
-     * @param &lt;A&gt; アノテーションのタイプ。
-     * @param annoClass アノテーションのクラスタイプ。
-     * @return 存在しない場合、空を返します。
-     */
-    @SuppressWarnings(&quot;unchecked&quot;)
-    public &lt;A extends Annotation&gt; Optional&lt;A&gt; getAnnotation(Class&lt;A&gt; annoClass) {
-<span class="fc" id="L257">        return Optional.ofNullable((A)annotationMap.get(annoClass));</span>
-    }
+    public PropertyMeta(String name, Class&lt;?&gt; propertyType) {
+<span class="fc" id="L93">        super(name, propertyType);</span>
+<span class="fc" id="L94">    }</span>
 
     /**
      * カラム用のプロパティかどうか判定する。
      * @return カラム情報を持つときtrueを返す。
      */
     public boolean isColumn() {
-<span class="fc bfc" id="L265" title="All 2 branches covered.">        return columnMeta != null;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        return columnMeta != null;</span>
     }
 
     /**
      * 埋め込みプロパティ情報を追加する
      * @param embeddedablePropertyMeta 埋め込みプロパティ
      */
-<span class="pc bpc" id="L272" title="1 of 2 branches missed.">    public void addEmbeddedablePropertyMeta(@NonNull PropertyMeta embeddedablePropertyMeta) {</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">    public void addEmbeddedablePropertyMeta(@NonNull PropertyMeta embeddedablePropertyMeta) {</span>
 
-<span class="fc" id="L274">        embeddedablePropertyMeta.parent = Optional.of(this);</span>
+<span class="fc" id="L110">        embeddedablePropertyMeta.parent = Optional.of(this);</span>
 
         // 親が埋め込み主キーの時
-<span class="pc bpc" id="L277" title="2 of 4 branches missed.">        if(hasAnnotation(EmbeddedId.class) &amp;&amp; !isTransient()) {</span>
-<span class="fc" id="L278">            embeddedablePropertyMeta.embeddedableId = true;</span>
+<span class="pc bpc" id="L113" title="2 of 4 branches missed.">        if(hasAnnotation(EmbeddedId.class) &amp;&amp; !isTransient()) {</span>
+<span class="fc" id="L114">            embeddedablePropertyMeta.embeddedableId = true;</span>
         }
 
-<span class="fc" id="L281">        this.embeddedablePropertyMetaMap.put(embeddedablePropertyMeta.getName(), embeddedablePropertyMeta);</span>
+<span class="fc" id="L117">        this.embeddedablePropertyMetaMap.put(embeddedablePropertyMeta.getName(), embeddedablePropertyMeta);</span>
 
-<span class="fc" id="L283">    }</span>
+<span class="fc" id="L119">    }</span>
 
     /**
      * 埋め込み用のクラスのプロパティかどか判定する。
      * @return 埋め込み用のクラスのプロパティの場合trueを変す。
      */
     public boolean hasParent() {
-<span class="fc" id="L290">        return parent.isPresent();</span>
+<span class="fc" id="L126">        return parent.isPresent();</span>
     }
 
     /**
@@ -296,7 +132,7 @@ public class PropertyMeta {
      * @throws NoSuchElementException 親が存在しないときにスローされます。
      */
     public PropertyMeta getParent() {
-<span class="fc" id="L299">        return parent.get();</span>
+<span class="fc" id="L135">        return parent.get();</span>
     }
 
     /**
@@ -304,7 +140,7 @@ public class PropertyMeta {
      * @return
      */
     public Collection&lt;PropertyMeta&gt; getEmbeddedablePopertyMetaList() {
-<span class="fc" id="L307">        return embeddedablePropertyMetaMap.values();</span>
+<span class="fc" id="L143">        return embeddedablePropertyMetaMap.values();</span>
     }
 
     /**
@@ -316,7 +152,7 @@ public class PropertyMeta {
      */
     public boolean isId() {
 
-<span class="fc bfc" id="L319" title="All 4 branches covered.">        return hasAnnotation(Id.class) || embeddedableId;</span>
+<span class="fc bfc" id="L155" title="All 4 branches covered.">        return hasAnnotation(Id.class) || embeddedableId;</span>
     }
 
     /**
@@ -325,7 +161,7 @@ public class PropertyMeta {
      * @return 埋め込みの場合trueを返す。
      */
     public boolean isEmbedded() {
-<span class="fc" id="L328">        return hasAnnotation(EmbeddedId.class);</span>
+<span class="fc" id="L164">        return hasAnnotation(EmbeddedId.class);</span>
     }
 
     /**
@@ -333,23 +169,34 @@ public class PropertyMeta {
      * @param generationType IDの生成タイプ
      */
     public void setIdGeneratonType(GeneratedValue.GenerationType generationType) {
-<span class="fc" id="L336">        this.idGenerationType = Optional.ofNullable(generationType);</span>
-<span class="fc" id="L337">    }</span>
+<span class="fc" id="L172">        this.idGenerationType = Optional.ofNullable(generationType);</span>
+<span class="fc" id="L173">    }</span>
 
     /**
      * 識別子の生成処理を設定する。
      * @param idGenerator 識別子の生成処理。
      */
     public void setIdGenerator(IdGenerator idGenerator) {
-<span class="fc" id="L344">        this.idGenerator = Optional.ofNullable(idGenerator);</span>
-<span class="fc" id="L345">    }</span>
+<span class="fc" id="L180">        this.idGenerator = Optional.ofNullable(idGenerator);</span>
+<span class="fc" id="L181">    }</span>
+
+    /**
+     * 生成対象の識別子の情報を設定する。
+     * @param idGenerationContext 生成対象の識別子の情報
+     */
+    public void setIdGenerationContext(IdGenerationContext idGenerationContext) {
+<span class="fc" id="L188">        this.idGenerationContext = Optional.ofNullable(idGenerationContext);</span>
+<span class="fc" id="L189">    }</span>
 
     /**
      * 永続化対象外かどうか判定する。
+     * &lt;p&gt;永続化対象外とは、アノテーション {@link Transient}が付与されているか、
+     * または、フィールドに修飾子 {@literal transient} が付与されているかどうかで判定します。
      * @return 永続化対象外のとき {@literal true} を返す。
      */
     public boolean isTransient() {
-<span class="fc" id="L352">        return hasAnnotation(Transient.class);</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">        return hasAnnotation(Transient.class)</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">                || field.map(f -&gt; Modifier.isTransient(f.getModifiers())).orElse(false);</span>
     }
 
     /**
@@ -357,7 +204,7 @@ public class PropertyMeta {
      * @return バージョンキーのとき {@literal true} を返す。
      */
     public boolean isVersion() {
-<span class="fc" id="L360">        return hasAnnotation(Version.class);</span>
+<span class="fc" id="L207">        return hasAnnotation(Version.class);</span>
     }
 
     /**
@@ -366,7 +213,7 @@ public class PropertyMeta {
      * @return LOBの場合はtrueを返す。
      */
     public boolean isLob() {
-<span class="fc" id="L369">        return hasAnnotation(Lob.class);</span>
+<span class="fc" id="L216">        return hasAnnotation(Lob.class);</span>
     }
 
     /**
@@ -374,7 +221,7 @@ public class PropertyMeta {
      * @return 作成日時用のプロパティのとき {@literal true} を返す。
      */
     public boolean isCreatedAt() {
-<span class="fc" id="L377">        return hasAnnotation(CreatedAt.class);</span>
+<span class="fc" id="L224">        return hasAnnotation(CreatedAt.class);</span>
     }
 
     /**
@@ -382,23 +229,23 @@ public class PropertyMeta {
      * @return 作成者用のプロパティのとき {@literal true} を返す。
      */
     public boolean isCreatedBy() {
-<span class="fc" id="L385">        return hasAnnotation(CreatedBy.class);</span>
+<span class="fc" id="L232">        return hasAnnotation(CreatedBy.class);</span>
     }
 
     /**
      * 修正日時用のプロパティがかどうか判定する。
      * @return 修正日時用のプロパティのとき {@literal true} を返す。
      */
-    public boolean isModifiedAt() {
-<span class="fc" id="L393">        return hasAnnotation(ModifiedAt.class);</span>
+    public boolean isUpdatedAt() {
+<span class="fc" id="L240">        return hasAnnotation(UpdatedAt.class);</span>
     }
 
     /**
      * 修正者用のプロパティがかどうか判定する。
      * @return 修正者用のプロパティのとき {@literal true} を返す。
      */
-    public boolean isModifiedBy() {
-<span class="fc" id="L401">        return hasAnnotation(ModifiedBy.class);</span>
+    public boolean isUpdatedBy() {
+<span class="fc" id="L248">        return hasAnnotation(UpdatedBy.class);</span>
     }
 
 

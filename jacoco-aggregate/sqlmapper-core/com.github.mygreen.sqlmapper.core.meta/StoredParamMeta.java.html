@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>StoredParamMeta.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.meta</a> &gt; <span class="el_source">StoredParamMeta.java</span></div><h1>StoredParamMeta.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.meta;
+
+import java.util.Collection;
+import java.util.Optional;
+
+import org.springframework.util.LinkedCaseInsensitiveMap;
+
+import com.github.mygreen.sqlmapper.core.type.ValueType;
+
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
+
+/**
+ * ストアドのパラメータを表現します。
+ *
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
+@RequiredArgsConstructor
+public class StoredParamMeta {
+
+    /**
+     * パラメータのタイプです
+     */
+    @Getter
+    private final Class&lt;?&gt; paramType;
+
+    /**
+     * 匿名パラメータ(INのみ)かどうか。
+     */
+    @Getter
+    private final boolean anonymouse;
+
+    /**
+     * 値の変換処理。
+     * &lt;p&gt;匿名パラメータのときのみ値を持つ。
+     */
+    @Getter
+    private Optional&lt;ValueType&lt;?&gt;&gt; valueType;
+
+    /**
+     * プロパティ情報
+     * &lt;p&gt;key=プロパティ名&lt;/p&gt;
+     */
+    private LinkedCaseInsensitiveMap&lt;StoredPropertyMeta&gt; propertyMetaMap = new LinkedCaseInsensitiveMap&lt;&gt;();
+
+    /**
+     * パラメータの値に対する {@link ValueType} を設定します。
+     * @param valueType パラメータの値に対する {@link ValueType} を設定しま
+     */
+<span class="nc bnc" id="L54" title="All 2 branches missed.">    public void setValueType(@NonNull ValueType&lt;?&gt; valueType) {</span>
+<span class="nc" id="L55">        this.valueType = Optional.of(valueType);</span>
+<span class="nc" id="L56">    }</span>
+
+    /**
+     * プロパティ情報を追加します。
+     * @param propertyMeta プロパティ情報。
+     */
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">    public void addPropertyMeta(@NonNull StoredPropertyMeta propertyMeta) {</span>
+<span class="fc" id="L63">        propertyMetaMap.put(propertyMeta.getName(), propertyMeta);</span>
+<span class="fc" id="L64">    }</span>
+
+    /**
+     * プロパティメタ情報を取得します。
+     * @param propertyName プロパティ名
+     * @return プロパティメタ情報
+     */
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">    public Optional&lt;StoredPropertyMeta&gt; getPropertyMeta(@NonNull String propertyName) {</span>
+<span class="fc" id="L72">        return Optional.ofNullable(propertyMetaMap.get(propertyName));</span>
+    }
+
+    /**
+     * プロパティメタデータがあるかどうかを返します。
+     * @param propertyName プロパティ名
+     * @return {@literal true}のときプロパティメタデータがあります。
+     */
+    public boolean hasPropertyMeta(String propertyName) {
+<span class="nc" id="L81">        return propertyMetaMap.containsKey(propertyName);</span>
+    }
+
+    /**
+     * 全てのプロパティメタ情報の一覧を返します。
+     * @return プロパティメタ情報の一覧
+     */
+    public Collection&lt;StoredPropertyMeta&gt; getAllPropertyMeta() {
+<span class="fc" id="L89">        return propertyMetaMap.values();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -18,4 +18,5 @@ com.github.mygreen.sqlmapper.core.type.standard
 com.github.mygreen.sqlmapper.core.util
 com.github.mygreen.sqlmapper.core.where
 com.github.mygreen.sqlmapper.core.where.metamodel
+com.github.mygreen.sqlmapper.core.where.metamodel.function
 com.github.mygreen.sqlmapper.core.where.simple

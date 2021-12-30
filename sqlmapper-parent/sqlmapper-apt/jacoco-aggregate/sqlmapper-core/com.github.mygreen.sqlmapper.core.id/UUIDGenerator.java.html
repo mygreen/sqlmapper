@@ -22,7 +22,7 @@ public class UUIDGenerator implements IdGenerator {
     /**
      * サポートしているクラスタイプ
      */
-<span class="nc" id="L25">    private static final List&lt;Class&lt;?&gt;&gt; SUPPORTED_TYPE_LIST = List.of(UUID.class, String.class);</span>
+<span class="fc" id="L25">    private static final List&lt;Class&lt;?&gt;&gt; SUPPORTED_TYPE_LIST = List.of(UUID.class, String.class);</span>
 
     /**
      * 生成するIDのクラスタイプ
@@ -31,7 +31,7 @@ public class UUIDGenerator implements IdGenerator {
 
     @Override
     public boolean isSupportedType(Class&lt;?&gt; type) {
-<span class="nc" id="L34">        return SUPPORTED_TYPE_LIST.contains(type);</span>
+<span class="fc" id="L34">        return SUPPORTED_TYPE_LIST.contains(type);</span>
     }
 
     @Override
@@ -40,12 +40,12 @@ public class UUIDGenerator implements IdGenerator {
     }
 
     @Override
-    public Object generateValue() {
+    public Object generateValue(final IdGenerationContext context) {
 
-<span class="nc" id="L45">        UUID value = UUID.randomUUID();</span>
+<span class="fc" id="L45">        UUID value = UUID.randomUUID();</span>
 
-<span class="nc bnc" id="L47" title="All 2 branches missed.">        if(requiredType == UUID.class) {</span>
-<span class="nc" id="L48">            return value;</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if(requiredType == UUID.class) {</span>
+<span class="fc" id="L48">            return value;</span>
 
 <span class="nc bnc" id="L50" title="All 2 branches missed.">        } else if(requiredType == String.class) {</span>
 <span class="nc" id="L51">            return value.toString();</span>

@@ -8,74 +8,72 @@
 <div id="overview"><a href="../../../../../../../../apidocs/com/github/mygreen/sqlmapper/core/where/metamodel/FuncOpHandler.html">View Javadoc</a></div><pre>
 <a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> com.github.mygreen.sqlmapper.core.where.metamodel;
 <a class="jxr_linenumber" name="L2" href="#L2">2</a>   
-<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.metamodel.Visitor;
-<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.metamodel.expression.Constant;
-<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.metamodel.operation.Operation;
-<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.metamodel.<strong class="jxr_keyword">operator</strong>.FunctionOp;
-<a class="jxr_linenumber" name="L7" href="#L7">7</a>   
-<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <em class="jxr_javadoccomment"> * 関数({@link FunctionOp})に対する処理を定義します。</em>
-<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <em class="jxr_javadoccomment"> * @author T.TSUCHIE</em>
-<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="FuncOpHandler" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/FuncOpHandler.html#FuncOpHandler">FuncOpHandler</a> <strong class="jxr_keyword">extends</strong> OperationHandler&lt;FunctionOp&gt;{
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> java.util.HashMap;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.where.metamodel.function.ConcatFunction;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.where.metamodel.function.CurrentDateFunction;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.where.metamodel.function.CurrentTimeFunction;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.where.metamodel.function.CurrentTimestampFunction;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.where.metamodel.function.CustomFunction;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.where.metamodel.function.LowerFunction;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.core.where.metamodel.function.UpperFunction;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.metamodel.Visitor;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.metamodel.operation.Operation;
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  <strong class="jxr_keyword">import</strong> com.github.mygreen.sqlmapper.metamodel.<strong class="jxr_keyword">operator</strong>.FunctionOp;
 <a class="jxr_linenumber" name="L16" href="#L16">16</a>  
-<a class="jxr_linenumber" name="L17" href="#L17">17</a>      @Override
-<a class="jxr_linenumber" name="L18" href="#L18">18</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> init() {
-<a class="jxr_linenumber" name="L19" href="#L19">19</a>          <em class="jxr_comment">// 何もしない</em>
-<a class="jxr_linenumber" name="L20" href="#L20">20</a>      }
-<a class="jxr_linenumber" name="L21" href="#L21">21</a>  
-<a class="jxr_linenumber" name="L22" href="#L22">22</a>      @Override
-<a class="jxr_linenumber" name="L23" href="#L23">23</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> handle(<a name="FunctionOp" href="../../../../../../../com/github/mygreen/sqlmapper/metamodel/operator/FunctionOp.html#FunctionOp">FunctionOp</a> <strong class="jxr_keyword">operator</strong>, Operation&lt;?&gt; expr, Visitor&lt;VisitorContext&gt; visitor, <a name="VisitorContext" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/VisitorContext.html#VisitorContext">VisitorContext</a> context) {
-<a class="jxr_linenumber" name="L24" href="#L24">24</a>  
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>          <strong class="jxr_keyword">switch</strong>(<strong class="jxr_keyword">operator</strong>) {
-<a class="jxr_linenumber" name="L26" href="#L26">26</a>              <strong class="jxr_keyword">case</strong> LOWER:
-<a class="jxr_linenumber" name="L27" href="#L27">27</a>                  context.appendSql(<span class="jxr_string">"lower("</span>);
-<a class="jxr_linenumber" name="L28" href="#L28">28</a>                  invoke(<strong class="jxr_keyword">operator</strong>, expr.getArg(0), visitor, context);
-<a class="jxr_linenumber" name="L29" href="#L29">29</a>                  context.appendSql(<span class="jxr_string">")"</span>);
-<a class="jxr_linenumber" name="L30" href="#L30">30</a>                  <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>              <strong class="jxr_keyword">case</strong> UPPER:
-<a class="jxr_linenumber" name="L32" href="#L32">32</a>                  context.appendSql(<span class="jxr_string">"upper("</span>);
-<a class="jxr_linenumber" name="L33" href="#L33">33</a>                  invoke(<strong class="jxr_keyword">operator</strong>, expr.getArg(0), visitor, context);
-<a class="jxr_linenumber" name="L34" href="#L34">34</a>                  context.appendSql(<span class="jxr_string">")"</span>);
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>                  <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L36" href="#L36">36</a>              <strong class="jxr_keyword">case</strong> CURRENT_DATE:
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>                  context.appendSql(<span class="jxr_string">"current_date"</span>);
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>                  doPrecision(expr, context);
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>                  <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>              <strong class="jxr_keyword">case</strong> CURRENT_TIME:
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>                  context.appendSql(<span class="jxr_string">"current_time"</span>);
-<a class="jxr_linenumber" name="L42" href="#L42">42</a>                  doPrecision(expr, context);
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>                  <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L44" href="#L44">44</a>              <strong class="jxr_keyword">case</strong> CURRENT_TIMESTAMP:
-<a class="jxr_linenumber" name="L45" href="#L45">45</a>                  context.appendSql(<span class="jxr_string">"current_timestamp"</span>);
-<a class="jxr_linenumber" name="L46" href="#L46">46</a>                  doPrecision(expr, context);
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>                  <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>              <strong class="jxr_keyword">default</strong>:
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>                  <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"not support operator="</span> + <strong class="jxr_keyword">operator</strong>);
-<a class="jxr_linenumber" name="L50" href="#L50">50</a>          }
-<a class="jxr_linenumber" name="L51" href="#L51">51</a>      }
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  <em class="jxr_javadoccomment"> * 関数({@link FunctionOp})に対する処理を定義します。</em>
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  <em class="jxr_javadoccomment"> * @version 0.3</em>
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>  <em class="jxr_javadoccomment"> * @author T.TSUCHIE</em>
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="FuncOpHandler" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/FuncOpHandler.html#FuncOpHandler">FuncOpHandler</a> <strong class="jxr_keyword">extends</strong> OperationHandler&lt;FunctionOp&gt; {
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  <em class="jxr_javadoccomment">     * SQL関数の各処理に対する実装</em>
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">private</strong> Map&lt;FunctionOp, SqlFunction&gt; functionMap = <strong class="jxr_keyword">new</strong> HashMap&lt;&gt;();
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>  
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>  <em class="jxr_javadoccomment">     * SQL関数の処理を登録します。</em>
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  <em class="jxr_javadoccomment">     * @since 0.3</em>
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>  <em class="jxr_javadoccomment">     * @param operator SQL関数名</em>
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>  <em class="jxr_javadoccomment">     * @param function SQL関数の処理</em>
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> register(<a name="FunctionOp" href="../../../../../../../com/github/mygreen/sqlmapper/metamodel/operator/FunctionOp.html#FunctionOp">FunctionOp</a> <strong class="jxr_keyword">operator</strong>, <a name="SqlFunction" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/SqlFunction.html#SqlFunction">SqlFunction</a> function) {
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>          <strong class="jxr_keyword">this</strong>.functionMap.put(<strong class="jxr_keyword">operator</strong>, function);
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>      }
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>      @Override
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> init() {
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>          <strong class="jxr_keyword">this</strong>.functionMap.clear();
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>          register(FunctionOp.LOWER, <strong class="jxr_keyword">new</strong> <a name="LowerFunction" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/function/LowerFunction.html#LowerFunction">LowerFunction</a>());
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>          register(FunctionOp.UPPER, <strong class="jxr_keyword">new</strong> <a name="UpperFunction" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/function/UpperFunction.html#UpperFunction">UpperFunction</a>());
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>  
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>          register(FunctionOp.CONCAT, <strong class="jxr_keyword">new</strong> <a name="ConcatFunction" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/function/ConcatFunction.html#ConcatFunction">ConcatFunction</a>());
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>          register(FunctionOp.CURRENT_DATE, <strong class="jxr_keyword">new</strong> <a name="CurrentDateFunction" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/function/CurrentDateFunction.html#CurrentDateFunction">CurrentDateFunction</a>());
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>          register(FunctionOp.CURRENT_TIME, <strong class="jxr_keyword">new</strong> <a name="CurrentTimeFunction" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/function/CurrentTimeFunction.html#CurrentTimeFunction">CurrentTimeFunction</a>());
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>          register(FunctionOp.CURRENT_TIMESTAMP, <strong class="jxr_keyword">new</strong> <a name="CurrentTimestampFunction" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/function/CurrentTimestampFunction.html#CurrentTimestampFunction">CurrentTimestampFunction</a>());
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  
-<a class="jxr_linenumber" name="L53" href="#L53">53</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>  <em class="jxr_javadoccomment">     * 時間の制度が指定されていれば処理を行う。</em>
-<a class="jxr_linenumber" name="L55" href="#L55">55</a>  <em class="jxr_javadoccomment">     * @param expr 演算子の式</em>
-<a class="jxr_linenumber" name="L56" href="#L56">56</a>  <em class="jxr_javadoccomment">     * @param context コンテキスト</em>
-<a class="jxr_linenumber" name="L57" href="#L57">57</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L58" href="#L58">58</a>      @SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
-<a class="jxr_linenumber" name="L59" href="#L59">59</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> doPrecision(Operation&lt;?&gt; expr, <a name="VisitorContext" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/VisitorContext.html#VisitorContext">VisitorContext</a> context) {
-<a class="jxr_linenumber" name="L60" href="#L60">60</a>  
-<a class="jxr_linenumber" name="L61" href="#L61">61</a>          <strong class="jxr_keyword">if</strong>(expr.getArgs().isEmpty()) {
-<a class="jxr_linenumber" name="L62" href="#L62">62</a>              <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>          }
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>  
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>          <strong class="jxr_keyword">int</strong> precision = (<strong class="jxr_keyword">int</strong>)((Constant&lt;Integer&gt;)expr.getArg(0)).getValue();
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>          context.appendSql(<span class="jxr_string">"("</span>).append(precision).append(<span class="jxr_string">")"</span>);
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>          register(FunctionOp.CUSTOM, <strong class="jxr_keyword">new</strong> <a name="CustomFunction" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/function/CustomFunction.html#CustomFunction">CustomFunction</a>());
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>      }
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>  
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      @Override
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> handle(<a name="FunctionOp" href="../../../../../../../com/github/mygreen/sqlmapper/metamodel/operator/FunctionOp.html#FunctionOp">FunctionOp</a> <strong class="jxr_keyword">operator</strong>, Operation&lt;?&gt; expr, Visitor&lt;VisitorContext&gt; visitor, <a name="VisitorContext" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/VisitorContext.html#VisitorContext">VisitorContext</a> context) {
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>  
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>          <a name="SqlFunction" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/SqlFunction.html#SqlFunction">SqlFunction</a> function = functionMap.get(<strong class="jxr_keyword">operator</strong>);
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>          <strong class="jxr_keyword">if</strong>(function == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>              <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"not support operator="</span> + <strong class="jxr_keyword">operator</strong>);
+<a class="jxr_linenumber" name="L62" href="#L62">62</a>          }
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>  
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>          function.handle(expr.getArgs(), visitor, context, <strong class="jxr_keyword">new</strong> <a name="ExpressionEvaluator" href="../../../../../../../com/github/mygreen/sqlmapper/core/where/metamodel/ExpressionEvaluator.html#ExpressionEvaluator">ExpressionEvaluator</a>(<strong class="jxr_keyword">operator</strong>, <strong class="jxr_keyword">this</strong>));
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>  
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>      }
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>      }
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>  
-<a class="jxr_linenumber" name="L70" href="#L70">70</a>  }
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>  }
 </pre>
 <hr/>
 <div id="footer">Copyright &#169; 2021 <a href="http://mygreen.github.io/sqlmapper/">mygreen</a>. All rights reserved.</div>

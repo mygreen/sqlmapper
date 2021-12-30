@@ -3,9 +3,11 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.Getter;
@@ -32,26 +34,26 @@ public class LocalDateTimeType implements ValueType&lt;LocalDateTime&gt; {
      * &lt;p&gt;SQLに直接埋め込む時にフォーマットする書式は、{@literal uuuu-MM-dd HH:mm:ss} が指定されます。
      */
     public LocalDateTimeType() {
-<span class="fc" id="L35">        this(&quot;uuuu-MM-dd HH:mm:ss&quot;);</span>
-<span class="fc" id="L36">    }</span>
+<span class="fc" id="L37">        this(&quot;uuuu-MM-dd HH:mm:ss&quot;);</span>
+<span class="fc" id="L38">    }</span>
 
     /**
      * 書式を指定してインスタンスを作成します。
      * @param pattern SQLに直接埋め込む時にフォーマットする書式。
      */
-<span class="fc" id="L42">    public LocalDateTimeType(final String pattern) {</span>
-<span class="fc" id="L43">        this.formatter = DateTimeFormatter.ofPattern(pattern);</span>
-<span class="fc" id="L44">    }</span>
+<span class="fc" id="L44">    public LocalDateTimeType(final String pattern) {</span>
+<span class="fc" id="L45">        this.formatter = DateTimeFormatter.ofPattern(pattern);</span>
+<span class="fc" id="L46">    }</span>
 
     @Override
     public LocalDateTime getValue(ResultSet rs, int columnIndex) throws SQLException {
 
-<span class="nc" id="L49">        Timestamp value = rs.getTimestamp(columnIndex);</span>
-<span class="nc bnc" id="L50" title="All 2 branches missed.">        if(value == null) {</span>
-<span class="nc" id="L51">            return null;</span>
+<span class="fc" id="L51">        Timestamp value = rs.getTimestamp(columnIndex);</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">        if(value == null) {</span>
+<span class="nc" id="L53">            return null;</span>
         }
 
-<span class="nc" id="L54">        return value.toLocalDateTime();</span>
+<span class="fc" id="L56">        return value.toLocalDateTime();</span>
     }
 
     /**
@@ -61,7 +63,7 @@ public class LocalDateTimeType implements ValueType&lt;LocalDateTime&gt; {
      */
     @Override
     public Object getSqlParameterValue(LocalDateTime value) {
-<span class="nc bnc" id="L64" title="All 2 branches missed.">        return value != null ? Timestamp.valueOf(value) : null;</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        return value != null ? Timestamp.valueOf(value) : null;</span>
     }
 
     /**
@@ -72,7 +74,13 @@ public class LocalDateTimeType implements ValueType&lt;LocalDateTime&gt; {
      */
     @Override
     public String getEmbeddedValue(LocalDateTime value) {
-<span class="nc bnc" id="L75" title="All 2 branches missed.">        return value != null ? formatter.format(value) : null;</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        return value != null ? formatter.format(value) : null;</span>
     }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+<span class="nc" id="L82">        return Types.TIMESTAMP;</span>
+    }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

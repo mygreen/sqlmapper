@@ -2,7 +2,9 @@
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.Getter;
@@ -27,12 +29,12 @@ public class BooleanType implements ValueType&lt;Boolean&gt; {
     @Override
     public Boolean getValue(ResultSet rs, int columnIndex) throws SQLException {
 
-<span class="nc" id="L30">        Boolean value = rs.getBoolean(columnIndex);</span>
-<span class="nc bnc" id="L31" title="All 4 branches missed.">        if(rs.wasNull() &amp;&amp; !forPrimitive) {</span>
-<span class="nc" id="L32">            return null;</span>
+<span class="fc" id="L32">        Boolean value = rs.getBoolean(columnIndex);</span>
+<span class="pc bpc" id="L33" title="3 of 4 branches missed.">        if(rs.wasNull() &amp;&amp; !forPrimitive) {</span>
+<span class="nc" id="L34">            return null;</span>
         }
 
-<span class="nc" id="L35">        return value;</span>
+<span class="fc" id="L37">        return value;</span>
     }
 
     /**
@@ -42,11 +44,16 @@ public class BooleanType implements ValueType&lt;Boolean&gt; {
     @Override
     public Object getSqlParameterValue(Boolean value) {
 
-<span class="nc bnc" id="L45" title="All 4 branches missed.">        if(value == null &amp;&amp; forPrimitive) {</span>
-<span class="nc" id="L46">            value = false;</span>
+<span class="pc bpc" id="L47" title="3 of 4 branches missed.">        if(value == null &amp;&amp; forPrimitive) {</span>
+<span class="nc" id="L48">            value = false;</span>
         }
 
-<span class="nc" id="L49">        return value;</span>
+<span class="fc" id="L51">        return value;</span>
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+<span class="nc" id="L56">        return Types.BOOLEAN;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

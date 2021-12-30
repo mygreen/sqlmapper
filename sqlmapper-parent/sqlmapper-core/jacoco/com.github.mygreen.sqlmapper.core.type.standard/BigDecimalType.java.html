@@ -3,7 +3,9 @@
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
@@ -21,22 +23,27 @@ public class BigDecimalType implements ValueType&lt;BigDecimal&gt; {
     @Override
     public BigDecimal getValue(ResultSet rs, int columnIndex) throws SQLException {
 
-<span class="nc" id="L24">        BigDecimal value = rs.getBigDecimal(columnIndex);</span>
-<span class="nc bnc" id="L25" title="All 2 branches missed.">        if(value == null) {</span>
-<span class="nc" id="L26">            return null;</span>
+<span class="fc" id="L26">        BigDecimal value = rs.getBigDecimal(columnIndex);</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if(value == null) {</span>
+<span class="fc" id="L28">            return null;</span>
         }
 
-<span class="nc" id="L29">        return value;</span>
+<span class="fc" id="L31">        return value;</span>
     }
 
     @Override
     public Object getSqlParameterValue(BigDecimal value) {
-<span class="nc" id="L34">        return value;</span>
+<span class="fc" id="L36">        return value;</span>
     }
 
     @Override
     public String getEmbeddedValue(BigDecimal value) {
-<span class="nc bnc" id="L39" title="All 2 branches missed.">        return value != null ? value.toPlainString() : null;</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        return value != null ? value.toPlainString() : null;</span>
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+<span class="nc" id="L46">        return Types.NUMERIC;</span>
     }
 
 }

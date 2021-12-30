@@ -20,13 +20,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.messageformatter.MessageInterpolator;
@@ -36,6 +33,7 @@ import com.github.mygreen.splate.SqlTemplateEngine;
 import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
+import com.github.mygreen.sqlmapper.core.config.JdbcTemplateProperties;
 import com.github.mygreen.sqlmapper.core.config.SqlTemplateProperties;
 import com.github.mygreen.sqlmapper.core.config.TableIdGeneratorProperties;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
@@ -47,6 +45,8 @@ import com.github.mygreen.sqlmapper.core.dialect.SqliteDialect;
 import com.github.mygreen.sqlmapper.core.dialect.StandardDialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.StoredParamMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.StoredPropertyMetaFactory;
 import com.github.mygreen.sqlmapper.core.naming.DefaultNamingRule;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
 import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
@@ -56,13 +56,13 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * SqlMapperによるAuto-Configuration設定
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
 <span class="nc" id="L63">@Slf4j</span>
 @Configuration
-@ConditionalOnClass({ DataSource.class, JdbcTemplate.class})
+@ConditionalOnClass({DataSource.class})
 @ConditionalOnSingleCandidate(DataSource.class)
 @PropertySource(&quot;classpath:/com/github/mygreen/sqlmapper/core/sqlmapper.properties&quot;)
 @EnableConfigurationProperties(SqlMapperProperties.class)
@@ -88,172 +88,175 @@ import lombok.extern.slf4j.Slf4j;
     @Autowired
     private DataSourceProperties dataSourceProperties;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-<span class="nc" id="L96">       this.applicationContext = applicationContext;</span>
-<span class="nc" id="L97">    }</span>
+<span class="nc" id="L93">       this.applicationContext = applicationContext;</span>
+<span class="nc" id="L94">    }</span>
 
     @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
-<span class="nc" id="L101">        this.applicationEventPublisher = applicationEventPublisher;</span>
-<span class="nc" id="L102">    }</span>
+<span class="nc" id="L98">        this.applicationEventPublisher = applicationEventPublisher;</span>
+<span class="nc" id="L99">    }</span>
 
     @Bean
     @ConditionalOnMissingBean
     public SqlMapper sqlMapper() {
-<span class="nc" id="L107">        return new SqlMapper(sqlMapperContext());</span>
+<span class="nc" id="L104">        return new SqlMapper(sqlMapperContext());</span>
     }
 
     @Bean
     @ConditionalOnMissingBean
     public SqlMapperContext sqlMapperContext() {
 
-<span class="nc" id="L114">        final SqlMapperContext context = new SqlMapperContext();</span>
-<span class="nc" id="L115">        context.setJdbcTemplate(jdbcTemplate);</span>
-<span class="nc" id="L116">        context.setNamingRule(namingRule());</span>
-<span class="nc" id="L117">        context.setMessageFormatter(messageFormatter());</span>
-<span class="nc" id="L118">        context.setDialect(dialect());</span>
-<span class="nc" id="L119">        context.setEntityMetaFactory(entityMetaFactory());</span>
-<span class="nc" id="L120">        context.setApplicationEventPublisher(applicationEventPublisher);</span>
-<span class="nc" id="L121">        context.setSqlTemplateEngine(sqlTemplateEngine());</span>
-<span class="nc" id="L122">        context.setValueTypeRegistry(valueTypeRegistry());</span>
-<span class="nc" id="L123">        context.setIdGeneratorTransactionTemplate(idGeneratorTransactionTemplate());</span>
+<span class="nc" id="L111">        final SqlMapperContext context = new SqlMapperContext();</span>
 
-<span class="nc" id="L125">        return context;</span>
+<span class="nc" id="L113">        context.setNamingRule(namingRule());</span>
+<span class="nc" id="L114">        context.setMessageFormatter(messageFormatter());</span>
+<span class="nc" id="L115">        context.setDialect(dialect());</span>
+<span class="nc" id="L116">        context.setEntityMetaFactory(entityMetaFactory());</span>
+<span class="nc" id="L117">        context.setApplicationEventPublisher(applicationEventPublisher);</span>
+<span class="nc" id="L118">        context.setSqlTemplateEngine(sqlTemplateEngine());</span>
+<span class="nc" id="L119">        context.setValueTypeRegistry(valueTypeRegistry());</span>
+<span class="nc" id="L120">        context.setDataSource(dataSource);</span>
+<span class="nc" id="L121">        context.setJdbcTemplateProperties(jdbcTemplateProperties());</span>
+<span class="nc" id="L122">        context.setTransactionManager(transactionManager());</span>
 
+<span class="nc" id="L124">        return context;</span>
+
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public JdbcTemplateProperties jdbcTemplateProperties() {
+<span class="nc" id="L131">        return sqlMapperProperties.getJdbcTemplate();</span>
     }
 
     @Bean
     @ConditionalOnMissingBean
     public SqlTemplateProperties sqlTemplateProperties() {
-<span class="nc" id="L132">        return sqlMapperProperties.getSqlTemplate();</span>
+<span class="nc" id="L137">        return sqlMapperProperties.getSqlTemplate();</span>
     }
 
     @Bean
     @ConditionalOnMissingBean
     public TableIdGeneratorProperties tableIdGeneratorProperties() {
-<span class="nc" id="L138">        return sqlMapperProperties.getTableIdGenerator();</span>
+<span class="nc" id="L143">        return sqlMapperProperties.getTableIdGenerator();</span>
     }
 
     @Bean
     @ConditionalOnMissingBean
     public EntityMetaFactory entityMetaFactory() {
-<span class="nc" id="L144">        return new EntityMetaFactory();</span>
+<span class="nc" id="L149">        return new EntityMetaFactory();</span>
     }
 
     @Bean
     @ConditionalOnMissingBean
     public PropertyMetaFactory propertyMetaFactory() {
-<span class="nc" id="L150">        return new PropertyMetaFactory();</span>
+<span class="nc" id="L155">        return new PropertyMetaFactory();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public StoredParamMetaFactory storedParamMetaFactory() {
+<span class="nc" id="L161">        return new StoredParamMetaFactory();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public StoredPropertyMetaFactory storedPropertyMetaFactory() {
+<span class="nc" id="L167">        return new StoredPropertyMetaFactory();</span>
     }
 
     @Bean
     @ConditionalOnMissingBean
     public NamingRule namingRule() {
-<span class="nc" id="L156">        return new DefaultNamingRule();</span>
+<span class="nc" id="L173">        return new DefaultNamingRule();</span>
     }
 
     @Bean
     @ConditionalOnMissingBean
     public MessageFormatter messageFormatter() {
 
-<span class="nc" id="L163">        final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();</span>
-<span class="nc" id="L164">        messageSource.addBasenames(&quot;com/github/mygreen/sqlmapper/core/messages&quot;);</span>
-<span class="nc" id="L165">        messageSource.setDefaultEncoding(&quot;UTF-8&quot;);</span>
-<span class="nc" id="L166">        messageSource.setUseCodeAsDefaultMessage(true);</span>
-<span class="nc" id="L167">        messageSource.setFallbackToSystemLocale(false);</span>
+<span class="nc" id="L180">        final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();</span>
+<span class="nc" id="L181">        messageSource.addBasenames(&quot;com/github/mygreen/sqlmapper/core/messages&quot;);</span>
+<span class="nc" id="L182">        messageSource.setDefaultEncoding(&quot;UTF-8&quot;);</span>
+<span class="nc" id="L183">        messageSource.setUseCodeAsDefaultMessage(true);</span>
+<span class="nc" id="L184">        messageSource.setFallbackToSystemLocale(false);</span>
 
         // SpELで処理する
-<span class="nc" id="L170">        final ExpressionEvaluator expressionEvaluator = new SpelExpressionEvaluator();</span>
-<span class="nc" id="L171">        final MessageInterpolator messageInterpolator = new MessageInterpolator(expressionEvaluator);</span>
+<span class="nc" id="L187">        final ExpressionEvaluator expressionEvaluator = new SpelExpressionEvaluator();</span>
+<span class="nc" id="L188">        final MessageInterpolator messageInterpolator = new MessageInterpolator(expressionEvaluator);</span>
 
-<span class="nc" id="L173">        return new MessageFormatter(messageSource, messageInterpolator);</span>
+<span class="nc" id="L190">        return new MessageFormatter(messageSource, messageInterpolator);</span>
 
     }
 
     @Bean
     @ConditionalOnMissingBean
     public ValueTypeRegistry valueTypeRegistry() {
-<span class="nc" id="L180">        return new ValueTypeRegistry();</span>
+<span class="nc" id="L197">        return new ValueTypeRegistry();</span>
     }
 
     @Bean
     @ConditionalOnMissingBean
     public SqlTemplateEngine sqlTemplateEngine() {
 
-<span class="nc" id="L187">        final SqlTemplateEngine templateEngine = new SqlTemplateEngine();</span>
-<span class="nc" id="L188">        templateEngine.setCached(sqlTemplateProperties().isCacheMode());</span>
-<span class="nc" id="L189">        templateEngine.setEncoding(sqlTemplateProperties().getEncoding());</span>
-<span class="nc" id="L190">        templateEngine.setSuffixName(dialect().getName());</span>
+<span class="nc" id="L204">        final SqlTemplateEngine templateEngine = new SqlTemplateEngine();</span>
+<span class="nc" id="L205">        templateEngine.setCached(sqlTemplateProperties().isCacheMode());</span>
+<span class="nc" id="L206">        templateEngine.setEncoding(sqlTemplateProperties().getEncoding());</span>
+<span class="nc" id="L207">        templateEngine.setSuffixName(dialect().getName());</span>
 
-<span class="nc" id="L192">        return templateEngine;</span>
+<span class="nc" id="L209">        return templateEngine;</span>
 
     }
 
     @Bean
     @ConditionalOnMissingBean
     public LobHandler lobHandler() {
-<span class="nc" id="L199">        return new DefaultLobHandler();</span>
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public JdbcTemplate jdbcTemplate() {
-<span class="nc" id="L205">        return new JdbcTemplate(dataSource);</span>
+<span class="nc" id="L216">        return new DefaultLobHandler();</span>
     }
 
     @Bean
     @ConditionalOnMissingBean
     public Dialect dialect() {
 
-<span class="nc" id="L212">        String url = dataSourceProperties.getUrl();</span>
-<span class="nc bnc" id="L213" title="All 2 branches missed.">        if (url != null) {</span>
-<span class="nc" id="L214">            DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(url);</span>
-<span class="nc bnc" id="L215" title="All 6 branches missed.">            switch(databaseDriver) {</span>
+<span class="nc" id="L223">        String url = dataSourceProperties.getUrl();</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">        if (url != null) {</span>
+<span class="nc" id="L225">            DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(url);</span>
+<span class="nc bnc" id="L226" title="All 6 branches missed.">            switch(databaseDriver) {</span>
                 case H2:
-<span class="nc" id="L217">                    return new H2Dialect();</span>
+<span class="nc" id="L228">                    return new H2Dialect();</span>
                 case HSQLDB:
-<span class="nc" id="L219">                    return new HsqlDialect();</span>
+<span class="nc" id="L230">                    return new HsqlDialect();</span>
                 case SQLITE:
-<span class="nc" id="L221">                    return new SqliteDialect();</span>
+<span class="nc" id="L232">                    return new SqliteDialect();</span>
                 case POSTGRESQL:
-<span class="nc" id="L223">                    return new PostgresDialect();</span>
+<span class="nc" id="L234">                    return new PostgresDialect();</span>
                 case ORACLE:
-<span class="nc" id="L225">                    return new OracleDialect();</span>
+<span class="nc" id="L236">                    return new OracleDialect();</span>
                 default:
                     break;
             }
         }
 
-<span class="nc bnc" id="L231" title="All 2 branches missed.">        if(log.isWarnEnabled()) {</span>
-<span class="nc" id="L232">            log.warn(&quot;StandardDialect was selected, because not explicit configuration and its is not possible to guess from 'sprint.datasource.url' property.&quot;);</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">        if(log.isWarnEnabled()) {</span>
+<span class="nc" id="L243">            log.warn(&quot;StandardDialect was selected, because not explicit configuration and its is not possible to guess from 'sprint.datasource.url' property.&quot;);</span>
         }
 
-<span class="nc" id="L235">        return new StandardDialect();</span>
+<span class="nc" id="L246">        return new StandardDialect();</span>
 
     }
 
     @Bean
     @ConditionalOnMissingBean
     public PlatformTransactionManager transactionManager() {
-<span class="nc" id="L242">        return new DataSourceTransactionManager(dataSource);</span>
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public TransactionTemplate idGeneratorTransactionTemplate() {
-<span class="nc" id="L248">        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager());</span>
-<span class="nc" id="L249">        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);</span>
-<span class="nc" id="L250">        return transactionTemplate;</span>
+<span class="nc" id="L253">        return new DataSourceTransactionManager(dataSource);</span>
     }
 
     @Bean
     @ConditionalOnMissingBean
     public AuditingEntityListener auditingEntityListener() {
-<span class="nc" id="L256">        return new AuditingEntityListener();</span>
+<span class="nc" id="L259">        return new AuditingEntityListener();</span>
     }
 
 

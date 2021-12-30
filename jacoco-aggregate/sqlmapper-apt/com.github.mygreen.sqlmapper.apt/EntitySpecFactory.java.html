@@ -86,81 +86,88 @@ public class EntitySpecFactory {
 <span class="fc" id="L86">        final AptType propertyType = propertyModel.getPropertyType();</span>
 
         FieldSpec filedSpec;
-<span class="fc bfc" id="L89" title="All 2 branches covered.">        if(propertyModel.isEmbedded()) {</span>
+<span class="pc bpc" id="L89" title="2 of 4 branches missed.">        if(propertyModel.isCustomType() || propertyModel.isLob()) {</span>
+            // 対応できない型の場合、汎用的なGeneralPathにする
+<span class="nc" id="L91">            TypeName filedTypeName = ParameterizedTypeName.get(ClassName.get(GeneralPath.class), propertyType.getTypeName());</span>
+<span class="nc" id="L92">            filedSpec = FieldSpec.builder(filedTypeName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="nc" id="L93">                    .initializer(&quot;createGeneral($S, $T.class)&quot;, propertyModel.getPropertyName(), propertyType.getTypeName())</span>
+<span class="nc" id="L94">                    .build();</span>
+
+<span class="pc bfc" id="L96" title="All 2 branches covered.">        } else if(propertyModel.isEmbedded()) {</span>
             // 埋め込み用のプロパティの場合
             // public final MPK id = new MPK(this, &quot;id&quot;)
-<span class="fc" id="L92">            String embeddedEntityMetamodelName = resolveEntityMetamodelName(propertyType.getSimpleName());</span>
-<span class="fc" id="L93">            ClassName embeddedEntityClassName = ClassName.bestGuess(embeddedEntityMetamodelName);</span>
-<span class="fc" id="L94">            filedSpec = FieldSpec.builder(embeddedEntityClassName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="fc" id="L95">                    .initializer(&quot;new $T(this, $S)&quot;, embeddedEntityClassName, propertyModel.getPropertyName())</span>
-<span class="fc" id="L96">                    .build();</span>
+<span class="fc" id="L99">            String embeddedEntityMetamodelName = resolveEntityMetamodelName(propertyType.getSimpleName());</span>
+<span class="fc" id="L100">            ClassName embeddedEntityClassName = ClassName.bestGuess(embeddedEntityMetamodelName);</span>
+<span class="fc" id="L101">            filedSpec = FieldSpec.builder(embeddedEntityClassName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="fc" id="L102">                    .initializer(&quot;new $T(this, $S)&quot;, embeddedEntityClassName, propertyModel.getPropertyName())</span>
+<span class="fc" id="L103">                    .build();</span>
 
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        } else if(propertyType.isInheritanceOf(String.class)) {</span>
-<span class="fc" id="L99">            filedSpec = FieldSpec.builder(StringPath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="fc" id="L100">                    .initializer(&quot;createString($S)&quot;, propertyModel.getPropertyName())</span>
-<span class="fc" id="L101">                    .build();</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">        } else if(propertyType.isInheritanceOf(String.class)) {</span>
+<span class="fc" id="L106">            filedSpec = FieldSpec.builder(StringPath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="fc" id="L107">                    .initializer(&quot;createString($S)&quot;, propertyModel.getPropertyName())</span>
+<span class="fc" id="L108">                    .build();</span>
 
-<span class="pc bpc" id="L103" title="1 of 4 branches missed.">        } else if (propertyType.isInheritanceOf(Number.class) || propertyType.isPrimitiveNumber()) {</span>
-<span class="fc" id="L104">            TypeName filedTypeName = ParameterizedTypeName.get(ClassName.get(NumberPath.class), propertyType.getWrapperTypeName());</span>
-<span class="fc" id="L105">            filedSpec = FieldSpec.builder(filedTypeName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="fc" id="L106">                    .initializer(&quot;createNumber($S, $T.class)&quot;, propertyModel.getPropertyName(), propertyType.getWrapperTypeName())</span>
-<span class="fc" id="L107">                    .build();</span>
+<span class="pc bpc" id="L110" title="1 of 4 branches missed.">        } else if (propertyType.isInheritanceOf(Number.class) || propertyType.isPrimitiveNumber()) {</span>
+<span class="fc" id="L111">            TypeName filedTypeName = ParameterizedTypeName.get(ClassName.get(NumberPath.class), propertyType.getWrapperTypeName());</span>
+<span class="fc" id="L112">            filedSpec = FieldSpec.builder(filedTypeName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="fc" id="L113">                    .initializer(&quot;createNumber($S, $T.class)&quot;, propertyModel.getPropertyName(), propertyType.getWrapperTypeName())</span>
+<span class="fc" id="L114">                    .build();</span>
 
-<span class="pc bnc" id="L109" title="All 4 branches missed.">        } else if (propertyType.isInheritanceOf(Boolean.class) || propertyType.isPrimitiveBoolean()) {</span>
-<span class="nc" id="L110">            filedSpec = FieldSpec.builder(BooleanPath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="nc" id="L111">                    .initializer(&quot;createBoolean($S)&quot;, propertyModel.getPropertyName())</span>
-<span class="nc" id="L112">                    .build();</span>
+<span class="pc bnc" id="L116" title="All 4 branches missed.">        } else if (propertyType.isInheritanceOf(Boolean.class) || propertyType.isPrimitiveBoolean()) {</span>
+<span class="nc" id="L117">            filedSpec = FieldSpec.builder(BooleanPath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="nc" id="L118">                    .initializer(&quot;createBoolean($S)&quot;, propertyModel.getPropertyName())</span>
+<span class="nc" id="L119">                    .build();</span>
 
-<span class="nc bnc" id="L114" title="All 2 branches missed.">        } else if(propertyType.isEnum()) {</span>
-<span class="nc" id="L115">            TypeName filedTypeName = ParameterizedTypeName.get(ClassName.get(EnumPath.class), propertyType.getTypeName());</span>
-<span class="nc" id="L116">            filedSpec = FieldSpec.builder(filedTypeName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="nc" id="L117">                    .initializer(&quot;createEnum($S, $T.class)&quot;, propertyModel.getPropertyName(), propertyType.getTypeName())</span>
-<span class="nc" id="L118">                    .build();</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        } else if(propertyType.isEnum()) {</span>
+<span class="nc" id="L122">            TypeName filedTypeName = ParameterizedTypeName.get(ClassName.get(EnumPath.class), propertyType.getTypeName());</span>
+<span class="nc" id="L123">            filedSpec = FieldSpec.builder(filedTypeName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="nc" id="L124">                    .initializer(&quot;createEnum($S, $T.class)&quot;, propertyModel.getPropertyName(), propertyType.getTypeName())</span>
+<span class="nc" id="L125">                    .build();</span>
 
-<span class="nc bnc" id="L120" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(Timestamp.class)) {</span>
-<span class="nc" id="L121">            filedSpec = FieldSpec.builder(SqlTimestampPath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="nc" id="L122">                    .initializer(&quot;createSqlTimestamp($S)&quot;, propertyModel.getPropertyName())</span>
-<span class="nc" id="L123">                    .build();</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(Timestamp.class)) {</span>
+<span class="nc" id="L128">            filedSpec = FieldSpec.builder(SqlTimestampPath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="nc" id="L129">                    .initializer(&quot;createSqlTimestamp($S)&quot;, propertyModel.getPropertyName())</span>
+<span class="nc" id="L130">                    .build();</span>
 
-<span class="nc bnc" id="L125" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(Time.class)) {</span>
-<span class="nc" id="L126">            filedSpec = FieldSpec.builder(SqlTimePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="nc" id="L127">                    .initializer(&quot;createSqlTime($S)&quot;, propertyModel.getPropertyName())</span>
-<span class="nc" id="L128">                    .build();</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(Time.class)) {</span>
+<span class="nc" id="L133">            filedSpec = FieldSpec.builder(SqlTimePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="nc" id="L134">                    .initializer(&quot;createSqlTime($S)&quot;, propertyModel.getPropertyName())</span>
+<span class="nc" id="L135">                    .build();</span>
 
-<span class="nc bnc" id="L130" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(Date.class)) {</span>
-<span class="nc" id="L131">            filedSpec = FieldSpec.builder(SqlDatePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="nc" id="L132">                    .initializer(&quot;createSqlDate($S)&quot;, propertyModel.getPropertyName())</span>
-<span class="nc" id="L133">                    .build();</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(Date.class)) {</span>
+<span class="nc" id="L138">            filedSpec = FieldSpec.builder(SqlDatePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="nc" id="L139">                    .initializer(&quot;createSqlDate($S)&quot;, propertyModel.getPropertyName())</span>
+<span class="nc" id="L140">                    .build();</span>
 
-<span class="nc bnc" id="L135" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(java.util.Date.class)) {</span>
-<span class="nc" id="L136">            filedSpec = FieldSpec.builder(UtilDatePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="nc" id="L137">                    .initializer(&quot;createUtilDate($S)&quot;, propertyModel.getPropertyName())</span>
-<span class="nc" id="L138">                    .build();</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(java.util.Date.class)) {</span>
+<span class="nc" id="L143">            filedSpec = FieldSpec.builder(UtilDatePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="nc" id="L144">                    .initializer(&quot;createUtilDate($S)&quot;, propertyModel.getPropertyName())</span>
+<span class="nc" id="L145">                    .build();</span>
 
-<span class="nc bnc" id="L140" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(LocalDate.class)) {</span>
-<span class="nc" id="L141">            filedSpec = FieldSpec.builder(LocalDatePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="nc" id="L142">                    .initializer(&quot;createLocalDate($S)&quot;, propertyModel.getPropertyName())</span>
-<span class="nc" id="L143">                    .build();</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(LocalDate.class)) {</span>
+<span class="nc" id="L148">            filedSpec = FieldSpec.builder(LocalDatePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="nc" id="L149">                    .initializer(&quot;createLocalDate($S)&quot;, propertyModel.getPropertyName())</span>
+<span class="nc" id="L150">                    .build();</span>
 
-<span class="nc bnc" id="L145" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(LocalTime.class)) {</span>
-<span class="nc" id="L146">            filedSpec = FieldSpec.builder(LocalTimePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="nc" id="L147">                    .initializer(&quot;createLocalTime($S)&quot;, propertyModel.getPropertyName())</span>
-<span class="nc" id="L148">                    .build();</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(LocalTime.class)) {</span>
+<span class="nc" id="L153">            filedSpec = FieldSpec.builder(LocalTimePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="nc" id="L154">                    .initializer(&quot;createLocalTime($S)&quot;, propertyModel.getPropertyName())</span>
+<span class="nc" id="L155">                    .build();</span>
 
-<span class="nc bnc" id="L150" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(LocalDateTime.class)) {</span>
-<span class="nc" id="L151">            filedSpec = FieldSpec.builder(LocalDateTimePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="nc" id="L152">                    .initializer(&quot;createLocalDateTime($S)&quot;, propertyModel.getPropertyName())</span>
-<span class="nc" id="L153">                    .build();</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">        } else if(propertyType.isInheritanceOf(LocalDateTime.class)) {</span>
+<span class="nc" id="L158">            filedSpec = FieldSpec.builder(LocalDateTimePath.class, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="nc" id="L159">                    .initializer(&quot;createLocalDateTime($S)&quot;, propertyModel.getPropertyName())</span>
+<span class="nc" id="L160">                    .build();</span>
 
         } else {
             // 汎用的なGeneralPathにする
-<span class="nc" id="L157">            TypeName filedTypeName = ParameterizedTypeName.get(ClassName.get(GeneralPath.class), propertyType.getTypeName());</span>
-<span class="nc" id="L158">            filedSpec = FieldSpec.builder(filedTypeName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
-<span class="nc" id="L159">                    .initializer(&quot;createGeneral($S, $T.class)&quot;, propertyModel.getPropertyName(), propertyType.getTypeName())</span>
-<span class="nc" id="L160">                    .build();</span>
+<span class="nc" id="L164">            TypeName filedTypeName = ParameterizedTypeName.get(ClassName.get(GeneralPath.class), propertyType.getTypeName());</span>
+<span class="nc" id="L165">            filedSpec = FieldSpec.builder(filedTypeName, propertyModel.getPropertyName(), Modifier.PUBLIC, Modifier.FINAL)</span>
+<span class="nc" id="L166">                    .initializer(&quot;createGeneral($S, $T.class)&quot;, propertyModel.getPropertyName(), propertyType.getTypeName())</span>
+<span class="nc" id="L167">                    .build();</span>
         }
 
-<span class="fc" id="L163">        return filedSpec;</span>
+<span class="fc" id="L170">        return filedSpec;</span>
 
     }
 
@@ -172,31 +179,31 @@ public class EntitySpecFactory {
      */
     private TypeSpec createTypeSpecAsNormal(final EntityMetamodel entityModel, final List&lt;FieldSpec&gt; fieldSpecs) {
         // エンティティのクラス
-<span class="fc" id="L175">        final ClassName entityType = entityModel.getType().asClassName();</span>
+<span class="fc" id="L182">        final ClassName entityType = entityModel.getType().asClassName();</span>
 
         // メタモデルのクラス名
-<span class="fc" id="L178">        final String entityMetamodelName = resolveEntityMetamodelName(entityModel.getClassName());</span>
+<span class="fc" id="L185">        final String entityMetamodelName = resolveEntityMetamodelName(entityModel.getClassName());</span>
 
         // 継承タイプ
         final TypeName metamodelSuperClass;
-<span class="pc bpc" id="L182" title="1 of 2 branches missed.">        if(entityModel.hasSuperClass()) {</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">        if(entityModel.hasSuperClass()) {</span>
             /*
              * 継承タイプ - 親が @MappedSuperclass を付与している場合
              * extends MParent&lt;Sample&gt;
              */
-<span class="nc" id="L187">            ClassName superClass = entityModel.getSuperClassType().asClassName();</span>
-<span class="nc" id="L188">            String metamodelSuperClassName =</span>
-<span class="nc" id="L189">                    superClass.packageName()</span>
-<span class="nc" id="L190">                    + AptUtils.getPackageClassNameSeparator(entityModel)</span>
-<span class="nc" id="L191">                    + resolveEntityMetamodelName(superClass.simpleName());</span>
+<span class="nc" id="L194">            ClassName superClass = entityModel.getSuperClassType().asClassName();</span>
+<span class="nc" id="L195">            String metamodelSuperClassName =</span>
+<span class="nc" id="L196">                    superClass.packageName()</span>
+<span class="nc" id="L197">                    + AptUtils.getPackageClassNameSeparator(entityModel)</span>
+<span class="nc" id="L198">                    + resolveEntityMetamodelName(superClass.simpleName());</span>
 
-<span class="nc" id="L193">            metamodelSuperClass = ParameterizedTypeName.get(ClassName.bestGuess(metamodelSuperClassName), TypeVariableName.get(entityType.simpleName()));</span>
-<span class="nc" id="L194">        } else {</span>
+<span class="nc" id="L200">            metamodelSuperClass = ParameterizedTypeName.get(ClassName.bestGuess(metamodelSuperClassName), TypeVariableName.get(entityType.simpleName()));</span>
+<span class="nc" id="L201">        } else {</span>
             /*
              * 継承タイプ - 通常
              * extends EntityPatBase&lt;Sample&gt;
              */
-<span class="fc" id="L199">            metamodelSuperClass = ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), entityType);</span>
+<span class="fc" id="L206">            metamodelSuperClass = ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), entityType);</span>
         }
 
         /*
@@ -206,12 +213,12 @@ public class EntitySpecFactory {
          * }
          *
          */
-<span class="fc" id="L209">        MethodSpec consturctor1 = MethodSpec.constructorBuilder()</span>
-<span class="fc" id="L210">                .addModifiers(Modifier.PUBLIC)</span>
-<span class="fc" id="L211">                .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), entityType), &quot;type&quot;)</span>
-<span class="fc" id="L212">                .addParameter(String.class, &quot;name&quot;)</span>
-<span class="fc" id="L213">                .addStatement(&quot;super(type, name)&quot;)</span>
-<span class="fc" id="L214">                .build();</span>
+<span class="fc" id="L216">        MethodSpec consturctor1 = MethodSpec.constructorBuilder()</span>
+<span class="fc" id="L217">                .addModifiers(Modifier.PUBLIC)</span>
+<span class="fc" id="L218">                .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), entityType), &quot;type&quot;)</span>
+<span class="fc" id="L219">                .addParameter(String.class, &quot;name&quot;)</span>
+<span class="fc" id="L220">                .addStatement(&quot;super(type, name)&quot;)</span>
+<span class="fc" id="L221">                .build();</span>
 
         /*
          * コンストラクタ
@@ -220,33 +227,33 @@ public class EntitySpecFactory {
          * }
          *
          */
-<span class="fc" id="L223">        MethodSpec consturctor2 = MethodSpec.constructorBuilder()</span>
-<span class="fc" id="L224">                .addModifiers(Modifier.PUBLIC)</span>
-<span class="fc" id="L225">                .addParameter(String.class, &quot;name&quot;)</span>
-<span class="fc" id="L226">                .addStatement(&quot;super($T.class, name)&quot;, entityType)</span>
-<span class="fc" id="L227">                .build();</span>
+<span class="fc" id="L230">        MethodSpec consturctor2 = MethodSpec.constructorBuilder()</span>
+<span class="fc" id="L231">                .addModifiers(Modifier.PUBLIC)</span>
+<span class="fc" id="L232">                .addParameter(String.class, &quot;name&quot;)</span>
+<span class="fc" id="L233">                .addStatement(&quot;super($T.class, name)&quot;, entityType)</span>
+<span class="fc" id="L234">                .build();</span>
 
         /*
          * エンティティの自身のインスタンスフィールド
          * public static final MSample sample = new MSample(&quot;sample&quot;);
          */
-<span class="fc" id="L233">        ClassName entityClassName = ClassName.bestGuess(entityMetamodelName);</span>
-<span class="fc" id="L234">        final String entityFieldName = NameUtils.uncapitalize(entityModel.getClassName());</span>
-<span class="fc" id="L235">        FieldSpec entityFieldSpec = FieldSpec.builder(entityClassName, entityFieldName, Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)</span>
-<span class="fc" id="L236">                .initializer(&quot;new $L($S)&quot;, entityMetamodelName, entityFieldName)</span>
-<span class="fc" id="L237">                .build();</span>
+<span class="fc" id="L240">        ClassName entityClassName = ClassName.bestGuess(entityMetamodelName);</span>
+<span class="fc" id="L241">        final String entityFieldName = NameUtils.uncapitalize(entityModel.getClassName());</span>
+<span class="fc" id="L242">        FieldSpec entityFieldSpec = FieldSpec.builder(entityClassName, entityFieldName, Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)</span>
+<span class="fc" id="L243">                .initializer(&quot;new $L($S)&quot;, entityMetamodelName, entityFieldName)</span>
+<span class="fc" id="L244">                .build();</span>
 
-<span class="fc" id="L239">        return TypeSpec.classBuilder(entityMetamodelName)</span>
-<span class="fc" id="L240">              .addModifiers(resolveEntityTypeModifiers(entityModel))</span>
-<span class="fc" id="L241">              .superclass(metamodelSuperClass)</span>
-<span class="fc" id="L242">              .addAnnotation(createGeneratorAnnoSpec())</span>
-<span class="fc" id="L243">              .addJavadoc(&quot;$L is SqlMapper's metamodel type for {@link $T}&quot;, entityMetamodelName, entityType)</span>
-<span class="fc" id="L244">              .addMethod(consturctor1)</span>
-<span class="fc" id="L245">              .addMethod(consturctor2)</span>
-<span class="fc" id="L246">              .addField(entityFieldSpec)</span>
-<span class="fc" id="L247">              .addFields(fieldSpecs)</span>
-<span class="fc" id="L248">              .addTypes(createStaticInnerTypeSpecs(entityModel))</span>
-<span class="fc" id="L249">              .build();</span>
+<span class="fc" id="L246">        return TypeSpec.classBuilder(entityMetamodelName)</span>
+<span class="fc" id="L247">              .addModifiers(resolveEntityTypeModifiers(entityModel))</span>
+<span class="fc" id="L248">              .superclass(metamodelSuperClass)</span>
+<span class="fc" id="L249">              .addAnnotation(createGeneratorAnnoSpec())</span>
+<span class="fc" id="L250">              .addJavadoc(&quot;$L is SqlMapper's metamodel type for {@link $T}&quot;, entityMetamodelName, entityType)</span>
+<span class="fc" id="L251">              .addMethod(consturctor1)</span>
+<span class="fc" id="L252">              .addMethod(consturctor2)</span>
+<span class="fc" id="L253">              .addField(entityFieldSpec)</span>
+<span class="fc" id="L254">              .addFields(fieldSpecs)</span>
+<span class="fc" id="L255">              .addTypes(createStaticInnerTypeSpecs(entityModel))</span>
+<span class="fc" id="L256">              .build();</span>
 
     }
 
@@ -259,35 +266,35 @@ public class EntitySpecFactory {
     private TypeSpec createTypeSpecAsAbstract(final EntityMetamodel entityModel, final List&lt;FieldSpec&gt; fieldSpecs) {
 
         // エンティティのクラス名情報
-<span class="nc" id="L262">        final ClassName entityType = entityModel.getType().asClassName();</span>
+<span class="nc" id="L269">        final ClassName entityType = entityModel.getType().asClassName();</span>
 
         // メタモデルのクラス名
-<span class="nc" id="L265">        final String entityMetamodelName = resolveEntityMetamodelName(entityModel.getClassName());</span>
+<span class="nc" id="L272">        final String entityMetamodelName = resolveEntityMetamodelName(entityModel.getClassName());</span>
 
         // 継承タイプ
         final TypeName metamodelSuperClass;
         final TypeVariableName classTypeVariable;
-<span class="nc bnc" id="L270" title="All 2 branches missed.">        if(entityModel.hasSuperClass()) {</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">        if(entityModel.hasSuperClass()) {</span>
             /*
              * 継承タイプ - 親が @MappedSuperclass を付与している場合
              * MSample&lt;E extends Sample&gt; extends MParent&lt;E&gt;
              */
-<span class="nc" id="L275">            ClassName superClass = entityModel.getSuperClassType().asClassName();</span>
-<span class="nc" id="L276">            String metamodelSuperClassName =</span>
-<span class="nc" id="L277">                    superClass.packageName()</span>
-<span class="nc" id="L278">                    + AptUtils.getPackageClassNameSeparator(entityModel)</span>
-<span class="nc" id="L279">                    + resolveEntityMetamodelName(superClass.simpleName());</span>
+<span class="nc" id="L282">            ClassName superClass = entityModel.getSuperClassType().asClassName();</span>
+<span class="nc" id="L283">            String metamodelSuperClassName =</span>
+<span class="nc" id="L284">                    superClass.packageName()</span>
+<span class="nc" id="L285">                    + AptUtils.getPackageClassNameSeparator(entityModel)</span>
+<span class="nc" id="L286">                    + resolveEntityMetamodelName(superClass.simpleName());</span>
 
-<span class="nc" id="L281">           metamodelSuperClass = ParameterizedTypeName.get(ClassName.bestGuess(metamodelSuperClassName), TypeVariableName.get(&quot;E&quot;));</span>
-<span class="nc" id="L282">           classTypeVariable = TypeVariableName.get(&quot;E&quot;, entityType);</span>
+<span class="nc" id="L288">           metamodelSuperClass = ParameterizedTypeName.get(ClassName.bestGuess(metamodelSuperClassName), TypeVariableName.get(&quot;E&quot;));</span>
+<span class="nc" id="L289">           classTypeVariable = TypeVariableName.get(&quot;E&quot;, entityType);</span>
 
-<span class="nc" id="L284">        } else {</span>
+<span class="nc" id="L291">        } else {</span>
             /*
              * 継承タイプ - 自身が抽象クラス
              * MSample&lt;E extends Sample&gt; extends EntityPatBase&lt;E&gt;
              */
-<span class="nc" id="L289">            metamodelSuperClass = ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), TypeVariableName.get(&quot;E&quot;));</span>
-<span class="nc" id="L290">            classTypeVariable = TypeVariableName.get(&quot;E&quot;, entityType);</span>
+<span class="nc" id="L296">            metamodelSuperClass = ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), TypeVariableName.get(&quot;E&quot;));</span>
+<span class="nc" id="L297">            classTypeVariable = TypeVariableName.get(&quot;E&quot;, entityType);</span>
         }
 
 
@@ -297,23 +304,23 @@ public class EntitySpecFactory {
          *    super(type, name);
          * }
          */
-<span class="nc" id="L300">        MethodSpec consturctor1 = MethodSpec.constructorBuilder()</span>
-<span class="nc" id="L301">                .addModifiers(Modifier.PUBLIC)</span>
-<span class="nc" id="L302">                .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), WildcardTypeName.subtypeOf(TypeVariableName.get(&quot;E&quot;))), &quot;type&quot;)</span>
-<span class="nc" id="L303">                .addParameter(String.class, &quot;name&quot;)</span>
-<span class="nc" id="L304">                .addStatement(&quot;super(type, name)&quot;)</span>
-<span class="nc" id="L305">                .build();</span>
+<span class="nc" id="L307">        MethodSpec consturctor1 = MethodSpec.constructorBuilder()</span>
+<span class="nc" id="L308">                .addModifiers(Modifier.PUBLIC)</span>
+<span class="nc" id="L309">                .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), WildcardTypeName.subtypeOf(TypeVariableName.get(&quot;E&quot;))), &quot;type&quot;)</span>
+<span class="nc" id="L310">                .addParameter(String.class, &quot;name&quot;)</span>
+<span class="nc" id="L311">                .addStatement(&quot;super(type, name)&quot;)</span>
+<span class="nc" id="L312">                .build();</span>
 
-<span class="nc" id="L307">        return TypeSpec.classBuilder(entityMetamodelName)</span>
-<span class="nc" id="L308">              .addModifiers(resolveEntityTypeModifiers(entityModel))</span>
-<span class="nc" id="L309">              .superclass(metamodelSuperClass)</span>
-<span class="nc" id="L310">              .addTypeVariable(classTypeVariable)</span>
-<span class="nc" id="L311">              .addAnnotation(createGeneratorAnnoSpec())</span>
-<span class="nc" id="L312">              .addJavadoc(&quot;$L is SqlMapper's metamodel type for {@link $T}&quot;, entityMetamodelName, entityType)</span>
-<span class="nc" id="L313">              .addMethod(consturctor1)</span>
-<span class="nc" id="L314">              .addFields(fieldSpecs)</span>
-<span class="nc" id="L315">              .addTypes(createStaticInnerTypeSpecs(entityModel))</span>
-<span class="nc" id="L316">              .build();</span>
+<span class="nc" id="L314">        return TypeSpec.classBuilder(entityMetamodelName)</span>
+<span class="nc" id="L315">              .addModifiers(resolveEntityTypeModifiers(entityModel))</span>
+<span class="nc" id="L316">              .superclass(metamodelSuperClass)</span>
+<span class="nc" id="L317">              .addTypeVariable(classTypeVariable)</span>
+<span class="nc" id="L318">              .addAnnotation(createGeneratorAnnoSpec())</span>
+<span class="nc" id="L319">              .addJavadoc(&quot;$L is SqlMapper's metamodel type for {@link $T}&quot;, entityMetamodelName, entityType)</span>
+<span class="nc" id="L320">              .addMethod(consturctor1)</span>
+<span class="nc" id="L321">              .addFields(fieldSpecs)</span>
+<span class="nc" id="L322">              .addTypes(createStaticInnerTypeSpecs(entityModel))</span>
+<span class="nc" id="L323">              .build();</span>
 
     }
 
@@ -325,31 +332,31 @@ public class EntitySpecFactory {
      */
     private TypeSpec createTypeSpecAsEmbeddeable(final EntityMetamodel entityModel, final List&lt;FieldSpec&gt; fieldSpecs) {
         // エンティティのクラスタイプ
-<span class="fc" id="L328">        final ClassName entityType = entityModel.getType().asClassName();</span>
+<span class="fc" id="L335">        final ClassName entityType = entityModel.getType().asClassName();</span>
 
         // メタモデルのクラス名
-<span class="fc" id="L331">        final String entityMetamodelName = resolveEntityMetamodelName(entityModel.getClassName());</span>
+<span class="fc" id="L338">        final String entityMetamodelName = resolveEntityMetamodelName(entityModel.getClassName());</span>
 
         // 継承タイプ
         final TypeName metamodelSuperClass;
-<span class="pc bpc" id="L335" title="1 of 2 branches missed.">        if(entityModel.hasSuperClass()) {</span>
+<span class="pc bpc" id="L342" title="1 of 2 branches missed.">        if(entityModel.hasSuperClass()) {</span>
             /*
              * 継承タイプ - 親が @MappedSuperclass を付与している場合
              * extends MParent&lt;Sample&gt;
              */
-<span class="nc" id="L340">            ClassName superClass = entityModel.getSuperClassType().asClassName();</span>
-<span class="nc" id="L341">            String metamodelSuperClassName =</span>
-<span class="nc" id="L342">                    superClass.packageName()</span>
-<span class="nc" id="L343">                    + AptUtils.getPackageClassNameSeparator(entityModel)</span>
-<span class="nc" id="L344">                    + resolveEntityMetamodelName(superClass.simpleName());</span>
+<span class="nc" id="L347">            ClassName superClass = entityModel.getSuperClassType().asClassName();</span>
+<span class="nc" id="L348">            String metamodelSuperClassName =</span>
+<span class="nc" id="L349">                    superClass.packageName()</span>
+<span class="nc" id="L350">                    + AptUtils.getPackageClassNameSeparator(entityModel)</span>
+<span class="nc" id="L351">                    + resolveEntityMetamodelName(superClass.simpleName());</span>
 
-<span class="nc" id="L346">            metamodelSuperClass = ParameterizedTypeName.get(ClassName.bestGuess(metamodelSuperClassName), TypeVariableName.get(entityType.simpleName()));</span>
-<span class="nc" id="L347">        } else {</span>
+<span class="nc" id="L353">            metamodelSuperClass = ParameterizedTypeName.get(ClassName.bestGuess(metamodelSuperClassName), TypeVariableName.get(entityType.simpleName()));</span>
+<span class="nc" id="L354">        } else {</span>
             /*
              * 継承タイプ - 通常
              * extends EntityPatBase&lt;Sample&gt;
              */
-<span class="fc" id="L352">            metamodelSuperClass = ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), entityType);</span>
+<span class="fc" id="L359">            metamodelSuperClass = ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), entityType);</span>
         }
 
         /*
@@ -359,13 +366,13 @@ public class EntitySpecFactory {
          * }
          *
          */
-<span class="fc" id="L362">        MethodSpec consturctor1 = MethodSpec.constructorBuilder()</span>
-<span class="fc" id="L363">                .addModifiers(Modifier.PUBLIC)</span>
-<span class="fc" id="L364">                .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), entityType), &quot;type&quot;)</span>
-<span class="fc" id="L365">                .addParameter(ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), WildcardTypeName.subtypeOf(Object.class)), &quot;parent&quot;)</span>
-<span class="fc" id="L366">                .addParameter(String.class, &quot;name&quot;)</span>
-<span class="fc" id="L367">                .addStatement(&quot;super(type, parent, name)&quot;)</span>
-<span class="fc" id="L368">                .build();</span>
+<span class="fc" id="L369">        MethodSpec consturctor1 = MethodSpec.constructorBuilder()</span>
+<span class="fc" id="L370">                .addModifiers(Modifier.PUBLIC)</span>
+<span class="fc" id="L371">                .addParameter(ParameterizedTypeName.get(ClassName.get(Class.class), entityType), &quot;type&quot;)</span>
+<span class="fc" id="L372">                .addParameter(ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), WildcardTypeName.subtypeOf(Object.class)), &quot;parent&quot;)</span>
+<span class="fc" id="L373">                .addParameter(String.class, &quot;name&quot;)</span>
+<span class="fc" id="L374">                .addStatement(&quot;super(type, parent, name)&quot;)</span>
+<span class="fc" id="L375">                .build();</span>
 
         /*
          * コンストラクタ
@@ -374,23 +381,23 @@ public class EntitySpecFactory {
          * }
          *
          */
-<span class="fc" id="L377">        MethodSpec consturctor2 = MethodSpec.constructorBuilder()</span>
-<span class="fc" id="L378">                .addModifiers(Modifier.PUBLIC)</span>
-<span class="fc" id="L379">                .addParameter(ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), WildcardTypeName.subtypeOf(Object.class)), &quot;parent&quot;)</span>
-<span class="fc" id="L380">                .addParameter(String.class, &quot;name&quot;)</span>
-<span class="fc" id="L381">                .addStatement(&quot;super($T.class, parent, name)&quot;, entityType)</span>
-<span class="fc" id="L382">                .build();</span>
+<span class="fc" id="L384">        MethodSpec consturctor2 = MethodSpec.constructorBuilder()</span>
+<span class="fc" id="L385">                .addModifiers(Modifier.PUBLIC)</span>
+<span class="fc" id="L386">                .addParameter(ParameterizedTypeName.get(ClassName.get(EntityPathBase.class), WildcardTypeName.subtypeOf(Object.class)), &quot;parent&quot;)</span>
+<span class="fc" id="L387">                .addParameter(String.class, &quot;name&quot;)</span>
+<span class="fc" id="L388">                .addStatement(&quot;super($T.class, parent, name)&quot;, entityType)</span>
+<span class="fc" id="L389">                .build();</span>
 
-<span class="fc" id="L384">        return TypeSpec.classBuilder(entityMetamodelName)</span>
-<span class="fc" id="L385">              .addModifiers(resolveEntityTypeModifiers(entityModel))</span>
-<span class="fc" id="L386">              .superclass(metamodelSuperClass)</span>
-<span class="fc" id="L387">              .addAnnotation(createGeneratorAnnoSpec())</span>
-<span class="fc" id="L388">              .addJavadoc(&quot;$L is SqlMapper's metamodel type for {@link $T}&quot;, entityMetamodelName, entityType)</span>
-<span class="fc" id="L389">              .addMethod(consturctor1)</span>
-<span class="fc" id="L390">              .addMethod(consturctor2)</span>
-<span class="fc" id="L391">              .addFields(fieldSpecs)</span>
-<span class="fc" id="L392">              .addTypes(createStaticInnerTypeSpecs(entityModel))</span>
-<span class="fc" id="L393">              .build();</span>
+<span class="fc" id="L391">        return TypeSpec.classBuilder(entityMetamodelName)</span>
+<span class="fc" id="L392">              .addModifiers(resolveEntityTypeModifiers(entityModel))</span>
+<span class="fc" id="L393">              .superclass(metamodelSuperClass)</span>
+<span class="fc" id="L394">              .addAnnotation(createGeneratorAnnoSpec())</span>
+<span class="fc" id="L395">              .addJavadoc(&quot;$L is SqlMapper's metamodel type for {@link $T}&quot;, entityMetamodelName, entityType)</span>
+<span class="fc" id="L396">              .addMethod(consturctor1)</span>
+<span class="fc" id="L397">              .addMethod(consturctor2)</span>
+<span class="fc" id="L398">              .addFields(fieldSpecs)</span>
+<span class="fc" id="L399">              .addTypes(createStaticInnerTypeSpecs(entityModel))</span>
+<span class="fc" id="L400">              .build();</span>
 
     }
 
@@ -401,13 +408,13 @@ public class EntitySpecFactory {
      */
     private List&lt;TypeSpec&gt; createStaticInnerTypeSpecs(EntityMetamodel parentEntityModel) {
 
-<span class="fc" id="L404">        List&lt;TypeSpec&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L411">        List&lt;TypeSpec&gt; list = new ArrayList&lt;&gt;();</span>
 
-<span class="fc bfc" id="L406" title="All 2 branches covered.">        for(EntityMetamodel staticInnerEntityModel : parentEntityModel.getStaticInnerEntities()) {</span>
-<span class="fc" id="L407">            list.add(create(staticInnerEntityModel));</span>
-<span class="fc" id="L408">        }</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">        for(EntityMetamodel staticInnerEntityModel : parentEntityModel.getStaticInnerEntities()) {</span>
+<span class="fc" id="L414">            list.add(create(staticInnerEntityModel));</span>
+<span class="fc" id="L415">        }</span>
 
-<span class="fc" id="L410">        return list;</span>
+<span class="fc" id="L417">        return list;</span>
 
     }
 
@@ -417,18 +424,18 @@ public class EntitySpecFactory {
      * @return 修飾子
      */
     private Modifier[] resolveEntityTypeModifiers(final EntityMetamodel entityModel) {
-<span class="fc" id="L420">        List&lt;Modifier&gt; list = new ArrayList&lt;&gt;(1);</span>
-<span class="fc" id="L421">        list.add(Modifier.PUBLIC);</span>
+<span class="fc" id="L427">        List&lt;Modifier&gt; list = new ArrayList&lt;&gt;(1);</span>
+<span class="fc" id="L428">        list.add(Modifier.PUBLIC);</span>
 
-<span class="pc bpc" id="L423" title="1 of 2 branches missed.">        if(entityModel.getType().isAbstract()) {</span>
-<span class="nc" id="L424">            list.add(Modifier.ABSTRACT);</span>
+<span class="pc bpc" id="L430" title="1 of 2 branches missed.">        if(entityModel.getType().isAbstract()) {</span>
+<span class="nc" id="L431">            list.add(Modifier.ABSTRACT);</span>
         }
 
-<span class="fc bfc" id="L427" title="All 2 branches covered.">        if(entityModel.getType().isStaticInnerClass()) {</span>
-<span class="fc" id="L428">            list.add(Modifier.STATIC);</span>
+<span class="fc bfc" id="L434" title="All 2 branches covered.">        if(entityModel.getType().isStaticInnerClass()) {</span>
+<span class="fc" id="L435">            list.add(Modifier.STATIC);</span>
         }
 
-<span class="fc" id="L431">        return list.toArray(new Modifier[list.size()]);</span>
+<span class="fc" id="L438">        return list.toArray(new Modifier[list.size()]);</span>
     }
 
     /**
@@ -438,9 +445,9 @@ public class EntitySpecFactory {
      * @return 接頭語 + クラス名 + 接尾語。
      */
     private String resolveEntityMetamodelName(String simpleClassName) {
-<span class="fc" id="L441">        return metamodelConfig.getPrefix()</span>
+<span class="fc" id="L448">        return metamodelConfig.getPrefix()</span>
                 + simpleClassName
-<span class="fc" id="L443">                + metamodelConfig.getSuffix();</span>
+<span class="fc" id="L450">                + metamodelConfig.getSuffix();</span>
     }
 
     /**
@@ -448,10 +455,10 @@ public class EntitySpecFactory {
      * @return
      */
     private AnnotationSpec createGeneratorAnnoSpec() {
-<span class="fc" id="L451">        return AnnotationSpec.builder(Generated.class)</span>
-<span class="fc" id="L452">                .addMember(&quot;value&quot;, &quot;$S&quot;, &quot;SqlMapper - EntityMetamodelGenerator&quot;)</span>
-<span class="fc" id="L453">                .addMember(&quot;date&quot;, &quot;$S&quot;, DateTimeFormatter.ofPattern(&quot;uuuu-MM-dd HH:mm:ss&quot;).format(LocalDateTime.now()))</span>
-<span class="fc" id="L454">                .build();</span>
+<span class="fc" id="L458">        return AnnotationSpec.builder(Generated.class)</span>
+<span class="fc" id="L459">                .addMember(&quot;value&quot;, &quot;$S&quot;, &quot;SqlMapper - EntityMetamodelGenerator&quot;)</span>
+<span class="fc" id="L460">                .addMember(&quot;date&quot;, &quot;$S&quot;, DateTimeFormatter.ofPattern(&quot;uuuu-MM-dd HH:mm:ss&quot;).format(LocalDateTime.now()))</span>
+<span class="fc" id="L461">                .build();</span>
     }
 
 }

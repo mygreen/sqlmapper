@@ -3,7 +3,6 @@
 import java.time.LocalTime;
 
 import com.github.mygreen.sqlmapper.metamodel.operation.LocalTimeOperation;
-import com.github.mygreen.sqlmapper.metamodel.operation.SqlTimeOperation;
 import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 
 /**
@@ -16,15 +15,15 @@ import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 public abstract class LocalTimeExpression extends TemporalExpressionBase&lt;LocalTime&gt; {
 
     public LocalTimeExpression(Expression&lt;LocalTime&gt; mixin) {
-<span class="nc" id="L19">        super(mixin);</span>
-<span class="nc" id="L20">    }</span>
+<span class="nc" id="L18">        super(mixin);</span>
+<span class="nc" id="L19">    }</span>
 
     /**
      * 現在の時刻を取得する関数 {@literal CURRENT_TIME} を返します。
      * @return 関数 {@literal CURRENT_TIME}
      */
     public static LocalTimeExpression currentTime() {
-<span class="nc" id="L27">        return new LocalTimeOperation(FunctionOp.CURRENT_TIME);</span>
+<span class="nc" id="L26">        return new LocalTimeOperation(FunctionOp.CURRENT_TIME);</span>
     }
 
     /**
@@ -32,8 +31,8 @@ public abstract class LocalTimeExpression extends TemporalExpressionBase&lt;Loca
      * @param precision 精度
      * @return 関数 {@literal CURRENT_TIME}
      */
-    public static SqlTimeExpression currentTime(int precision) {
-<span class="nc" id="L36">        return new SqlTimeOperation(FunctionOp.CURRENT_TIME, Constant.create(precision));</span>
+    public static LocalTimeExpression currentTime(int precision) {
+<span class="nc" id="L35">        return new LocalTimeOperation(FunctionOp.CURRENT_TIME, Constant.create(precision));</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

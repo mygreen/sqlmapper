@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComparisionOpHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.where.metamodel</a> &gt; <span class="el_source">ComparisionOpHandler.java</span></div><h1>ComparisionOpHandler.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.where.metamodel;
 
-import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
+import com.github.mygreen.sqlmapper.metamodel.Path;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
@@ -51,8 +51,8 @@ import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
          * 比較演算子の場合、左変=プロパティパス、右辺=定数で構成される場合、
          * 定数をプロパティの変換規則に従い変換する。
          */
-<span class="pc bpc" id="L54" title="3 of 4 branches missed.">        if(left instanceof PropertyPath &amp;&amp; right instanceof Constant) {</span>
-<span class="nc" id="L55">            visitConstantWithPropertyPath((PropertyPath&lt;?&gt;)left, (Constant&lt;?&gt;)right, rightContext);</span>
+<span class="fc bfc" id="L54" title="All 4 branches covered.">        if(isPropertyPath(left) &amp;&amp; right instanceof Constant) {</span>
+<span class="fc" id="L55">            visitConstantWithPropertyPath((Path&lt;?&gt;)left, (Constant&lt;?&gt;)right, rightContext);</span>
         } else {
 <span class="fc" id="L57">            invoke(operator, right, visitor, rightContext);</span>
         }
@@ -83,14 +83,14 @@ import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
          * 比較演算子の場合、左変=プロパティパス、右辺=定数で構成される場合、
          * 定数をプロパティの変換規則に従い変換する。
          */
-<span class="pc bpc" id="L86" title="3 of 4 branches missed.">        if(left instanceof PropertyPath &amp;&amp; right1 instanceof Constant) {</span>
-<span class="nc" id="L87">            visitConstantWithPropertyPath((PropertyPath&lt;?&gt;)left, (Constant&lt;?&gt;)right1, rightContext1);</span>
+<span class="pc bpc" id="L86" title="1 of 4 branches missed.">        if(isPropertyPath(left) &amp;&amp; right1 instanceof Constant) {</span>
+<span class="fc" id="L87">            visitConstantWithPropertyPath((Path&lt;?&gt;)left, (Constant&lt;?&gt;)right1, rightContext1);</span>
         } else {
 <span class="fc" id="L89">            invoke(operator, right1, visitor, rightContext1);</span>
         }
 
-<span class="pc bpc" id="L92" title="3 of 4 branches missed.">        if(left instanceof PropertyPath &amp;&amp; right2 instanceof Constant) {</span>
-<span class="nc" id="L93">            visitConstantWithPropertyPath((PropertyPath&lt;?&gt;)left, (Constant&lt;?&gt;)right2, rightContext2);</span>
+<span class="pc bpc" id="L92" title="1 of 4 branches missed.">        if(isPropertyPath(left) &amp;&amp; right2 instanceof Constant) {</span>
+<span class="fc" id="L93">            visitConstantWithPropertyPath((Path&lt;?&gt;)left, (Constant&lt;?&gt;)right2, rightContext2);</span>
         } else {
 <span class="fc" id="L95">            invoke(operator, right2, visitor, rightContext2);</span>
         }

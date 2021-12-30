@@ -60,6 +60,15 @@ public class AutoSelectImpl&lt;T&gt; implements AutoSelect&lt;T&gt; {
 <span class="fc" id="L60">    @Getter</span>
     private final Map&lt;Class&lt;?&gt;, EntityMeta&gt; entityMetaMap = new HashMap&lt;&gt;();
 
+    @Getter
+    private Integer queryTimeout;
+
+    @Getter
+    private Integer fetchSize;
+
+    @Getter
+    private Integer maxRows;
+
     /**
      * SQLのヒントです。
      */
@@ -70,39 +79,39 @@ public class AutoSelectImpl&lt;T&gt; implements AutoSelect&lt;T&gt; {
      * 取得するレコード数の上限値です。
      * &lt;p&gt;負の値の時は無視します。
      */
-<span class="fc" id="L73">    @Getter</span>
+<span class="fc" id="L82">    @Getter</span>
     private int limit = -1;
 
     /**
      * 取得するレコード数の開始位置です。
      * &lt;p&gt;負の値の時は無視します。
      */
-<span class="fc" id="L80">    @Getter</span>
+<span class="fc" id="L89">    @Getter</span>
     private int offset = -1;
 
     /**
      * select句へ追加するプロパティです。
      */
-<span class="fc" id="L86">    @Getter</span>
+<span class="fc" id="L95">    @Getter</span>
     private final Set&lt;PropertyPath&lt;?&gt;&gt; includesProperties = new LinkedHashSet&lt;&gt;();
 
     /**
      * select句から除外するプロパティです。
      */
-<span class="fc" id="L92">    @Getter</span>
+<span class="fc" id="L101">    @Getter</span>
     private final Set&lt;PropertyPath&lt;?&gt;&gt; excludesProperties = new LinkedHashSet&lt;&gt;();
 
     /**
      * テーブルの結合条件の一覧です。
      */
-<span class="fc" id="L98">    @SuppressWarnings(&quot;rawtypes&quot;)</span>
+<span class="fc" id="L107">    @SuppressWarnings(&quot;rawtypes&quot;)</span>
     @Getter
     private final List&lt;JoinCondition&gt; joinConditions = new ArrayList&lt;&gt;();
 
     /**
      * エンティティの構成定義の一覧です
      */
-<span class="fc" id="L105">    @SuppressWarnings(&quot;rawtypes&quot;)</span>
+<span class="fc" id="L114">    @SuppressWarnings(&quot;rawtypes&quot;)</span>
     @Getter
     private final List&lt;JoinAssociation&gt; joinAssociations = new ArrayList&lt;&gt;();
 
@@ -115,7 +124,7 @@ public class AutoSelectImpl&lt;T&gt; implements AutoSelect&lt;T&gt; {
     /**
      * ソート順です。
      */
-<span class="fc" id="L118">    @Getter</span>
+<span class="fc" id="L127">    @Getter</span>
     private List&lt;OrderSpecifier&gt; orders = new ArrayList&lt;&gt;();
 
     /**
@@ -139,7 +148,7 @@ public class AutoSelectImpl&lt;T&gt; implements AutoSelect&lt;T&gt; {
     /**
      * SELECT ～ FOR UPDATEでの待機時間 (秒単位) です。
      */
-<span class="fc" id="L142">    @Getter</span>
+<span class="fc" id="L151">    @Getter</span>
     private int forUpdateWaitSeconds = 0;
 
     /**
@@ -148,78 +157,96 @@ public class AutoSelectImpl&lt;T&gt; implements AutoSelect&lt;T&gt; {
      * @param entityPath マッピングするエンティティのメタモデル。
      */
     @SuppressWarnings(&quot;unchecked&quot;)
-<span class="pc bpc" id="L151" title="2 of 4 branches missed.">    public AutoSelectImpl(@NonNull SqlMapperContext context, @NonNull EntityPath&lt;T&gt; entityPath) {</span>
-<span class="fc" id="L152">        this.context = context;</span>
-<span class="fc" id="L153">        this.entityPath = entityPath;</span>
-<span class="fc" id="L154">        this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());</span>
-<span class="fc" id="L155">        this.baseClass = (Class&lt;T&gt;)entityMeta.getEntityType();</span>
+<span class="pc bpc" id="L160" title="2 of 4 branches missed.">    public AutoSelectImpl(@NonNull SqlMapperContext context, @NonNull EntityPath&lt;T&gt; entityPath) {</span>
+<span class="fc" id="L161">        this.context = context;</span>
+<span class="fc" id="L162">        this.entityPath = entityPath;</span>
+<span class="fc" id="L163">        this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());</span>
+<span class="fc" id="L164">        this.baseClass = (Class&lt;T&gt;)entityMeta.getEntityType();</span>
 
-<span class="fc" id="L157">        this.entityMetaMap.put(entityPath.getType(), context.getEntityMetaFactory().create(entityPath.getType()));</span>
-<span class="fc" id="L158">    }</span>
+<span class="fc" id="L166">        this.entityMetaMap.put(entityPath.getType(), context.getEntityMetaFactory().create(entityPath.getType()));</span>
+<span class="fc" id="L167">    }</span>
+
+    @Override
+    public AutoSelectImpl&lt;T&gt; queryTimeout(int seconds) {
+<span class="nc" id="L171">        this.queryTimeout = seconds;</span>
+<span class="nc" id="L172">        return this;</span>
+    }
+
+    @Override
+    public AutoSelectImpl&lt;T&gt; fetchSize(int fetchSize) {
+<span class="nc" id="L177">        this.fetchSize = fetchSize;</span>
+<span class="nc" id="L178">        return this;</span>
+    }
+
+    @Override
+    public AutoSelectImpl&lt;T&gt; maxRows(int maxRows) {
+<span class="nc" id="L183">        this.maxRows = maxRows;</span>
+<span class="nc" id="L184">        return this;</span>
+    }
 
     @Override
     public AutoSelectImpl&lt;T&gt; hint(String hint) {
-<span class="nc" id="L162">        this.hint = hint;</span>
-<span class="nc" id="L163">        return this;</span>
+<span class="nc" id="L189">        this.hint = hint;</span>
+<span class="nc" id="L190">        return this;</span>
     }
 
     @Override
     public AutoSelectImpl&lt;T&gt; limit(int limit) {
-<span class="nc" id="L168">        this.limit = limit;</span>
-<span class="nc" id="L169">        return this;</span>
+<span class="fc" id="L195">        this.limit = limit;</span>
+<span class="fc" id="L196">        return this;</span>
     }
 
     @Override
     public AutoSelectImpl&lt;T&gt; offset(int offset) {
-<span class="nc" id="L174">        this.offset = offset;</span>
-<span class="nc" id="L175">        return this;</span>
+<span class="fc" id="L201">        this.offset = offset;</span>
+<span class="fc" id="L202">        return this;</span>
     }
 
     @Override
     public AutoSelectImpl&lt;T&gt; includes(final PropertyPath&lt;?&gt;... properties) {
 
-<span class="nc bnc" id="L181" title="All 2 branches missed.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
-<span class="nc" id="L182">            this.includesProperties.add(prop);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
+<span class="fc" id="L209">            this.includesProperties.add(prop);</span>
         }
 
-<span class="nc" id="L185">        return this;</span>
+<span class="fc" id="L212">        return this;</span>
 
     }
 
     @Override
     public AutoSelectImpl&lt;T&gt; excludes(final PropertyPath&lt;?&gt;... properties) {
 
-<span class="nc bnc" id="L192" title="All 2 branches missed.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
-<span class="nc" id="L193">            this.excludesProperties.add(prop);</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
+<span class="fc" id="L220">            this.excludesProperties.add(prop);</span>
         }
 
-<span class="nc" id="L196">        return this;</span>
+<span class="fc" id="L223">        return this;</span>
 
     }
 
     @Override
-<span class="pc bpc" id="L201" title="1 of 2 branches missed.">    public &lt;ENTITY extends EntityPath&lt;?&gt;&gt; AutoSelectImpl&lt;T&gt; innerJoin(@NonNull ENTITY toEntityPath,</span>
-<span class="pc bpc" id="L202" title="1 of 2 branches missed.">            @NonNull JoinCondition.Conditioner&lt;ENTITY&gt; conditioner) {</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">    public &lt;ENTITY extends EntityPath&lt;?&gt;&gt; AutoSelectImpl&lt;T&gt; innerJoin(@NonNull ENTITY toEntityPath,</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">            @NonNull JoinCondition.Conditioner&lt;ENTITY&gt; conditioner) {</span>
 
-<span class="fc" id="L204">        JoinCondition&lt;ENTITY&gt; condition = new JoinCondition&lt;&gt;(JoinType.INNER, toEntityPath, conditioner);</span>
-<span class="fc" id="L205">        validateJoinCondition(condition);</span>
+<span class="fc" id="L231">        JoinCondition&lt;ENTITY&gt; condition = new JoinCondition&lt;&gt;(JoinType.INNER, toEntityPath, conditioner);</span>
+<span class="fc" id="L232">        validateJoinCondition(condition);</span>
 
-<span class="fc" id="L207">        this.entityMetaMap.put(toEntityPath.getType(), context.getEntityMetaFactory().create(toEntityPath.getType()));</span>
-<span class="fc" id="L208">        this.joinConditions.add(condition);</span>
-<span class="fc" id="L209">        return this;</span>
+<span class="fc" id="L234">        this.entityMetaMap.put(toEntityPath.getType(), context.getEntityMetaFactory().create(toEntityPath.getType()));</span>
+<span class="fc" id="L235">        this.joinConditions.add(condition);</span>
+<span class="fc" id="L236">        return this;</span>
     }
 
     @Override
-<span class="nc bnc" id="L213" title="All 2 branches missed.">    public &lt;ENTITY extends EntityPath&lt;?&gt;&gt; AutoSelectImpl&lt;T&gt; leftJoin(@NonNull ENTITY toEntityPath,</span>
-<span class="nc bnc" id="L214" title="All 2 branches missed.">            @NonNull JoinCondition.Conditioner&lt;ENTITY&gt; conditioner) {</span>
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">    public &lt;ENTITY extends EntityPath&lt;?&gt;&gt; AutoSelectImpl&lt;T&gt; leftJoin(@NonNull ENTITY toEntityPath,</span>
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">            @NonNull JoinCondition.Conditioner&lt;ENTITY&gt; conditioner) {</span>
 
-<span class="nc" id="L216">        JoinCondition&lt;ENTITY&gt; condition = new JoinCondition&lt;&gt;(JoinType.LEFT_OUTER, toEntityPath, conditioner);</span>
-<span class="nc" id="L217">        validateJoinCondition(condition);</span>
+<span class="fc" id="L243">        JoinCondition&lt;ENTITY&gt; condition = new JoinCondition&lt;&gt;(JoinType.LEFT_OUTER, toEntityPath, conditioner);</span>
+<span class="fc" id="L244">        validateJoinCondition(condition);</span>
 
-<span class="nc" id="L219">        this.entityMetaMap.put(toEntityPath.getType(), context.getEntityMetaFactory().create(toEntityPath.getType()));</span>
-<span class="nc" id="L220">        this.joinConditions.add(condition);</span>
+<span class="fc" id="L246">        this.entityMetaMap.put(toEntityPath.getType(), context.getEntityMetaFactory().create(toEntityPath.getType()));</span>
+<span class="fc" id="L247">        this.joinConditions.add(condition);</span>
 
-<span class="nc" id="L222">        return this;</span>
+<span class="fc" id="L249">        return this;</span>
     }
 
     /**
@@ -236,75 +263,75 @@ public class AutoSelectImpl&lt;T&gt; implements AutoSelect&lt;T&gt; {
     private void validateJoinCondition(JoinCondition&lt;?&gt; condition) {
 
         // 同じ組み合わせのエンティティが存在しかチェックします。
-<span class="fc bfc" id="L239" title="All 2 branches covered.">        for(JoinCondition&lt;?&gt; target : joinConditions) {</span>
-<span class="pc bpc" id="L240" title="1 of 2 branches missed.">            if(target.getToEntity().equals(condition.getToEntity())) {</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">        for(JoinCondition&lt;?&gt; target : joinConditions) {</span>
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">            if(target.getToEntity().equals(condition.getToEntity())) {</span>
 
                 // 同じ組み合わせの場合
-<span class="nc" id="L243">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.existsSameJoinEntity&quot;)</span>
-<span class="nc" id="L244">                        .param(&quot;toEntity&quot;, condition.getToEntity().getPathMeta().getElement())</span>
-<span class="nc" id="L245">                        .format());</span>
+<span class="nc" id="L270">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.existsSameJoinEntity&quot;)</span>
+<span class="nc" id="L271">                        .param(&quot;toEntity&quot;, condition.getToEntity().getPathMeta().getElement())</span>
+<span class="nc" id="L272">                        .format());</span>
             }
-<span class="fc" id="L247">        }</span>
+<span class="fc" id="L274">        }</span>
 
-<span class="fc" id="L249">    }</span>
+<span class="fc" id="L276">    }</span>
 
     @Override
-<span class="pc bpc" id="L252" title="2 of 4 branches missed.">    public &lt;E1, E2&gt; AutoSelectImpl&lt;T&gt; associate(@NonNull EntityPath&lt;E1&gt; entityPath1, @NonNull EntityPath&lt;E2&gt; entityPath2,</span>
-<span class="pc bpc" id="L253" title="1 of 2 branches missed.">            @NonNull JoinAssociation.Associator&lt;E1, E2&gt; associator) {</span>
+<span class="pc bpc" id="L279" title="2 of 4 branches missed.">    public &lt;E1, E2&gt; AutoSelectImpl&lt;T&gt; associate(@NonNull EntityPath&lt;E1&gt; entityPath1, @NonNull EntityPath&lt;E2&gt; entityPath2,</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">            @NonNull JoinAssociation.Associator&lt;E1, E2&gt; associator) {</span>
 
-<span class="fc" id="L255">        JoinAssociation&lt;E1, E2&gt; association = new JoinAssociation&lt;&gt;(entityPath1, entityPath2, associator);</span>
+<span class="fc" id="L282">        JoinAssociation&lt;E1, E2&gt; association = new JoinAssociation&lt;&gt;(entityPath1, entityPath2, associator);</span>
 
         // 同じ組み合わせのエンティティが存在しないかチェックします
-<span class="fc bfc" id="L258" title="All 2 branches covered.">        for(JoinAssociation&lt;?, ?&gt; target : joinAssociations) {</span>
-<span class="pc bpc" id="L259" title="3 of 4 branches missed.">            if((target.getEntity1().equals(association.getEntity1()) &amp;&amp; target.getEntity2().equals(association.getEntity2()))</span>
-<span class="pc bpc" id="L260" title="3 of 4 branches missed.">                    || (target.getEntity1().equals(association.getEntity2()) &amp;&amp; target.getEntity2().equals(association.getEntity1()))</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">        for(JoinAssociation&lt;?, ?&gt; target : joinAssociations) {</span>
+<span class="pc bpc" id="L286" title="3 of 4 branches missed.">            if((target.getEntity1().equals(association.getEntity1()) &amp;&amp; target.getEntity2().equals(association.getEntity2()))</span>
+<span class="pc bpc" id="L287" title="3 of 4 branches missed.">                    || (target.getEntity1().equals(association.getEntity2()) &amp;&amp; target.getEntity2().equals(association.getEntity1()))</span>
                     ) {
                 // 同じ組み合わせの場合 - エンティティ1、エンティティ2の順番は考慮しません。
-<span class="nc" id="L263">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.existsSameAssociateEntity&quot;)</span>
-<span class="nc" id="L264">                        .param(&quot;entity1&quot;, association.getEntity1().getPathMeta().getElement())</span>
-<span class="nc" id="L265">                        .param(&quot;entity2&quot;, association.getEntity2().getPathMeta().getElement())</span>
-<span class="nc" id="L266">                        .format());</span>
+<span class="nc" id="L290">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.existsSameAssociateEntity&quot;)</span>
+<span class="nc" id="L291">                        .param(&quot;entity1&quot;, association.getEntity1().getPathMeta().getElement())</span>
+<span class="nc" id="L292">                        .param(&quot;entity2&quot;, association.getEntity2().getPathMeta().getElement())</span>
+<span class="nc" id="L293">                        .format());</span>
             }
-<span class="fc" id="L268">        }</span>
+<span class="fc" id="L295">        }</span>
 
-<span class="fc" id="L270">        this.joinAssociations.add(association);</span>
-<span class="fc" id="L271">        return this;</span>
+<span class="fc" id="L297">        this.joinAssociations.add(association);</span>
+<span class="fc" id="L298">        return this;</span>
     }
 
     @Override
-<span class="pc bpc" id="L275" title="1 of 2 branches missed.">    public AutoSelectImpl&lt;T&gt; where(@NonNull Predicate where) {</span>
-<span class="fc" id="L276">        this.where = where;</span>
-<span class="fc" id="L277">        return this;</span>
+<span class="pc bpc" id="L302" title="1 of 2 branches missed.">    public AutoSelectImpl&lt;T&gt; where(@NonNull Predicate where) {</span>
+<span class="fc" id="L303">        this.where = where;</span>
+<span class="fc" id="L304">        return this;</span>
     }
 
     @Override
     public AutoSelectImpl&lt;T&gt; orderBy(OrderSpecifier... orders) {
         //TODO: 追加ではなく、上書き（直接変数に代入）する
-<span class="fc" id="L283">        this.orders.addAll(Arrays.asList(orders));</span>
-<span class="fc" id="L284">        return this;</span>
+<span class="fc" id="L310">        this.orders.addAll(Arrays.asList(orders));</span>
+<span class="fc" id="L311">        return this;</span>
     }
 
     @Override
-<span class="pc bpc" id="L288" title="1 of 2 branches missed.">    public AutoSelectImpl&lt;T&gt; id(@NonNull final Object... idPropertyValues) {</span>
+<span class="pc bpc" id="L315" title="1 of 2 branches missed.">    public AutoSelectImpl&lt;T&gt; id(@NonNull final Object... idPropertyValues) {</span>
 
-<span class="fc" id="L290">        Optional&lt;PropertyMeta&gt; embeddedIdPropertyMeta = entityMeta.getEmbeddedIdPropertyMeta();</span>
-<span class="pc bpc" id="L291" title="1 of 2 branches missed.">        if(isEmbeddedProperty(idPropertyValues, embeddedIdPropertyMeta)) {</span>
+<span class="fc" id="L317">        Optional&lt;PropertyMeta&gt; embeddedIdPropertyMeta = entityMeta.getEmbeddedIdPropertyMeta();</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">        if(isEmbeddedProperty(idPropertyValues, embeddedIdPropertyMeta)) {</span>
             // 埋め込みIDのとき
-<span class="nc" id="L293">            this.idPropertyValues = getEmbeddedIdValue(idPropertyValues, embeddedIdPropertyMeta.get().getEmbeddedablePopertyMetaList());</span>
+<span class="fc" id="L320">            this.idPropertyValues = getEmbeddedIdValue(idPropertyValues[0], embeddedIdPropertyMeta.get().getEmbeddedablePopertyMetaList());</span>
         } else {
-<span class="fc" id="L295">            List&lt;PropertyMeta&gt; idPropertyMetaList = entityMeta.getIdPropertyMetaList();</span>
-<span class="pc bpc" id="L296" title="1 of 2 branches missed.">            if(idPropertyMetaList.size() != idPropertyValues.length) {</span>
-<span class="nc" id="L297">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noMatchIdPropertySize&quot;)</span>
-<span class="nc" id="L298">                        .paramWithClass(&quot;entityType&quot;, entityPath.getType())</span>
-<span class="nc" id="L299">                        .param(&quot;actualSize&quot;, idPropertyValues.length)</span>
-<span class="nc" id="L300">                        .param(&quot;expectedSize&quot;, idPropertyMetaList.size())</span>
-<span class="nc" id="L301">                        .format());</span>
+<span class="fc" id="L322">            List&lt;PropertyMeta&gt; idPropertyMetaList = entityMeta.getIdPropertyMetaList();</span>
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">            if(idPropertyMetaList.size() != idPropertyValues.length) {</span>
+<span class="nc" id="L324">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noMatchIdPropertySize&quot;)</span>
+<span class="nc" id="L325">                        .paramWithClass(&quot;entityType&quot;, entityPath.getType())</span>
+<span class="nc" id="L326">                        .param(&quot;actualSize&quot;, idPropertyValues.length)</span>
+<span class="nc" id="L327">                        .param(&quot;expectedSize&quot;, idPropertyMetaList.size())</span>
+<span class="nc" id="L328">                        .format());</span>
             }
 
-<span class="fc" id="L304">            this.idPropertyValues = idPropertyValues;</span>
+<span class="fc" id="L331">            this.idPropertyValues = idPropertyValues;</span>
         }
 
-<span class="fc" id="L307">        return this;</span>
+<span class="fc" id="L334">        return this;</span>
     }
 
     /**
@@ -314,12 +341,15 @@ public class AutoSelectImpl&lt;T&gt; implements AutoSelect&lt;T&gt; {
      * @return {@literal true}のとき埋め込みID。
      */
     private boolean isEmbeddedProperty(Object[] idPropertyValues, Optional&lt;PropertyMeta&gt; embeddedIdPropertyMeta) {
-<span class="pc bpc" id="L317" title="3 of 4 branches missed.">        if(idPropertyValues.length != 0 || embeddedIdPropertyMeta.isEmpty()) {</span>
-<span class="fc" id="L318">            return false;</span>
+<span class="pc bpc" id="L344" title="1 of 4 branches missed.">        if(idPropertyValues.length == 0 || embeddedIdPropertyMeta.isEmpty()) {</span>
+<span class="fc" id="L345">            return false;</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">        } else if(idPropertyValues.length &gt;= 2) {</span>
+            // IDの指定件数が複数ある時点で埋め込みIDではないので対象外とする。
+<span class="fc" id="L348">            return false;</span>
         }
 
-<span class="nc" id="L321">        Class&lt;?&gt; embeddedType = embeddedIdPropertyMeta.get().getPropertyType();</span>
-<span class="nc" id="L322">        return embeddedType.isAssignableFrom(idPropertyValues[0].getClass());</span>
+<span class="fc" id="L351">        Class&lt;?&gt; embeddedType = embeddedIdPropertyMeta.get().getPropertyType();</span>
+<span class="fc" id="L352">        return embeddedType.isAssignableFrom(idPropertyValues[0].getClass());</span>
     }
 
     /**
@@ -330,55 +360,55 @@ public class AutoSelectImpl&lt;T&gt; implements AutoSelect&lt;T&gt; {
      */
     private Object[] getEmbeddedIdValue(Object value, Collection&lt;PropertyMeta&gt; embeddablePropertyList) {
 
-<span class="nc" id="L333">        List&lt;Object&gt; idValueList = new ArrayList&lt;&gt;(embeddablePropertyList.size());</span>
-<span class="nc bnc" id="L334" title="All 2 branches missed.">        for(PropertyMeta propertyMeta : embeddablePropertyList) {</span>
-<span class="nc" id="L335">            idValueList.add(PropertyValueInvoker.getPropertyValue(propertyMeta, value));</span>
-<span class="nc" id="L336">        }</span>
+<span class="fc" id="L363">        List&lt;Object&gt; idValueList = new ArrayList&lt;&gt;(embeddablePropertyList.size());</span>
+<span class="fc bfc" id="L364" title="All 2 branches covered.">        for(PropertyMeta propertyMeta : embeddablePropertyList) {</span>
+<span class="fc" id="L365">            idValueList.add(PropertyValueInvoker.getPropertyValue(propertyMeta, value));</span>
+<span class="fc" id="L366">        }</span>
 
-<span class="nc" id="L338">        return idValueList.toArray(new Object[idValueList.size()]);</span>
+<span class="fc" id="L368">        return idValueList.toArray(new Object[idValueList.size()]);</span>
     }
 
     @Override
-<span class="nc bnc" id="L342" title="All 2 branches missed.">    public AutoSelectImpl&lt;T&gt; version(@NonNull final Object versionPropertyValue) {</span>
+<span class="pc bpc" id="L372" title="1 of 2 branches missed.">    public AutoSelectImpl&lt;T&gt; version(@NonNull final Object versionPropertyValue) {</span>
 
-<span class="nc bnc" id="L344" title="All 2 branches missed.">        if(!entityMeta.hasVersionPropertyMeta()) {</span>
-<span class="nc" id="L345">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noVersionProperty&quot;)</span>
-<span class="nc" id="L346">                    .paramWithClass(&quot;entityType&quot;, entityPath.getType())</span>
-<span class="nc" id="L347">                    .format());</span>
+<span class="pc bpc" id="L374" title="1 of 2 branches missed.">        if(!entityMeta.hasVersionPropertyMeta()) {</span>
+<span class="nc" id="L375">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noVersionProperty&quot;)</span>
+<span class="nc" id="L376">                    .paramWithClass(&quot;entityType&quot;, entityPath.getType())</span>
+<span class="nc" id="L377">                    .format());</span>
         }
 
-<span class="nc" id="L350">        this.versionPropertyValue = versionPropertyValue;</span>
+<span class="fc" id="L380">        this.versionPropertyValue = versionPropertyValue;</span>
 
-<span class="nc" id="L352">        return this;</span>
+<span class="fc" id="L382">        return this;</span>
     }
 
     @Override
     public AutoSelectImpl&lt;T&gt; forUpdate() {
-<span class="nc" id="L357">        final Dialect dialect = context.getDialect();</span>
-<span class="nc bnc" id="L358" title="All 2 branches missed.">        if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NORMAL)) {</span>
-<span class="nc" id="L359">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.notSupportSelectForUpdate&quot;)</span>
-<span class="nc" id="L360">                    .paramWithClass(&quot;entityType&quot;, entityPath.getType())</span>
-<span class="nc" id="L361">                    .param(&quot;dialectName&quot;, dialect.getName())</span>
-<span class="nc" id="L362">                    .format());</span>
+<span class="nc" id="L387">        final Dialect dialect = context.getDialect();</span>
+<span class="nc bnc" id="L388" title="All 2 branches missed.">        if(!dialect.supportsSelectForUpdate(SelectForUpdateType.NORMAL)) {</span>
+<span class="nc" id="L389">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.notSupportSelectForUpdate&quot;)</span>
+<span class="nc" id="L390">                    .paramWithClass(&quot;entityType&quot;, entityPath.getType())</span>
+<span class="nc" id="L391">                    .param(&quot;dialectName&quot;, dialect.getName())</span>
+<span class="nc" id="L392">                    .format());</span>
         }
 
-<span class="nc" id="L365">        this.forUpdateType = SelectForUpdateType.NORMAL;</span>
-<span class="nc" id="L366">        return this;</span>
+<span class="nc" id="L395">        this.forUpdateType = SelectForUpdateType.NORMAL;</span>
+<span class="nc" id="L396">        return this;</span>
     }
 
     @Override
     public AutoSelectImpl&lt;T&gt; forUpdateNoWait() {
 
-<span class="nc" id="L372">        final Dialect dialect = context.getDialect();</span>
-<span class="nc bnc" id="L373" title="All 2 branches missed.">        if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NOWAIT)) {</span>
-<span class="nc" id="L374">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.notSupportSelectForUpdateNowait&quot;)</span>
-<span class="nc" id="L375">                    .paramWithClass(&quot;entityType&quot;, entityPath.getType())</span>
-<span class="nc" id="L376">                    .param(&quot;dialectName&quot;, dialect.getName())</span>
-<span class="nc" id="L377">                    .format());</span>
+<span class="nc" id="L402">        final Dialect dialect = context.getDialect();</span>
+<span class="nc bnc" id="L403" title="All 2 branches missed.">        if(!dialect.supportsSelectForUpdate(SelectForUpdateType.NOWAIT)) {</span>
+<span class="nc" id="L404">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.notSupportSelectForUpdateNowait&quot;)</span>
+<span class="nc" id="L405">                    .paramWithClass(&quot;entityType&quot;, entityPath.getType())</span>
+<span class="nc" id="L406">                    .param(&quot;dialectName&quot;, dialect.getName())</span>
+<span class="nc" id="L407">                    .format());</span>
         }
 
-<span class="nc" id="L380">        this.forUpdateType = SelectForUpdateType.NOWAIT;</span>
-<span class="nc" id="L381">        return this;</span>
+<span class="nc" id="L410">        this.forUpdateType = SelectForUpdateType.NOWAIT;</span>
+<span class="nc" id="L411">        return this;</span>
     }
 
     /**
@@ -389,55 +419,55 @@ public class AutoSelectImpl&lt;T&gt; implements AutoSelect&lt;T&gt; {
      */
     public AutoSelectImpl&lt;T&gt; forUpdateWait(final int seconds) {
 
-<span class="nc" id="L392">        final Dialect dialect = context.getDialect();</span>
-<span class="nc bnc" id="L393" title="All 2 branches missed.">        if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.WAIT)) {</span>
-<span class="nc" id="L394">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.notSupportSelectForUpdateWait&quot;)</span>
-<span class="nc" id="L395">                    .paramWithClass(&quot;entityType&quot;, entityPath.getType())</span>
-<span class="nc" id="L396">                    .param(&quot;dialectName&quot;, dialect.getName())</span>
-<span class="nc" id="L397">                    .format());</span>
+<span class="nc" id="L422">        final Dialect dialect = context.getDialect();</span>
+<span class="nc bnc" id="L423" title="All 2 branches missed.">        if(!dialect.supportsSelectForUpdate(SelectForUpdateType.WAIT)) {</span>
+<span class="nc" id="L424">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.notSupportSelectForUpdateWait&quot;)</span>
+<span class="nc" id="L425">                    .paramWithClass(&quot;entityType&quot;, entityPath.getType())</span>
+<span class="nc" id="L426">                    .param(&quot;dialectName&quot;, dialect.getName())</span>
+<span class="nc" id="L427">                    .format());</span>
         }
 
-<span class="nc" id="L400">        this.forUpdateType = SelectForUpdateType.WAIT;</span>
-<span class="nc" id="L401">        this.forUpdateWaitSeconds = seconds;</span>
-<span class="nc" id="L402">        return this;</span>
+<span class="nc" id="L430">        this.forUpdateType = SelectForUpdateType.WAIT;</span>
+<span class="nc" id="L431">        this.forUpdateWaitSeconds = seconds;</span>
+<span class="nc" id="L432">        return this;</span>
     }
 
     @Override
     public long getCount() {
-<span class="fc" id="L407">        return new AutoSelectExecutor&lt;&gt;(this, true)</span>
-<span class="fc" id="L408">                .getCount();</span>
+<span class="fc" id="L437">        return new AutoSelectExecutor&lt;&gt;(this, true)</span>
+<span class="fc" id="L438">                .getCount();</span>
     }
 
     @Override
     public T getSingleResult() {
-<span class="fc" id="L413">        return  new AutoSelectExecutor&lt;&gt;(this, false)</span>
-<span class="fc" id="L414">                .getSingleResult(entity -&gt; {</span>
-<span class="fc" id="L415">                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));</span>
-<span class="fc" id="L416">                });</span>
+<span class="fc" id="L443">        return  new AutoSelectExecutor&lt;&gt;(this, false)</span>
+<span class="fc" id="L444">                .getSingleResult(entity -&gt; {</span>
+<span class="fc" id="L445">                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));</span>
+<span class="fc" id="L446">                });</span>
     }
 
     @Override
     public Optional&lt;T&gt; getOptionalResult() {
-<span class="nc" id="L421">        return new AutoSelectExecutor&lt;&gt;(this, false)</span>
-<span class="nc" id="L422">                .getOptionalResult(entity -&gt; {</span>
-<span class="nc" id="L423">                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));</span>
-<span class="nc" id="L424">                });</span>
+<span class="fc" id="L451">        return new AutoSelectExecutor&lt;&gt;(this, false)</span>
+<span class="fc" id="L452">                .getOptionalResult(entity -&gt; {</span>
+<span class="fc" id="L453">                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));</span>
+<span class="fc" id="L454">                });</span>
     }
 
     @Override
     public List&lt;T&gt; getResultList() {
-<span class="fc" id="L429">        return new AutoSelectExecutor&lt;&gt;(this, false)</span>
-<span class="fc" id="L430">                .getResultList(entity -&gt; {</span>
-<span class="fc" id="L431">                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));</span>
-<span class="fc" id="L432">                });</span>
+<span class="fc" id="L459">        return new AutoSelectExecutor&lt;&gt;(this, false)</span>
+<span class="fc" id="L460">                .getResultList(entity -&gt; {</span>
+<span class="fc" id="L461">                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));</span>
+<span class="fc" id="L462">                });</span>
     }
 
     @Override
     public Stream&lt;T&gt; getResultStream() {
-<span class="fc" id="L437">        return new AutoSelectExecutor&lt;&gt;(this, false)</span>
-<span class="fc" id="L438">                .getResultStream(entity -&gt; {</span>
-<span class="fc" id="L439">                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));</span>
-<span class="fc" id="L440">                });</span>
+<span class="fc" id="L467">        return new AutoSelectExecutor&lt;&gt;(this, false)</span>
+<span class="fc" id="L468">                .getResultStream(entity -&gt; {</span>
+<span class="fc" id="L469">                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(AutoSelectImpl.this, entityMeta, entity));</span>
+<span class="fc" id="L470">                });</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

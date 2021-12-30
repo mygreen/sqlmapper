@@ -33,7 +33,7 @@ import lombok.Getter;
      * @return このインスタンス自身
      */
     public SimpleWhereBuilder or() {
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if(!terms.isEmpty()) {</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if(!terms.isEmpty()) {</span>
 <span class="fc" id="L37">            this.childrenWhere.add(putAsSimpleWhere());</span>
         }
 <span class="fc" id="L39">        return this;</span>

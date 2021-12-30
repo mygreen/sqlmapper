@@ -2,7 +2,7 @@ GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_
 sqlmapper-apt,com.github.mygreen.sqlmapper.apt.model,AptType,61,127,14,18,17,32,17,14,6,9
 sqlmapper-apt,com.github.mygreen.sqlmapper.apt.model,EntityMetamodel,23,51,7,5,3,13,7,6,2,5
 sqlmapper-apt,com.github.mygreen.sqlmapper.apt,MetamodelConfig,0,21,0,0,0,3,0,3,0,3
-sqlmapper-apt,com.github.mygreen.sqlmapper.apt,EntityMetamodelFactory,25,141,9,9,8,33,6,8,0,5
+sqlmapper-apt,com.github.mygreen.sqlmapper.apt,EntityMetamodelFactory,27,148,10,10,8,34,7,8,0,5
 sqlmapper-apt,com.github.mygreen.sqlmapper.apt,AptUtils,9,59,3,11,3,15,4,7,1,3
-sqlmapper-apt,com.github.mygreen.sqlmapper.apt,EntitySpecFactory,528,542,27,19,85,101,17,15,1,8
+sqlmapper-apt,com.github.mygreen.sqlmapper.apt,EntitySpecFactory,570,548,29,21,89,102,19,15,1,8
 sqlmapper-apt,com.github.mygreen.sqlmapper.apt,EntityMetamodelProcessor,67,226,5,21,18,51,5,14,0,6

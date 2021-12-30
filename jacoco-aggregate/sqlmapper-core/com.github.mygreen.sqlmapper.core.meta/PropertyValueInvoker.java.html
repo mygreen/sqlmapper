@@ -101,28 +101,28 @@ import lombok.extern.slf4j.Slf4j;
 <span class="pc bpc" id="L101" title="1 of 2 branches missed.">    public static Object getEmbeddedPropertyValue(final @NonNull PropertyMeta propertyMeta,</span>
 <span class="pc bpc" id="L102" title="1 of 2 branches missed.">            final @NonNull Object entityObject) {</span>
 
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if(!propertyMeta.hasParent()) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        if(!propertyMeta.hasParent()) {</span>
 <span class="fc" id="L105">            return getPropertyValue(propertyMeta, entityObject);</span>
         }
 
-<span class="nc" id="L108">        final LinkedList&lt;PropertyMeta&gt; parentStack = new LinkedList&lt;&gt;();</span>
-<span class="nc" id="L109">        setupParentStack(propertyMeta, parentStack);</span>
+<span class="fc" id="L108">        final LinkedList&lt;PropertyMeta&gt; parentStack = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L109">        setupParentStack(propertyMeta, parentStack);</span>
 
-<span class="nc" id="L111">        Object parentObject = entityObject;</span>
+<span class="fc" id="L111">        Object parentObject = entityObject;</span>
 
         // スタックの最上部（ルート）から下にたどる
-<span class="nc bnc" id="L114" title="All 2 branches missed.">        for(PropertyMeta parent : parentStack) {</span>
-<span class="nc" id="L115">            Object propertyValue = getPropertyValue(parent, parentObject);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        for(PropertyMeta parent : parentStack) {</span>
+<span class="fc" id="L115">            Object propertyValue = getPropertyValue(parent, parentObject);</span>
 
             // 親がnullのとき、子もnullとして返す。
-<span class="nc bnc" id="L118" title="All 2 branches missed.">            if(propertyValue == null) {</span>
-<span class="nc" id="L119">                return null;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            if(propertyValue == null) {</span>
+<span class="fc" id="L119">                return null;</span>
             }
 
-<span class="nc" id="L122">            parentObject = propertyValue;</span>
-<span class="nc" id="L123">        }</span>
+<span class="fc" id="L122">            parentObject = propertyValue;</span>
+<span class="fc" id="L123">        }</span>
 
-<span class="nc" id="L125">        return getPropertyValue(propertyMeta, parentObject);</span>
+<span class="fc" id="L125">        return getPropertyValue(propertyMeta, parentObject);</span>
     }
 
     /**
@@ -138,48 +138,47 @@ import lombok.extern.slf4j.Slf4j;
 <span class="pc bpc" id="L138" title="1 of 2 branches missed.">    public static void setEmbeddedPropertyValue(final @NonNull PropertyMeta propertyMeta,</span>
 <span class="pc bpc" id="L139" title="1 of 2 branches missed.">            final @NonNull Object entityObject, final Object propertyValue) {</span>
 
-<span class="pc bpc" id="L141" title="1 of 2 branches missed.">        if(!propertyMeta.hasParent()) {</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        if(!propertyMeta.hasParent()) {</span>
 <span class="fc" id="L142">            setPropertyValue(propertyMeta, entityObject, propertyValue);</span>
 <span class="fc" id="L143">            return;</span>
         }
 
-<span class="nc" id="L146">        final LinkedList&lt;PropertyMeta&gt; parentStack = new LinkedList&lt;&gt;();</span>
-<span class="nc" id="L147">        setupParentStack(propertyMeta, parentStack);</span>
+<span class="fc" id="L146">        final LinkedList&lt;PropertyMeta&gt; parentStack = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L147">        setupParentStack(propertyMeta, parentStack);</span>
 
-<span class="nc" id="L149">        Object parentObject = entityObject;</span>
+<span class="fc" id="L149">        Object parentObject = entityObject;</span>
 
         // スタックの最上部（ルート）から下にたどっていく
-<span class="nc bnc" id="L152" title="All 2 branches missed.">        for(PropertyMeta parent : parentStack) {</span>
-<span class="nc" id="L153">            Object parentPropertyValue = getPropertyValue(parent, parentObject);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        for(PropertyMeta parent : parentStack) {</span>
+<span class="fc" id="L153">            Object parentPropertyValue = getPropertyValue(parent, parentObject);</span>
 
             // 親のインスタンスがない場合は作成する
-<span class="nc bnc" id="L156" title="All 2 branches missed.">            if(parentPropertyValue == null) {</span>
-<span class="nc" id="L157">                parentPropertyValue = BeanUtils.instantiateClass(parent.getPropertyType());</span>
-<span class="nc" id="L158">                setPropertyValue(parent, parentObject, propertyValue);</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">            if(parentPropertyValue == null) {</span>
+<span class="fc" id="L157">                parentPropertyValue = BeanUtils.instantiateClass(parent.getPropertyType());</span>
+<span class="fc" id="L158">                setPropertyValue(parent, parentObject, parentPropertyValue);</span>
             }
-<span class="nc" id="L160">            parentObject = parentPropertyValue;</span>
-<span class="nc" id="L161">        }</span>
 
-<span class="nc" id="L163">        setPropertyValue(propertyMeta, parentObject, propertyValue);</span>
+<span class="fc" id="L161">            parentObject = parentPropertyValue;</span>
+<span class="fc" id="L162">        }</span>
 
-<span class="nc" id="L165">    }</span>
+<span class="fc" id="L164">        setPropertyValue(propertyMeta, parentObject, propertyValue);</span>
+
+<span class="fc" id="L166">    }</span>
 
     /**
      * 埋め込みプロパティの親をたどるためのスタックを設定する。
      * @param propertyMeta 子のプロパティ情報
-     * @param parentStack 親へのスタック（自身を含む）
+     * @param parentStack 親へのスタック
      */
     private static void setupParentStack(final PropertyMeta propertyMeta,
             final LinkedList&lt;PropertyMeta&gt; parentStack) {
 
-<span class="nc" id="L175">        parentStack.push(propertyMeta);</span>
-
-<span class="nc bnc" id="L177" title="All 2 branches missed.">        if(propertyMeta.hasParent()) {</span>
-<span class="nc" id="L178">            setupParentStack(propertyMeta.getParent(), parentStack);</span>
-<span class="nc" id="L179">            return;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">        if(propertyMeta.hasParent()) {</span>
+<span class="fc" id="L177">            parentStack.push(propertyMeta.getParent());</span>
+<span class="fc" id="L178">            setupParentStack(propertyMeta.getParent(), parentStack);</span>
         }
 
-<span class="nc" id="L182">    }</span>
+<span class="fc" id="L181">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
