@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
@@ -17,11 +18,49 @@ import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 /**
  * 抽出を行うSQLを自動生成するクエリです。
  *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  * @param <T> 処理対象となるエンティティの型
  */
 public interface AutoSelect<T> {
+
+    /**
+     * クエリタイムアウトの秒数を設定します。
+     * <p>{@literal -1} を指定するとJDBC ドライバーのデフォルト値を使用します。
+     *
+     * @since 0.3
+     * @param seconds クエリタイムアウトの秒数
+     * @return 自身のインスタンス。
+     */
+    AutoSelect<T> queryTimeout(int seconds);
+
+    /**
+     * フェッチ数を設定します。
+     * <p>これをデフォルト値よりも高く設定すると、大きな結果セットを処理する際に、メモリ消費を犠牲にして処理速度が向上します。
+     * <p>{@literal -1} を指定するとJDBC ドライバーのデフォルト値を使用します。
+     *
+     * @since 0.3
+     * @param fetchSize フェッチ数
+     * @return 自身のインスタンス。
+     */
+    AutoSelect<T> fetchSize(int fetchSize);
+
+    /**
+     * 最大行数を設定します。
+     * <p>JDBCのStatementレベルで、結果セットのオブジェクトが含むことのできる最大行数を制限します。
+     *  <br>制限値を超えた場合は通知なしの除外されます。
+     * </p>
+     * <p>RDMSでLIMIT句がサポートされていない場合に使用します。
+     *  <br>LIMIT句がサポートされている場合は、{@link #limit(int)} を使用します。
+     * </p>
+     * <p>{@literal -1} を指定するとJDBC ドライバーのデフォルト値を使用します。
+     *
+     * @since 0.3
+     * @param maxRows 最大行数
+     * @return 自身のインスタンス。
+     */
+    AutoSelect<T> maxRows(int maxRows);
 
     /**
      * ヒントを設定します。
@@ -39,14 +78,15 @@ public interface AutoSelect<T> {
 
     /**
      * 抽出するデータの開始位置を指定します。
-     * @param offset 開始位置。
+     * @param offset 開始位置。0から始まります。
      * @return このインスタンス自身
      */
     AutoSelect<T> offset(int offset);
 
     /**
-     * 指定のプロパティのみを挿入対象とします。
-     * <p>アノテーション {@literal @Column(insertable = false)} が設定されているプロパティは対象外となります。</p>
+     * 指定のプロパティのみを抽出対象とします。
+     * <p>ID(主キー)の場合は、必ず抽出対象となります。</p>
+     * <p>{@link #excludes(PropertyPath...)} と同時に指定した場合、{@link #includes(PropertyPath...)}が優先されます。</p>
      *
      * @param properties 挿入対象のプロパティ情報。
      * @return 自身のインスタンス。
@@ -55,7 +95,9 @@ public interface AutoSelect<T> {
     AutoSelect<T> includes(PropertyPath<?>... properties);
 
     /**
-     * 指定のプロパティを挿入対象から除外します。
+     * 指定のプロパティを抽出対象から除外します。
+     * <p>ID(主キー)の場合は、必ず抽出対象となります。</p>
+     * <p>{@link #includes(PropertyPath...)} と同時に指定した場合、{@link #includes(PropertyPath...)}が優先されます。</p>
      *
      * @param properties 除外対象のプロパティ情報。
      * @return 自身のインスタンス。
@@ -87,6 +129,9 @@ public interface AutoSelect<T> {
 
     /**
      * テーブル結合の際に複数のテーブルのエンティティの構成定義を指定します。
+     * <p>{@literal OUTER JOIN}で関連先が存在しない場合も、各プロパティがnullの値が設定さたエンティティのインスタンスが渡されるため、主キーなどで判定して除外します。
+     *   <br>例 : {@code associate(c_, a_, (e1, e2) -> Optional.ofNullable(e2.getCustomerId()).ifPresent(c -> e1.setAddress(e2)))}
+     * </p>
      *
      * @param <E1> エンティティタイプ1
      * @param <E2> エンティティタイプ2
@@ -164,7 +209,8 @@ public interface AutoSelect<T> {
      * 検索してベースオブジェクトを返します。
      *
      * @return ベースオブジェクト。
-     * @throws IncorrectResultSizeDataAccessException 1件も見つからない場合、2件以上見つかった場合にスローされます。
+     * @throws EmptyResultDataAccessException 1件も見つからなかった場合にスローされます。
+     * @throws IncorrectResultSizeDataAccessException 2件以上見つかった場合にスローされます。
      */
     T getSingleResult();
 
@@ -172,6 +218,7 @@ public interface AutoSelect<T> {
      * 検索してベースオブジェクトを返します。
      *
      * @return ベースオブジェクト。1件も対象がないときは空を返します。
+     * @throws IncorrectResultSizeDataAccessException 2件以上見つかった場合にスローされます。
      */
     Optional<T> getOptionalResult();
 

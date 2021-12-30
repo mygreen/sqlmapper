@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
@@ -132,13 +134,22 @@ public class AutoDeleteExecutor {
 
         prepare();
 
-        final int rows = context.getJdbcTemplate().update(executedSql, paramValues.toArray());
+        final int rows = getJdbcTemplate().update(executedSql, paramValues.toArray());
         if(isOptimisticLock()) {
             validateRows(rows);
         }
         return rows;
 
+    }
 
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(query.getQueryTimeout())
+                .build();
     }
 
     /**

@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 
@@ -32,6 +33,9 @@ public class AutoAnyDeleteImpl<T> implements AutoAnyDelete<T> {
     @Getter
     private final EntityMeta entityMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
     /**
      * クライテリアです。
      */
@@ -44,7 +48,27 @@ public class AutoAnyDeleteImpl<T> implements AutoAnyDelete<T> {
         this.entityPath = entityPath;
         this.entityMeta = context.getEntityMetaFactory().create(entityPath.getType());
         this.baseClass = (Class<T>)entityMeta.getEntityType();
+
+        validateTarget();
     }
+
+    private void validateTarget() {
+
+        // 読み取り専用かどうかのチェック
+        if(entityMeta.getTableMeta().isReadOnly()) {
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.readOnlyEntity")
+                    .paramWithClass("entityType", entityMeta.getEntityType())
+                    .format());
+        }
+
+    }
+
+    @Override
+    public AutoAnyDeleteImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
+    }
+
 
     @Override
     public AutoAnyDeleteImpl<T> where(@NonNull Predicate where) {

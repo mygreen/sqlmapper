@@ -1,9 +1,12 @@
 package com.github.mygreen.sqlmapper.core.query.sql;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import com.github.mygreen.splate.ProcessResult;
 import com.github.mygreen.splate.SqlTemplate;
 import com.github.mygreen.splate.SqlTemplateContext;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 
 import lombok.Getter;
 
@@ -34,6 +37,9 @@ public class SqlCountImpl implements SqlCount {
     @Getter
     private final SqlTemplateContext parameter;
 
+    @Getter
+    private Integer queryTimeout;
+
     public SqlCountImpl(SqlMapperContext context, SqlTemplate template, SqlTemplateContext parameter) {
         this.context = context;
         this.template = template;
@@ -41,9 +47,26 @@ public class SqlCountImpl implements SqlCount {
     }
 
     @Override
+    public SqlCountImpl queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
+    }
+
+    @Override
     public long getCount() {
         ProcessResult result = template.process(parameter);
-        return context.getJdbcTemplate().queryForObject(result.getSql(), Long.class, result.getParameters().toArray());
+        String sql = context.getDialect().convertGetCountSql(result.getSql());
+        return getJdbcTemplate().queryForObject(sql, Long.class, result.getParameters().toArray());
 
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(queryTimeout)
+                .build();
     }
 }

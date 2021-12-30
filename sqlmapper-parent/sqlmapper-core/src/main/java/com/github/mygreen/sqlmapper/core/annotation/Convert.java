@@ -21,12 +21,14 @@ public @interface Convert {
 
     /**
      * 変換処理の実装クラスを指定します。
+     * @return 変換処理の実装クラス。
      */
     @SuppressWarnings("rawtypes")
     Class<? extends ValueType> type();
 
     /**
      * (オプション)Spring Beanの名称。コンテナに登録されている実装クラスを参照する場合に指定します。
+     * @return Spring Beanの名称。
      */
     String name() default "";
 

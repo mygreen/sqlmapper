@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.metamodel.operation;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
@@ -44,6 +45,11 @@ public class SqlTimestampOperation extends SqlTimestampExpression implements Ope
     @Override
     public Expression<?> getArg(int index) {
         return opMixin.getArg(index);
+    }
+
+    @Override
+    public Optional<Expression<?>> getOptArg(int index) {
+        return opMixin.getOptArg(index);
     }
 
     @Override

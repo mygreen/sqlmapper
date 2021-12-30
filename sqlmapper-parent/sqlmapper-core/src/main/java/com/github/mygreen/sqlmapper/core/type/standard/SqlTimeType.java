@@ -3,9 +3,12 @@ package com.github.mygreen.sqlmapper.core.type.standard;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import com.github.mygreen.sqlmapper.core.annotation.Temporal.TemporalType;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 
 import lombok.Getter;
 
@@ -51,6 +54,11 @@ public class SqlTimeType implements SqlTemporalType<Time> {
     }
 
     @Override
+    public Time convertTo(Date utilDate) {
+        return new Time(utilDate.getTime());
+    }
+
+    @Override
     public Time getValue(ResultSet rs, int columnIndex) throws SQLException {
 
         Time value = rs.getTime(columnIndex);
@@ -76,4 +84,10 @@ public class SqlTimeType implements SqlTemporalType<Time> {
     public String getEmbeddedValue(Time value) {
         return value != null ? new SimpleDateFormat(pattern).format(value) : null;
     }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+        return Types.TIME;
+    }
+
 }

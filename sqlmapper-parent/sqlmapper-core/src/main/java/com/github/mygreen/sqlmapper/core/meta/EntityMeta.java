@@ -72,13 +72,13 @@ public class EntityMeta {
      * 修正日時用のカラムプロパティ
      */
     @Getter
-    private Optional<PropertyMeta> modifiedAtPropertyMeta = Optional.empty();
+    private Optional<PropertyMeta> updatedAtPropertyMeta = Optional.empty();
 
     /**
      * 修正者用のカラムプロパティ
      */
     @Getter
-    private Optional<PropertyMeta> modifiedByPropertyMeta = Optional.empty();
+    private Optional<PropertyMeta> updatedByPropertyMeta = Optional.empty();
 
     /**
      * カラム用のプロパティ情報
@@ -231,19 +231,19 @@ public class EntityMeta {
     }
 
     /**
-     * 修正日時を表すプロパティのメタデータを持つかどうか。
+     * 更新日時を表すプロパティのメタデータを持つかどうか。
      * @return 修正日時を表すプロパティのメタデータがあれば {@literal true} を返す。
      */
-    public boolean hasModifiedAtPropertyMeta() {
-        return modifiedAtPropertyMeta.isPresent();
+    public boolean hasUpdatedAtPropertyMeta() {
+        return updatedAtPropertyMeta.isPresent();
     }
 
     /**
-     * 修正者を表すプロパティのメタデータを持つかどうか。
+     * 更新者を表すプロパティのメタデータを持つかどうか。
      * @return 修正者を表すプロパティのメタデータがあれば {@literal true} を返す。
      */
-    public boolean hasModifiedByPropertyMeta() {
-        return modifiedByPropertyMeta.isPresent();
+    public boolean hasUpdatedByPropertyMeta() {
+        return updatedByPropertyMeta.isPresent();
     }
 
     /**
@@ -272,12 +272,12 @@ public class EntityMeta {
             this.createdByPropertyMeta = Optional.of(propertyMeta);
         }
 
-        if(propertyMeta.isModifiedAt()) {
-            this.modifiedAtPropertyMeta = Optional.of(propertyMeta);
+        if(propertyMeta.isUpdatedAt()) {
+            this.updatedAtPropertyMeta = Optional.of(propertyMeta);
         }
 
-        if(propertyMeta.isModifiedBy()) {
-            this.modifiedByPropertyMeta = Optional.of(propertyMeta);
+        if(propertyMeta.isUpdatedBy()) {
+            this.updatedByPropertyMeta = Optional.of(propertyMeta);
         }
 
         if(propertyMeta.getColumnMeta() != null) {

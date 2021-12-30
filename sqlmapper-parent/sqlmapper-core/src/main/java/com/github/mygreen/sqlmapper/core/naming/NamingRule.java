@@ -38,4 +38,12 @@ public interface NamingRule {
      */
     String columnToProperty(String columnName);
 
+    /**
+     * プロパティ名をストアドプロシージャ／ファンクションの引数名に変換する
+     * @param propertyName プロパティ名
+     * @return ストアドプロシージャ／ファンクションの引数名
+     */
+    String propertyToStoredParam(String propertyName);
+
+
 }

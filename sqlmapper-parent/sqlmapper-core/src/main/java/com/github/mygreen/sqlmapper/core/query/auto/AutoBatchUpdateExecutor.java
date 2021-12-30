@@ -3,10 +3,12 @@ package com.github.mygreen.sqlmapper.core.query.auto;
 import java.util.List;
 
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.query.SetClause;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
@@ -93,21 +95,8 @@ public class AutoBatchUpdateExecutor {
         final int dataSize = query.getEntitySize();
 
         for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
-            final String propertyName = propertyMeta.getName();
-            // 主キーは検索条件に入れるので対象外
-            if(propertyMeta.isId() || !propertyMeta.getColumnMeta().isUpdatable()) {
-                continue;
-            }
 
-            if (propertyMeta.isVersion() && !query.isIncludeVersion()) {
-                continue;
-            }
-
-            if(query.getExcludesProperties().contains(propertyName)) {
-                continue;
-            }
-
-            if(!query.getIncludesProperties().isEmpty() && !query.getIncludesProperties().contains(propertyName)) {
+            if(!isTargetProperty(propertyMeta)) {
                 continue;
             }
 
@@ -136,6 +125,48 @@ public class AutoBatchUpdateExecutor {
             final String columnName = propertyMeta.getColumnMeta().getName();
             setClause.addSql(columnName, columnName + " + 1");
         }
+    }
+
+    /**
+     * 更新対象のプロパティか判定します。
+     * @param propertyMeta プロパティ情報
+     * @return 更新対象のとき、{@literal true} を返します。
+     */
+    private boolean isTargetProperty(final PropertyMeta propertyMeta) {
+
+        // 主キーは検索条件に入れるので対象外
+        if(propertyMeta.isId() || !propertyMeta.getColumnMeta().isUpdatable()) {
+            return false;
+        }
+
+        /*
+         * バージョンキーは通常は更新対象となるため、通常の条件では対象外。
+         * ただし、includeVersion = true のときは更新対象とする。
+         */
+        if(propertyMeta.isVersion() && !query.isIncludeVersion()) {
+            return false;
+        }
+
+        if(!propertyMeta.getColumnMeta().isUpdatable()) {
+            return false;
+        }
+
+        if(propertyMeta.isTransient()) {
+            return false;
+        }
+
+        final String propertyName = propertyMeta.getName();
+        if(query.getIncludesProperties().contains(propertyName)) {
+            return true;
+        }
+
+        if(query.getExcludesProperties().contains(propertyName)) {
+            return false;
+        }
+
+        // 更新対象が指定されているときは、その他はすべて更新対象外とする。
+        return query.getIncludesProperties().isEmpty();
+
     }
 
     /**
@@ -204,7 +235,7 @@ public class AutoBatchUpdateExecutor {
             return new int[query.getEntitySize()];
         }
 
-        int[] res = context.getJdbcTemplate().batchUpdate(executedSql, QueryUtils.convertBatchArgs(batchParams));
+        int[] res = getJdbcTemplate().batchUpdate(executedSql, QueryUtils.convertBatchArgs(batchParams));
 
         final int dataSize = query.getEntitySize();
         for(int i=0; i < dataSize; i++) {
@@ -221,6 +252,16 @@ public class AutoBatchUpdateExecutor {
 
         return res;
 
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(query.getQueryTimeout())
+                .build();
     }
 
     /**

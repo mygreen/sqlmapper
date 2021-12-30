@@ -35,7 +35,7 @@ public class Constant<T> extends ImmutableExpression<T> {
     public Constant(final Class<? extends T> type, final T value, boolean expandable) {
         super(type);
         this.value = value;
-        this.expandable = false;
+        this.expandable = expandable;
     }
 
     /**
@@ -45,6 +45,15 @@ public class Constant<T> extends ImmutableExpression<T> {
      */
     public static Constant<String> createString(String value) {
         return new Constant<String>(String.class, value);
+    }
+
+    /**
+     * char型の定数を作成します。
+     * @param value char型
+     * @return char型の定数
+     */
+    public static Constant<Character> createChar(char value) {
+        return new Constant<Character>(Character.class, value);
     }
 
     /**

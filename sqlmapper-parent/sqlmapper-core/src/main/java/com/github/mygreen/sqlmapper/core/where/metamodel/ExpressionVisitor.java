@@ -46,15 +46,28 @@ import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
  */
 public class ExpressionVisitor implements Visitor<VisitorContext> {
 
-    private Map<Class<?>, OperationHandler<? extends Operator>> operationHandlerMap;
-    {
-        this.operationHandlerMap = new HashMap<>();
-        operationHandlerMap.put(BooleanOp.class, new BooleanOpHandler());
-        operationHandlerMap.put(UnaryOp.class, new UnaryOpHandler());
-        operationHandlerMap.put(ComparisionOp.class, new ComparisionOpHandler());
-        operationHandlerMap.put(LikeOp.class, new LikeOpHandler());
-        operationHandlerMap.put(FunctionOp.class, new FuncOpHandler());
-        operationHandlerMap.put(ArithmeticOp.class, new ArithmeticOpHandler());
+    private Map<Class<?>, OperationHandler<? extends Operator>> operationHandlerMap = new HashMap<>();
+
+    public ExpressionVisitor() {
+        register(BooleanOp.class, new BooleanOpHandler());
+        register(UnaryOp.class, new UnaryOpHandler());
+        register(ComparisionOp.class, new ComparisionOpHandler());
+        register(LikeOp.class, new LikeOpHandler());
+        register(FunctionOp.class, new FuncOpHandler());
+        register(ArithmeticOp.class, new ArithmeticOpHandler());
+    }
+
+    /**
+     * 演算子に対する処理を登録します。
+     * <p>登録する際に、{@literal OperationHandler#init()}を実行します。
+     *
+     * @param <T> 演算子の種別
+     * @param operatorClass 演算子種別のクラス
+     * @param handler 演算子に対する処理
+     */
+    public <T extends Operator> void register(Class<T> operatorClass,  OperationHandler<T> handler) {
+        handler.init();
+        this.operationHandlerMap.put(operatorClass, handler);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -75,7 +88,7 @@ public class ExpressionVisitor implements Visitor<VisitorContext> {
             Collection<?> values = (Collection<?>)expr.getValue();
             context.addParamValues(values);
             context.appendSql("(")
-                .append(QueryUtils.repeat("?", ",", values.size()))
+                .append(QueryUtils.repeat("?", ", ", values.size()))
                 .append(")");
         } else {
             context.addParamValue(expr.getValue());
@@ -99,7 +112,6 @@ public class ExpressionVisitor implements Visitor<VisitorContext> {
                 throw new IllegalQueryException("unknwon property : " + propertyName);
             }
 
-            // TODO: Embeddedのネストした場合を考慮する
             final String tableName = context.getTableNameResolver().getTableAlias(rootPath);
             final String columnName;
             // SQL - カラム名を追加

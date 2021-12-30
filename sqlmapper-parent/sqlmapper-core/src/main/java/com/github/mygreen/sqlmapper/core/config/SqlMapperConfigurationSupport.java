@@ -13,13 +13,10 @@ import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.messageformatter.MessageInterpolator;
@@ -32,6 +29,8 @@ import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.StoredParamMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.StoredPropertyMetaFactory;
 import com.github.mygreen.sqlmapper.core.naming.DefaultNamingRule;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
 import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
@@ -83,18 +82,33 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
     public SqlMapperContext sqlMapperContext() {
 
         final SqlMapperContext context = new SqlMapperContext();
-        context.setJdbcTemplate(jdbcTemplate());
         context.setNamingRule(namingRule());
         context.setMessageFormatter(messageFormatter());
         context.setDialect(dialect());
         context.setEntityMetaFactory(entityMetaFactory());
+        context.setStoredParamMetaFactory(storedParamMetaFactory());
         context.setApplicationEventPublisher(applicationEventPublisher);
         context.setSqlTemplateEngine(sqlTemplateEngine());
         context.setValueTypeRegistry(valueTypeRegistry());
-        context.setIdGeneratorTransactionTemplate(idGeneratorTransactionTemplate(transactionManager()));
+        context.setDataSource(dataSource());
+        context.setJdbcTemplateProperties(jdbcTemplateProperties());
+        context.setTransactionManager(transactionManager());
 
         return context;
 
+    }
+
+
+    @Bean
+    @Description("JdbcTemplateの設定値")
+    public JdbcTemplateProperties jdbcTemplateProperties() {
+        JdbcTemplateProperties prop = new JdbcTemplateProperties();
+        prop.setFetchSize(env.getRequiredProperty("sqlmapper.jdbc-template.fetch-size", int.class));
+        prop.setMaxRows(env.getRequiredProperty("sqlmapper.jdbc-template.max-rows", int.class));
+        prop.setQueryTimeout(env.getRequiredProperty("sqlmapper.jdbc-template.query-timeout", int.class));
+        prop.setIgnoreWarning(env.getRequiredProperty("sqlmapper.jdbc-template.ignore-warning", boolean.class));
+
+        return prop;
     }
 
     @Bean
@@ -133,6 +147,18 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
     @Description("エンティティのプロパティからメタ情報を作成するBean。")
     public PropertyMetaFactory propertyMetaFactory() {
         return new PropertyMetaFactory();
+    }
+
+    @Bean
+    @Description("ストアドのパラメータのメタ情報を作成するBean。")
+    public StoredParamMetaFactory storedParamMetaFactory() {
+        return new StoredParamMetaFactory();
+    }
+
+    @Bean
+    @Description("ストアドのパラメータのプロパティかからメタ情報を作成するBean。")
+    public StoredPropertyMetaFactory storedPropertyMetaFactory() {
+        return new StoredPropertyMetaFactory();
     }
 
     @Bean
@@ -193,12 +219,6 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
     }
 
     @Bean
-    @Description("SQLクエリを発行するJDBCテンプレート")
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource());
-    }
-
-    @Bean
     @Description("DB接続するためのデータソース")
     public abstract DataSource dataSource();
 
@@ -206,21 +226,6 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
     @Description("トランザクションマネージャ")
     public PlatformTransactionManager transactionManager() {
         return new DataSourceTransactionManager(dataSource());
-    }
-
-    /**
-     * ID生成用のトランザクションテンプレートのBean定義。
-     * <p>デフォルトでは、トランザクションを独立されるため {@link TransactionDefinition#PROPAGATION_REQUIRES_NEW} を使用します。
-     *
-     * @param transactionManager トランザクションマネージャ
-     * @return トランザクションテンプレート
-     */
-    @Bean
-    @Description("ID生成用のトランザクションテンプレート")
-    public TransactionTemplate idGeneratorTransactionTemplate(PlatformTransactionManager transactionManager) {
-        TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
-        transactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        return transactionTemplate;
     }
 
     @Bean

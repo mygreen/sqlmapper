@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.query.SetClause;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
@@ -89,38 +91,10 @@ public class AutoUpdateExecutor {
     private void prepareSetClause() {
 
         for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
-            final String propertyName = propertyMeta.getName();
+
             final Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, query.getEntity());
-
-            // 主キーは検索条件に入れるので対象外
-            if(propertyMeta.isId() || !propertyMeta.getColumnMeta().isUpdatable()) {
+            if(!isTargetProperty(propertyMeta, propertyValue)) {
                 continue;
-            }
-
-            if (propertyMeta.isVersion() && !query.isIncludeVersion()) {
-                continue;
-            }
-
-            if(query.getExcludesProperties().contains(propertyName)) {
-                continue;
-            }
-
-            if(!query.getIncludesProperties().isEmpty() && !query.getIncludesProperties().contains(propertyName)) {
-                continue;
-            }
-
-            if (query.isExcludesNull() && propertyValue == null) {
-                continue;
-            }
-
-            if (query.getBeforeStates() != null) {
-                final Object oldValue = query.getBeforeStates().get(propertyName);
-                if (propertyValue == oldValue) {
-                    continue;
-                }
-                if (propertyValue != null && propertyValue.equals(oldValue)) {
-                    continue;
-                }
             }
 
             this.targetPropertyCount++;
@@ -139,6 +113,65 @@ public class AutoUpdateExecutor {
             final String columnName = propertyMeta.getColumnMeta().getName();
             setClause.addSql(columnName, columnName + " + 1");
         }
+    }
+
+    /**
+     * 更新対象のプロパティか判定します。
+     * @param propertyMeta プロパティ情報
+     * @param propertyValue 更新対象の値
+     * @return 更新対象のとき、{@literal true} を返します。
+     */
+    private boolean isTargetProperty(final PropertyMeta propertyMeta, final Object propertyValue) {
+
+        // 主キーは検索条件に入れるので対象外
+        if(propertyMeta.isId() || !propertyMeta.getColumnMeta().isUpdatable()) {
+            return false;
+        }
+
+        /*
+         * バージョンキーは通常は更新対象となるため、通常の条件では対象外。
+         * ただし、includeVersion = true のときは更新対象とする。
+         */
+        if(propertyMeta.isVersion() && !query.isIncludeVersion()) {
+            return false;
+        }
+
+        if(!propertyMeta.getColumnMeta().isUpdatable()) {
+            return false;
+        }
+
+        if(propertyMeta.isTransient()) {
+            return false;
+        }
+
+        final String propertyName = propertyMeta.getName();
+        if(query.getIncludesProperties().contains(propertyName)) {
+            return true;
+        }
+
+        if(query.getExcludesProperties().contains(propertyName)) {
+            return false;
+        }
+
+        // nullは対象外とするとき
+        if(query.isExcludesNull() && propertyValue == null) {
+            return false;
+        }
+
+        // 比較対象と同じ値は更新対象外
+        if(query.getBeforeStates() != null) {
+            final Object oldValue = query.getBeforeStates().get(propertyName);
+            if (propertyValue == oldValue) {
+                return false;
+            }
+            if (propertyValue != null && propertyValue.equals(oldValue)) {
+                return false;
+            }
+        }
+
+        // 更新対象が指定されているときは、その他はすべて更新対象外とする。
+        return query.getIncludesProperties().isEmpty();
+
     }
 
     /**
@@ -194,7 +227,7 @@ public class AutoUpdateExecutor {
 
     /**
      * 更新処理を実行します。
-     * 
+     *
      * @return 更新したレコード件数です。更新対象のプロパティ（カラム）がない場合は {@literal 0} を返します。
      * @throws OptimisticLockingFailureException 楽観的排他制御を行う場合に該当するレコードが存在しない場合にスローされます。
      */
@@ -206,7 +239,7 @@ public class AutoUpdateExecutor {
             return 0;
         }
 
-        final int rows = context.getJdbcTemplate().update(executedSql, paramValues.toArray());
+        final int rows = getJdbcTemplate().update(executedSql, paramValues.toArray());
         if(isOptimisticLock()) {
             validateRows(rows);
         }
@@ -217,6 +250,16 @@ public class AutoUpdateExecutor {
 
         return rows;
 
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(query.getQueryTimeout())
+                .build();
     }
 
     /**

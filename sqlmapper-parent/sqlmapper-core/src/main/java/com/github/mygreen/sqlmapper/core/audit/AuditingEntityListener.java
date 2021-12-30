@@ -1,9 +1,11 @@
 package com.github.mygreen.sqlmapper.core.audit;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 
 import com.github.mygreen.sqlmapper.core.event.PreBatchInsertEvent;
+import com.github.mygreen.sqlmapper.core.event.PreBatchUpdateEvent;
 import com.github.mygreen.sqlmapper.core.event.PreInsertEvent;
 import com.github.mygreen.sqlmapper.core.event.PreUpdateEvent;
 import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
@@ -33,6 +36,8 @@ public class AuditingEntityListener implements InitializingBean {
 
     /**
      * 監査人情報を提供する。
+     * @param auditorProvider 監査人情報の提供処理。
+     * @return 監査人情報の提供処理。
      */
     @Setter
     @Getter
@@ -40,13 +45,12 @@ public class AuditingEntityListener implements InitializingBean {
     protected AuditorProvider<?> auditorProvider;
 
     /**
-     * {@inheritDoc}
+     * 監査情報を提供する {@link AuditorProvider}がSpringのコンテナに登録されていない場合は、デフォルトの空の情報を設定します。
      *
-     * <p>監査情報を提供する {@link AuditorProvider}がSpringのコンテナに登録されていない場合は、
-     *   デフォルトの空の情報を設定します。
+     * {@inheritDoc}
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         if(auditorProvider == null) {
             this.auditorProvider = new AuditorProvider<Object>() {
 
@@ -73,9 +77,9 @@ public class AuditingEntityListener implements InitializingBean {
             PropertyValueInvoker.setEmbeddedPropertyValue(p, event.getEntity(), value);
         });
 
-        entityMeta.getModifiedAtPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedAtPropertyMeta().ifPresent(p -> {
             Object value = getCurrentDateTime(p.getPropertyType());
-            PropertyValueInvoker.setPropertyValue(p, event.getEntity(), value);
+            PropertyValueInvoker.setEmbeddedPropertyValue(p, event.getEntity(), value);
         });
 
         entityMeta.getCreatedByPropertyMeta().ifPresent(p -> {
@@ -83,7 +87,7 @@ public class AuditingEntityListener implements InitializingBean {
             value.ifPresent(v -> PropertyValueInvoker.setEmbeddedPropertyValue(p, event.getEntity(), v));
         });
 
-        entityMeta.getModifiedByPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedByPropertyMeta().ifPresent(p -> {
             Optional<?> value = auditorProvider.getCurrentAuditor();
             value.ifPresent(v -> PropertyValueInvoker.setEmbeddedPropertyValue(p, event.getEntity(), v));
         });
@@ -99,14 +103,14 @@ public class AuditingEntityListener implements InitializingBean {
 
         final EntityMeta entityMeta = event.getEntityMeta();
 
-        entityMeta.getModifiedAtPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedAtPropertyMeta().ifPresent(p -> {
             Object value = getCurrentDateTime(p.getPropertyType());
-            PropertyValueInvoker.setPropertyValue(p, event.getEntity(), value);
+            PropertyValueInvoker.setEmbeddedPropertyValue(p, event.getEntity(), value);
         });
 
-        entityMeta.getModifiedByPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedByPropertyMeta().ifPresent(p -> {
             Optional<?> value = auditorProvider.getCurrentAuditor();
-            value.ifPresent(v -> PropertyValueInvoker.setPropertyValue(p, event.getEntity(), v));
+            value.ifPresent(v -> PropertyValueInvoker.setEmbeddedPropertyValue(p, event.getEntity(), v));
         });
 
     }
@@ -127,7 +131,7 @@ public class AuditingEntityListener implements InitializingBean {
             }
         });
 
-        entityMeta.getModifiedAtPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedAtPropertyMeta().ifPresent(p -> {
             Object value = getCurrentDateTime(p.getPropertyType());
             for(Object entity : event.getEntities()) {
                 PropertyValueInvoker.setEmbeddedPropertyValue(p, entity, value);
@@ -143,7 +147,7 @@ public class AuditingEntityListener implements InitializingBean {
             });
         });
 
-        entityMeta.getModifiedByPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedByPropertyMeta().ifPresent(p -> {
             Optional<?> value = auditorProvider.getCurrentAuditor();
             value.ifPresent(v -> {
                 for(Object entity : event.getEntities()) {
@@ -159,18 +163,18 @@ public class AuditingEntityListener implements InitializingBean {
      * @param event イベント情報。
      */
     @EventListener
-    public void onPreBatchUpdate(final PreBatchInsertEvent event) {
+    public void onPreBatchUpdate(final PreBatchUpdateEvent event) {
 
         final EntityMeta entityMeta = event.getEntityMeta();
 
-        entityMeta.getModifiedAtPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedAtPropertyMeta().ifPresent(p -> {
             Object value = getCurrentDateTime(p.getPropertyType());
             for(Object entity : event.getEntities()) {
                 PropertyValueInvoker.setEmbeddedPropertyValue(p, entity, value);
             }
         });
 
-        entityMeta.getModifiedByPropertyMeta().ifPresent(p -> {
+        entityMeta.getUpdatedByPropertyMeta().ifPresent(p -> {
             Optional<?> value = auditorProvider.getCurrentAuditor();
             value.ifPresent(v -> {
                 for(Object entity : event.getEntities()) {
@@ -187,9 +191,18 @@ public class AuditingEntityListener implements InitializingBean {
      * @throws IllegalArgumentException 引数で指定した {@literal propertyType} がサポートしていない日時型の場合。
      */
     protected Object getCurrentDateTime(final Class<?> propertyType) {
-        if(Date.class.isAssignableFrom(propertyType)) {
-            // java.util.Date の子クラス(java.sql.XXXX) の場合
-            return new Date();
+
+        if(Timestamp.class.isAssignableFrom(propertyType)) {
+            return new Timestamp(System.currentTimeMillis());
+
+        } else if(Time.class.isAssignableFrom(propertyType)) {
+            return new Time(System.currentTimeMillis());
+
+        } else if(Date.class.isAssignableFrom(propertyType)) {
+            return new Date(System.currentTimeMillis());
+
+        } else if(java.util.Date.class.isAssignableFrom(propertyType)) {
+            return new java.util.Date();
 
         } else if(LocalDate.class.isAssignableFrom(propertyType)) {
             return LocalDate.now();

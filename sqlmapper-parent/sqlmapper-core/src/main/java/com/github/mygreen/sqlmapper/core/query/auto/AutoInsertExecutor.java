@@ -6,16 +6,20 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.KeyHolder;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.core.id.IdGenerationContext;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
 import com.github.mygreen.sqlmapper.core.util.QueryUtils;
@@ -25,6 +29,7 @@ import com.github.mygreen.sqlmapper.core.util.QueryUtils;
  * 挿入を行うSQLを自動生成するクエリを実行します。
  * {@link AutoInsertImpl}のクエリ実行処理の移譲先です。
  *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -33,7 +38,7 @@ public class AutoInsertExecutor {
     /**
      * バージョンプロパティの初期値
      */
-    public static final long INITIAL_VERSION = 1L;
+    public static final long INITIAL_VERSION = 0L;
 
     /**
      * クエリ情報
@@ -91,16 +96,7 @@ public class AutoInsertExecutor {
 
         for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
 
-            final String propertyName = propertyMeta.getName();
-            if(!propertyMeta.getColumnMeta().isInsertable()) {
-                continue;
-            }
-
-            if(query.getExcludesProperties().contains(propertyName)) {
-                continue;
-            }
-
-            if(!query.getIncludesProperties().isEmpty() && !query.getIncludesProperties().contains(propertyName)) {
+            if(!isTargetProperty(propertyMeta)) {
                 continue;
             }
 
@@ -116,7 +112,7 @@ public class AutoInsertExecutor {
                     usingIdentityKeyColumnNames.add(columnName);
                     continue;
                 } else {
-                    propertyValue = getNextVal(propertyMeta.getIdGenerator().get());
+                    propertyValue = getNextVal(propertyMeta);
                     PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, query.getEntity(), propertyValue);
                 }
             }
@@ -135,21 +131,65 @@ public class AutoInsertExecutor {
 
             // クエリのパラメータの組み立て
             ValueType valueType = propertyMeta.getValueType();
-            paramSource.addValue(columnName, valueType.getSqlParameterValue(propertyValue));
+            Object paramValue = valueType.getSqlParameterValue(propertyValue);
+            if(paramValue instanceof SqlParameterValue) {
+                // SimpleJdbcInsert を使用する際は、テーブルのコンテキストを見るので、型情報は不要。
+                paramValue = ((SqlParameterValue)paramValue).getValue();
+            }
+            paramSource.addValue(columnName, paramValue);
 
         }
     }
 
+
+    /**
+     * 挿入対象のプロパティか判定します。
+     * @param propertyMeta プロパティ情報
+     * @return 挿入対象のとき、{@literal true} を返します。
+     */
+    private boolean isTargetProperty(final PropertyMeta propertyMeta) {
+
+        if(propertyMeta.isId()) {
+            return true;
+        }
+
+        if(propertyMeta.isVersion()) {
+            return true;
+        }
+
+        if(propertyMeta.isTransient()) {
+            return false;
+        }
+
+        final String propertyName = propertyMeta.getName();
+
+        if(query.getIncludesProperties().contains(propertyName)) {
+            return true;
+        }
+
+        if(query.getExcludesProperties().contains(propertyName)) {
+            return false;
+        }
+
+        // 挿入対象が指定されているときは、その他はすべて抽出対象外とする。
+        return query.getIncludesProperties().isEmpty();
+
+    }
+
+
     /**
      * 主キーを生成する
-     * @param generator 主キーの生成処理
+     * @param propertyMeta 生成対象のIDプロパティのメタ情報
      * @return 生成した主キーの値
      */
-    private Object getNextVal(final IdGenerator generator) {
+    private Object getNextVal(final PropertyMeta propertyMeta) {
+
+        IdGenerator generator = propertyMeta.getIdGenerator().get();
+        IdGenerationContext generationContext = propertyMeta.getIdGenerationContext().get();
 
         // トランザクションは別にする。
-        return context.getIdGeneratorTransactionTemplate().execute(action -> {
-            return generator.generateValue();
+        return context.txRequiresNew().execute(action -> {
+            return generator.generateValue(generationContext);
         });
     }
 
@@ -158,13 +198,23 @@ public class AutoInsertExecutor {
      */
     private void prepareInsertOperation() {
 
-        this.insertOperation = new SimpleJdbcInsert(context.getJdbcTemplate())
+        this.insertOperation = new SimpleJdbcInsert(getJdbcTemplate())
                 .withTableName(query.getEntityMeta().getTableMeta().getFullName())
                 .usingColumns(QueryUtils.toArray(usingColumnNames));
 
         if(!usingIdentityKeyColumnNames.isEmpty()) {
             insertOperation.usingGeneratedKeyColumns(QueryUtils.toArray(usingIdentityKeyColumnNames));
         }
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(query.getQueryTimeout())
+                .build();
     }
 
     /**

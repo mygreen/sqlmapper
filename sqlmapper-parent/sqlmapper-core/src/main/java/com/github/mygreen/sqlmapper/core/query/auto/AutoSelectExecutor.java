@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
@@ -22,6 +23,8 @@ import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.query.FromClause;
 import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.IllegalQueryException;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.query.JoinAssociation;
 import com.github.mygreen.sqlmapper.core.query.JoinCondition;
 import com.github.mygreen.sqlmapper.core.query.OrderByClause;
@@ -35,6 +38,8 @@ import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
 import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
 import com.github.mygreen.sqlmapper.metamodel.EntityPath;
 import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
+import com.github.mygreen.sqlmapper.metamodel.Path;
+import com.github.mygreen.sqlmapper.metamodel.PathMeta;
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 
@@ -223,19 +228,9 @@ public class AutoSelectExecutor<T> {
 
             // ベースとなるエンティティのカラム指定の場合
             for(PropertyMeta propertyMeta : query.getEntityMeta().getAllColumnPropertyMeta()) {
-                final String propertyName = propertyMeta.getName();
-                final PropertyPath<?> propertyPath = query.getEntityPath().findPropertyPath(propertyName);
 
-                if(propertyMeta.isTransient()) {
-                    continue;
-                }
-
-                if(query.getExcludesProperties().contains(propertyPath)) {
-                    continue;
-                }
-
-                if(!query.getIncludesProperties().isEmpty()
-                        && !query.getIncludesProperties().contains(propertyPath)) {
+                if(!isTargetProperty(propertyMeta)) {
+                    // 抽出対象のプロパティでない場合はスキップします。
                     continue;
                 }
 
@@ -321,6 +316,41 @@ public class AutoSelectExecutor<T> {
             }
 
         }
+
+    }
+
+    /**
+     * 抽出対象のプロパティか判定します。
+     * @param propertyMeta プロパティ情報
+     * @return 抽出対象のとき、{@literal true} を返します。
+     */
+    private boolean isTargetProperty(final PropertyMeta propertyMeta) {
+
+        if(propertyMeta.isId()) {
+            return true;
+        }
+
+        if(propertyMeta.isTransient()) {
+            return false;
+        }
+
+        if(query.getIncludesProperties().isEmpty() && query.getExcludesProperties().isEmpty()) {
+            return true;
+        }
+
+        final String propertyName = propertyMeta.getName();
+        final PropertyPath<?> propertyPath = query.getEntityPath().findPropertyPath(propertyName);
+
+        if(query.getIncludesProperties().contains(propertyPath)) {
+            return true;
+        }
+
+        if(query.getExcludesProperties().contains(propertyPath)) {
+            return false;
+        }
+
+        // 抽出対象が指定されているときは、その他はすべて抽出対象外とする。
+        return query.getIncludesProperties().isEmpty();
 
     }
 
@@ -440,19 +470,23 @@ public class AutoSelectExecutor<T> {
         }
 
         for(OrderSpecifier order : query.getOrders()) {
-            String propertyName = order.getPath().getPathMeta().getElement();
+            PathMeta pathMeta = order.getPath().getPathMeta();
+            Path<?> rootPath = pathMeta.findRootPath();
+            String propertyName = pathMeta.getElement();
             Optional<PropertyMeta> propertyMeta = query.getEntityMeta().findPropertyMeta(propertyName);
-
-            String tableAlias = tableNameResolver.getTableAlias(order.getPath().getPathMeta().getParent());
-            if(!StringUtils.hasLength(tableAlias)) {
-                //TODO: 例外処理
-
+            if(propertyMeta.isEmpty()) {
+                throw new IllegalQueryException("unknwon property : " + propertyName);
             }
 
-            propertyMeta.ifPresent(p -> {
-                String orderBy = String.format("%s.%s %s", tableAlias, p.getColumnMeta().getName(), order.getOrder().name());
-                orderByClause.addSql(orderBy);
-            });
+            String tableName = tableNameResolver.getTableAlias(rootPath);
+            String columnName;
+            if(tableName != null) {
+                columnName = tableName + "." + propertyMeta.get().getColumnMeta().getName();
+            } else {
+                columnName = propertyMeta.get().getColumnMeta().getName();;
+            }
+
+            orderByClause.addSql(columnName + " " + order.getOrder().name());
         }
 
     }
@@ -468,7 +502,7 @@ public class AutoSelectExecutor<T> {
         }
 
         // LIMIT句を指定していないかのチェック
-        if(query.getLimit() > 0 || query.getOffset() > 0) {
+        if(query.getLimit() > 0 || query.getOffset() >= 0) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportPaginationWithForUpdate")
                     .format());
         }
@@ -500,7 +534,7 @@ public class AutoSelectExecutor<T> {
                 + orderByClause.toSql()
                 + forUpdateClause;
 
-        if(query.getLimit() > 0 || query.getLimit() == 0 && query.getOffset() > 0) {
+        if(query.getLimit() > 0 || query.getOffset() >= 0) {
             sql = dialect.convertLimitSql(sql, query.getOffset(), query.getLimit());
         }
 
@@ -516,7 +550,7 @@ public class AutoSelectExecutor<T> {
     public long getCount() {
         prepare();
 
-        return context.getJdbcTemplate().queryForObject(executedSql, Long.class, paramValues.toArray());
+        return getJdbcTemplate().queryForObject(executedSql, Long.class, paramValues.toArray());
     }
 
     /**
@@ -531,7 +565,7 @@ public class AutoSelectExecutor<T> {
 
         AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
-        return context.getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues.toArray());
+        return getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues.toArray());
     }
 
     /**
@@ -539,15 +573,18 @@ public class AutoSelectExecutor<T> {
      *
      * @param callback エンティティマッピング後のコールバック処理。
      * @return エンティティのベースオブジェクト。1件も対象がないときは空を返します。
+     * @throws IncorrectResultSizeDataAccessException 2件以上見つかった場合にスローされます。
      */
     public Optional<T> getOptionalResult(EntityMappingCallback<T> callback) {
         prepare();
 
         AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
-        final List<T> ret = context.getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
+        final List<T> ret = getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
         if(ret.isEmpty()) {
             return Optional.empty();
+        } else if(ret.size() > 1) {
+            throw new IncorrectResultSizeDataAccessException(1, ret.size());
         } else {
             return Optional.of(ret.get(0));
         }
@@ -564,7 +601,7 @@ public class AutoSelectExecutor<T> {
 
         AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
-        return context.getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
+        return getJdbcTemplate().query(executedSql, rowMapper, paramValues.toArray());
     }
 
     /**
@@ -577,7 +614,19 @@ public class AutoSelectExecutor<T> {
 
         AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
-        return context.getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues.toArray());
+        return getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues.toArray());
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(query.getQueryTimeout())
+                .fetchSize(query.getFetchSize())
+                .maxRows(query.getMaxRows())
+                .build();
     }
 
 }

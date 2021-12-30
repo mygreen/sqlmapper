@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,6 +20,7 @@ import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
 import com.github.mygreen.sqlmapper.core.annotation.Table;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
+import com.github.mygreen.sqlmapper.core.id.TableIdGenerator;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
 
 import lombok.Getter;
@@ -28,7 +30,7 @@ import lombok.Setter;
 /**
  * エンティティのメタ情報を作成します。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -72,6 +74,21 @@ public class EntityMetaFactory {
      */
     public void clear() {
         this.entityMetaMap.clear();
+    }
+
+    /**
+     * IDのテーブルによる自動採番のキャッシュ情報をクリアします。
+     * クリアすることで、次に採番するときに、最新のDBの情報を反映した状態になります。
+     * @since 0.3
+     */
+    public void refreshTableIdGenerator() {
+
+        entityMetaMap.values().stream()
+            .flatMap(e -> e.getIdPropertyMetaList().stream())
+            .filter(p -> p.getIdGenerator().isPresent() && (p.getIdGenerator().get() instanceof TableIdGenerator))
+            .map(p -> (TableIdGenerator)(p.getIdGenerator().get()))
+            .forEach(g -> g.clearCache());
+
     }
 
     /**
@@ -140,6 +157,8 @@ public class EntityMetaFactory {
                 tableMeta.setCatalog(annoTable.catalog());
             }
 
+            tableMeta.setReadOnly(annoTable.readOnly());
+
         } else {
             tableMeta.setName(defaultName);
         }
@@ -156,7 +175,7 @@ public class EntityMetaFactory {
     private void doPropertyMeta(final EntityMeta entityMeta, final Class<?> entityClass) {
 
         final List<PropertyMeta> propertyMetaList = new ArrayList<>();
-        extractProperty(entityClass, propertyMetaList, entityMeta);
+        extractProperty(entityClass, propertyMetaList, entityMeta, false);
         extractSuperClassProperty(entityClass.getSuperclass(), propertyMetaList, entityMeta);
 
         // 埋め込みのプロパティを抽出する
@@ -175,9 +194,10 @@ public class EntityMetaFactory {
      * @param targetClass 抽出対象のクラス。
      * @param propertyMetaList 抽出したプロパティ一覧
      * @param entityMeta エンティティのメタ情報
+     * @param embeddedId 埋め込み型のIDのプロパティの処理かどうか。
      */
     private void extractProperty(final Class<?> targetClass, final List<PropertyMeta> propertyMetaList,
-            final EntityMeta entityMeta) {
+            final EntityMeta entityMeta, boolean embeddedId) {
 
         for(Field field : targetClass.getDeclaredFields()) {
 
@@ -188,7 +208,7 @@ public class EntityMetaFactory {
 
             ReflectionUtils.makeAccessible(field);
 
-            propertyMetaList.add(propertyMetaFactory.create(field, entityMeta));
+            propertyMetaList.add(propertyMetaFactory.create(field, Optional.of(entityMeta), embeddedId));
 
         }
     }
@@ -209,7 +229,7 @@ public class EntityMetaFactory {
 
         final MappedSuperclass annoMappedSuperclass = superClass.getAnnotation(MappedSuperclass.class);
         if(annoMappedSuperclass != null) {
-            extractProperty(superClass, propertyMetaList, entityMeta);
+            extractProperty(superClass, propertyMetaList, entityMeta, false);
         }
 
         // 再帰的に遡っていく
@@ -228,6 +248,8 @@ public class EntityMetaFactory {
 
         final Class<?> embeddableClass = propertyMeta.getPropertyType();
 
+        boolean embeddedId = propertyMeta.hasAnnotation(EmbeddedId.class);
+
         if(embeddableClass.getAnnotation(Embeddable.class) == null) {
             throw new InvalidEntityException(entityClass, messageFormatter.create("embeddable.anno.required")
                     .paramWithClass("entityClass", entityClass)
@@ -239,7 +261,7 @@ public class EntityMetaFactory {
 
         // 埋め込みクラスのプロパティ情報の抽出
         final List<PropertyMeta> embeddedPropertyList = new ArrayList<>();
-        extractProperty(embeddableClass, embeddedPropertyList, entityMeta);
+        extractProperty(embeddableClass, embeddedPropertyList, entityMeta, embeddedId);
 
         validatedEmbeddedProperty(entityClass, embeddableClass, embeddedPropertyList);
 

@@ -1,6 +1,6 @@
 package com.github.mygreen.sqlmapper.core.where.metamodel;
 
-import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
+import com.github.mygreen.sqlmapper.metamodel.Path;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
@@ -21,7 +21,7 @@ public class ArithmeticOpHandler extends OperationHandler<ArithmeticOp> {
         // 算術演算子
         addTemplate(ArithmeticOp.MULT, "{0} * {1}");
         addTemplate(ArithmeticOp.DIV, "{0} / {1}");
-        addTemplate(ArithmeticOp.MOD, "{0} % {1}");
+        addTemplate(ArithmeticOp.MOD, "mod({0}, {1})");
         addTemplate(ArithmeticOp.ADD, "{0} + {1}");
         addTemplate(ArithmeticOp.SUB, "{0} - {1}");
 
@@ -43,8 +43,8 @@ public class ArithmeticOpHandler extends OperationHandler<ArithmeticOp> {
          * 算術演算子の場合、左変=プロパティパス、右辺=定数で構成される場合、
          * 定数をプロパティの変換規則に従い変換する。
          */
-        if(left instanceof PropertyPath && right instanceof Constant) {
-            visitConstantWithPropertyPath((PropertyPath<?>)left, (Constant<?>)right, rightContext);
+        if(isPropertyPath(left) && right instanceof Constant) {
+            visitConstantWithPropertyPath((Path<?>)left, (Constant<?>)right, rightContext);
         } else {
             invoke(operator, right, visitor, rightContext);
         }

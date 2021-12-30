@@ -13,11 +13,15 @@ public enum FunctionOp implements Operator {
     // String
     LOWER(String.class, -1),
     UPPER(String.class, -1),
+    CONCAT(String.class, -1),
 
     // Date/Time
     CURRENT_DATE(Comparable.class, -1),
     CURRENT_TIME(Comparable.class, -1),
-    CURRENT_TIMESTAMP(Comparable.class, -1)
+    CURRENT_TIMESTAMP(Comparable.class, -1),
+
+    // 任意の関数
+    CUSTOM(Object.class, -1);
 
     ;
 

@@ -3,7 +3,6 @@ package com.github.mygreen.sqlmapper.metamodel.expression;
 import java.time.LocalTime;
 
 import com.github.mygreen.sqlmapper.metamodel.operation.LocalTimeOperation;
-import com.github.mygreen.sqlmapper.metamodel.operation.SqlTimeOperation;
 import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
 
 /**
@@ -32,7 +31,7 @@ public abstract class LocalTimeExpression extends TemporalExpressionBase<LocalTi
      * @param precision 精度
      * @return 関数 {@literal CURRENT_TIME}
      */
-    public static SqlTimeExpression currentTime(int precision) {
-        return new SqlTimeOperation(FunctionOp.CURRENT_TIME, Constant.create(precision));
+    public static LocalTimeExpression currentTime(int precision) {
+        return new LocalTimeOperation(FunctionOp.CURRENT_TIME, Constant.create(precision));
     }
 }

@@ -3,6 +3,7 @@ package com.github.mygreen.sqlmapper.metamodel.operation;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import com.github.mygreen.sqlmapper.metamodel.Predicate;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
@@ -58,6 +59,14 @@ public class PredicateOperation implements Operation<Boolean>, Predicate {
     }
 
     @Override
+    public Optional<Expression<?>> getOptArg(int index) {
+        if(index >= args.size()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(args.get(index));
+    }
+
+    @Override
     public List<Expression<?>> getArgs() {
         return args;
     }
@@ -75,4 +84,5 @@ public class PredicateOperation implements Operation<Boolean>, Predicate {
     public String toString() {
         return OperationUtils.toDebugString(this);
     }
+
 }

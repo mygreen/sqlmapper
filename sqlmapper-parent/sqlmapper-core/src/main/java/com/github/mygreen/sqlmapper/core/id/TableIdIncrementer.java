@@ -145,7 +145,7 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
      * @param incrementValue 採番値に対する加算する値
      */
     private void updateTable(final String name, final long incrementValue) {
-        jdbcTemplate.update(sqlUpdate, name, incrementValue);
+        jdbcTemplate.update(sqlUpdate, incrementValue, name);
     }
 
 }

@@ -13,9 +13,9 @@ import lombok.Setter;
 
 /**
  * {@link GenerationType#TABLE}方式でIDの値を自動生成するIDジェネレータです。
- * <p>サポートするIDのクラスタイプは、{@code long/Long/int/Integer/String}です。
+ * <p>サポートするIDのクラスタイプは、{@literal long/Long/int/Integer/String}です。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -64,7 +64,7 @@ public class TableIdGenerator implements IdGenerator {
      * @throws DataIntegrityViolationException コンストラクタで指定された引数 {@literal requiredType} がサポート対象外の場合。
      */
     @Override
-    public Object generateValue() {
+    public Object generateValue(final IdGenerationContext context) {
         long value = incrementer.nextValue(sequenceName);
 
         if(requiredType == long.class || requiredType == Long.class) {
@@ -86,5 +86,13 @@ public class TableIdGenerator implements IdGenerator {
 
         throw new DataIntegrityViolationException("not supported java type : " + requiredType.getName());
 
+    }
+
+    /**
+     * IDのキャッシュ情報をクリアします。
+     * <p>クリアすることで、次回、{@link #generateValue(IdGenerationContext)}を呼び出した時に、最新のDBの情報を反映した状態になります。
+     */
+    public void clearCache() {
+        incrementer.clear(sequenceName);
     }
 }

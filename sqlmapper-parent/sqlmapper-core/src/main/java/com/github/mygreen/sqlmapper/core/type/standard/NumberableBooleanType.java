@@ -2,7 +2,9 @@ package com.github.mygreen.sqlmapper.core.type.standard;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.Getter;
@@ -51,5 +53,10 @@ public class NumberableBooleanType implements ValueType<Boolean> {
 
         final int sqlValue = value ? 1 : 0;
         return sqlValue;
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+        return Types.SMALLINT;
     }
 }

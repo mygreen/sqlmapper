@@ -9,7 +9,7 @@ Mavenを使用している場合は、``pom.xml`` に依存関係を追加しま
 利用するDBのJDBCドライバの定義も追加します。
 
 .pom.xmlへの依存関係の追加
-[source, xml]
+[source, xml, subs="attributes+"]
 ----
 <project>
     <dependencies>
@@ -17,7 +17,7 @@ Mavenを使用している場合は、``pom.xml`` に依存関係を追加しま
         <dependency>
 			<groupId>com.github.mygreen.sqlmapper</groupId>
 			<artifactId>sqlmapper-spring-boot-starter</artifactId>
-			<version>0.2</version>
+			<version>{app-ver}</version>
 		</dependency>
 
 		<!-- 利用するDBのJDBCドライバを追加します -->
@@ -33,7 +33,7 @@ Mavenを使用している場合は、``pom.xml`` に依存関係を追加しま
 さらに、メタモデルを自動生成する設定を追加します。
 
 .pom.xmlへのメタモデルの自動生成設定の追加
-[source, xml]
+[source, xml, subs="attributes+"]
 ----
 <project>
     <build>
@@ -63,7 +63,7 @@ Mavenを使用している場合は、``pom.xml`` に依存関係を追加しま
 				    <dependency>
 						<groupId>com.github.mygreen.sqlmapper</groupId>
 						<artifactId>sqlmapper-apt</artifactId>
-						<version>0.2</version>
+						<version>{app-ver}</version>
 					</dependency>
 			    </dependencies>
 			</plugin>

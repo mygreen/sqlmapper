@@ -1,25 +1,16 @@
 package com.github.mygreen.sqlmapper.core.dialect;
 
-import org.springframework.lang.Nullable;
-
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
-import com.github.mygreen.sqlmapper.core.type.ValueType;
-import com.github.mygreen.sqlmapper.core.type.standard.BooleanType;
-import com.github.mygreen.sqlmapper.core.type.standard.NumberableBooleanType;
 
 /**
  * 古いOracleDBの方言です。
  * <p>Oracle11以前が対象です。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
 public class OracleLegacyDialect extends OracleDialect {
-
-    private final NumberableBooleanType objectiveBooleanType = new NumberableBooleanType(false);
-
-    private final NumberableBooleanType primitiveBooleanType = new NumberableBooleanType(true);
 
     /**
      * {@inheritDoc}
@@ -28,17 +19,19 @@ public class OracleLegacyDialect extends OracleDialect {
      *  <li>{@link GenerationType#IDENTITY} : {@literal false}</li>
      *  <li>{@link GenerationType#SEQUENCE} : {@literal true}</li>
      *  <li>{@link GenerationType#TABLE} : {@literal true}</li>
-     *  <li>その他 : {@literal false}</li>
+     *  <li>{@link GenerationType#UUID} : {@literal true}</li>
      * </ul>
      */
     @Override
-    public boolean isSupportedGenerationType(GenerationType generationType) {
+    public boolean supportsGenerationType(GenerationType generationType) {
         switch(generationType) {
             case IDENTITY:
                 return false;
             case SEQUENCE:
                 return true;
             case TABLE:
+                return true;
+            case UUID:
                 return true;
             default:
                 return false;
@@ -48,31 +41,16 @@ public class OracleLegacyDialect extends OracleDialect {
     /**
      * {@inheritDoc}
      *
-     * @return 与えられた値が {@literal boolean/Boolean}のとき、整数型に変換する {@link NumberableBooleanType} に変換します。
-     */
-    @Override
-    public ValueType<?> getValueType(@Nullable ValueType<?> valueType) {
-        if(valueType == null) {
-            return null;
-        }
-
-        if(valueType instanceof BooleanType) {
-            if(((BooleanType)valueType).isForPrimitive()) {
-                return primitiveBooleanType;
-            } else {
-                return objectiveBooleanType;
-            }
-        }
-        return valueType;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
      * @return {@literal ROWNUMBER}を使用し、疑似的にLIMIT句を表現します。
+     * @throws IllegalArgumentException 引数{@literal offset} または {@literal limit} の値の何れかが 0より小さい場合にスローされます。
      */
     @Override
     public String convertLimitSql(String sql, int offset, int limit) {
+
+        if(offset < 0 && limit < 0) {
+            throw new IllegalArgumentException("Either offset or limit should be greather than 0.");
+        }
+
         StringBuilder buf = new StringBuilder(sql.length() + 100);
         sql = sql.trim();
         String lowerSql = sql.toLowerCase();
@@ -81,24 +59,30 @@ public class OracleLegacyDialect extends OracleDialect {
             sql = sql.substring(0, sql.length() - 11);
             isForUpdate = true;
         }
+
         buf.append("select * from ( select temp_.*, rownum rownumber_ from ( ");
         buf.append(sql);
         buf.append(" ) temp_ ) where");
-        boolean hasOffset = offset > 0;
-        if (hasOffset) {
-            buf.append(" rownumber_ > ");
-            buf.append(offset);
+
+        if(offset >= 0 && limit >= 0) {
+            buf.append(" rownumber_ between ")
+                .append(offset + 1)
+                .append(" and ")
+                .append(offset + limit);
+
+        } else if(offset >= 0) {
+            buf.append(" rownumber_ >= ")
+                .append(offset + 1);
+
+        } else if(limit >= 0) {
+            buf.append(" rownumber_ <= ")
+                .append(limit);
         }
-        if (limit > 0) {
-            if (hasOffset) {
-                buf.append(" and");
-            }
-            buf.append(" rownumber_ <= ");
-            buf.append(offset + limit);
-        }
+
         if (isForUpdate) {
             buf.append(" for update");
         }
+
         return buf.toString();
     }
 

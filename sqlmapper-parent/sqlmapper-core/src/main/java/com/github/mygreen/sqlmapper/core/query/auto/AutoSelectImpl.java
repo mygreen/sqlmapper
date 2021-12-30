@@ -60,6 +60,15 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
     @Getter
     private final Map<Class<?>, EntityMeta> entityMetaMap = new HashMap<>();
 
+    @Getter
+    private Integer queryTimeout;
+
+    @Getter
+    private Integer fetchSize;
+
+    @Getter
+    private Integer maxRows;
+
     /**
      * SQLのヒントです。
      */
@@ -155,6 +164,24 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
         this.baseClass = (Class<T>)entityMeta.getEntityType();
 
         this.entityMetaMap.put(entityPath.getType(), context.getEntityMetaFactory().create(entityPath.getType()));
+    }
+
+    @Override
+    public AutoSelectImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
+    }
+
+    @Override
+    public AutoSelectImpl<T> fetchSize(int fetchSize) {
+        this.fetchSize = fetchSize;
+        return this;
+    }
+
+    @Override
+    public AutoSelectImpl<T> maxRows(int maxRows) {
+        this.maxRows = maxRows;
+        return this;
     }
 
     @Override
@@ -290,7 +317,7 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
         Optional<PropertyMeta> embeddedIdPropertyMeta = entityMeta.getEmbeddedIdPropertyMeta();
         if(isEmbeddedProperty(idPropertyValues, embeddedIdPropertyMeta)) {
             // 埋め込みIDのとき
-            this.idPropertyValues = getEmbeddedIdValue(idPropertyValues, embeddedIdPropertyMeta.get().getEmbeddedablePopertyMetaList());
+            this.idPropertyValues = getEmbeddedIdValue(idPropertyValues[0], embeddedIdPropertyMeta.get().getEmbeddedablePopertyMetaList());
         } else {
             List<PropertyMeta> idPropertyMetaList = entityMeta.getIdPropertyMetaList();
             if(idPropertyMetaList.size() != idPropertyValues.length) {
@@ -314,7 +341,10 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
      * @return {@literal true}のとき埋め込みID。
      */
     private boolean isEmbeddedProperty(Object[] idPropertyValues, Optional<PropertyMeta> embeddedIdPropertyMeta) {
-        if(idPropertyValues.length != 0 || embeddedIdPropertyMeta.isEmpty()) {
+        if(idPropertyValues.length == 0 || embeddedIdPropertyMeta.isEmpty()) {
+            return false;
+        } else if(idPropertyValues.length >= 2) {
+            // IDの指定件数が複数ある時点で埋め込みIDではないので対象外とする。
             return false;
         }
 
@@ -355,7 +385,7 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
     @Override
     public AutoSelectImpl<T> forUpdate() {
         final Dialect dialect = context.getDialect();
-        if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NORMAL)) {
+        if(!dialect.supportsSelectForUpdate(SelectForUpdateType.NORMAL)) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdate")
                     .paramWithClass("entityType", entityPath.getType())
                     .param("dialectName", dialect.getName())
@@ -370,7 +400,7 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
     public AutoSelectImpl<T> forUpdateNoWait() {
 
         final Dialect dialect = context.getDialect();
-        if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.NOWAIT)) {
+        if(!dialect.supportsSelectForUpdate(SelectForUpdateType.NOWAIT)) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdateNowait")
                     .paramWithClass("entityType", entityPath.getType())
                     .param("dialectName", dialect.getName())
@@ -390,7 +420,7 @@ public class AutoSelectImpl<T> implements AutoSelect<T> {
     public AutoSelectImpl<T> forUpdateWait(final int seconds) {
 
         final Dialect dialect = context.getDialect();
-        if(!dialect.isSupportedSelectForUpdate(SelectForUpdateType.WAIT)) {
+        if(!dialect.supportsSelectForUpdate(SelectForUpdateType.WAIT)) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.notSupportSelectForUpdateWait")
                     .paramWithClass("entityType", entityPath.getType())
                     .param("dialectName", dialect.getName())

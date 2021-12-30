@@ -38,6 +38,9 @@ public class AutoBatchDeleteImpl<T> implements AutoBatchDelete<T> {
     @Getter
     private final EntityMeta entityMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
     /**
      * バージョンプロパティを無視して削除するかどうか。
      */
@@ -70,6 +73,14 @@ public class AutoBatchDeleteImpl<T> implements AutoBatchDelete<T> {
     }
 
     private void validateTarget() {
+
+        // 読み取り専用かどうかのチェック
+        if(entityMeta.getTableMeta().isReadOnly()) {
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.readOnlyEntity")
+                    .paramWithClass("entityType", entityMeta.getEntityType())
+                    .format());
+        }
+
         // 主キーを持つかどうかのチェック
         if(entityMeta.getIdPropertyMetaList().isEmpty()) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.requiredId")
@@ -93,6 +104,12 @@ public class AutoBatchDeleteImpl<T> implements AutoBatchDelete<T> {
      */
     public int getEntitySize() {
         return entities.length;
+    }
+
+    @Override
+    public AutoBatchDeleteImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
     }
 
     @Override

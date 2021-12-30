@@ -21,7 +21,8 @@ List<Employee> results = sqlMapper.selectFrom(MEmployee.employee)
 
 1件検索する場合は、`getSingleResult()` を使用します。
 
-* 1件も見つからない、または、2件以上見つかった場合、Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
+* 1件も見つからないときは、Springの例外 `EmptyResultDataAccessException` がスローされます。
+* 2件以上見つかった場合、Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
 
 [source,java]
 ----
@@ -29,9 +30,11 @@ Employee result = sqlMapper.selectFrom(MEmployee.employee)
         .getSingleResult();
 ----
 
-0件/複数件見つかったときに例外をスローされないようにするには、`getOptionalResult()` を使用します。
+1件も見つからなかったときに例外をスローされないようにするには、`getOptionalResult()` を使用します。
 
 * 戻り値を `java.util.Optinal` で受け取ることができます。
+* ただし、2件以上見つかったときは Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
+** 例外がスローされないようにするためにメソッド `limit(1)` による件数を指定することをお勧めします。
 
 [source,java]
 ----
@@ -231,7 +234,7 @@ List<Employee> results = sqlMapper.selectFrom(e)
         .getResultList();
 ----
 
-NOTE: `includes(...)` と `excludes(...)` の両方で同じプロパティを指定した場合、`excludes(...)` が優先されます。
+NOTE: `includes(...)` と `excludes(...)` の両方で同じプロパティを指定した場合、`includes(...)` が優先されます。
 
 
 == 指定したプロパティを検索結果から除外する
@@ -269,10 +272,10 @@ List<Employee> results = sqlMapper.selectFrom(e)
 
 ページングを指定するには、以下のメソッドを使用します。
 
-* `limit(int limit)` : 取得する行数を指定します。
 * `offset(int offset)` : 最初に取得する行の位置を指定します。最初の行の位置は0になります。 
+* `limit(int limit)` : 取得する行数を指定します。
 
-ページングを指定するには、必ず <<select_order_by,並び順>> の指定も必要です。
+NOTE: ページングを指定するには、必ず <<select_order_by,並び順>> の指定も必要です。
 
 [source,java]
 ----
@@ -280,8 +283,8 @@ MEmployee e = MEmployee.employee;
 
 List<Employee> results = sqlMapper.selectFrom(e)
         .orderBy(e.name.asc(), e.hireDate.desc())
-        .limit(100)
         .offset(10)
+        .limit(100)
         .getResultList();
 ----
 

@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.jdbc.support.lob.LobHandler;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,9 @@ public class LobByteArrayType implements ValueType<byte[]> {
 
     @Override
     public Object getSqlParameterValue(byte[] value) {
+        if(value == null) {
+            return null;
+        }
         return new SqlParameterValue(Types.BLOB, new SqlLobValue(value, lobHandler));
     }
 
@@ -52,5 +56,10 @@ public class LobByteArrayType implements ValueType<byte[]> {
             buff.append(b);
         }
         return buff.toString();
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+        return Types.BLOB;
     }
 }

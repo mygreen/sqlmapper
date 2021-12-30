@@ -11,7 +11,7 @@ import com.github.mygreen.sqlmapper.core.query.IllegalQueryException;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 import com.github.mygreen.sqlmapper.metamodel.Path;
-import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
+import com.github.mygreen.sqlmapper.metamodel.PathType;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
@@ -35,10 +35,6 @@ public abstract class OperationHandler<T extends Operator> {
      * マップの値ととなるテンプレートは{@link MessageFormat}の形式。
      */
     protected Map<T, String> templateMap = new HashMap<>();
-
-    public OperationHandler() {
-        init();
-    }
 
     /**
      * 初期化処理
@@ -85,13 +81,31 @@ public abstract class OperationHandler<T extends Operator> {
     }
 
     /**
+     * 式がプロパティパスかどうか判定します。
+     * @param exp 式
+     * @return プロパティパスの場合、{@literal true}を返します。
+     */
+    protected boolean isPropertyPath(Expression<?> exp) {
+
+        if(!(exp instanceof Path)) {
+            return false;
+        }
+
+        Path<?> path = (Path<?>) exp;
+        return path.getPathMeta().getType() == PathType.PROPERTY;
+
+    }
+
+    /**
      * プロパティが確定しているのとき定数の処理。
      * @param propertyPath プロパティパス
      * @param expr 定数
      * @param context コンテキスト
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected void visitConstantWithPropertyPath(PropertyPath<?> propertyPath, Constant<?> expr, VisitorContext context) {
+    protected void visitConstantWithPropertyPath(Path<?> propertyPath, Constant<?> expr, VisitorContext context) {
+
+        assert propertyPath.getPathMeta().getType() == PathType.PROPERTY;
 
         Path<?> rootPath = propertyPath.getPathMeta().findRootPath();
         Class<?> rootClassType = rootPath.getType();
@@ -111,7 +125,7 @@ public abstract class OperationHandler<T extends Operator> {
                 context.addParamValue(valueType.getSqlParameterValue(value));
             }
             context.appendSql("(")
-                .append(QueryUtils.repeat("?", ",", values.size()))
+                .append(QueryUtils.repeat("?", ", ", values.size()))
                 .append(")");
         } else {
             context.addParamValue(valueType.getSqlParameterValue(expr.getValue()));

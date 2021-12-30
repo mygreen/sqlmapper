@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-class DefaultNamingRuleTest extends DefaultNamingRule {
+public class DefaultNamingRuleTest extends DefaultNamingRule {
 
     @Test
     void testEntityToTable() {
@@ -33,5 +33,11 @@ class DefaultNamingRuleTest extends DefaultNamingRule {
         assertEquals("firstName", columnToProperty("FIRST_NAME"));
         assertEquals("firstName", columnToProperty("first_name"));
 
+    }
+
+    @Test
+    void testPropertyToStoredParam() {
+        assertEquals("id", propertyToStoredParam("id"));
+        assertEquals("first_name", propertyToStoredParam("firstName"));
     }
 }

@@ -3,9 +3,11 @@ package com.github.mygreen.sqlmapper.core.type.standard;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.sql.Types;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.Getter;
@@ -73,5 +75,10 @@ public class LocalTimeType implements ValueType<LocalTime> {
     @Override
     public String getEmbeddedValue(LocalTime value) {
         return value != null ? formatter.format(value) : null;
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+        return Types.TIME;
     }
 }

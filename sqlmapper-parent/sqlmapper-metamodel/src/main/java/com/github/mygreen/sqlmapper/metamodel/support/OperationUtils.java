@@ -5,6 +5,7 @@ import com.github.mygreen.sqlmapper.metamodel.operator.ArithmeticOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.BooleanOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
 import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
+import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
 
 /**
  * 演算操作に関するユーティリティ
@@ -34,6 +35,12 @@ public class OperationUtils {
             // 親ノードがOR/ANDで子ノードがBETWEENのとき
             // 実際は括弧で囲まなくてもよいが見やすさのために囲む
             return true;
+        } else if(parentOp == UnaryOp.NOT || parentOp == UnaryOp.EXISTS || parentOp == UnaryOp.NOT_EXISTS) {
+            // 親ノードが NOT /EXISTS / NOT_EXISTS 演算子のとき
+            return true;
+        } else if(parentOp.getClass().equals(childOp.getClass())) {
+            // 親ノードと子ノードが同じ演算子グループの場合、それぞれの優先度に従う
+            return parentOp.getPriority() < childOp.getPriority();
         } else if(childOp instanceof ArithmeticOp) {
             // 子ノードが算術演算子の場合、必ず囲む。
             return true;

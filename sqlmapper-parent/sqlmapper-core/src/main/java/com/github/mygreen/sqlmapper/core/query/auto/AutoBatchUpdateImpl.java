@@ -39,6 +39,9 @@ public class AutoBatchUpdateImpl<T> implements AutoBatchUpdate<T> {
     @Getter
     private final EntityMeta entityMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
     /**
      * バージョンプロパティを更新対象に含めるかどうか。
      */
@@ -83,6 +86,14 @@ public class AutoBatchUpdateImpl<T> implements AutoBatchUpdate<T> {
     }
 
     private void validateTarget() {
+
+        // 読み取り専用かどうかのチェック
+        if(entityMeta.getTableMeta().isReadOnly()) {
+            throw new IllegalOperateException(context.getMessageFormatter().create("query.readOnlyEntity")
+                    .paramWithClass("entityType", entityMeta.getEntityType())
+                    .format());
+        }
+
         // 主キーを持つかどうかのチェック
         if(entityMeta.getIdPropertyMetaList().isEmpty()) {
             throw new IllegalOperateException(context.getMessageFormatter().create("query.requiredId")
@@ -106,6 +117,12 @@ public class AutoBatchUpdateImpl<T> implements AutoBatchUpdate<T> {
      */
     public int getEntitySize() {
         return entities.length;
+    }
+
+    @Override
+    public AutoBatchUpdateImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
     }
 
     @Override

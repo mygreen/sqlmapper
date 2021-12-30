@@ -38,6 +38,9 @@ public class AutoBatchInsertImpl<T> implements AutoBatchInsert<T> {
     @Getter
     private final EntityMeta entityMeta;
 
+    @Getter
+    private Integer queryTimeout;
+
     /**
      * 挿入対象とするプロパティ一覧
      */
@@ -82,6 +85,12 @@ public class AutoBatchInsertImpl<T> implements AutoBatchInsert<T> {
      */
     public int getEntitySize() {
         return entities.length;
+    }
+
+    @Override
+    public AutoBatchInsertImpl<T> queryTimeout(int seconds) {
+        this.queryTimeout = seconds;
+        return this;
     }
 
     @Override

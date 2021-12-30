@@ -20,13 +20,6 @@ public class ColumnMeta {
     private String name;
 
     /**
-     * 挿入可能かどうか。
-     */
-    @Getter
-    @Setter
-    private boolean insertable = true;
-
-    /**
      * 更新可能かどうか。
      */
     @Getter

@@ -3,7 +3,9 @@ package com.github.mygreen.sqlmapper.core.type.standard;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,11 @@ public class BigDecimalType implements ValueType<BigDecimal> {
     @Override
     public String getEmbeddedValue(BigDecimal value) {
         return value != null ? value.toPlainString() : null;
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+        return Types.NUMERIC;
     }
 
 }

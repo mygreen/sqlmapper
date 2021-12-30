@@ -1,12 +1,7 @@
 package com.github.mygreen.sqlmapper.core.meta;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -18,63 +13,31 @@ import com.github.mygreen.sqlmapper.core.annotation.EmbeddedId;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
 import com.github.mygreen.sqlmapper.core.annotation.Lob;
-import com.github.mygreen.sqlmapper.core.annotation.ModifiedAt;
-import com.github.mygreen.sqlmapper.core.annotation.ModifiedBy;
 import com.github.mygreen.sqlmapper.core.annotation.Transient;
+import com.github.mygreen.sqlmapper.core.annotation.UpdatedAt;
+import com.github.mygreen.sqlmapper.core.annotation.UpdatedBy;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
+import com.github.mygreen.sqlmapper.core.id.IdGenerationContext;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 /**
  * プロパティのメタ情報です。
  *
- *
  * @author T.TSUCHIE
+ * @version 0.3
  *
  */
-@RequiredArgsConstructor
-public class PropertyMeta {
-
-    /**
-     * プロパティ名
-     */
-    @Getter
-    private final String name;
-
-    /**
-     * プロパティタイプ
-     */
-    @Getter
-    private final Class<?> propertyType;
-
-    /**
-     * フィールド情報
-     */
-    private Optional<Field> field = Optional.empty();
-
-    /**
-     * setterメソッド
-     */
-    private Optional<Method> writeMethod = Optional.empty();
-
-    /**
-     * getterメソッド
-     */
-    private Optional<Method> readMethod = Optional.empty();
-
-    /**
-     * アノテーションの情報
-     */
-    private Map<Class<? extends Annotation>, Annotation> annotationMap = new HashMap<>();
+public class PropertyMeta extends PropertyBase {
 
     /**
      * 埋め込み型の主キーの子プロパティかどうか。
      */
+    @Setter
     private boolean embeddedableId = false;
 
     /**
@@ -103,158 +66,31 @@ public class PropertyMeta {
     private ValueType<?> valueType;
 
     /**
-     * 識別子の生成タイプ
+     * IDの生成タイプ
      */
     @Getter
     private Optional<GeneratedValue.GenerationType> idGenerationType = Optional.empty();
 
     /**
-     * 識別子の生成処理
+     * IDの生成処理
      */
     @Getter
     private Optional<IdGenerator> idGenerator = Optional.empty();
 
     /**
-     * プロパティが定義されているクラス情報を取得します。
-     * @return プロパティが定義されているクラス情報
-     * @throws IllegalStateException クラス情報を取得するための情報が不足している場合。
+     * 生成対象の識別子の情報。
+     * <p>ID生成時に渡す際の情報として使用するので、効率化のためにここで事前に作成して保持しておく。
      */
-    public Class<?> getDeclaringClass() {
-
-        if(field.isPresent()) {
-            return field.get().getDeclaringClass();
-        }
-
-        if(readMethod.isPresent()) {
-            return readMethod.get().getDeclaringClass();
-        }
-
-        if(writeMethod.isPresent()) {
-            return writeMethod.get().getDeclaringClass();
-        }
-
-        throw new IllegalStateException("not found availabeld info.");
-
-    }
+    @Getter
+    private Optional<IdGenerationContext> idGenerationContext = Optional.empty();
 
     /**
-     * 読み込み可能なプロパティか判定する。
-     * <p>getterメソッドまたはpublicなフィールドが存在する場合</p>
-     * @return {@literal true}のとき読み込み可能。
+     * プロパティのインスタンス情報を作成します。
+     * @param name プロパティ名
+     * @param propertyType プロパティのクラスタイプ
      */
-    public boolean isReadable() {
-
-        if(readMethod.isPresent()) {
-            return true;
-        }
-
-        if(field.isPresent()) {
-            if(Modifier.isPublic(field.get().getModifiers())) {
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-
-    /**
-     * 書込み可能なプロパティか判定する。
-     * <p>setterメソッドまたはpublicなフィールドが存在する場合</p>
-     * @return {@literal true}のと書き込み可能。
-     */
-    public boolean isWritable() {
-
-        if(writeMethod.isPresent()) {
-            return true;
-        }
-
-        if(field.isPresent()) {
-            if(Modifier.isPublic(field.get().getModifiers())) {
-                return true;
-            }
-        }
-
-        return false;
-
-    }
-
-    /**
-     * プロパティに対するフィールドを設定します。
-     * @param field フィールド（nullを許容します）
-     */
-    public void setField(Field field) {
-        this.field = Optional.ofNullable(field);
-    }
-
-    /**
-     * プロパティに対するフィールドを情報を取得します。
-     * @return プロパティに対するフィールド情報
-     */
-    public Optional<Field> getField() {
-        return field;
-    }
-
-    /**
-     * プロパティに対するsetterメソッドを設定します。
-     * @param method setterメソッド（nullを許容します）
-     */
-    public void setWriteMethod(Method method) {
-        this.writeMethod = Optional.ofNullable(method);
-    }
-
-    /**
-     * プロパティに対するsetterメソッドを取得します。
-     * @return プロパティに対するsetterメソッド。
-     */
-    public Optional<Method> getWriteMethod() {
-        return writeMethod;
-    }
-
-    /**
-     * プロパティに対するgetterメソッドを設定します。
-     * @param method getterメソッド（nullを許容します）
-     */
-    public void setReadMethod(Method method) {
-        this.readMethod = Optional.ofNullable(method);
-    }
-
-    /**
-     * プロパティに対するgetterメソッドを取得します。
-     * @return プロパティに対するgetterメソッド
-     */
-    public Optional<Method> getReadMethod() {
-        return readMethod;
-    }
-
-    /**
-     * アノテーションを追加します。
-     * @param annoClass アノテーションのタイプ
-     * @param anno 追加するアノテーション
-     */
-    public void addAnnotation(@NonNull Class<? extends Annotation> annoClass, @NonNull Annotation anno) {
-        this.annotationMap.put(annoClass, anno);
-    }
-
-    /**
-     * 指定したアノテーションを持つか判定します。
-     * @param <A> アノテーションのタイプ。
-     * @param annoClass アノテーションのクラスタイプ。
-     * @return trueの場合、アノテーションを持ちます。
-     */
-    public <A extends Annotation> boolean hasAnnotation(@NonNull Class<A> annoClass) {
-        return annotationMap.containsKey(annoClass);
-    }
-
-    /**
-     * タイプを指定して、アノテーションを取得する。
-     * @param <A> アノテーションのタイプ。
-     * @param annoClass アノテーションのクラスタイプ。
-     * @return 存在しない場合、空を返します。
-     */
-    @SuppressWarnings("unchecked")
-    public <A extends Annotation> Optional<A> getAnnotation(Class<A> annoClass) {
-        return Optional.ofNullable((A)annotationMap.get(annoClass));
+    public PropertyMeta(String name, Class<?> propertyType) {
+        super(name, propertyType);
     }
 
     /**
@@ -345,11 +181,22 @@ public class PropertyMeta {
     }
 
     /**
+     * 生成対象の識別子の情報を設定する。
+     * @param idGenerationContext 生成対象の識別子の情報
+     */
+    public void setIdGenerationContext(IdGenerationContext idGenerationContext) {
+        this.idGenerationContext = Optional.ofNullable(idGenerationContext);
+    }
+
+    /**
      * 永続化対象外かどうか判定する。
+     * <p>永続化対象外とは、アノテーション {@link Transient}が付与されているか、
+     * または、フィールドに修飾子 {@literal transient} が付与されているかどうかで判定します。
      * @return 永続化対象外のとき {@literal true} を返す。
      */
     public boolean isTransient() {
-        return hasAnnotation(Transient.class);
+        return hasAnnotation(Transient.class)
+                || field.map(f -> Modifier.isTransient(f.getModifiers())).orElse(false);
     }
 
     /**
@@ -389,16 +236,16 @@ public class PropertyMeta {
      * 修正日時用のプロパティがかどうか判定する。
      * @return 修正日時用のプロパティのとき {@literal true} を返す。
      */
-    public boolean isModifiedAt() {
-        return hasAnnotation(ModifiedAt.class);
+    public boolean isUpdatedAt() {
+        return hasAnnotation(UpdatedAt.class);
     }
 
     /**
      * 修正者用のプロパティがかどうか判定する。
      * @return 修正者用のプロパティのとき {@literal true} を返す。
      */
-    public boolean isModifiedBy() {
-        return hasAnnotation(ModifiedBy.class);
+    public boolean isUpdatedBy() {
+        return hasAnnotation(UpdatedBy.class);
     }
 
 

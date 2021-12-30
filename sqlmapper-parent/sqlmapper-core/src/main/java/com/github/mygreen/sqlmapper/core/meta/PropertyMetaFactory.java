@@ -10,9 +10,13 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.BeanNotOfRequiredTypeException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.github.mygreen.messageformatter.MessageFormatter;
 import com.github.mygreen.sqlmapper.core.annotation.Column;
@@ -24,8 +28,10 @@ import com.github.mygreen.sqlmapper.core.annotation.SequenceGenerator;
 import com.github.mygreen.sqlmapper.core.annotation.TableGenerator;
 import com.github.mygreen.sqlmapper.core.annotation.Temporal;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
+import com.github.mygreen.sqlmapper.core.config.JdbcTemplateProperties;
 import com.github.mygreen.sqlmapper.core.config.TableIdGeneratorProperties;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.id.IdGenerationContext;
 import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.core.id.SequenceIdGenerator;
@@ -34,6 +40,7 @@ import com.github.mygreen.sqlmapper.core.id.TableIdGenerator;
 import com.github.mygreen.sqlmapper.core.id.TableIdIncrementer;
 import com.github.mygreen.sqlmapper.core.id.UUIDGenerator;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
 import com.github.mygreen.sqlmapper.core.util.ClassUtils;
@@ -45,7 +52,7 @@ import lombok.Setter;
 /**
  * プロパティのメタ情報を作成します。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
  */
@@ -79,23 +86,30 @@ public class PropertyMetaFactory {
     @Getter
     @Setter
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private JdbcTemplateProperties jdbcTemplateProperties;
 
     @Getter
     @Setter
     @Autowired
     private TableIdGeneratorProperties tableIdGeneratorProperties;
 
+    @Getter
+    @Setter
+    @Autowired
+    private ApplicationContext applicationContext;
+
     /**
      * プロパティのメタ情報を作成します。
      * @param field フィールド
-     * @param entityMeta エンティティのメタ情報
+     * @param entityMeta エンティティのメタ情報。空の場合はID情報の処理をスキップします。
+     * @param embeddedId 埋め込み型のIDのプロパティかどうか。
      * @return プロパティのメタ情報
      */
-    public PropertyMeta create(final Field field, final EntityMeta entityMeta) {
+    public PropertyMeta create(final Field field, final Optional<EntityMeta> entityMeta, final boolean embeddedId) {
 
         final Class<?> declaringClass = field.getDeclaringClass();
         final PropertyMeta propertyMeta = new PropertyMeta(field.getName(), field.getType());
+        propertyMeta.setEmbeddedableId(embeddedId);
         doField(propertyMeta, field);
 
         // フィールドに対するgetter/setterメソッドを設定します。
@@ -119,7 +133,7 @@ public class PropertyMetaFactory {
         if(!propertyMeta.isEmbedded() && !propertyMeta.isTransient()) {
 
             doColumnMeta(propertyMeta);
-            doIdGenerator(propertyMeta, entityMeta);
+            entityMeta.ifPresent(em -> doIdGenerator(propertyMeta, em));
 
             // プロパティに対する型変換を設定します。
             ValueType<?> valueType = valueTypeRegistry.findValueType(propertyMeta);
@@ -236,8 +250,7 @@ public class PropertyMetaFactory {
                 columnMeta.setName(defaultColumnName);
             }
 
-            columnMeta.setInsertable(annoColumn.get().insertable());
-            columnMeta.setUpdatable(annoColumn.get().insertable());
+            columnMeta.setUpdatable(annoColumn.get().updatable());
 
         } else {
             columnMeta.setName(defaultColumnName);
@@ -266,22 +279,61 @@ public class PropertyMetaFactory {
         final Class<?> propertyType = propertyMeta.getPropertyType();
 
         GenerationType generationType = annoGeneratedValue.get().strategy();
+        if(generationType != GenerationType.AUTO && !dialect.supportsGenerationType(generationType)) {
+            throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.notSupportForDialect")
+                    .paramWithClass("classType", entityMeta.getEntityType())
+                    .param("property", propertyMeta.getName())
+                    .paramWithAnno("anno", GeneratedValue.class)
+                    .param("attrName", "strategy")
+                    .param("attrValue", generationType)
+                    .param("dialectName", dialect.getName())
+                    .format());
+        }
+
+        // 生成戦略の補完
         if(generationType == GenerationType.AUTO) {
             generationType = dialect.getDefaultGenerationType();
         }
 
         final IdGenerator idGenerator;
-        if(generationType == GenerationType.IDENTITY) {
-            IdentityIdGenerator identityIdGenerator = new IdentityIdGenerator(propertyType);
-            if(!annoGeneratedValue.get().format().isEmpty()) {
-                identityIdGenerator.setFormatter(new DecimalFormat(annoGeneratedValue.get().format()));
+        if(StringUtils.hasLength(annoGeneratedValue.get().generator())) {
+            /*
+             * 属性「generator」が指定されている場合は、「strategy」の値は無視する。
+             * ただし、IDENTITYの場合はクエリ実行前に処理されてしまうので、
+             * Autoに補完して間違った処理をされないようにする。
+             */
+            generationType = GenerationType.AUTO;
+
+            final String generatorName = annoGeneratedValue.get().generator();
+            try {
+                idGenerator = applicationContext.getBean(generatorName, IdGenerator.class);
+
+            } catch(NoSuchBeanDefinitionException  e) {
+                throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.noSuchBeanDefinition")
+                        .paramWithClass("classType", entityMeta.getEntityType())
+                        .param("property", propertyMeta.getName())
+                        .paramWithAnno("anno", GeneratedValue.class)
+                        .param("attrName", "generator")
+                        .param("attrValue", generatorName)
+                        .format(), e);
+            } catch(BeanNotOfRequiredTypeException e) {
+                throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.beanNotOfRequiredType")
+                        .paramWithClass("classType", entityMeta.getEntityType())
+                        .param("property", propertyMeta.getName())
+                        .paramWithAnno("anno", GeneratedValue.class)
+                        .param("attrName", "generator")
+                        .param("attrValue", generatorName)
+                        .paramWithClass("requiredType", IdGenerator.class)
+                        .format(), e);
             }
+        } else if(generationType == GenerationType.IDENTITY) {
+            IdentityIdGenerator identityIdGenerator = new IdentityIdGenerator(propertyType);
             idGenerator = identityIdGenerator;
 
         } else if(generationType == GenerationType.SEQUENCE) {
             Optional<SequenceGenerator> annoSequenceGenerator = propertyMeta.getAnnotation(SequenceGenerator.class);
             final String sequenceName;
-            if(annoSequenceGenerator.isPresent()) {
+            if(annoSequenceGenerator.isPresent() && !annoSequenceGenerator.get().sequenceName().isEmpty()) {
                 sequenceName = NameUtils.tableFullName(annoSequenceGenerator.get().sequenceName(),
                         annoSequenceGenerator.get().catalog(),
                         annoSequenceGenerator.get().schema());
@@ -291,9 +343,19 @@ public class PropertyMetaFactory {
             SequenceIdGenerator sequenceIdGenerator = new SequenceIdGenerator(
                     dialect.getSequenceIncrementer(dataSource, sequenceName), propertyType);
 
-            if(!annoGeneratedValue.get().format().isEmpty()) {
-                sequenceIdGenerator.setFormatter(new DecimalFormat(annoGeneratedValue.get().format()));
-            }
+            annoSequenceGenerator.map(a -> a.format()).filter(f -> !f.isEmpty()).ifPresent(f -> {
+                try {
+                    sequenceIdGenerator.setFormatter(new DecimalFormat(f));
+                } catch(IllegalArgumentException e) {
+                    throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.wrongFormat")
+                            .paramWithClass("classType", entityMeta.getEntityType())
+                            .param("property", propertyMeta.getName())
+                            .paramWithAnno("anno", TableGenerator.class)
+                            .param("attrName", "format")
+                            .param("attrValue", f)
+                            .format(), e);
+                }
+            });
 
             idGenerator = sequenceIdGenerator;
 
@@ -366,23 +428,23 @@ public class PropertyMetaFactory {
             }
 
             TableIdGenerator tableIdGenerator = new TableIdGenerator(
-                    new TableIdIncrementer(jdbcTemplate, tableIdContext),
+                    new TableIdIncrementer(getJdbcTemplate(), tableIdContext),
                     propertyMeta.getPropertyType(), sequenceName);
 
 
-            if(!annoGeneratedValue.get().format().isEmpty()) {
+            annoTableGenerator.map(a -> a.format()).filter(f -> !f.isEmpty()).ifPresent(f -> {
                 try {
-                    tableIdGenerator.setFormatter(new DecimalFormat(annoGeneratedValue.get().format()));
+                    tableIdGenerator.setFormatter(new DecimalFormat(f));
                 } catch(IllegalArgumentException e) {
                     throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.wrongFormat")
                             .paramWithClass("classType", entityMeta.getEntityType())
                             .param("property", propertyMeta.getName())
                             .paramWithAnno("anno", TableGenerator.class)
                             .param("attrName", "format")
-                            .param("attrValue", annoGeneratedValue.get().format())
+                            .param("attrValue", f)
                             .format(), e);
                 }
-            }
+            });
 
             idGenerator = tableIdGenerator;
 
@@ -412,7 +474,14 @@ public class PropertyMetaFactory {
 
         propertyMeta.setIdGenerator(idGenerator);
         propertyMeta.setIdGeneratonType(generationType);
-        //TODO: SpringからBeanを取得するする
+
+        // 生成対象のIDの情報
+        final IdGenerationContext generationContext = new IdGenerationContext();
+        generationContext.setTableMeta(entityMeta.getTableMeta());
+        generationContext.setColumnMeta(propertyMeta.getColumnMeta());
+        generationContext.setEntityType(entityMeta.getEntityType());
+        generationContext.setPropertyType(propertyMeta.getPropertyType());
+        propertyMeta.setIdGenerationContext(generationContext);
 
     }
 
@@ -435,8 +504,8 @@ public class PropertyMetaFactory {
                 && propertyType != Long.class && propertyType != long.class) {
 
             throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.notSupportTypeList")
-                    .paramWithClass("entityType", declaringClass)
-                    .param("propperty", propertyMeta.getName())
+                    .paramWithClass("classType", declaringClass)
+                    .param("property", propertyMeta.getName())
                     .paramWithAnno("anno", Id.class)
                     .paramWithClass("actualType", propertyType)
                     .paramWithClass("expectedTypeList", String.class, Integer.class, int.class, Long.class, long.class)
@@ -447,8 +516,8 @@ public class PropertyMetaFactory {
         if(!propertyMeta.isId() && propertyMeta.hasAnnotation(GeneratedValue.class)) {
 
             throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.notIdWithGeneratedValue")
-                    .paramWithClass("entityType", declaringClass)
-                    .param("propperty", propertyMeta.getName())
+                    .paramWithClass("classType", declaringClass)
+                    .param("property", propertyMeta.getName())
                     .paramWithAnno("anno", GeneratedValue.class)
                     .format());
         }
@@ -458,8 +527,8 @@ public class PropertyMetaFactory {
         if(propertyMeta.hasAnnotation(Enumerated.class) && !propertyType.isEnum()) {
 
             throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.notSupportType")
-                    .paramWithClass("entityType", declaringClass)
-                    .param("propperty", propertyMeta.getName())
+                    .paramWithClass("classType", declaringClass)
+                    .param("property", propertyMeta.getName())
                     .paramWithAnno("anno", Enumerated.class)
                     .paramWithClass("actualType", propertyType)
                     .paramWithClass("expectedType", Enum.class)
@@ -472,8 +541,8 @@ public class PropertyMetaFactory {
                 && propertyType != Long.class && propertyType != long.class) {
 
             throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.notSupportTypeList")
-                    .paramWithClass("entityType", declaringClass)
-                    .param("propperty", propertyMeta.getName())
+                    .paramWithClass("classType", declaringClass)
+                    .param("property", propertyMeta.getName())
                     .paramWithAnno("anno", Version.class)
                     .paramWithClass("actualType", propertyType)
                     .paramWithClass("expectedTypeList", Integer.class, int.class, Long.class, long.class)
@@ -487,12 +556,21 @@ public class PropertyMetaFactory {
 
             // 時制の型が不明なプロパティに対して、@Temporalが付与されていない場合
             throw new InvalidEntityException(declaringClass, messageFormatter.create("property.anno.requiredAnnoTemporal")
-                    .paramWithClass("entityType", declaringClass)
-                    .param("propperty", propertyMeta.getName())
+                    .paramWithClass("classType", declaringClass)
+                    .param("property", propertyMeta.getName())
                     .paramWithAnno("anno", Temporal.class)
                     .format());
         }
 
+    }
+
+    /**
+     * {@link TableIdGenerator}用の {@link JdbcTemplate} を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(dataSource, jdbcTemplateProperties)
+                .build();
     }
 
 }

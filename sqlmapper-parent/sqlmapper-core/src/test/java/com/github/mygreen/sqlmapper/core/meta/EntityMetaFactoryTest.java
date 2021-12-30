@@ -18,8 +18,8 @@ import com.github.mygreen.sqlmapper.core.annotation.Id;
 import com.github.mygreen.sqlmapper.core.annotation.MappedSuperclass;
 import com.github.mygreen.sqlmapper.core.annotation.Transient;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
-import com.github.mygreen.sqlmapper.core.testdata.EntityBase;
-import com.github.mygreen.sqlmapper.core.testdata.NoDbTestConfig;
+import com.github.mygreen.sqlmapper.core.test.config.NoDbTestConfig;
+import com.github.mygreen.sqlmapper.core.test.entity.EntityBase;
 
 import lombok.Data;
 import lombok.Getter;
@@ -161,7 +161,7 @@ public class EntityMetaFactoryTest {
 
 
             } else if(propertyMeta.getName().equals("updateAt")) {
-                assertThat(propertyMeta.isModifiedAt()).isTrue();
+                assertThat(propertyMeta.isUpdatedAt()).isTrue();
                 assertThat(propertyMeta.getDeclaringClass()).isEqualTo(EntityBase.class);
 
                 assertCount++;

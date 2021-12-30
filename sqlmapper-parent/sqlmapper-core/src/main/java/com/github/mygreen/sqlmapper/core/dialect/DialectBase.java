@@ -1,10 +1,18 @@
 package com.github.mygreen.sqlmapper.core.dialect;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.query.SelectForUpdateType;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
+import com.github.mygreen.sqlmapper.core.where.metamodel.OperationHandler;
+import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
+
+import lombok.Getter;
 
 /**
  * {@link Dialect}のベースとなるクラス。
@@ -15,6 +23,12 @@ import com.github.mygreen.sqlmapper.core.type.ValueType;
  *
  */
 public abstract class DialectBase implements Dialect {
+
+    /**
+     * メタモデルによる各演算子の処理のマップ。
+     */
+    @Getter
+    protected Map<Class<?>, OperationHandler<? extends Operator>> operationHandlerMap = new HashMap<>();
 
     /**
      * {@inheritDoc}
@@ -44,6 +58,16 @@ public abstract class DialectBase implements Dialect {
     /**
      * {@inheritDoc}
      *
+     * @return {@literal "select count(*) from (<sql>)"} を返します。
+     */
+    public String convertGetCountSql(final String sql) {
+        Assert.hasLength(sql, "sql should be not empty.");
+        return "select count(*) from ( " + sql + " )";
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * @return 空文字({@literal ""})を返します。
      */
     @Override
@@ -57,7 +81,7 @@ public abstract class DialectBase implements Dialect {
      * @return {@link SelectForUpdateType#NORMAL} を返します。
      */
     @Override
-    public boolean isSupportedSelectForUpdate(final SelectForUpdateType type) {
+    public boolean supportsSelectForUpdate(final SelectForUpdateType type) {
         return type == SelectForUpdateType.NORMAL;
     }
 
@@ -71,23 +95,53 @@ public abstract class DialectBase implements Dialect {
         return " for update";
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String convertLimitSql(String sql, int offset, int limit) {
 
+        if(offset < 0 && limit < 0) {
+            throw new IllegalArgumentException("Either offset or limit should be greather than 0.");
+        }
+
         StringBuilder buf = new StringBuilder(sql.length() + 20);
         buf.append(sql);
-        if (offset > 0) {
-            buf.append(" limit ")
-                .append(limit)
-                .append(" offset ")
-                .append(offset);
-        } else {
+        if (limit >= 0) {
             buf.append(" limit ")
                 .append(limit);
         }
 
+        if (offset >= 0) {
+            buf.append(" offset ")
+                .append(offset);
+        }
+
         return buf.toString();
 
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@literal false} を返します。
+     */
+    @Override
+    public boolean needsParameterForResultSet() {
+        return false;
+    }
+
+    /**
+     * メタモデルに対する演算子に対する処理を登録します。
+     * <p>登録する際に、{@literal OperationHandler#init()}を実行します。
+     *
+     * @since 0.3
+     * @param <T> 演算子の種別
+     * @param operatorClass 演算子種別のクラス
+     * @param handler 演算子に対する処理
+     */
+    public <T extends Operator> void register(Class<T> operatorClass,  OperationHandler<T> handler) {
+        this.operationHandlerMap.put(operatorClass, handler);
     }
 
 }

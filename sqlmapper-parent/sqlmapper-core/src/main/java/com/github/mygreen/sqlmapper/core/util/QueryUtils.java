@@ -34,7 +34,8 @@ public class QueryUtils {
     public static MapSqlParameterSource get(MapSqlParameterSource[] paramSources, int index) {
         MapSqlParameterSource paramSource = paramSources[index];
         if(paramSource == null) {
-            paramSources[index] = new MapSqlParameterSource();
+            paramSource = new MapSqlParameterSource();
+            paramSources[index] = paramSource;
         }
 
         return paramSource;
@@ -50,7 +51,8 @@ public class QueryUtils {
     public static List<Object> get(List<Object>[] batchParams, int index) {
         List<Object> params = batchParams[index];
         if(params == null) {
-            batchParams[index] = new ArrayList<>();
+            params = new ArrayList<>();
+            batchParams[index] = params;
         }
         return params;
     }
@@ -58,7 +60,7 @@ public class QueryUtils {
     /**
      * JdbcItemplate用のバッチ実行用のパラメータの形式に変換する。
      * @param batchParams 変換対象のパラメータ
-     * @return {@code List<Object[]>} の毛市域に変換したパラメータ。
+     * @return {@literal List<Object[]>} の形式に変換したパラメータ。
      */
     public static List<Object[]> convertBatchArgs(List<Object>[] batchParams) {
 
@@ -96,7 +98,7 @@ public class QueryUtils {
         StringBuilder result = new StringBuilder();
 
         for(int i=0; i < repeat; i++) {
-            if(result.length() > 0 && !StringUtils.hasLength(separator)) {
+            if(result.length() > 0 && StringUtils.hasLength(separator)) {
                 result.append(separator);
             }
 
@@ -114,16 +116,26 @@ public class QueryUtils {
      *  <li>{@literal _} {@literal =>} {@literal \_}</li>
      * </ul>
      * @param str エスケープ対象の文字列
+     * @param escape エスケープ文字
      * @return エスケープ後の文字列
      */
-    public static String escapeLike(final String str) {
+    public static String escapeLike(final String str, final char escape) {
 
         if(!StringUtils.hasLength(str)) {
             return "";
         }
 
-        return str.replaceAll("%", "\\%")
-                .replaceAll("_", "\\_");
+        int length = str.length();
+        StringBuilder sb = new StringBuilder(length);
+        for(int i=0; i < length; i++) {
+            char c = str.charAt(i);
+            if(c == '%' || c == '_') {
+                sb.append(escape).append(c);
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
 }

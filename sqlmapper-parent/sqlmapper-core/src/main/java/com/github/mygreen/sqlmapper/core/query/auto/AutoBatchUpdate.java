@@ -8,12 +8,22 @@ import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 /**
  * バッチ更新を行うSQLを自動生成するクエリです。
  *
- *
+ * @version 0.3
  * @author T.TSUCHIE
  *
- * @param <T>
+ * @param <T> 処理対象となるエンティティの型
  */
 public interface AutoBatchUpdate<T> {
+
+    /**
+     * クエリタイムアウトの秒数を設定します。
+     * <p>{@literal -1} を指定するとJDBC ドライバーのデフォルト値を使用します。
+     *
+     * @since 0.3
+     * @param seconds クエリタイムアウトの秒数
+     * @return 自身のインスタンス。
+     */
+    AutoBatchUpdate<T> queryTimeout(int seconds);
 
     /**
      * バージョンプロパティを通常の更新対象に含め、バージョンチェックの対象外とします。
@@ -33,8 +43,9 @@ public interface AutoBatchUpdate<T> {
     AutoBatchUpdate<T> suppresOptimisticLockException();
 
     /**
-     * 指定のプロパティのみを挿入対象とします。
-     * <p>アノテーション {@literal @Column(updatable = false)} が設定されているプロパティは対象外となります。</p>
+     * 指定のプロパティのみを更新対象とします。
+     * <p>ID(主キー)は自動的に更新対象外となります。</p>
+     * <p>アノテーション {@literal @Column(updatable = false)} が設定されているプロパティは自動的に対象外となります。</p>
      *
      * @param properties 更新対象のプロパティ情報。
      * @return 自身のインスタンス。
@@ -44,6 +55,8 @@ public interface AutoBatchUpdate<T> {
 
     /**
      * 指定のプロパティを更新対象から除外します。
+     * <p>ID(主キー)は自動的に更新対象外となります。</p>
+     * <p>アノテーション {@literal @Column(updatable = false)} が設定されているプロパティは自動的に対象外となります。</p>
      *
      * @param properties 除外対象のプロパティ名。
      * @return 自身のインスタンス。

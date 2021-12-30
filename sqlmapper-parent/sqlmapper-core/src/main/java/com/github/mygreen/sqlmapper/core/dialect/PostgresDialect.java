@@ -34,17 +34,19 @@ public class PostgresDialect extends DialectBase {
      *  <li>{@link GenerationType#IDENTITY} : {@literal true}</li>
      *  <li>{@link GenerationType#SEQUENCE} : {@literal true}</li>
      *  <li>{@link GenerationType#TABLE} : {@literal true}</li>
-     *  <li>その他 : {@literal false}</li>
+     *  <li>{@link GenerationType#UUID} : {@literal true}</li>
      * </ul>
      */
     @Override
-    public boolean isSupportedGenerationType(GenerationType generationType) {
+    public boolean supportsGenerationType(GenerationType generationType) {
         switch(generationType) {
             case IDENTITY:
                 return true;
             case SEQUENCE:
                 return true;
             case TABLE:
+                return true;
+            case UUID:
                 return true;
             default:
                 return false;
@@ -59,5 +61,15 @@ public class PostgresDialect extends DialectBase {
     @Override
     public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
         return new PostgresSequenceMaxValueIncrementer(dataSource, sequenceName);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@literal true} を返します。
+     */
+    @Override
+    public boolean needsParameterForResultSet() {
+        return true;
     }
 }

@@ -36,6 +36,13 @@ public class TableMeta {
     private String catalog;
 
     /**
+     * 読み取り専用かどうか。
+     */
+    @Getter
+    @Setter
+    private boolean readOnly = false;
+
+    /**
      * カタログやスキーマを含んだ完全な名前を返します。
      * @return カタログやスキーマを含んだ完全な名前
      */

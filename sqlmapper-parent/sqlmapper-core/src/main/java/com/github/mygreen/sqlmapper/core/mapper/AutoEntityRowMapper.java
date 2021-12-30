@@ -28,7 +28,7 @@ public class AutoEntityRowMapper<T> implements RowMapper<T> {
     private final Class<T> baseEntityClass;
 
     /**
-     * 抽出対象のプロパティと所属するエンティティの暮らすタイプのマップ情報です。
+     * 抽出対象のプロパティと所属するエンティティのクラスタイプのマップ情報です。
      */
     private final Map<PropertyMeta, Class<?>> propertyMetaEntityTypeMap;
 

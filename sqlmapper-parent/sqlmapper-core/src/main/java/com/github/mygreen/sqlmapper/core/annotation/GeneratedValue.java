@@ -5,9 +5,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.text.DecimalFormat;
 
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 
 /**
  * 識別子(主キー)の値を自動生成する方法を定義します。
@@ -22,21 +22,20 @@ import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 public @interface GeneratedValue {
 
     /**
-     * アノテーションの付いたエンティティの識別子(主キー)を生成するために、
-     * 永続化プロバイダが使用しなければならない生成戦略。
+     * アノテーションの付いたエンティティの識別子(主キー)を生成するために、永続化プロバイダが使用しなければならない生成戦略。
+     * <p>{@link #generator()}を指定している場合、この属性は無視されます。
+     *
+     * @return 識別子(主キー)の生成戦略。
      */
     GenerationType strategy() default GenerationType.AUTO;
 
     /**
-     * Springコンテナ管理のBean名を指定します。
+     * 独自に識別子を生成するための、Springコンテナ管理のBean名を指定します。
+     * <p>{@link IdGenerator} を実装している必要があります。
+     *
+     * @return 識別子の生成処理のSpring Beanの名称。
      */
     String generator() default "";
-
-    /**
-     * 識別子のクラスタイプが文字列のときに書式を設定することができます。
-     * @return {@link DecimalFormat}で指定できる書式です。
-     */
-    String format() default "";
 
     /**
      * 主キー生成戦略の種別を定義します。
@@ -69,7 +68,6 @@ public @interface GeneratedValue {
          * 永続化プロバイダは {@link java.util.UUID} を使用しランダムなセキュアな値を割り当てます。
          */
         UUID
-
         ;
     }
 }

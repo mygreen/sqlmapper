@@ -2,12 +2,14 @@ package com.github.mygreen.sqlmapper.core.type.enumeration;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.github.mygreen.messageformatter.MessageFormatter;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.type.SqlValueConversionException;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 
@@ -95,5 +97,10 @@ public class EnumStringType<T extends Enum<T>> implements ValueType<T> {
     @Override
     public String getEmbeddedValue(T value) {
         return value != null ? value.name() : null;
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+        return Types.VARCHAR;
     }
 }

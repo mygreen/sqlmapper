@@ -3,9 +3,11 @@ package com.github.mygreen.sqlmapper.core.type.standard;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 
 import com.github.mygreen.sqlmapper.core.annotation.Temporal.TemporalType;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 
 import lombok.Getter;
 
@@ -51,6 +53,11 @@ public class SqlDateType implements SqlTemporalType<Date> {
     }
 
     @Override
+    public Date convertTo(java.util.Date utilDate) {
+        return new Date(utilDate.getTime());
+    }
+
+    @Override
     public Date getValue(ResultSet rs, int columnIndex) throws SQLException {
 
         Date value = rs.getDate(columnIndex);
@@ -75,6 +82,11 @@ public class SqlDateType implements SqlTemporalType<Date> {
     @Override
     public String getEmbeddedValue(Date value) {
         return value != null ? new SimpleDateFormat(pattern).format(value) : null;
+    }
+
+    @Override
+    public int getSqlType(Dialect dialect) {
+        return Types.DATE;
     }
 
 }

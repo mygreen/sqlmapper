@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
 import com.github.mygreen.sqlmapper.core.query.WhereClause;
 import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhere;
@@ -105,7 +108,17 @@ public class AutoAnyDeleteExecutor {
      */
     public int execute() {
         prepare();
-        return context.getJdbcTemplate().update(executedSql, paramValues.toArray());
+        return getJdbcTemplate().update(executedSql, paramValues.toArray());
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())
+                .queryTimeout(query.getQueryTimeout())
+                .build();
     }
 
 }
