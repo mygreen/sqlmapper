@@ -20,12 +20,13 @@ import java.lang.annotation.Target;
 public @interface Temporal {
 
     /**
-     * 時制の型を指定します。
+     * 時制の種別を指定します。
+     * @return 時制の種別。
      */
     TemporalType value();
 
     /**
-     * 時制の型を定義します。
+     * 時制の種別を定義します。
      *
      *
      * @author T.TSUCHIE

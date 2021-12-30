@@ -20,6 +20,7 @@ public @interface Enumerated {
 
     /**
      * (オプション) {@link Enum} 型のマッピング種別。
+     * @return 列挙型のマッピング種別。
      */
     EnumType value();
 

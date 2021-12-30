@@ -25,12 +25,15 @@ public @interface GeneratedValue {
      * アノテーションの付いたエンティティの識別子(主キー)を生成するために、永続化プロバイダが使用しなければならない生成戦略。
      * <p>{@link #generator()}を指定している場合、この属性は無視されます。
      *
+     * @return 識別子(主キー)の生成戦略。
      */
     GenerationType strategy() default GenerationType.AUTO;
 
     /**
      * 独自に識別子を生成するための、Springコンテナ管理のBean名を指定します。
      * <p>{@link IdGenerator} を実装している必要があります。
+     *
+     * @return 識別子の生成処理のSpring Beanの名称。
      */
     String generator() default "";
 

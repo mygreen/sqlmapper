@@ -21,11 +21,13 @@ public @interface Column {
     /**
      * (オプション) カラム名を指定します。
      * デフォルトではプロパティもしくはフィールドの名前になります。
+     * @return カラム名
      */
     String name() default "";
 
     /**
-     * (オプション) 永続化プロバイダによって生成されたSQL UPDATEステートメントにカラムが含まれるかどうか。
+     * (オプション) 永続化プロバイダによって生成されたSQL UPDATE文にカラムが含まれるかどうか。
+     * @return 永続化プロバイダによって生成されたSQL UPDATE文にカラムが含まれるかどうか。
      */
     boolean updatable() default true;
 

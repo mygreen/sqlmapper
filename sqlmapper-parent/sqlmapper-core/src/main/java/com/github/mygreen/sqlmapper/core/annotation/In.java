@@ -21,6 +21,7 @@ public @interface In {
     /**
      * (オプション) パラメータ名を指定します。
      * デフォルトではプロパティもしくはフィールドの名前になります。
+     * @return パラメータ名。
      */
     String name() default "";
 }
