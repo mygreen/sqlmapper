@@ -94,7 +94,6 @@ public abstract class AllocatableIdGenerator {
          * 新しいIDを払い出します。
          * <p>未割当のキャッシュしているIDがあれば、そちらを払い出します。
          *
-         * @param key キー名
          * @return 新しいIDを返します。
          */
         public synchronized long getNextValue() {

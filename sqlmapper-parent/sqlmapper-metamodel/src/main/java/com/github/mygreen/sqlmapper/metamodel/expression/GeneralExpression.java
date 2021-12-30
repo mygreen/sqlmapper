@@ -166,7 +166,7 @@ public abstract class GeneralExpression<T> extends DslExpression<T> {
      * <ul>
      *  <li>{@literal $left} : 左辺。クエリ実行時には展開されます。</li>
      *  <li>{@literal ?} : プレースホルダー。クエリ実行時に展開されます。
-     *   <br />引数{@literal args} の個数と一致させる必要があります。
+     *   <br>引数{@literal args} の個数と一致させる必要があります。
      *  </li>
      * </ul>
      *

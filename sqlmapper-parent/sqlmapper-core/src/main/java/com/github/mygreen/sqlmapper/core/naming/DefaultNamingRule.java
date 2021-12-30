@@ -14,7 +14,7 @@ public class DefaultNamingRule implements NamingRule {
 
     /**
      * {@inheritDoc}
-     * <p>大文字のスネークケース変換します。({@literal SampleCustomer} -> {@literal SAMPLE_CUSTOMER})
+     * <p>大文字のスネークケース変換します。({@literal SampleCustomer} {@literal =>} {@literal SAMPLE_CUSTOMER})
      */
     @Override
     public String entityToTable(final String entityName) {
@@ -60,7 +60,7 @@ public class DefaultNamingRule implements NamingRule {
 
     /**
      * {@inheritDoc}
-     * <p>大文字のスネークケース変換します。({@literal sampleName} -> {@literal SAMPLE_NAME})
+     * <p>大文字のスネークケース変換します。({@literal sampleName} {@literal =>} {@literal SAMPLE_NAME})
      */
     @Override
     public String propertyToColumn(final String propertyName) {
@@ -81,7 +81,7 @@ public class DefaultNamingRule implements NamingRule {
 
     /**
      * {@inheritDoc}
-     * <p>スネークケースから先頭が小文字のキャメルケースに変換します。({@literal SAMPLE_NAME} -> {@literal sampleName})
+     * <p>スネークケースから先頭が小文字のキャメルケースに変換します。({@literal SAMPLE_NAME} {@literal =>} {@literal sampleName})
      */
 
     @Override
@@ -111,7 +111,7 @@ public class DefaultNamingRule implements NamingRule {
 
     /**
      * {@inheritDoc}
-     * <p>小文字のスネークケース変換します。({@literal sampleName} -> {@literal SAMPLE_NAME})
+     * <p>小文字のスネークケース変換します。({@literal sampleName} {@literal =>} {@literal SAMPLE_NAME})
      */
     @Override
     public String propertyToStoredParam(final String propertyName) {

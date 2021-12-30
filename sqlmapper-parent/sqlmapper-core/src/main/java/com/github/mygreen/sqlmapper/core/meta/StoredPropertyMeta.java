@@ -116,7 +116,6 @@ public class StoredPropertyMeta extends PropertyBase {
 
     /**
      * このプロパティに対して値を設定する。
-     * @param propertyMeta 取得対象のプロパティ情報
      * @param entityObject 親のオブジェクト
      * @param propertyValue 設定するプロパティの値
      * @throws NullPointerException 引数{@literal entityObject}がnullの場合
@@ -149,7 +148,6 @@ public class StoredPropertyMeta extends PropertyBase {
 
     /**
      * このプロパティの値を取得する。
-     * @param propertyMeta 取得対象のプロパティ情報
      * @param entityObject ルートとなるエンティティオブジェクト
      * @return プロパティの値。
      * @throws NullPointerException 引数がnullのとき

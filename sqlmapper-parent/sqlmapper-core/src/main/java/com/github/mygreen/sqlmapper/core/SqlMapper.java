@@ -322,7 +322,7 @@ public class SqlMapper {
     /**
      * 自動プロシージャ呼び出しを返します。
      * @param procedureName 呼び出すストアドプロシージャの名前
-     * @param パラメータです。
+     * @param parameter パラメータです。
      * @return 自動プロシージャ呼び出し
      */
     public AutoProcedureCall call(@NonNull String procedureName, @NonNull Object parameter) {
@@ -332,7 +332,7 @@ public class SqlMapper {
     /**
      * 自動プロシージャ呼び出しを返します。
      * @param procedureName 呼び出すストアドプロシージャの名前
-     * @param パラメータです。
+     * @param parameter パラメータです。
      * @return 自動プロシージャ呼び出し
      */
     public AutoProcedureCall call(@NonNull StoredName procedureName, @NonNull Object parameter) {
