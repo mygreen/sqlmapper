@@ -20,7 +20,8 @@ List<Employee> results = sqlMapper.selectBySql(
 
 SQLを使って1件検索をする場合は、 `selectBySql(...)` と `getSingleResult()` を組み合わせます。
 
-* 1件も見つからない、または、2件以上見つかった場合、Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
+* 1件も見つからないときは、Springの例外 `EmptyResultDataAccessException` がスローされます。
+* 2件以上見つかった場合、Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
 
 [source,java]
 ----
@@ -34,9 +35,11 @@ Employee result = sqlMapper.sqlMapper.selectBySql(
         .getSingleResult();
 ----
 
-0件/複数件見つかったときに例外をスローされないようにするには、`getOptionalResult()` を使用します。
+1件も見つからなかったときに例外をスローされないようにするには、`getOptionalResult()` を使用します。
 
 * 戻り値を `java.util.Optinal` で受け取ることができます。
+* ただし、2件以上見つかったときは Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
+** 例外がスローされないようにするためにメソッド `limit(1)` による件数を指定することをお勧めします。
 
 [source,java]
 ----
@@ -89,6 +92,9 @@ List<Employee> results = sqlMapper.selectBySql(
 
 `SELECT COUNT(*) ～` による検索結果の行数を取得するには、`getCountBySql(...)` を使用します。
 
+NOTE: SQLファイルで定義したSQLを、`select count(*) from (<SQLテンプレートの内容>)` に変換して実行されるため、`count` 句をSQLテンプレートに記載する必要はありません。
+
+
 [source,java]
 ----
 SqlTemplateContext templateContext = new MapSqlTemplateContext(
@@ -99,6 +105,34 @@ long count = sqlMapper.selectBySql(
             "select * from employee where salary >= /*salary*/", 
             templateContext)
             getCount();
+----
+
+== ページング
+
+ページングを指定するには、以下のメソッドを使用します。
+
+* `offset(int offset)` : 最初に取得する行の位置を指定します。最初の行の位置は0になります。 
+* `limit(int limit)` : 取得する行数を指定します。
+
+[NOTE]
+====
+ * SQLファイルで定義したSQLを、`<SQLテンプレートの内容> offset <開始位置> limit <取得行数>` に変換して実行されるため、`offset`/`limit` 句をSQLテンプレートに記載する必要はありません。
+ * 並び順が一定になるように、SQLテンプレート内で並び順を指定しておく必要があります。
+====
+
+
+[source,java]
+----
+SqlTemplateContext templateContext = new MapSqlTemplateContext(
+        Map.of("salary", nwe BigDecimal(2000)));
+
+List<Employee> results = sqlMapper.selectBySql(
+            Employee.class, 
+            "select * from employee where salary >= /*salary*/",
+            templateContext)
+        .offset(10)
+        .limit(100)
+        .getResultList();
 ----
 
 

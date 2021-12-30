@@ -30,9 +30,11 @@ Employee result = sqlMapper.selectFrom(MEmployee.employee)
         .getSingleResult();
 ----
 
-1件も見つかったときに例外をスローされないようにするには、`getOptionalResult()` を使用します。
+1件も見つからなかったときに例外をスローされないようにするには、`getOptionalResult()` を使用します。
 
 * 戻り値を `java.util.Optinal` で受け取ることができます。
+* ただし、2件以上見つかったときは Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
+** 例外がスローされないようにするためにメソッド `limit(1)` による件数を指定することをお勧めします。
 
 [source,java]
 ----
