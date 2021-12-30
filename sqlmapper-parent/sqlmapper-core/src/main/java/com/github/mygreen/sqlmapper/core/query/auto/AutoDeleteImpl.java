@@ -21,7 +21,7 @@ import lombok.NonNull;
 public class AutoDeleteImpl<T> implements AutoDelete<T> {
 
     /**
-     * SqlMapperの設定情報。
+     * SqlMapperの設定情報
      */
     @Getter
     private final SqlMapperContext context;
@@ -38,6 +38,9 @@ public class AutoDeleteImpl<T> implements AutoDelete<T> {
     @Getter
     private final EntityMeta entityMeta;
 
+    /**
+     * クエリのタイムアウト時間 [msec]
+     */
     @Getter
     private Integer queryTimeout;
 
@@ -79,6 +82,7 @@ public class AutoDeleteImpl<T> implements AutoDelete<T> {
         }
     }
 
+    @Override
     public AutoDeleteImpl<T> queryTimeout(int seconds) {
         this.queryTimeout = seconds;
         return this;

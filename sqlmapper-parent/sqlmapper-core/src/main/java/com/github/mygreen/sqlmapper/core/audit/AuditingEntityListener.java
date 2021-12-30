@@ -36,6 +36,8 @@ public class AuditingEntityListener implements InitializingBean {
 
     /**
      * 監査人情報を提供する。
+     * @param auditorProvider 監査人情報の提供処理。
+     * @return 監査人情報の提供処理。
      */
     @Setter
     @Getter
@@ -43,10 +45,9 @@ public class AuditingEntityListener implements InitializingBean {
     protected AuditorProvider<?> auditorProvider;
 
     /**
-     * {@inheritDoc}
+     * 監査情報を提供する {@link AuditorProvider}がSpringのコンテナに登録されていない場合は、デフォルトの空の情報を設定します。
      *
-     * <p>監査情報を提供する {@link AuditorProvider}がSpringのコンテナに登録されていない場合は、
-     *   デフォルトの空の情報を設定します。
+     * {@inheritDoc}
      */
     @Override
     public void afterPropertiesSet() {
