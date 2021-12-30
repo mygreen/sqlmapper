@@ -39,9 +39,9 @@ public class Sample {
 | DB型 | Java型
 
 |``BLOB``
-|``byte[]``
+|``byte[]`` / `java.sql.Blob`
 
 |``CLOB``
-|``String``
+|``String`` / `java.sql.Clob`
 
 |===
