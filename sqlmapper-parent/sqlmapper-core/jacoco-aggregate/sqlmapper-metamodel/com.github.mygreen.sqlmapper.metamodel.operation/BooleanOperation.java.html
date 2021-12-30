@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>BooleanOperation.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel.operation</a> &gt; <span class="el_source">BooleanOperation.java</span></div><h1>BooleanOperation.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel.operation;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.github.mygreen.sqlmapper.metamodel.Visitor;
+import com.github.mygreen.sqlmapper.metamodel.expression.BooleanExpression;
+import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
+import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
+import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
+
+import lombok.NonNull;
+
+/**
+ * ブーリアン型を値に持つ式の演算操作を表現します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class BooleanOperation extends BooleanExpression implements Operation&lt;Boolean&gt; {
+
+    private PredicateOperation opMixin;
+
+    public BooleanOperation(PredicateOperation mixin) {
+<span class="fc" id="L26">        super(mixin);</span>
+<span class="fc" id="L27">        this.opMixin = mixin;</span>
+<span class="fc" id="L28">    }</span>
+
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">    public BooleanOperation(@NonNull Operator op, Expression&lt;?&gt;... args) {</span>
+<span class="fc" id="L31">        this(new PredicateOperation(op, args));</span>
+<span class="fc" id="L32">    }</span>
+
+    @Override
+    public Operator getOperator() {
+<span class="fc" id="L36">        return opMixin.getOperator();</span>
+    }
+
+    @Override
+    public Expression&lt;?&gt; getArg(int index) {
+<span class="nc" id="L41">        return opMixin.getArg(index);</span>
+    }
+
+    @Override
+    public Optional&lt;Expression&lt;?&gt;&gt; getOptArg(int index) {
+<span class="nc" id="L46">        return opMixin.getOptArg(index);</span>
+    }
+
+    @Override
+    public List&lt;Expression&lt;?&gt;&gt; getArgs() {
+<span class="fc" id="L51">        return opMixin.getArgs();</span>
+    }
+
+    @Override
+    public &lt;C&gt; void accept(Visitor&lt;C&gt; visitor, C context) {
+<span class="fc" id="L56">        visitor.visit(opMixin, context);</span>
+<span class="fc" id="L57">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return 2重否定の場合は、否定を取り消した式を返します。
+     */
+    @Override
+    public BooleanExpression not() {
+
+<span class="nc bnc" id="L67" title="All 4 branches missed.">        if(opMixin.getOperator() == UnaryOp.NOT &amp;&amp; opMixin.getArg(0) instanceof BooleanOperation) {</span>
+            // 子要素がNOTの場合は2重否定になるため、否定を取り外す
+<span class="nc" id="L69">            return (BooleanOperation) opMixin.getArg(0);</span>
+        }
+<span class="nc" id="L71">        return super.not();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

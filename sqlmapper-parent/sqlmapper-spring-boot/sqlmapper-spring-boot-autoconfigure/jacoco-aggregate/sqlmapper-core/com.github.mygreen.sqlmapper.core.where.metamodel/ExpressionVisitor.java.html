@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>ExpressionVisitor.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-spring-boot-autoconfigure</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.where.metamodel</a> &gt; <span class="el_source">ExpressionVisitor.java</span></div><h1>ExpressionVisitor.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.where.metamodel;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.util.StringUtils;
+
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.query.FromClause;
+import com.github.mygreen.sqlmapper.core.query.IllegalQueryException;
+import com.github.mygreen.sqlmapper.core.query.OrderByClause;
+import com.github.mygreen.sqlmapper.core.query.SelectClause;
+import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
+import com.github.mygreen.sqlmapper.core.query.WhereClause;
+import com.github.mygreen.sqlmapper.core.util.QueryUtils;
+import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
+import com.github.mygreen.sqlmapper.metamodel.Path;
+import com.github.mygreen.sqlmapper.metamodel.PathMeta;
+import com.github.mygreen.sqlmapper.metamodel.PathType;
+import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
+import com.github.mygreen.sqlmapper.metamodel.Visitor;
+import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
+import com.github.mygreen.sqlmapper.metamodel.expression.SubQueryExpression;
+import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
+import com.github.mygreen.sqlmapper.metamodel.operation.SubQueryMeta;
+import com.github.mygreen.sqlmapper.metamodel.operator.ArithmeticOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.BooleanOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.LikeOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
+import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
+
+/**
+ * メタモデルの式ノードを巡回するVisitorです。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class ExpressionVisitor implements Visitor&lt;VisitorContext&gt; {
+
+<span class="fc" id="L49">    private Map&lt;Class&lt;?&gt;, OperationHandler&lt;? extends Operator&gt;&gt; operationHandlerMap = new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L51">    public ExpressionVisitor() {</span>
+<span class="fc" id="L52">        register(BooleanOp.class, new BooleanOpHandler());</span>
+<span class="fc" id="L53">        register(UnaryOp.class, new UnaryOpHandler());</span>
+<span class="fc" id="L54">        register(ComparisionOp.class, new ComparisionOpHandler());</span>
+<span class="fc" id="L55">        register(LikeOp.class, new LikeOpHandler());</span>
+<span class="fc" id="L56">        register(FunctionOp.class, new FuncOpHandler());</span>
+<span class="fc" id="L57">        register(ArithmeticOp.class, new ArithmeticOpHandler());</span>
+<span class="fc" id="L58">    }</span>
+
+    /**
+     * 演算子に対する処理を登録します。
+     * &lt;p&gt;登録する際に、{@literal OperationHandler#init()}を実行します。
+     *
+     * @param &lt;T&gt; 演算子の種別
+     * @param operatorClass 演算子種別のクラス
+     * @param handler 演算子に対する処理
+     */
+    public &lt;T extends Operator&gt; void register(Class&lt;T&gt; operatorClass,  OperationHandler&lt;T&gt; handler) {
+<span class="fc" id="L69">        handler.init();</span>
+<span class="fc" id="L70">        this.operationHandlerMap.put(operatorClass, handler);</span>
+<span class="fc" id="L71">    }</span>
+
+    @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+    @Override
+    public void visit(final Operation&lt;?&gt; expr, final VisitorContext context) {
+<span class="fc" id="L76">        final Operator operator = expr.getOperator();</span>
+
+<span class="fc" id="L78">        OperationHandler handler = operationHandlerMap.get(operator.getClass());</span>
+<span class="fc" id="L79">        handler.handle(operator, expr, this, context);</span>
+
+<span class="fc" id="L81">    }</span>
+
+    @Override
+    public void visit(final Constant&lt;?&gt; expr, final VisitorContext context) {
+        // 値はプレースホルダーを追加
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        if(expr.isExpandable()) {</span>
+            // IN句などの展開可能な複数要素の場合
+<span class="nc" id="L88">            Collection&lt;?&gt; values = (Collection&lt;?&gt;)expr.getValue();</span>
+<span class="nc" id="L89">            context.addParamValues(values);</span>
+<span class="nc" id="L90">            context.appendSql(&quot;(&quot;)</span>
+<span class="nc" id="L91">                .append(QueryUtils.repeat(&quot;?&quot;, &quot;, &quot;, values.size()))</span>
+<span class="nc" id="L92">                .append(&quot;)&quot;);</span>
+<span class="nc" id="L93">        } else {</span>
+<span class="fc" id="L94">            context.addParamValue(expr.getValue());</span>
+<span class="fc" id="L95">            context.appendSql(&quot;?&quot;);</span>
+
+        }
+
+<span class="fc" id="L99">    }</span>
+
+
+    @Override
+    public void visit(final Path&lt;?&gt; expr, final VisitorContext context) {
+
+<span class="fc" id="L105">        final PathMeta pathMeta = expr.getPathMeta();</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if(pathMeta.getType() == PathType.PROPERTY) {</span>
+<span class="fc" id="L107">            Path&lt;?&gt; rootPath = pathMeta.findRootPath();</span>
+<span class="fc" id="L108">            Class&lt;?&gt; rootClassType = rootPath.getType();</span>
+<span class="fc" id="L109">            String propertyName = pathMeta.getElement();</span>
+<span class="fc" id="L110">            Optional&lt;PropertyMeta&gt; propertyMeta = context.getEntityMetaMap().get(rootClassType).findPropertyMeta(propertyName);</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">            if(propertyMeta.isEmpty()) {</span>
+<span class="nc" id="L112">                throw new IllegalQueryException(&quot;unknwon property : &quot; + propertyName);</span>
+            }
+
+<span class="fc" id="L115">            final String tableName = context.getTableNameResolver().getTableAlias(rootPath);</span>
+            final String columnName;
+            // SQL - カラム名を追加
+<span class="fc bfc" id="L118" title="All 2 branches covered.">            if(tableName != null) {</span>
+<span class="fc" id="L119">                columnName = tableName + &quot;.&quot; + propertyMeta.get().getColumnMeta().getName();</span>
+            } else {
+<span class="fc" id="L121">                columnName = propertyMeta.get().getColumnMeta().getName();;</span>
+            }
+<span class="fc" id="L123">            context.appendSql(columnName);</span>
+
+<span class="fc" id="L125">        } else {</span>
+<span class="nc" id="L126">            throw new IllegalArgumentException(&quot;not support pathType=&quot; + pathMeta.getType());</span>
+        }
+
+<span class="fc" id="L129">    }</span>
+
+    @Override
+    public void visit(final SubQueryExpression&lt;?&gt; expr, final VisitorContext context) {
+<span class="fc" id="L133">        final SubQueryMeta queryMeta = expr.getQueryMeta();</span>
+<span class="fc" id="L134">        final Dialect dialect = context.getDialect();</span>
+<span class="fc" id="L135">        final TableNameResolver tableNameResolver = context.getTableNameResolver();</span>
+
+        // テーブル名の組み立て
+        //TODO: テーブル名は新規に割り当てる必要があるかどうか。
+<span class="fc" id="L139">        final FromClause fromClause = new FromClause();</span>
+<span class="fc" id="L140">        tableNameResolver.prepareTableAlias(queryMeta.getEntityPath());</span>
+<span class="fc" id="L141">        EntityMeta entityMeta = context.getEntityMetaFactory().create(queryMeta.getEntityPath().getType());</span>
+<span class="fc" id="L142">        fromClause.addSql(entityMeta.getTableMeta().getFullName(), tableNameResolver.getTableAlias(queryMeta.getEntityPath()));</span>
+
+        // 抽出カラムの組み立て
+<span class="fc" id="L145">        final SelectClause selectClause = new SelectClause();</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        for(PropertyMeta propertyMeta : entityMeta.getAllColumnPropertyMeta()) {</span>
+<span class="fc" id="L147">            final String propertyName = propertyMeta.getName();</span>
+<span class="fc" id="L148">            final PropertyPath&lt;?&gt; propertyPath = queryMeta.getEntityPath().findPropertyPath(propertyName);</span>
+
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">            if(propertyMeta.isTransient()) {</span>
+<span class="nc" id="L151">                continue;</span>
+            }
+
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            if(!queryMeta.getIncludesProperties().isEmpty()</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">                    &amp;&amp; !queryMeta.getIncludesProperties().contains(propertyPath)) {</span>
+<span class="fc" id="L156">                continue;</span>
+            }
+
+<span class="fc" id="L159">            String tableAlias = tableNameResolver.getTableAlias(queryMeta.getEntityPath());</span>
+<span class="fc" id="L160">            selectClause.addSql(tableAlias, propertyMeta.getColumnMeta().getName());</span>
+<span class="fc" id="L161">        }</span>
+
+        // 条件の組み立て
+<span class="fc" id="L164">        final WhereClause whereClause = new WhereClause();</span>
+<span class="fc" id="L165">        final List&lt;Object&gt; paramValues = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">        if(queryMeta.getWhere() != null) {</span>
+<span class="fc" id="L167">            MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(context.getEntityMetaMap(), context.getDialect(),</span>
+<span class="fc" id="L168">                    context.getEntityMetaFactory(), tableNameResolver);</span>
+<span class="fc" id="L169">            visitor.visit(new MetamodelWhere(queryMeta.getWhere()));</span>
+
+<span class="fc" id="L171">            whereClause.addSql(visitor.getCriteria());</span>
+<span class="fc" id="L172">            paramValues.addAll(visitor.getParamValues());</span>
+        }
+
+        // 並び順の組み立て
+<span class="fc" id="L176">        final OrderByClause orderByClause = new OrderByClause();</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">        for(OrderSpecifier order : queryMeta.getOrders()) {</span>
+<span class="nc" id="L178">            String propertyName = order.getPath().getPathMeta().getElement();</span>
+<span class="nc" id="L179">            Optional&lt;PropertyMeta&gt; propertyMeta = entityMeta.findPropertyMeta(propertyName);</span>
+
+<span class="nc" id="L181">            String tableAlias = tableNameResolver.getTableAlias(order.getPath().getPathMeta().getParent());</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">            if(!StringUtils.hasLength(tableAlias)) {</span>
+                //TODO: 例外処理
+
+            }
+
+<span class="nc" id="L187">            propertyMeta.ifPresent(p -&gt; {</span>
+<span class="nc" id="L188">                String orderBy = String.format(&quot;%s.%s %s&quot;, tableAlias, p.getColumnMeta().getName(), order.getOrder().name());</span>
+<span class="nc" id="L189">                orderByClause.addSql(orderBy);</span>
+<span class="nc" id="L190">            });</span>
+<span class="nc" id="L191">        }</span>
+
+<span class="fc" id="L193">        String sql = &quot;select &quot;</span>
+<span class="fc" id="L194">                + selectClause.toSql()</span>
+<span class="fc" id="L195">                + fromClause.toSql()</span>
+<span class="fc" id="L196">                + whereClause.toSql()</span>
+<span class="fc" id="L197">                + orderByClause.toSql();</span>
+
+        // limit句の組み立て
+<span class="pc bpc" id="L200" title="4 of 6 branches missed.">        if(queryMeta.getLimit() &gt; 0 || queryMeta.getLimit() == 0 &amp;&amp; queryMeta.getOffset() &gt; 0) {</span>
+<span class="nc" id="L201">            sql = dialect.convertLimitSql(sql, queryMeta.getOffset(), queryMeta.getLimit());</span>
+        }
+
+        // 組み立てたSQLとパラメータを格納する
+<span class="fc" id="L205">        context.addParamValues(paramValues);</span>
+<span class="fc" id="L206">        context.appendSql(sql);</span>
+<span class="fc" id="L207">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
