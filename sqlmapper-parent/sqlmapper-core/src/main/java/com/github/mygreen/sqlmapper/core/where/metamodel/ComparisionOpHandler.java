@@ -1,7 +1,6 @@
 package com.github.mygreen.sqlmapper.core.where.metamodel;
 
 import com.github.mygreen.sqlmapper.metamodel.Path;
-import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
 import com.github.mygreen.sqlmapper.metamodel.Visitor;
 import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
 import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
@@ -91,7 +90,7 @@ public class ComparisionOpHandler extends OperationHandler<ComparisionOp> {
         }
 
         if(isPropertyPath(left) && right2 instanceof Constant) {
-            visitConstantWithPropertyPath((PropertyPath<?>)left, (Constant<?>)right2, rightContext2);
+            visitConstantWithPropertyPath((Path<?>)left, (Constant<?>)right2, rightContext2);
         } else {
             invoke(operator, right2, visitor, rightContext2);
         }

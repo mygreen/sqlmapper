@@ -17,7 +17,7 @@ import com.github.mygreen.sqlmapper.core.annotation.In;
 import com.github.mygreen.sqlmapper.core.annotation.InOut;
 import com.github.mygreen.sqlmapper.core.annotation.Out;
 import com.github.mygreen.sqlmapper.core.annotation.ResultSet;
-import com.github.mygreen.sqlmapper.core.testdata.NoDbTestConfig;
+import com.github.mygreen.sqlmapper.core.test.config.NoDbTestConfig;
 
 import lombok.Data;
 

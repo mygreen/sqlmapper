@@ -16,7 +16,7 @@ import com.github.mygreen.sqlmapper.core.where.Where;
  * @author T.TSUCHIE
  *
  */
-class SimpleWhereBuilderTest extends SimpleWhereBuilder {
+public class SimpleWhereBuilderTest extends SimpleWhereBuilder {
 
     @DisplayName("単純なAND")
     @Test

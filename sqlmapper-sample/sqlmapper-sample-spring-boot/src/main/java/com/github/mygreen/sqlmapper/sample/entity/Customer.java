@@ -9,6 +9,7 @@ import com.github.mygreen.sqlmapper.core.annotation.Entity;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue;
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
 import com.github.mygreen.sqlmapper.core.annotation.Id;
+import com.github.mygreen.sqlmapper.core.annotation.TableGenerator;
 import com.github.mygreen.sqlmapper.core.annotation.UpdatedAt;
 import com.github.mygreen.sqlmapper.core.annotation.Version;
 
@@ -19,7 +20,8 @@ import lombok.Data;
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE, format = "000")
+    @TableGenerator(format = "000")
+    @GeneratedValue(strategy = GenerationType.TABLE)
     @Column(name = "customer_id")
     private String id;
 

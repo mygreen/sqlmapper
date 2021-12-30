@@ -28,6 +28,7 @@ public class LikeOpHandler extends OperationHandler<LikeOp>{
         // 何もしない
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void handle(LikeOp operator, Operation<?> expr, Visitor<VisitorContext> visitor, VisitorContext context) {
 

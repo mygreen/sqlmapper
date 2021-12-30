@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,10 +32,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.annotation.In;
 import com.github.mygreen.sqlmapper.core.annotation.Out;
-import com.github.mygreen.sqlmapper.core.testdata.PgsqlTestConfig;
+import com.github.mygreen.sqlmapper.core.test.config.PgsqlTestConfig;
 
 import lombok.Data;
 
+@Disabled("サンプルのため対象外")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes=PgsqlTestConfig.class)
 public class SamplePgsqlStoredTest {

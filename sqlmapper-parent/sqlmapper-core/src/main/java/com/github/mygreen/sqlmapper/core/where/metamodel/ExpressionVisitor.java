@@ -112,7 +112,6 @@ public class ExpressionVisitor implements Visitor<VisitorContext> {
                 throw new IllegalQueryException("unknwon property : " + propertyName);
             }
 
-            // TODO: Embeddedのネストした場合を考慮する
             final String tableName = context.getTableNameResolver().getTableAlias(rootPath);
             final String columnName;
             // SQL - カラム名を追加

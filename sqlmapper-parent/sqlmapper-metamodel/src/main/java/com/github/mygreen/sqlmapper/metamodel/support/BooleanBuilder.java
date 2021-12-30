@@ -66,7 +66,7 @@ public class BooleanBuilder implements Predicate {
     /**
      * {@inheritDoc}
      *
-     * @return 否定する式がない場合は {@literal null} を開けす。
+     * @return 否定する式がない場合は {@literal null} を返す。
      */
     @Override
     public Predicate not() {

@@ -129,6 +129,9 @@ public interface AutoSelect<T> {
 
     /**
      * テーブル結合の際に複数のテーブルのエンティティの構成定義を指定します。
+     * <p>{@literal OUTER JOIN}で関連先が存在しない場合も、各プロパティがnullの値が設定さたエンティティのインスタンスが渡されるため、主キーなどで判定して除外します。
+     *   <br>例 : {@code associate(c_, a_, (e1, e2) -> Optional.ofNullable(e2.getCustomerId()).ifPresent(c -> e1.setAddress(e2)))}
+     * </p>
      *
      * @param <E1> エンティティタイプ1
      * @param <E2> エンティティタイプ2
