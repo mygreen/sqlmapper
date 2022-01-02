@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>SqlMapperAutoConfiguration.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-spring-boot-starter</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-spring-boot-autoconfigure</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.boot.autoconfigure</a> &gt; <span class="el_source">SqlMapperAutoConfiguration.java</span></div><h1>SqlMapperAutoConfiguration.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.boot.autoconfigure;
+
+import javax.sql.DataSource;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.ApplicationEventPublisherAware;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.support.lob.DefaultLobHandler;
+import org.springframework.jdbc.support.lob.LobHandler;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import com.github.mygreen.messageformatter.MessageFormatter;
+import com.github.mygreen.messageformatter.MessageInterpolator;
+import com.github.mygreen.messageformatter.expression.ExpressionEvaluator;
+import com.github.mygreen.messageformatter.expression.SpelExpressionEvaluator;
+import com.github.mygreen.splate.SqlTemplateEngine;
+import com.github.mygreen.sqlmapper.core.SqlMapper;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
+import com.github.mygreen.sqlmapper.core.config.JdbcTemplateProperties;
+import com.github.mygreen.sqlmapper.core.config.SqlTemplateProperties;
+import com.github.mygreen.sqlmapper.core.config.TableIdGeneratorProperties;
+import com.github.mygreen.sqlmapper.core.dialect.Dialect;
+import com.github.mygreen.sqlmapper.core.dialect.H2Dialect;
+import com.github.mygreen.sqlmapper.core.dialect.HsqlDialect;
+import com.github.mygreen.sqlmapper.core.dialect.OracleDialect;
+import com.github.mygreen.sqlmapper.core.dialect.PostgresDialect;
+import com.github.mygreen.sqlmapper.core.dialect.SqliteDialect;
+import com.github.mygreen.sqlmapper.core.dialect.StandardDialect;
+import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.StoredParamMetaFactory;
+import com.github.mygreen.sqlmapper.core.meta.StoredPropertyMetaFactory;
+import com.github.mygreen.sqlmapper.core.naming.DefaultNamingRule;
+import com.github.mygreen.sqlmapper.core.naming.NamingRule;
+import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
+
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * SqlMapperによるAuto-Configuration設定
+ *
+ * @version 0.3
+ * @author T.TSUCHIE
+ *
+ */
+<span class="nc" id="L63">@Slf4j</span>
+@Configuration
+@ConditionalOnClass({DataSource.class})
+@ConditionalOnSingleCandidate(DataSource.class)
+@PropertySource(&quot;classpath:/com/github/mygreen/sqlmapper/core/sqlmapper.properties&quot;)
+@EnableConfigurationProperties(SqlMapperProperties.class)
+@AutoConfigureAfter(DataSourceAutoConfiguration.class)
+<span class="nc" id="L70">public class SqlMapperAutoConfiguration implements ApplicationContextAware, ApplicationEventPublisherAware {</span>
+
+    /**
+     * Springのアプリケーションコンテキスト
+     */
+    private ApplicationContext applicationContext;
+
+    /**
+     * イベントを配信する機能
+     */
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Autowired
+    private SqlMapperProperties sqlMapperProperties;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    private DataSourceProperties dataSourceProperties;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+<span class="nc" id="L93">       this.applicationContext = applicationContext;</span>
+<span class="nc" id="L94">    }</span>
+
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+<span class="nc" id="L98">        this.applicationEventPublisher = applicationEventPublisher;</span>
+<span class="nc" id="L99">    }</span>
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SqlMapper sqlMapper() {
+<span class="nc" id="L104">        return new SqlMapper(sqlMapperContext());</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SqlMapperContext sqlMapperContext() {
+
+<span class="nc" id="L111">        final SqlMapperContext context = new SqlMapperContext();</span>
+
+<span class="nc" id="L113">        context.setNamingRule(namingRule());</span>
+<span class="nc" id="L114">        context.setMessageFormatter(messageFormatter());</span>
+<span class="nc" id="L115">        context.setDialect(dialect());</span>
+<span class="nc" id="L116">        context.setEntityMetaFactory(entityMetaFactory());</span>
+<span class="nc" id="L117">        context.setApplicationEventPublisher(applicationEventPublisher);</span>
+<span class="nc" id="L118">        context.setSqlTemplateEngine(sqlTemplateEngine());</span>
+<span class="nc" id="L119">        context.setValueTypeRegistry(valueTypeRegistry());</span>
+<span class="nc" id="L120">        context.setDataSource(dataSource);</span>
+<span class="nc" id="L121">        context.setJdbcTemplateProperties(jdbcTemplateProperties());</span>
+<span class="nc" id="L122">        context.setTransactionManager(transactionManager());</span>
+
+<span class="nc" id="L124">        return context;</span>
+
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public JdbcTemplateProperties jdbcTemplateProperties() {
+<span class="nc" id="L131">        return sqlMapperProperties.getJdbcTemplate();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SqlTemplateProperties sqlTemplateProperties() {
+<span class="nc" id="L137">        return sqlMapperProperties.getSqlTemplate();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public TableIdGeneratorProperties tableIdGeneratorProperties() {
+<span class="nc" id="L143">        return sqlMapperProperties.getTableIdGenerator();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public EntityMetaFactory entityMetaFactory() {
+<span class="nc" id="L149">        return new EntityMetaFactory();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public PropertyMetaFactory propertyMetaFactory() {
+<span class="nc" id="L155">        return new PropertyMetaFactory();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public StoredParamMetaFactory storedParamMetaFactory() {
+<span class="nc" id="L161">        return new StoredParamMetaFactory();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public StoredPropertyMetaFactory storedPropertyMetaFactory() {
+<span class="nc" id="L167">        return new StoredPropertyMetaFactory();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public NamingRule namingRule() {
+<span class="nc" id="L173">        return new DefaultNamingRule();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public MessageFormatter messageFormatter() {
+
+<span class="nc" id="L180">        final ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();</span>
+<span class="nc" id="L181">        messageSource.addBasenames(&quot;com/github/mygreen/sqlmapper/core/messages&quot;);</span>
+<span class="nc" id="L182">        messageSource.setDefaultEncoding(&quot;UTF-8&quot;);</span>
+<span class="nc" id="L183">        messageSource.setUseCodeAsDefaultMessage(true);</span>
+<span class="nc" id="L184">        messageSource.setFallbackToSystemLocale(false);</span>
+
+        // SpELで処理する
+<span class="nc" id="L187">        final ExpressionEvaluator expressionEvaluator = new SpelExpressionEvaluator();</span>
+<span class="nc" id="L188">        final MessageInterpolator messageInterpolator = new MessageInterpolator(expressionEvaluator);</span>
+
+<span class="nc" id="L190">        return new MessageFormatter(messageSource, messageInterpolator);</span>
+
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ValueTypeRegistry valueTypeRegistry() {
+<span class="nc" id="L197">        return new ValueTypeRegistry();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SqlTemplateEngine sqlTemplateEngine() {
+
+<span class="nc" id="L204">        final SqlTemplateEngine templateEngine = new SqlTemplateEngine();</span>
+<span class="nc" id="L205">        templateEngine.setCached(sqlTemplateProperties().isCacheMode());</span>
+<span class="nc" id="L206">        templateEngine.setEncoding(sqlTemplateProperties().getEncoding());</span>
+<span class="nc" id="L207">        templateEngine.setSuffixName(dialect().getName());</span>
+
+<span class="nc" id="L209">        return templateEngine;</span>
+
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public LobHandler lobHandler() {
+<span class="nc" id="L216">        return new DefaultLobHandler();</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public Dialect dialect() {
+
+<span class="nc" id="L223">        String url = dataSourceProperties.getUrl();</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">        if (url != null) {</span>
+<span class="nc" id="L225">            DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(url);</span>
+<span class="nc bnc" id="L226" title="All 6 branches missed.">            switch(databaseDriver) {</span>
+                case H2:
+<span class="nc" id="L228">                    return new H2Dialect();</span>
+                case HSQLDB:
+<span class="nc" id="L230">                    return new HsqlDialect();</span>
+                case SQLITE:
+<span class="nc" id="L232">                    return new SqliteDialect();</span>
+                case POSTGRESQL:
+<span class="nc" id="L234">                    return new PostgresDialect();</span>
+                case ORACLE:
+<span class="nc" id="L236">                    return new OracleDialect();</span>
+                default:
+                    break;
+            }
+        }
+
+<span class="nc bnc" id="L242" title="All 2 branches missed.">        if(log.isWarnEnabled()) {</span>
+<span class="nc" id="L243">            log.warn(&quot;StandardDialect was selected, because not explicit configuration and its is not possible to guess from 'sprint.datasource.url' property.&quot;);</span>
+        }
+
+<span class="nc" id="L246">        return new StandardDialect();</span>
+
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public PlatformTransactionManager transactionManager() {
+<span class="nc" id="L253">        return new DataSourceTransactionManager(dataSource);</span>
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AuditingEntityListener auditingEntityListener() {
+<span class="nc" id="L259">        return new AuditingEntityListener();</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
