@@ -56,8 +56,8 @@ public class SqlEmbeddedEntityTest extends QueryTestSupport {
     void testSqlCountBySql() {
 
         MapSqlTemplateContext templateContext = new MapSqlTemplateContext();
-        templateContext.setVariable("id", new EmbeddedTestEntity.PK(null, 2l));
-        templateContext.setVariable("name", "%@embedded%");
+        templateContext.addVariable("id", new EmbeddedTestEntity.PK(null, 2l));
+        templateContext.addVariable("name", "%@embedded%");
 
         long result = sqlMapper.getCountBySqlFile("/sqltemplate/embedded_selectByAny.sql", templateContext);
 
