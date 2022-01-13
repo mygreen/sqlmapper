@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.github.mygreen.sqlmapper</groupId>
 		<artifactId>sqlmapper-root</artifactId>
-		<version>${revision}</version>
+		<version>0.3.1</version>
 	</parent>
 
 	<artifactId>sqlmapper-parent</artifactId>
