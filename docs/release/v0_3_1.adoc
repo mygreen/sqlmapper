@@ -1,0 +1,6 @@
+= ver.0.3.1 - 2022-01-13
+
+* https://github.com/mygreen/sqlmapper/pull/50[#50, window="_blank"] - 依存ライブラリであるSQLテンプレートのライブラリ `splate` をv0.3に更新しました。
+
+* https://github.com/mygreen/sqlmapper/pull/51[#51, window="_blank"] - `pom.xml` 定義間違いにより依存関係が解決できない事象を修正しました。
+

@@ -1,5 +1,6 @@
 = リリースノート
 
 // 各章のインポート
+include::v0_3_1.adoc[leveloffset=+1]
 include::v0_3.adoc[leveloffset=+1]
 include::v0_2.adoc[leveloffset=+1]
