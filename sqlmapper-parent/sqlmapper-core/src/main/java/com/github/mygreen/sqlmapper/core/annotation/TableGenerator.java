@@ -58,18 +58,20 @@ public @interface TableGenerator {
      * (オプション) 採番する際に予め払い出しておく個数の値。
      * <p>この属性で指定した分をあらかじめ払い出しておくことで、逐次生成することによるオーバーヘッドを削減します。
      * <p>指定できる値は、1以上の整数です。</p>
+     * <p>負の値を指定した場合は、デフォルト値が採用されます。</p>
      *
      * @return 払い出しておく個数。
      */
-    long allocationSize() default 50L;
+    long allocationSize() default -1l;
 
     /**
      * (オプション) 生成された最後の値を格納するカラムを初期化するために使用される初期値。
      * <p>指定できる値は、0以上の整数です。</p>
+     * <p>負の値を指定した場合は、デフォルト値が採用されます。</p>
      *
      * @return 初期値。
      */
-    long initialValue() default 0L;
+    long initialValue() default -1L;
 
     /**
      * (オプション) 採番する際の主キーの値としてのシーケンスの名前。
