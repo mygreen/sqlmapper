@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.github.mygreen.sqlmapper</groupId>
 		<artifactId>sqlmapper-root</artifactId>
-		<version>${revision}</version>
+		<version>0.3.1</version>
 	</parent>
 
 	<artifactId>report-aggregate</artifactId>
@@ -39,22 +39,22 @@
 		<dependency>
 			<groupId>com.github.mygreen.sqlmapper</groupId>
 			<artifactId>sqlmapper-core</artifactId>
-			<version>${revision}</version>
+			<version>${sqlmapper.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.mygreen.sqlmapper</groupId>
 			<artifactId>sqlmapper-metamodel</artifactId>
-			<version>${revision}</version>
+			<version>${sqlmapper.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.mygreen.sqlmapper</groupId>
 			<artifactId>sqlmapper-apt</artifactId>
-			<version>${revision}</version>
+			<version>${sqlmapper.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.mygreen.sqlmapper</groupId>
 			<artifactId>sqlmapper-spring-boot-autoconfigure</artifactId>
-			<version>${revision}</version>
+			<version>${sqlmapper.version}</version>
 		</dependency>
 
 	</dependencies>
