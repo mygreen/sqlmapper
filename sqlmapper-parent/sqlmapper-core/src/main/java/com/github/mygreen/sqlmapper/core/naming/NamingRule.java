@@ -54,7 +54,7 @@ public interface NamingRule {
      * @param columnName カラム名
      * @return シーケンス名
      */
-    String sequenceNameForTableGenerator(String talbeName, String columnName);
+    String sequenceNameForTableGenerator(String tableName, String columnName);
 
     /**
      * シーケンスによる採番を行う際のシーケンス名を決定します。
