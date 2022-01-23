@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS test_embedded_generated_value (
 	primary key (key1, key2)
 );
 
-CREATE SEQUENCE test_embedded_generated_value_key2 start with 1;
+CREATE SEQUENCE test_embedded_generated_value_key2_seq start with 1;
 
 
 -- 継承したエンティティのテスト

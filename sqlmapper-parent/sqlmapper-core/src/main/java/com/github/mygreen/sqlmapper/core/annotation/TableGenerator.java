@@ -11,6 +11,7 @@ import java.text.DecimalFormat;
  * 識別子(主キー)の値をテーブルにより採番する設定をします。
  * <p>このアノテーションは {@link Id}、{@link GeneratedValue} と併わせて使用しなければいけません。</p>
  *
+ * @version 0.3.2
  * @author T.TSUCHIE
  *
  */
@@ -69,6 +70,14 @@ public @interface TableGenerator {
      * @return 初期値。
      */
     long initialValue() default 0L;
+
+    /**
+     * (オプション) 採番する際の主キーの値としてのシーケンスの名前。
+     *
+     * @since 0.3.2
+     * @return シーケンス名。
+     */
+    String sequenceName() default "";
 
     /**
      * 識別子のクラスタイプが文字列のときに書式を設定することができます。
