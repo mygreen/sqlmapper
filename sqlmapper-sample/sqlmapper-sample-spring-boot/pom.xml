@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.github.mygreen.sqlmapper</groupId>
 		<artifactId>sqlmapper-sample</artifactId>
-		<version>0.3.1</version>
+		<version>0.3.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>sqlmapper-sample-spring-boot</artifactId>
