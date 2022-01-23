@@ -394,28 +394,10 @@ public class PropertyMetaFactory {
 
                 if(a.initialValue() >= 0L) {
                     tableIdContext.setInitialValue(a.initialValue());
-                } else {
-                    throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.min")
-                            .paramWithClass("classType", entityMeta.getEntityType())
-                            .param("property", propertyMeta.getName())
-                            .paramWithAnno("anno", TableGenerator.class)
-                            .param("attrName", "initialValue")
-                            .param("attrValue", a.initialValue())
-                            .param("min", 0)
-                            .format());
                 }
 
                 if(a.allocationSize() >= 1L) {
                     tableIdContext.setAllocationSize(a.allocationSize());
-                } else {
-                    throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.min")
-                            .paramWithClass("classType", entityMeta.getEntityType())
-                            .param("property", propertyMeta.getName())
-                            .paramWithAnno("anno", TableGenerator.class)
-                            .param("attrName", "allocationSize")
-                            .param("attrValue", a.allocationSize())
-                            .param("min", 1)
-                            .format());
                 }
 
             });
