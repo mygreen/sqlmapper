@@ -8,3 +8,4 @@ spring:
 sqlmapper:
   table-id-generator:
     allocation-size: 1
+    initial-value: 10
