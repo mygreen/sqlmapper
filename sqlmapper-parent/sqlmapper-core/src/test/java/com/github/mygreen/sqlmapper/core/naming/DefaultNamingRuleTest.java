@@ -40,4 +40,15 @@ public class DefaultNamingRuleTest extends DefaultNamingRule {
         assertEquals("id", propertyToStoredParam("id"));
         assertEquals("first_name", propertyToStoredParam("firstName"));
     }
+
+    @Test
+    void testSequenceNameForTableGenerator() {
+        assertEquals("EMPLOYEE_DETAIL_FIRST_NAME", sequenceNameForTableGenerator("Employee_detail", "first_name"));
+    }
+
+    @Test
+    void testSequenceNameForSequenceGenerator() {
+        assertEquals("EMPLOYEE_DETAIL_FIRST_NAME_SEQ", sequenceNameForSequenceGenerator("Employee_detail", "first_name"));
+    }
+
 }

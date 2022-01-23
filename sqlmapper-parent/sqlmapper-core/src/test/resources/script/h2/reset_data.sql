@@ -41,5 +41,5 @@ ALTER TABLE test_embedded_generated_value ALTER COLUMN key1 RESTART WITH 1;
 
 -- シーケンスのリセット : ALTER SEQUENCE <sequence_name> RESTART WITH 1;
 ALTER SEQUENCE test_sequence RESTART WITH 1;
-ALTER SEQUENCE test_embedded_generated_value_key2 RESTART WITH 1;
+ALTER SEQUENCE test_embedded_generated_value_key2_seq RESTART WITH 1;
 
