@@ -339,7 +339,7 @@ public class AutoBatchInsertTest extends QueryTestSupport {
                     .id(entities.get(i).getId())
                     .getSingleResult();
 
-            assertThat(result).hasFieldOrPropertyWithValue("id", (long)(i+1))
+            assertThat(result).hasFieldOrPropertyWithValue("id", (long)(i))
                     .hasFieldOrPropertyWithValue("comment", "test-table" + i);
 
         }

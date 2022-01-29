@@ -106,7 +106,7 @@ public class AutoEmbeddedEntityTest extends QueryTestSupport {
                 .id(entity.getId())
                 .getSingleResult();
 
-        assertThat(result).hasFieldOrPropertyWithValue("id", new EmbeddedGeneratedValueTestEntity.PK(1, "001@key2", "001@key3"))
+        assertThat(result).hasFieldOrPropertyWithValue("id", new EmbeddedGeneratedValueTestEntity.PK(1, "001@key2", "000@key3"))
                 .hasFieldOrPropertyWithValue("name", "001@insert");
 
     }
@@ -215,7 +215,7 @@ public class AutoEmbeddedEntityTest extends QueryTestSupport {
                     .getSingleResult();
 
             assertThat(result).hasFieldOrPropertyWithValue("id", new EmbeddedGeneratedValueTestEntity.PK(
-                    offset, String.format("%03d@key2", offset), String.format("%03d@key3", offset)))
+                    offset, String.format("%03d@key2", offset), String.format("%03d@key3", offset-1)))
                 .hasFieldOrPropertyWithValue("name", "name@" + offset);
 
         }

@@ -135,4 +135,60 @@ public class TableIdIncrementerTest extends QueryTestSupport {
         }
 
     }
+
+    @Test
+    public void testAllocationSize1WithInitail1() {
+
+        String sequenceName = "TestSeq1";
+
+        TableIdContext context = createDefaultContext();
+        context.setInitialValue(1l);
+        context.setAllocationSize(1l);
+        TableIdIncrementer incremeter = new TableIdIncrementer(new JdbcTemplate(dataSource), context);
+
+        // 初期値
+        long initialValue = txNew().execute(action -> incremeter.getCurrentValue(sequenceName));
+        assertThat(initialValue).isEqualTo(1l);
+
+        for(int i=0; i < 10; i++) {
+
+            // 次の値
+            long nextValue = txNew().execute(action -> incremeter.nextValue(sequenceName));
+            assertThat(nextValue).isEqualTo((long)(i+1));
+
+            // 現在のDBのシーケンスの値
+            long currentValue = txNew().execute(action -> incremeter.getCurrentValue(sequenceName));
+            assertThat(currentValue).isEqualTo((long)(i/context.getAllocationSize()+1)*context.getAllocationSize() + context.getInitialValue());
+            System.out.printf("i=%d, nextValue=%d, currentValue=%d\n", i, nextValue, currentValue);
+        }
+
+    }
+
+    @Test
+    public void testAllocationSize2WithInitail1() {
+
+        String sequenceName = "TestSeq1";
+
+        TableIdContext context = createDefaultContext();
+        context.setInitialValue(1l);
+        context.setAllocationSize(2l);
+        TableIdIncrementer incremeter = new TableIdIncrementer(new JdbcTemplate(dataSource), context);
+
+        // 初期値
+        long initialValue = txNew().execute(action -> incremeter.getCurrentValue(sequenceName));
+        assertThat(initialValue).isEqualTo(1l);
+
+        for(int i=0; i < 10; i++) {
+
+            // 次の値
+            long nextValue = txNew().execute(action -> incremeter.nextValue(sequenceName));
+            assertThat(nextValue).isEqualTo((long)(i+1));
+
+            // 現在のDBのシーケンスの値
+            long currentValue = txNew().execute(action -> incremeter.getCurrentValue(sequenceName));
+            assertThat(currentValue).isEqualTo((long)(i/context.getAllocationSize()+1)*context.getAllocationSize() + context.getInitialValue());
+            System.out.printf("i=%d, nextValue=%d, currentValue=%d\n", i, nextValue, currentValue);
+        }
+
+    }
 }
