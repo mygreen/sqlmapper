@@ -1,0 +1,13 @@
+= ver.0.3.1 - 2022-01-30
+
+* https://github.com/mygreen/sqlmapper/pull/53[#53, window="_blank"] - テーブルによるID採番の不具合の修正／シーケンス名の決定方法の修正。
+** テーブルによるID採番時に、シーケンス名が空になる事象を修正。
+** シーケンス名の決定方法を、NamingRule で決定するよう変更。
+
+* https://github.com/mygreen/sqlmapper/pull/54[#54, window="_blank"] - プロパティファイルによるテーブルによる採番の初期値が反映されない事象の修正
+
+* https://github.com/mygreen/sqlmapper/pull/55[#55, window="_blank"] - テーブルによる自動採番のインクリメントの条件を修正。
+** テーブルによる自動採番において、allocationSize=1 or 2 のとき、DBの更新値が間違っている事象を修正。
+
+* https://github.com/mygreen/sqlmapper/pull/56[#56, window="_blank"] - 非OracleモードのH2DBのシーケンスインクリメンターの修正。
+** H2DBを `1.4.x` ⇒ `2.1.x` に更新。

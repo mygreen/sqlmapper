@@ -1,8 +1,8 @@
 = SqlMapper
 :lang: ja
-:revision: 0.3.1
-:app-ver: 0.3.1
-:copyright: Tatsuo TSUCHIE, 2021
+:revision: 0.3.2
+:app-ver: 0.3.2
+:copyright: Tatsuo TSUCHIE, 2021-2022
 :docinfo: shared
 :doctype: book
 :toc: left
