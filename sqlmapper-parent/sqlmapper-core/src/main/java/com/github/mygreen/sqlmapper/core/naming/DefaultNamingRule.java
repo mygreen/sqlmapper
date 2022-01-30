@@ -6,6 +6,7 @@ package com.github.mygreen.sqlmapper.core.naming;
  * <p>エンティティのクラス名、プロパティ名をキャメルケースから、DBのテーブル名、カラム名としてスネークケースに変換する。</p>
  * <p>大文字に変換する。</p>
  *
+ * @version 0.3.2
  * @since 0.3
  * @author T.TSUCHIE
  *
@@ -128,6 +129,24 @@ public class DefaultNamingRule implements NamingRule {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>大文字に変換したテーブル名とカラム名を結合します。({@literal SAMPLE_CUSTOMER}, {@literal sample_name} {@literal =>} {@literal SAMPLE_CUSTOMER_SAMPLE_NAME})
+     */
+    @Override
+    public String sequenceNameForTableGenerator(final String tableName, final String columnName) {
+        return tableName.toUpperCase() + "_" + columnName.toUpperCase();
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>大文字に変換したテーブル名とカラム名を結合し、接尾語({@literal SEQ}) を付与します。 ({@literal SAMPLE_CUSTOMER}, {@literal sample_name} {@literal =>} {@literal SAMPLE_CUSTOMER_SAMPLE_NAME})
+     */
+    @Override
+    public String sequenceNameForSequenceGenerator(String tableName, String columnName) {
+        return tableName.toUpperCase() + "_" + columnName.toUpperCase() + "_SEQ";
     }
 
 }

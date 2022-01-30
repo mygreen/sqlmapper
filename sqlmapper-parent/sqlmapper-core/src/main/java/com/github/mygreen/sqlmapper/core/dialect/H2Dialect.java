@@ -3,9 +3,9 @@ package com.github.mygreen.sqlmapper.core.dialect;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
-import org.springframework.jdbc.support.incrementer.H2SequenceMaxValueIncrementer;
 
 import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.core.id.CustomH2SequenceMaxValueIncrementer;
 
 /**
  * H2用の方言の定義。
@@ -56,11 +56,13 @@ public class H2Dialect extends DialectBase {
     /**
      * {@inheritDoc}
      *
-     * @return {@link H2SequenceMaxValueIncrementer} のインスタンスを返します。
+     * @return {@link CustomH2SequenceMaxValueIncrementer} のインスタンスを返します。
      */
     @Override
     public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
-        return new H2SequenceMaxValueIncrementer(dataSource, sequenceName);
+//        return new H2SequenceMaxValueIncrementer(dataSource, sequenceName);
+        return new CustomH2SequenceMaxValueIncrementer(dataSource, sequenceName);
+
     }
 
 }

@@ -338,7 +338,7 @@ public class PropertyMetaFactory {
                         annoSequenceGenerator.get().catalog(),
                         annoSequenceGenerator.get().schema());
             } else {
-                sequenceName = entityMeta.getTableMeta().getName() + "_" + propertyMeta.getColumnMeta().getName();
+                sequenceName = namingRule.sequenceNameForSequenceGenerator(entityMeta.getTableMeta().getName(), propertyMeta.getColumnMeta().getName());
             }
             SequenceIdGenerator sequenceIdGenerator = new SequenceIdGenerator(
                     dialect.getSequenceIncrementer(dataSource, sequenceName), propertyType);
@@ -371,8 +371,6 @@ public class PropertyMetaFactory {
             tableIdContext.setAllocationSize(tableIdGeneratorProperties.getAllocationSize());
             tableIdContext.setInitialValue(tableIdGeneratorProperties.getInitialValue());
 
-            String sequenceName = entityMeta.getTableMeta().getName() + "_" + propertyMeta.getColumnMeta().getName();
-
             annoTableGenerator.ifPresent(a -> {
                 if(!a.table().isEmpty()) {
                     tableIdContext.setTable(a.table());
@@ -396,35 +394,20 @@ public class PropertyMetaFactory {
 
                 if(a.initialValue() >= 0L) {
                     tableIdContext.setInitialValue(a.initialValue());
-                } else {
-                    throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.min")
-                            .paramWithClass("classType", entityMeta.getEntityType())
-                            .param("property", propertyMeta.getName())
-                            .paramWithAnno("anno", TableGenerator.class)
-                            .param("attrName", "initialValue")
-                            .param("attrValue", a.initialValue())
-                            .param("min", 0)
-                            .format());
                 }
 
                 if(a.allocationSize() >= 1L) {
                     tableIdContext.setAllocationSize(a.allocationSize());
-                } else {
-                    throw new InvalidEntityException(entityMeta.getEntityType(), messageFormatter.create("property.anno.attr.min")
-                            .paramWithClass("classType", entityMeta.getEntityType())
-                            .param("property", propertyMeta.getName())
-                            .paramWithAnno("anno", TableGenerator.class)
-                            .param("attrName", "allocationSize")
-                            .param("attrValue", a.allocationSize())
-                            .param("min", 1)
-                            .format());
                 }
 
             });
 
 
-            if(annoTableGenerator.isPresent() && annoTableGenerator.get().pkColumn().isEmpty()) {
-                sequenceName = annoTableGenerator.get().pkColumn();
+            final String sequenceName;
+            if(annoTableGenerator.isPresent() && !annoTableGenerator.get().sequenceName().isEmpty()) {
+                sequenceName = annoTableGenerator.get().sequenceName();
+            } else {
+                sequenceName = namingRule.sequenceNameForTableGenerator(entityMeta.getTableMeta().getName(), propertyMeta.getColumnMeta().getName());
             }
 
             TableIdGenerator tableIdGenerator = new TableIdGenerator(

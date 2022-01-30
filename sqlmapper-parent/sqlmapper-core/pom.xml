@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>com.github.mygreen.sqlmapper</groupId>
 		<artifactId>sqlmapper-parent</artifactId>
-		<version>0.3.1</version>
+		<version>0.3.2</version>
 	</parent>
 
 	<artifactId>sqlmapper-core</artifactId>
@@ -44,7 +44,7 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>1.4.200</version>
+			<version>2.1.210</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

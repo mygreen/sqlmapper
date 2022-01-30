@@ -7,7 +7,7 @@
 	<artifactId>sqlmapper-root</artifactId>
 	<name>SqlMapper</name>
 	<packaging>pom</packaging>
-	<version>0.3.1</version>
+	<version>0.3.2</version>
 	<description><![CDATA[ SqlMapperはJavaによるSQLをPOJOにマッピングするライブラリです。 ]]></description>
 	<url>https://mygreen.github.io/sqlmapper/</url>
 
@@ -18,7 +18,7 @@
 	</modules>
 
 	<properties>
-		<sqlmapper.version>0.3.1</sqlmapper.version>
+		<sqlmapper.version>0.3.2</sqlmapper.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>11</java.version>
@@ -38,7 +38,7 @@
 
 	<distributionManagement>
 		<snapshotRepository>
-			<id>ossrh</id>
+			<id>sonatype-nexus-snapshots</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
 		<repository>

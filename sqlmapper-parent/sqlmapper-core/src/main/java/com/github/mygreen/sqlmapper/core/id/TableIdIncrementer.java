@@ -60,6 +60,10 @@ public class TableIdIncrementer extends AllocatableIdGenerator {
             throw new IllegalArgumentException("TableIdContext#allocationSize shoule be greater than 1.");
         }
 
+        if(context.getInitialValue() < 0) {
+            throw new IllegalArgumentException("TableIdContext#initialValue shoule be greater than 0.");
+        }
+
         final String tableName = NameUtils.tableFullName(context.getTable(), context.getCatalog(), context.getSchema());
         this.sqlSelect = new StringBuilder(100)
                     .append("SELECT ")

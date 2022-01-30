@@ -86,7 +86,7 @@ public abstract class AllocatableIdGenerator {
         private long currentValue = -1l;
 
         /**
-         * 割り当て済みの値
+         * 割り当て済みの個数
          */
         private long allocated = -1L;
 
@@ -99,16 +99,20 @@ public abstract class AllocatableIdGenerator {
         public synchronized long getNextValue() {
 
             if(currentValue < 0l) {
+                // 現在の値の読み込み
                 this.currentValue = getCurrentValue(key);
             }
 
             if(allocated < 0l || allocated >= allocationSize) {
-                currentValue = allocateValue(key, allocationSize) - allocationSize;
+                // 未割当の場合 or 割り当てた個数が確保数を超える場合
+                // キャッシュサイズ分を確保し、割り当て数をリセット
                 this.allocated = 1l;
-            }
+                this.currentValue = allocateValue(key, allocationSize) - allocationSize;
 
-            if(allocated < allocationSize) {
-                return currentValue + allocated++;
+            } else {
+                // 割り当てた個数が確保数未満の場合、割り当て数を+1
+                this.allocated++;
+                this.currentValue++;
             }
 
             return currentValue;

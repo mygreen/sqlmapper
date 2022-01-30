@@ -311,7 +311,7 @@ public class AutoInsertTest extends QueryTestSupport {
                     .id(entity.getId())
                     .getSingleResult();
 
-            assertThat(result).hasFieldOrPropertyWithValue("id", (long)(i+1))
+            assertThat(result).hasFieldOrPropertyWithValue("id", (long)(i))
                 .hasFieldOrPropertyWithValue("comment", "test-table" + i);
         }
 
@@ -337,7 +337,7 @@ public class AutoInsertTest extends QueryTestSupport {
                     .id(entity.getId())
                     .getSingleResult();
 
-            assertThat(result).hasFieldOrPropertyWithValue("id", "0000000" + (i+1))
+            assertThat(result).hasFieldOrPropertyWithValue("id", "0000000" + (i))
                 .hasFieldOrPropertyWithValue("comment", "test-table-format" + i);
         }
 

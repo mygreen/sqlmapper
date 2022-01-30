@@ -22,7 +22,7 @@ Apache License verion 2.0
 - Java 11+
 - Srping Framework 5.3+
 - Spring Boot 2.4+
-- splate 0.2+
+- splate 0.3+
 
 ## ドキュメント
 
