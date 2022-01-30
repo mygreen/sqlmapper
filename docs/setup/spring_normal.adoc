@@ -2,7 +2,7 @@
 
 非Spring Boot の環境、または、SqlMapperのstater を使用しない時の環境設定方法を説明します。
 
-== ライブラリの依存関係の追加
+== Mavenへのライブラリの依存関係の追加
 
 Mavenを使用している場合は、``pom.xml`` に依存関係を追加します。
 
@@ -24,7 +24,7 @@ Mavenを使用している場合は、``pom.xml`` に依存関係を追加しま
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
-			<version>1.4.200</version>
+			<version>2.1.210</version>
 		</dependency>
 
     </dependencies>
@@ -71,6 +71,29 @@ Mavenを使用している場合は、``pom.xml`` に依存関係を追加しま
         </plugins>
     </build>
 </project>
+----
+
+== Gradleへのライブラリの依存関係の追加
+
+Gradleを使用している場合は、``build.gradle`` に依存関係を追加します。
+
+利用するDBのJDBCドライバの定義も追加します。
+
+さらに、メタモデルを自動生成する設定を追加します。
+
+.build.gradleへの依存関係の追加
+[source, groovy, subs="attributes+"]
+----
+dependencies {
+	implementation 'com.github.mygreen.sqlmapper:sqlmapper-spring-boot-starter:{app-ver}'
+
+	// 利用するDBのJDBCドライバを追加
+	implementation 'com.h2database:h2:2.1.210'
+
+	// メタモデルを自動生成する設定
+	annotationProcessor 'com.github.mygreen.sqlmapper:sqlmapper-apt:{app-ver}'
+
+}
 ----
 
 == JavaConfigの設定
