@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AutoAnyDeleteExecutor.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.query.auto</a> &gt; <span class="el_source">AutoAnyDeleteExecutor.java</span></div><h1>AutoAnyDeleteExecutor.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.query.auto;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
+import com.github.mygreen.sqlmapper.core.query.TableNameResolver;
+import com.github.mygreen.sqlmapper.core.query.WhereClause;
+import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhere;
+import com.github.mygreen.sqlmapper.core.where.metamodel.MetamodelWhereVisitor;
+
+/**
+ * 任意の条件を指定して削除を行うSQLを自動生成するクエリを実行します。
+ * {@link AutoAnyDeleteImpl}のクエリ実行処理の移譲先です。
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class AutoAnyDeleteExecutor {
+
+    /**
+     * クエリ情報
+     */
+    private final AutoAnyDeleteImpl&lt;?&gt; query;
+
+    /**
+     * 設定情報
+     */
+    private final SqlMapperContext context;
+
+    /**
+     * where句
+     */
+<span class="fc" id="L38">    private final WhereClause whereClause = new WhereClause();</span>
+
+    /**
+     * テーブルの別名を管理します。
+     */
+<span class="fc" id="L43">    private final TableNameResolver tableNameResolver = new TableNameResolver();</span>
+
+    /**
+     * 実行するSQLです
+     */
+    private String executedSql;
+
+    /**
+     * クエリのパラメータです。
+     */
+<span class="fc" id="L53">    private final List&lt;Object&gt; paramValues = new ArrayList&lt;&gt;();</span>
+
+    /**
+     * 組み立てたクエリ情報を指定するコンストラクタ。
+     * @param query クエリ情報
+     */
+<span class="fc" id="L59">    public AutoAnyDeleteExecutor(AutoAnyDeleteImpl&lt;?&gt; query) {</span>
+<span class="fc" id="L60">        this.query = query;</span>
+<span class="fc" id="L61">        this.context = query.getContext();</span>
+<span class="fc" id="L62">    }</span>
+
+    /**
+     * クエリ実行の準備を行います。
+     */
+    private void prepare() {
+
+<span class="fc" id="L69">        prepareCondition();</span>
+<span class="fc" id="L70">        prepareSql();</span>
+<span class="fc" id="L71">    }</span>
+
+    /**
+     * 条件文の組み立てを行います
+     */
+    private void prepareCondition() {
+
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if(query.getWhere() == null) {</span>
+<span class="fc" id="L79">            return;</span>
+        }
+
+<span class="fc" id="L82">        MetamodelWhereVisitor visitor = new MetamodelWhereVisitor(</span>
+<span class="fc" id="L83">                Map.of(query.getBaseClass(), query.getEntityMeta()),</span>
+<span class="fc" id="L84">                context.getDialect(),</span>
+<span class="fc" id="L85">                context.getEntityMetaFactory(),</span>
+                tableNameResolver);
+<span class="fc" id="L87">        visitor.visit(new MetamodelWhere(query.getWhere()));</span>
+
+<span class="fc" id="L89">        this.whereClause.addSql(visitor.getCriteria());</span>
+<span class="fc" id="L90">        this.paramValues.addAll(visitor.getParamValues());</span>
+<span class="fc" id="L91">    }</span>
+
+    /**
+     * 実行するSQLを組み立てます。
+     */
+    private void prepareSql() {
+
+<span class="fc" id="L98">        final String sql = &quot;delete from &quot;</span>
+<span class="fc" id="L99">                + query.getEntityMeta().getTableMeta().getFullName()</span>
+<span class="fc" id="L100">                + whereClause.toSql();</span>
+
+<span class="fc" id="L102">        this.executedSql = sql;</span>
+<span class="fc" id="L103">    }</span>
+
+    /**
+     * 削除処理を実行します。
+     * @return 削除したレコード件数を返します。
+     */
+    public int execute() {
+<span class="fc" id="L110">        prepare();</span>
+<span class="fc" id="L111">        return getJdbcTemplate().update(executedSql, paramValues.toArray());</span>
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+<span class="fc" id="L119">        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())</span>
+<span class="fc" id="L120">                .queryTimeout(query.getQueryTimeout())</span>
+<span class="fc" id="L121">                .build();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

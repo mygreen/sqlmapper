@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>SqlMapper.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core</a> &gt; <span class="el_source">SqlMapper.java</span></div><h1>SqlMapper.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core;
+
+import java.util.Collection;
+import java.util.List;
+
+import com.github.mygreen.splate.EmptyValueSqlTemplateContext;
+import com.github.mygreen.splate.SqlTemplateContext;
+import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoAnyDelete;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoAnyDeleteImpl;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchDelete;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchDeleteImpl;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchInsert;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchInsertImpl;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchUpdate;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoBatchUpdateImpl;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoDelete;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoDeleteImpl;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoFunctionCall;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoFunctionCallImpl;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoInsert;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoInsertImpl;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoProcedureCall;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoProcedureCallImpl;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoSelect;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoSelectImpl;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoUpdate;
+import com.github.mygreen.sqlmapper.core.query.auto.AutoUpdateImpl;
+import com.github.mygreen.sqlmapper.core.query.sql.SqlCountImpl;
+import com.github.mygreen.sqlmapper.core.query.sql.SqlSelect;
+import com.github.mygreen.sqlmapper.core.query.sql.SqlSelectImpl;
+import com.github.mygreen.sqlmapper.core.query.sql.SqlUpdate;
+import com.github.mygreen.sqlmapper.core.query.sql.SqlUpdateImpl;
+import com.github.mygreen.sqlmapper.metamodel.EntityPath;
+
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * JDBCによるSQL実行を管理するクラスです。
+ *
+ * @author T.TSUCHIE
+ *
+ */
+@RequiredArgsConstructor
+public class SqlMapper {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
+
+    /**
+     * SQLを自動生成して抽出します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param entityPath 抽出対象のテーブルのエンティティ情報
+     * @return 抽出を行うSQLを自動生成するクエリ
+     */
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">    public &lt;T&gt; AutoSelect&lt;T&gt; selectFrom(@NonNull EntityPath&lt;T&gt; entityPath) {</span>
+<span class="fc" id="L62">        return new AutoSelectImpl&lt;T&gt;(context, entityPath);</span>
+    }
+
+    /**
+     * SQLを自動生成して挿入します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param entity 挿入対象のテーブルのエンティティのインスタンス
+     * @return 挿入を行うSQLを自動生成するクエリ
+     */
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">    public &lt;T&gt; AutoInsert&lt;T&gt; insert(@NonNull T entity) {</span>
+<span class="fc" id="L72">        return new AutoInsertImpl&lt;T&gt;(context, entity);</span>
+    }
+
+    /**
+     * SQLを自動生成して削除します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param entity 削除対象のテーブルのエンティティのインスタンス
+     * @return 削除を行うSQLを自動生成するクエリ
+     */
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">    public &lt;T&gt; AutoDelete&lt;T&gt; delete(@NonNull T entity){</span>
+<span class="fc" id="L82">        return new AutoDeleteImpl&lt;T&gt;(context, entity);</span>
+    }
+
+    /**
+     * SQLを自動生成して更新します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param entity エンティティのインスタンス
+     * @return 更新を行うSQLを自動生成するクエリ
+     */
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">    public &lt;T&gt; AutoUpdate&lt;T&gt; update(@NonNull T entity) {</span>
+<span class="fc" id="L92">        return new AutoUpdateImpl&lt;T&gt;(context, entity);</span>
+    }
+
+    /**
+     * 任意の条件を指定して、SQLを自動生成して削除します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param entityPath 削除対象のテーブルのエンティティ情報
+     * @return 任意の条件をして削除を行うSQLを自動生成するクエリ
+     */
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">    public &lt;T&gt; AutoAnyDelete&lt;T&gt; deleteFrom(@NonNull EntityPath&lt;T&gt; entityPath) {</span>
+<span class="fc" id="L102">        return new AutoAnyDeleteImpl&lt;T&gt;(context, entityPath);</span>
+    }
+
+    /**
+     * SQLを自動生成してバッチ挿入します。
+     * &lt;p&gt;主キーが識別子（IDENTITY）による自動生成の場合は、バッチ実行ではなく1件ずつ処理されるので注意してください。&lt;/p&gt;
+     *
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param entities バッチ挿入対象のテーブルのエンティティのインスタンス
+     * @return バッチ挿入を行うSQLを自動生成するクエリ
+     * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public &lt;T&gt; AutoBatchInsert&lt;T&gt; insertBatch(T... entities) {
+<span class="nc" id="L116">        return new AutoBatchInsertImpl&lt;T&gt;(context, entities);</span>
+    }
+
+    /**
+     * SQLを自動生成してバッチ挿入します。
+     * &lt;p&gt;主キーが識別子（IDENTITY）による自動生成の場合は、バッチ実行ではなく1件ずつ処理されるので注意してください。&lt;/p&gt;
+     *
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param entities バッチ挿入対象のテーブルのエンティティのインスタンス
+     * @return バッチ挿入を行うSQLを自動生成するクエリ
+     * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
+     */
+    public &lt;T&gt; AutoBatchInsert&lt;T&gt; insertBatch(List&lt;T&gt; entities) {
+<span class="fc" id="L129">        return new AutoBatchInsertImpl&lt;T&gt;(context, entities);</span>
+    }
+
+    /**
+     * SQLを自動生成してバッチ更新します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param entities バッチ更新対象のテーブルのエンティティのインスタンス
+     * @return バッチ更新を行うSQLを自動生成するクエリ
+     * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public &lt;T&gt; AutoBatchUpdate&lt;T&gt; updateBatch(T... entities) {
+<span class="nc" id="L141">        return new AutoBatchUpdateImpl&lt;T&gt;(context, entities);</span>
+    }
+
+    /**
+     * SQLを自動生成してバッチ更新します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param entities バッチ更新対象のテーブルのエンティティのインスタンス
+     * @return バッチ更新を行うSQLを自動生成するクエリ
+     * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
+     */
+    public &lt;T&gt; AutoBatchUpdate&lt;T&gt; updateBatch(List&lt;T&gt; entities) {
+<span class="fc" id="L152">        return new AutoBatchUpdateImpl&lt;T&gt;(context, entities);</span>
+    }
+
+    /**
+     * SQLを自動生成してバッチ削除します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param entities バッチ削除対象のテーブルのエンティティのインスタンス
+     * @return バッチ削除を行うSQLを自動生成するクエリ
+     * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public &lt;T&gt; AutoBatchDelete&lt;T&gt; deleteBatch(T... entities) {
+<span class="nc" id="L164">        return new AutoBatchDeleteImpl&lt;T&gt;(context, entities);</span>
+    }
+
+    /**
+     * SQLを自動生成してバッチ削除します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param entities バッチ削除対象のテーブルのエンティティのインスタンス
+     * @return バッチ削除を行うSQLを自動生成するクエリ
+     * @throws IllegalOperateException 引数で指定したエンティティの並びが空のときにスローされます。
+     */
+    public &lt;T&gt; AutoBatchDelete&lt;T&gt; deleteBatch(Collection&lt;T&gt; entities) {
+<span class="fc" id="L175">        return new AutoBatchDeleteImpl&lt;T&gt;(context, entities);</span>
+    }
+
+    /**
+     * SQLテンプレートファイルを指定して抽出します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param baseClass エンティティのクラス
+     * @param path SQLテンプレートのファイルパス。
+     * @return SQLテンプレートによる抽出を行うクエリ
+     */
+<span class="nc bnc" id="L185" title="All 4 branches missed.">    public &lt;T&gt; SqlSelect&lt;T&gt; selectBySqlFile(@NonNull Class&lt;T&gt; baseClass, @NonNull String path) {</span>
+<span class="nc" id="L186">        return new SqlSelectImpl&lt;T&gt;(context, baseClass, context.getSqlTemplateEngine().getTemplate(path), new EmptyValueSqlTemplateContext());</span>
+    }
+
+    /**
+     * SQLテンプレートファイルを指定して抽出します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param baseClass エンティティのクラス
+     * @param path SQLテンプレートのファイルパス。
+     * @param parameter SQLテンプレートのパラメータ
+     * @return SQLテンプレートによる抽出を行うクエリ
+     */
+<span class="pc bpc" id="L197" title="3 of 6 branches missed.">    public &lt;T&gt; SqlSelect&lt;T&gt; selectBySqlFile(@NonNull Class&lt;T&gt; baseClass, @NonNull String path, @NonNull SqlTemplateContext parameter) {</span>
+<span class="fc" id="L198">        return new SqlSelectImpl&lt;T&gt;(context, baseClass, context.getSqlTemplateEngine().getTemplate(path), parameter);</span>
+    }
+
+    /**
+     * SQLテンプレートファイルを指定して件数のカウントを取得します。
+     * @param path SQLテンプレートのファイルパス。
+     * @return カウント結果
+     */
+<span class="nc bnc" id="L206" title="All 2 branches missed.">    public long getCountBySqlFile(@NonNull String path) {</span>
+<span class="nc" id="L207">        return new SqlCountImpl(context, context.getSqlTemplateEngine().getTemplate(path), new EmptyValueSqlTemplateContext())</span>
+<span class="nc" id="L208">                .getCount();</span>
+    }
+
+    /**
+     * SQLテンプレートファイルを指定して件数のカウントを取得します。
+     * @param path SQLテンプレートのファイルパス。
+     * @param parameter SQLテンプレートのパラメータ
+     * @return カウント結果
+     */
+<span class="pc bpc" id="L217" title="2 of 4 branches missed.">    public long getCountBySqlFile(@NonNull String path, @NonNull SqlTemplateContext parameter) {</span>
+<span class="fc" id="L218">        return new SqlCountImpl(context, context.getSqlTemplateEngine().getTemplate(path), parameter)</span>
+<span class="fc" id="L219">                .getCount();</span>
+    }
+
+    /**
+     * SQLテンプレートファイルを指定して更新（INSERT / UPDATE/ DELETE）を行います。
+     * @param path SQLテンプレートのファイルパス。
+     * @return SQLテンプレートによる更新を行うクエリ
+     */
+<span class="nc bnc" id="L227" title="All 2 branches missed.">    public SqlUpdate updateBySqlFile(@NonNull String path) {</span>
+<span class="nc" id="L228">        return new SqlUpdateImpl(context, context.getSqlTemplateEngine().getTemplate(path), new EmptyValueSqlTemplateContext());</span>
+    }
+
+    /**
+     * SQLテンプレートファイルを指定して更新（INSERT / UPDATE/ DELETE）を行います。
+     * @param path SQLテンプレートのファイルパス。
+     * @param parameter SQLテンプレートのパラメータ
+     * @return SQLテンプレートによる更新を行うクエリ
+     */
+<span class="pc bpc" id="L237" title="2 of 4 branches missed.">    public SqlUpdate updateBySqlFile(@NonNull String path, @NonNull SqlTemplateContext parameter) {</span>
+<span class="fc" id="L238">        return new SqlUpdateImpl(context, context.getSqlTemplateEngine().getTemplate(path), parameter);</span>
+    }
+
+    /**
+     * SQLテンプレートを指定して抽出します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param baseClass エンティティのクラス
+     * @param sql SQLテンプレート
+     * @return SQLテンプレートによる抽出を行うクエリ
+     */
+<span class="nc bnc" id="L248" title="All 4 branches missed.">    public &lt;T&gt; SqlSelect&lt;T&gt; selectBySql(@NonNull Class&lt;T&gt; baseClass, @NonNull String sql) {</span>
+<span class="nc" id="L249">        return new SqlSelectImpl&lt;T&gt;(context, baseClass, context.getSqlTemplateEngine().getTemplateByText(sql), new EmptyValueSqlTemplateContext());</span>
+    }
+
+    /**
+     * SQLテンプレートを指定して抽出します。
+     * @param &lt;T&gt; 処理対象となるエンティティの型
+     * @param baseClass エンティティのクラス
+     * @param sql SQLテンプレート
+     * @param parameter SQLテンプレートのパラメータ
+     * @return SQLテンプレートによる抽出を行うクエリ
+     */
+<span class="pc bpc" id="L260" title="3 of 6 branches missed.">    public &lt;T&gt; SqlSelect&lt;T&gt; selectBySql(@NonNull Class&lt;T&gt; baseClass, @NonNull String sql, @NonNull SqlTemplateContext parameter) {</span>
+<span class="fc" id="L261">        return new SqlSelectImpl&lt;T&gt;(context, baseClass, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);</span>
+    }
+
+    /**
+     * SQLテンプレートを指定して件数のカウントを取得します。
+     * @param sql SQLテンプレート
+     * @return カウント結果
+     */
+<span class="nc bnc" id="L269" title="All 2 branches missed.">    public long getCountBySql(@NonNull String sql) {</span>
+<span class="nc" id="L270">        return new SqlCountImpl(context, context.getSqlTemplateEngine().getTemplateByText(sql), new EmptyValueSqlTemplateContext())</span>
+<span class="nc" id="L271">                .getCount();</span>
+    }
+
+    /**
+     * SQLテンプレートを指定して件数のカウントを取得します。
+     * @param sql SQLテンプレート
+     * @param parameter SQLテンプレートのパラメータ
+     * @return カウント結果
+     */
+<span class="pc bpc" id="L280" title="2 of 4 branches missed.">    public long getCountBySql(@NonNull String sql, @NonNull SqlTemplateContext parameter) {</span>
+<span class="fc" id="L281">        return new SqlCountImpl(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter)</span>
+<span class="fc" id="L282">                .getCount();</span>
+    }
+
+    /**
+     * SQLテンプレートを指定して更新（INSERT / UPDATE/ DELETE）を行います。
+     * @param sql SQLテンプレート
+     * @return SQLテンプレートによる更新を行うクエリ
+     */
+<span class="nc bnc" id="L290" title="All 2 branches missed.">    public SqlUpdate updateBySql(@NonNull String sql) {</span>
+<span class="nc" id="L291">        return new SqlUpdateImpl(context, context.getSqlTemplateEngine().getTemplateByText(sql), new EmptyValueSqlTemplateContext());</span>
+    }
+
+    /**
+     * SQLテンプレートを指定して更新（INSERT / UPDATE/ DELETE）を行います。
+     * @param sql SQLテンプレート
+     * @param parameter SQLテンプレートのパラメータ
+     * @return SQLテンプレートによる更新を行うクエリ
+     */
+<span class="pc bpc" id="L300" title="2 of 4 branches missed.">    public SqlUpdate updateBySql(@NonNull String sql, @NonNull SqlTemplateContext parameter) {</span>
+<span class="fc" id="L301">        return new SqlUpdateImpl(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);</span>
+    }
+
+    /**
+     * 自動プロシージャ呼び出しを返します。
+     * @param procedureName 呼び出すストアドプロシージャの名前
+     * @return 自動プロシージャ呼び出し
+     */
+<span class="nc bnc" id="L309" title="All 2 branches missed.">    public AutoProcedureCall call(@NonNull String procedureName) {</span>
+<span class="nc" id="L310">        return call(new StoredName(procedureName));</span>
+    }
+
+    /**
+     * 自動プロシージャ呼び出しを返します。
+     * @param procedureName 呼び出すストアドプロシージャの名前
+     * @return 自動プロシージャ呼び出し
+     */
+<span class="nc bnc" id="L318" title="All 2 branches missed.">    public AutoProcedureCall call(@NonNull StoredName procedureName) {</span>
+<span class="nc" id="L319">        return new AutoProcedureCallImpl(context, procedureName);</span>
+    }
+
+    /**
+     * 自動プロシージャ呼び出しを返します。
+     * @param procedureName 呼び出すストアドプロシージャの名前
+     * @param parameter パラメータです。
+     * @return 自動プロシージャ呼び出し
+     */
+<span class="pc bpc" id="L328" title="2 of 4 branches missed.">    public AutoProcedureCall call(@NonNull String procedureName, @NonNull Object parameter) {</span>
+<span class="fc" id="L329">        return call(new StoredName(procedureName), parameter);</span>
+    }
+
+    /**
+     * 自動プロシージャ呼び出しを返します。
+     * @param procedureName 呼び出すストアドプロシージャの名前
+     * @param parameter パラメータです。
+     * @return 自動プロシージャ呼び出し
+     */
+<span class="pc bpc" id="L338" title="2 of 4 branches missed.">    public AutoProcedureCall call(@NonNull StoredName procedureName, @NonNull Object parameter) {</span>
+<span class="fc" id="L339">        return new AutoProcedureCallImpl(context, procedureName, parameter);</span>
+    }
+
+    /**
+     * 自動ファンクション呼び出しを返します。
+     * @param &lt;T&gt; ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param resultClass  ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param functionName 呼び出すストアドファンクションの名前。
+     * @return 自動ファンクション呼び出し。
+     */
+<span class="nc bnc" id="L349" title="All 4 branches missed.">    public &lt;T&gt; AutoFunctionCall&lt;T&gt; call(@NonNull Class&lt;T&gt; resultClass, @NonNull String functionName) {</span>
+<span class="nc" id="L350">        return call(resultClass, new StoredName(functionName));</span>
+    }
+
+    /**
+     * 自動ファンクション呼び出しを返します。
+     * @param &lt;T&gt; ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param resultClass  ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param functionName 呼び出すストアドファンクションの名前。
+     * @return 自動ファンクション呼び出し。
+     */
+<span class="nc bnc" id="L360" title="All 4 branches missed.">    public &lt;T&gt; AutoFunctionCall&lt;T&gt; call(@NonNull Class&lt;T&gt; resultClass, @NonNull StoredName functionName) {</span>
+<span class="nc" id="L361">        return new AutoFunctionCallImpl&lt;T&gt;(context, resultClass, functionName);</span>
+    }
+
+    /**
+     * 自動ファンクション呼び出しを返します。
+     * @param &lt;T&gt; ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param resultClass  ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param functionName 呼び出すストアドファンクションの名前。
+     * @param parameter パラメータです。
+     * @return 自動ファンクション呼び出し。
+     */
+<span class="nc bnc" id="L372" title="All 6 branches missed.">    public &lt;T&gt; AutoFunctionCall&lt;T&gt; call(@NonNull Class&lt;T&gt; resultClass, @NonNull String functionName, @NonNull Object parameter) {</span>
+<span class="nc" id="L373">        return call(resultClass, new StoredName(functionName), parameter);</span>
+    }
+
+    /**
+     * 自動ファンクション呼び出しを返します。
+     * @param &lt;T&gt; ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param resultClass  ファンクションの戻り値の型。ファンクションの戻り値が結果セットの場合はリストの要素のクラス。
+     * @param functionName 呼び出すストアドファンクションの名前。
+     * @param parameter パラメータです。
+     * @return 自動ファンクション呼び出し。
+     */
+<span class="nc bnc" id="L384" title="All 6 branches missed.">    public &lt;T&gt; AutoFunctionCall&lt;T&gt; call(@NonNull Class&lt;T&gt; resultClass, @NonNull StoredName functionName, @NonNull Object parameter) {</span>
+<span class="nc" id="L385">        return new AutoFunctionCallImpl&lt;T&gt;(context, resultClass, functionName, parameter);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

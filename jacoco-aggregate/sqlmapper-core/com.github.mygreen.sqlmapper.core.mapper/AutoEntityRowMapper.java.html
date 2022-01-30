@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AutoEntityRowMapper.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.mapper</a> &gt; <span class="el_source">AutoEntityRowMapper.java</span></div><h1>AutoEntityRowMapper.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.mapper;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.jdbc.core.RowMapper;
+
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.JoinAssociation;
+
+/**
+ * 1レコード分のエンティティをマッピングする。
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class AutoEntityRowMapper&lt;T&gt; implements RowMapper&lt;T&gt; {
+
+    /**
+     * エンティティクラスです。
+     */
+    private final Class&lt;T&gt; baseEntityClass;
+
+    /**
+     * 抽出対象のプロパティと所属するエンティティのクラスタイプのマップ情報です。
+     */
+    private final Map&lt;PropertyMeta, Class&lt;?&gt;&gt; propertyMetaEntityTypeMap;
+
+    /**
+     * 結合する際の構成情報です
+     */
+    @SuppressWarnings(&quot;rawtypes&quot;)
+    private final List&lt;JoinAssociation&gt; joinAssociations;
+
+    /**
+     * エンティティマッピング後のコールバック処理
+     */
+    private final Optional&lt;EntityMappingCallback&lt;T&gt;&gt; callback;
+
+    /**
+     * マッピング対象のプロパティのリスト
+     * SELECT文の指定順になっている。
+     */
+    private PropertyMeta[] propertyMetaList;
+    /**
+     * 取得するカラムが確定している場合は、プロパティ情報を指定する。
+     * @param baseEntityClass ベースとなるエンティティクラス
+     * @param propertyMetaEntityTypeMap 取得対象のプロパティ情報
+     * @param joinAssociations 結合テーブルのエンティティの構成情報
+     * @param callback エンティティマッピング後のコールバック処理
+     */
+    @SuppressWarnings(&quot;rawtypes&quot;)
+    public AutoEntityRowMapper(Class&lt;T&gt; baseEntityClass, Map&lt;PropertyMeta, Class&lt;?&gt;&gt; propertyMetaEntityTypeMap,
+<span class="fc" id="L60">            List&lt;JoinAssociation&gt; joinAssociations, Optional&lt;EntityMappingCallback&lt;T&gt;&gt; callback) {</span>
+<span class="fc" id="L61">        this.baseEntityClass = baseEntityClass;</span>
+<span class="fc" id="L62">        this.propertyMetaEntityTypeMap = propertyMetaEntityTypeMap;</span>
+<span class="fc" id="L63">        this.joinAssociations = joinAssociations;</span>
+<span class="fc" id="L64">        this.callback = callback;</span>
+
+<span class="fc" id="L66">        this.propertyMetaList = propertyMetaEntityTypeMap.keySet().toArray(new PropertyMeta[propertyMetaEntityTypeMap.size()]);</span>
+<span class="fc" id="L67">    }</span>
+
+    @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+    @Override
+    public T mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+
+        // マッピングするエンティティのインスタンスの準備
+<span class="fc" id="L74">        Map&lt;Class&lt;?&gt;, Object&gt; entityInstanceMap = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        for(Class&lt;?&gt; entityClass : propertyMetaEntityTypeMap.values()) {</span>
+<span class="fc" id="L76">            Object entityObject = BeanUtils.instantiateClass(entityClass);</span>
+<span class="fc" id="L77">            entityInstanceMap.put(entityClass, entityObject);</span>
+<span class="fc" id="L78">        }</span>
+
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        for(int i=0; i &lt; propertyMetaList.length; i++) {</span>
+<span class="fc" id="L81">            PropertyMeta propertyMeta = propertyMetaList[i];</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">            if(propertyMeta == null) {</span>
+                // 任意のSQL実行時にエンティティのプロパティにマッピング対象でないカラムがある場合ので無視する。
+<span class="nc" id="L84">                continue;</span>
+            }
+<span class="fc" id="L86">            Object propertyValue = propertyMeta.getValueType().getValue(rs, i + 1);</span>
+
+<span class="fc" id="L88">            Object entityObject = entityInstanceMap.get(propertyMetaEntityTypeMap.get(propertyMeta));</span>
+<span class="fc" id="L89">            PropertyValueInvoker.setEmbeddedPropertyValue(propertyMeta, entityObject, propertyValue);</span>
+        }
+
+        // 結合テーブルの構成定義の呼び出し
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        for(JoinAssociation association : joinAssociations) {</span>
+<span class="fc" id="L94">            Object entityObject1 = entityInstanceMap.get(association.getEntity1().getType());</span>
+<span class="fc" id="L95">            Object entityObject2 = entityInstanceMap.get(association.getEntity2().getType());</span>
+<span class="fc" id="L96">            association.getAssociator().associate(entityObject1, entityObject2);</span>
+<span class="fc" id="L97">        }</span>
+
+<span class="fc" id="L99">        final T baseEntity = (T)entityInstanceMap.get(baseEntityClass);</span>
+
+        // コールバック処理の実行
+<span class="fc" id="L102">        callback.ifPresent(c -&gt; c.call(baseEntity));</span>
+
+<span class="fc" id="L104">        return baseEntity;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

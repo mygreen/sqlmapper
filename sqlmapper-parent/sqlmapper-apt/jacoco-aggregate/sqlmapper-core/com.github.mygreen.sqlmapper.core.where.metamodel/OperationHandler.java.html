@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>OperationHandler.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-apt</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.where.metamodel</a> &gt; <span class="el_source">OperationHandler.java</span></div><h1>OperationHandler.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.where.metamodel;
+
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.query.IllegalQueryException;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
+import com.github.mygreen.sqlmapper.core.util.QueryUtils;
+import com.github.mygreen.sqlmapper.metamodel.Path;
+import com.github.mygreen.sqlmapper.metamodel.PathType;
+import com.github.mygreen.sqlmapper.metamodel.Visitor;
+import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
+import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
+import com.github.mygreen.sqlmapper.metamodel.expression.SubQueryExpression;
+import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
+import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
+import com.github.mygreen.sqlmapper.metamodel.support.OperationUtils;
+
+/**
+ * 演算子に対する処理を行うためのテンプレートクラス。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param &lt;T&gt; 処理対象の演算子
+ */
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">public abstract class OperationHandler&lt;T extends Operator&gt; {</span>
+
+    /**
+     * 演算子に対するテンプレートのマップ
+     * マップの値ととなるテンプレートは{@link MessageFormat}の形式。
+     */
+<span class="fc" id="L37">    protected Map&lt;T, String&gt; templateMap = new HashMap&lt;&gt;();</span>
+
+    /**
+     * 初期化処理
+     */
+    protected abstract void init();
+
+    /**
+     * 演算子に対する処理を行います。
+     * @param operator 演算子
+     * @param expr 演算子と非演算子を含む処理対象の式の情報
+     * @param visitor Visitor
+     * @param context このンテキスト
+     */
+    public abstract void handle(T operator, Operation&lt;?&gt; expr, Visitor&lt;VisitorContext&gt; visitor, VisitorContext context);
+
+    /**
+     * テンプレートを追加します。
+     * @param op 演算子
+     * @param template テンプレート（{@link MessageFormat}の形式。）
+     * @return 既に演算子に対するテンプレートが追加されている場合は、古いテンプレートの値を返します。
+     */
+    public String addTemplate(T op, String template) {
+<span class="fc" id="L60">        return templateMap.put(op, template);</span>
+    }
+
+    /**
+     * 演算子に対応するテンプレートを取得します。
+     * @param op 演算子
+     * @return 対応するテンプレートが存在しない場合は、nullを返します。
+     */
+    public String getTemplate(T op) {
+<span class="nc" id="L69">        return templateMap.get(op);</span>
+    }
+
+    /**
+     * テンプレートを使用してフォーマットします。
+     * @param op 演算子
+     * @param args 引数
+     * @return フォーマットした値
+     */
+    public String formatWithTemplate(T op, Object... args) {
+<span class="fc" id="L79">        String template = templateMap.get(op);</span>
+<span class="fc" id="L80">        return MessageFormat.format(template, args);</span>
+    }
+
+    /**
+     * 式がプロパティパスかどうか判定します。
+     * @param exp 式
+     * @return プロパティパスの場合、{@literal true}を返します。
+     */
+    protected boolean isPropertyPath(Expression&lt;?&gt; exp) {
+
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if(!(exp instanceof Path)) {</span>
+<span class="fc" id="L91">            return false;</span>
+        }
+
+<span class="fc" id="L94">        Path&lt;?&gt; path = (Path&lt;?&gt;) exp;</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">        return path.getPathMeta().getType() == PathType.PROPERTY;</span>
+
+    }
+
+    /**
+     * プロパティが確定しているのとき定数の処理。
+     * @param propertyPath プロパティパス
+     * @param expr 定数
+     * @param context コンテキスト
+     */
+    @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+    protected void visitConstantWithPropertyPath(Path&lt;?&gt; propertyPath, Constant&lt;?&gt; expr, VisitorContext context) {
+
+<span class="pc bpc" id="L108" title="2 of 4 branches missed.">        assert propertyPath.getPathMeta().getType() == PathType.PROPERTY;</span>
+
+<span class="fc" id="L110">        Path&lt;?&gt; rootPath = propertyPath.getPathMeta().findRootPath();</span>
+<span class="fc" id="L111">        Class&lt;?&gt; rootClassType = rootPath.getType();</span>
+<span class="fc" id="L112">        String propertyName = propertyPath.getPathMeta().getElement();</span>
+<span class="fc" id="L113">        Optional&lt;PropertyMeta&gt; propertyMeta = context.getEntityMetaMap().get(rootClassType).findPropertyMeta(propertyName);</span>
+<span class="pc bpc" id="L114" title="1 of 2 branches missed.">        if(propertyMeta.isEmpty()) {</span>
+<span class="nc" id="L115">            throw new IllegalQueryException(&quot;unknwon property : &quot; + propertyName);</span>
+        }
+
+<span class="fc" id="L118">        ValueType valueType = propertyMeta.get().getValueType();</span>
+
+        // 値はプレースホルダーを追加
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if(expr.isExpandable()) {</span>
+            // 展開可能な複数の要素の場合
+<span class="fc" id="L123">            Collection&lt;?&gt; values = (Collection&lt;?&gt;)expr.getValue();</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">            for(Object value : values) {</span>
+<span class="fc" id="L125">                context.addParamValue(valueType.getSqlParameterValue(value));</span>
+<span class="fc" id="L126">            }</span>
+<span class="fc" id="L127">            context.appendSql(&quot;(&quot;)</span>
+<span class="fc" id="L128">                .append(QueryUtils.repeat(&quot;?&quot;, &quot;, &quot;, values.size()))</span>
+<span class="fc" id="L129">                .append(&quot;)&quot;);</span>
+<span class="fc" id="L130">        } else {</span>
+<span class="fc" id="L131">            context.addParamValue(valueType.getSqlParameterValue(expr.getValue()));</span>
+<span class="fc" id="L132">            context.appendSql(&quot;?&quot;);</span>
+        }
+
+<span class="fc" id="L135">    }</span>
+
+    /**
+     * 各処理に振り分ける
+     * @param parentOperator 親ノードの演算子
+     * @param expr 評価対象の式
+     * @param visitor Visitor
+     * @param context コンテキスト
+     */
+    protected void invoke(Operator parentOperator, Expression&lt;?&gt; expr, Visitor&lt;VisitorContext&gt; visitor, VisitorContext context) {
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        if(expr instanceof Operation) {</span>
+<span class="fc" id="L147">            Operation&lt;?&gt; operation = (Operation&lt;?&gt;)expr;</span>
+            // /子ノードが演算子の場合、括弧で囲むか判定する。
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            if(OperationUtils.isEnclosedParenthesis(parentOperator, operation.getOperator())) {</span>
+<span class="fc" id="L150">                context.appendSql(&quot;(&quot;);</span>
+<span class="fc" id="L151">                visitor.visit(operation, context);</span>
+<span class="fc" id="L152">                context.appendSql(&quot;)&quot;);</span>
+            } else {
+<span class="fc" id="L154">                visitor.visit(operation, context);</span>
+            }
+
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        } else if(expr instanceof Constant) {</span>
+<span class="fc" id="L158">            visitor.visit((Constant&lt;?&gt;)expr, context);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        } else if (expr instanceof Path) {</span>
+<span class="fc" id="L160">            visitor.visit((Path&lt;?&gt;)expr, context);</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        } else if(expr instanceof SubQueryExpression) {</span>
+<span class="fc" id="L162">            context.appendSql(&quot;(&quot;);</span>
+<span class="fc" id="L163">            visitor.visit((SubQueryExpression&lt;?&gt;)expr, context);</span>
+<span class="fc" id="L164">            context.appendSql(&quot;)&quot;);</span>
+        } else {
+<span class="nc" id="L166">            throw new IllegalArgumentException(&quot;not support Expression instance of &quot; + expr.getClass());</span>
+        }
+
+<span class="fc" id="L169">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

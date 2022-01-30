@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AutoDeleteExecutor.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.query.auto</a> &gt; <span class="el_source">AutoDeleteExecutor.java</span></div><h1>AutoDeleteExecutor.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.query.auto;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
+import com.github.mygreen.sqlmapper.core.query.WhereClause;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
+import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereBuilder;
+import com.github.mygreen.sqlmapper.core.where.simple.SimpleWhereVisitor;
+
+/**
+ * 削除を行うSQLを自動生成するクエリを実行します。
+ * {@link AutoDeleteImpl}のクエリ実行処理の移譲先です。
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class AutoDeleteExecutor {
+
+    /**
+     * クエリ情報
+     */
+    private final AutoDeleteImpl&lt;?&gt; query;
+
+    /**
+     * 設定情報
+     */
+    private final SqlMapperContext context;
+
+    /**
+     * where句
+     */
+<span class="fc" id="L40">    private final WhereClause whereClause = new WhereClause();</span>
+
+    /**
+     * 実行するSQLです
+     */
+    private String executedSql;
+
+    /**
+     * クエリのパラメータです。
+     */
+<span class="fc" id="L50">    private final List&lt;Object&gt; paramValues = new ArrayList&lt;&gt;();</span>
+
+    /**
+     * 組み立てたクエリ情報を指定するコンストラクタ。
+     * @param query クエリ情報
+     */
+<span class="fc" id="L56">    public AutoDeleteExecutor(AutoDeleteImpl&lt;?&gt; query) {</span>
+<span class="fc" id="L57">        this.query = query;</span>
+<span class="fc" id="L58">        this.context = query.getContext();</span>
+<span class="fc" id="L59">    }</span>
+
+    /**
+     * クエリ実行の準備を行います。
+     */
+    private void prepare() {
+
+<span class="fc" id="L66">        prepareWhereClause();</span>
+<span class="fc" id="L67">        prepareSql();</span>
+<span class="fc" id="L68">    }</span>
+
+    /**
+     * 条件文の組み立てを行います
+     */
+    @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+    private void prepareWhereClause() {
+
+<span class="fc" id="L76">        final SimpleWhereBuilder where = new SimpleWhereBuilder();</span>
+
+        // 主キーを条件分として組み立てます
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        for(PropertyMeta propertyMeta : query.getEntityMeta().getIdPropertyMetaList()) {</span>
+<span class="fc" id="L80">            String exp = String.format(&quot;%s = ?&quot;, propertyMeta.getColumnMeta().getName());</span>
+
+<span class="fc" id="L82">            Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, query.getEntity());</span>
+<span class="fc" id="L83">            ValueType valueType = propertyMeta.getValueType();</span>
+<span class="fc" id="L84">            Object value = valueType.getSqlParameterValue(propertyValue);</span>
+
+<span class="fc" id="L86">            where.exp(exp, value);</span>
+<span class="fc" id="L87">        }</span>
+
+        // 楽観的排他チェックを行うときは、バージョンキーも条件に加えます。
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if(isOptimisticLock()) {</span>
+<span class="fc" id="L91">            final PropertyMeta propertyMeta = query.getEntityMeta().getVersionPropertyMeta().get();</span>
+<span class="fc" id="L92">            String exp = String.format(&quot;%s = ?&quot;, propertyMeta.getColumnMeta().getName());</span>
+
+<span class="fc" id="L94">            Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, query.getEntity());</span>
+<span class="fc" id="L95">            ValueType valueType = propertyMeta.getValueType();</span>
+<span class="fc" id="L96">            Object value = valueType.getSqlParameterValue(propertyValue);</span>
+
+<span class="fc" id="L98">            where.exp(exp, value);</span>
+
+        }
+
+<span class="fc" id="L102">        SimpleWhereVisitor visitor = new SimpleWhereVisitor();</span>
+<span class="fc" id="L103">        where.accept(visitor);</span>
+
+<span class="fc" id="L105">        this.whereClause.addSql(visitor.getCriteria());</span>
+<span class="fc" id="L106">        this.paramValues.addAll(visitor.getParamValues());</span>
+<span class="fc" id="L107">    }</span>
+
+    /**
+     * 実行するSQLを組み立てます。
+     */
+    private void prepareSql() {
+
+<span class="fc" id="L114">        final String sql = &quot;delete from &quot;</span>
+<span class="fc" id="L115">                + query.getEntityMeta().getTableMeta().getFullName()</span>
+<span class="fc" id="L116">                + whereClause.toSql();</span>
+
+<span class="fc" id="L118">        this.executedSql = sql;</span>
+<span class="fc" id="L119">    }</span>
+
+    /**
+     * 楽観的同時実行制御を行っている場合は&lt;code&gt;true&lt;/code&gt;を返します。
+     * @return 楽観的同時実行制御を行っている場合は&lt;code&gt;true&lt;/code&gt;
+     */
+    private boolean isOptimisticLock() {
+<span class="fc bfc" id="L126" title="All 4 branches covered.">        return !query.isIgnoreVersion() &amp;&amp; query.getEntityMeta().hasVersionPropertyMeta();</span>
+    }
+
+    /**
+     * 削除処理を実行します。
+     * @return 削除したレコード件数を返します。
+     */
+    public int execute() {
+
+<span class="fc" id="L135">        prepare();</span>
+
+<span class="fc" id="L137">        final int rows = getJdbcTemplate().update(executedSql, paramValues.toArray());</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        if(isOptimisticLock()) {</span>
+<span class="fc" id="L139">            validateRows(rows);</span>
+        }
+<span class="fc" id="L141">        return rows;</span>
+
+    }
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+<span class="fc" id="L150">        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())</span>
+<span class="fc" id="L151">                .queryTimeout(query.getQueryTimeout())</span>
+<span class="fc" id="L152">                .build();</span>
+    }
+
+    /**
+     * 更新対象のレコード数のチェック
+     * @param rows 更新したレコード数
+     */
+    private void validateRows(final int rows) {
+<span class="fc bfc" id="L160" title="All 4 branches covered.">        if(!query.isSuppresOptimisticLockException() &amp;&amp; rows == 0) {</span>
+<span class="fc" id="L161">            throw new OptimisticLockingFailureException(context.getMessageFormatter().create(&quot;query.alreadyDelete&quot;)</span>
+<span class="fc" id="L162">                    .param(&quot;entity&quot;, query.getEntity())</span>
+<span class="fc" id="L163">                    .format());</span>
+        }
+<span class="fc" id="L165">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

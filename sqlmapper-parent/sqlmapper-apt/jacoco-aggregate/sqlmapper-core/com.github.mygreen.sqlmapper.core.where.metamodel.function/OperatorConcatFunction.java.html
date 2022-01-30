@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>OperatorConcatFunction.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-apt</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.where.metamodel.function</a> &gt; <span class="el_source">OperatorConcatFunction.java</span></div><h1>OperatorConcatFunction.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.where.metamodel.function;
+
+import java.util.List;
+
+import com.github.mygreen.sqlmapper.core.where.metamodel.ExpressionEvaluator;
+import com.github.mygreen.sqlmapper.core.where.metamodel.SqlFunction;
+import com.github.mygreen.sqlmapper.core.where.metamodel.VisitorContext;
+import com.github.mygreen.sqlmapper.metamodel.Visitor;
+import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
+
+/**
+ * 演算子 {@literal ||} による文字列結合を処理します。
+ *
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L18">public class OperatorConcatFunction implements SqlFunction {</span>
+
+    @Override
+    public void handle(List&lt;Expression&lt;?&gt;&gt; args, Visitor&lt;VisitorContext&gt; visitor, VisitorContext context,
+            ExpressionEvaluator evaluator) {
+
+        // 左辺の評価
+<span class="nc" id="L25">        Expression&lt;?&gt; left = args.get(0);</span>
+<span class="nc" id="L26">        VisitorContext leftContext = new VisitorContext(context);</span>
+<span class="nc" id="L27">        evaluator.evaluate(left, visitor, leftContext);</span>
+
+        // 右辺の評価
+<span class="nc" id="L30">        Expression&lt;?&gt; right = args.get(1);</span>
+<span class="nc" id="L31">        VisitorContext rightContext = new VisitorContext(context);</span>
+<span class="nc" id="L32">        evaluator.evaluate(right, visitor, rightContext);</span>
+
+        // 評価した結果を親のコンテキストに追加する
+<span class="nc" id="L35">        context.appendSql(&quot;(&quot;)</span>
+<span class="nc" id="L36">            .append(leftContext.getCriteria())</span>
+<span class="nc" id="L37">            .append(&quot; || &quot;)</span>
+<span class="nc" id="L38">            .append(rightContext.getCriteria())</span>
+<span class="nc" id="L39">            .append(&quot;)&quot;);</span>
+
+<span class="nc" id="L41">        context.addParamValues(leftContext.getParamValues());</span>
+<span class="nc" id="L42">        context.addParamValues(rightContext.getParamValues());</span>
+
+<span class="nc" id="L44">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

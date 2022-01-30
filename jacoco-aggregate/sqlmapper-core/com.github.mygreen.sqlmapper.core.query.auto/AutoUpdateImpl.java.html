@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AutoUpdateImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.query.auto</a> &gt; <span class="el_source">AutoUpdateImpl.java</span></div><h1>AutoUpdateImpl.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.query.auto;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.dao.OptimisticLockingFailureException;
+
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.event.PostUpdateEvent;
+import com.github.mygreen.sqlmapper.core.event.PreUpdateEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
+import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.metamodel.EntityPath;
+import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
+
+import lombok.Getter;
+import lombok.NonNull;
+
+/**
+ * 更新を行うSQLを自動生成するクエリの実装です。
+ *
+ * @author T.TSUCHIE
+ *
+ * @param &lt;T&gt; 処理対象となるエンティティの型
+ */
+public class AutoUpdateImpl&lt;T&gt; implements AutoUpdate&lt;T&gt; {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
+
+    /**
+     * 削除対象のエンティティ
+     */
+    @Getter
+    private final T entity;
+
+    /**
+     * エンティティ情報
+     */
+    @Getter
+    private final EntityMeta entityMeta;
+
+    @Getter
+    private Integer queryTimeout;
+
+    /**
+     * バージョンプロパティを更新対象に含めるかどうか。
+     */
+    @Getter
+    private boolean includeVersion;
+
+    /**
+     * null値のプロパティを更新から除外する
+     */
+    @Getter
+    private boolean excludesNull;
+
+    /**
+     * バージョンチェックを行った場合に、更新行数が0行でも{@link OptimisticLockingFailureException}スローしないなら&lt;code&gt;true&lt;/code&gt;
+     */
+<span class="fc" id="L69">    @Getter</span>
+    private boolean suppresOptimisticLockException = false;
+
+    /**
+     * 更新対象とするプロパティ
+     */
+<span class="fc" id="L75">    @Getter</span>
+    private final Set&lt;String&gt; includesProperties = new LinkedHashSet&lt;&gt;();
+
+    /**
+     * 更新対象から除外するプロパティ
+     */
+<span class="fc" id="L81">    @Getter</span>
+    private final Set&lt;String&gt; excludesProperties = new LinkedHashSet&lt;&gt;();
+
+    /**
+     * 更新前のプロパティの状態を保持するマップ。
+     * &lt;p&gt;
+     * key=プロパティ名、value=プロパティの値。
+     * &lt;/p&gt;
+     */
+<span class="fc" id="L90">    @Getter</span>
+<span class="fc" id="L91">    private Map&lt;String, Object&gt; beforeStates = Collections.emptyMap();</span>
+
+<span class="fc" id="L93">    public AutoUpdateImpl(SqlMapperContext context, T entity) {</span>
+<span class="fc" id="L94">        this.context = context;</span>
+<span class="fc" id="L95">        this.entity = entity;</span>
+<span class="fc" id="L96">        this.entityMeta = context.getEntityMetaFactory().create(entity.getClass());</span>
+
+        // 処理対象の情報の整合性などのチェックを行う
+<span class="fc" id="L99">        validateTarget();</span>
+<span class="fc" id="L100">    }</span>
+
+    private void validateTarget() {
+
+        // 読み取り専用かどうかのチェック
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        if(entityMeta.getTableMeta().isReadOnly()) {</span>
+<span class="nc" id="L106">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.readOnlyEntity&quot;)</span>
+<span class="nc" id="L107">                    .paramWithClass(&quot;entityType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L108">                    .format());</span>
+        }
+
+        // 主キーを持つかどうかのチェック
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if(entityMeta.getIdPropertyMetaList().isEmpty()) {</span>
+<span class="nc" id="L113">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.requiredId&quot;)</span>
+<span class="nc" id="L114">                    .paramWithClass(&quot;entityType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L115">                    .format());</span>
+        }
+<span class="fc" id="L117">    }</span>
+
+    @Override
+    public AutoUpdateImpl&lt;T&gt; queryTimeout(int seconds) {
+<span class="nc" id="L121">        this.queryTimeout = seconds;</span>
+<span class="nc" id="L122">        return this;</span>
+    }
+
+    @Override
+    public AutoUpdateImpl&lt;T&gt; includesVersion() {
+<span class="fc" id="L127">        this.includeVersion = true;</span>
+<span class="fc" id="L128">        return this;</span>
+    }
+
+    @Override
+    public AutoUpdateImpl&lt;T&gt; excludesNull() {
+<span class="fc" id="L133">        this.excludesNull = true;</span>
+<span class="fc" id="L134">        return this;</span>
+    }
+
+    @Override
+    public AutoUpdateImpl&lt;T&gt; suppresOptimisticLockException() {
+<span class="fc" id="L139">        this.suppresOptimisticLockException = true;</span>
+<span class="fc" id="L140">        return this;</span>
+    }
+
+    @Override
+    public AutoUpdateImpl&lt;T&gt; includes(final PropertyPath&lt;?&gt;... properties) {
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
+<span class="fc" id="L147">            String propertyName = prop.getPathMeta().getElement();</span>
+
+            // 挿入対象のプロパティの親のチェック
+<span class="fc" id="L150">            EntityPath&lt;?&gt; parentPath = (EntityPath&lt;?&gt;)prop.getPathMeta().getParent();</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">            if(!entityMeta.getEntityType().equals(parentPath.getType())) {</span>
+<span class="nc" id="L152">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noIncludeProperty&quot;)</span>
+<span class="nc" id="L153">                        .paramWithClass(&quot;classType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L154">                        .param(&quot;properyName&quot;, propertyName)</span>
+<span class="nc" id="L155">                        .format());</span>
+            }
+
+<span class="fc" id="L158">            this.includesProperties.add(propertyName);</span>
+        }
+
+<span class="fc" id="L161">        return this;</span>
+    }
+
+    @Override
+    public AutoUpdateImpl&lt;T&gt; excludes(final PropertyPath&lt;?&gt;... properties) {
+
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
+<span class="fc" id="L168">            String propertyName = prop.getPathMeta().getElement();</span>
+
+            // 除外対象のプロパティの親のチェック
+<span class="fc" id="L171">            EntityPath&lt;?&gt; parentPath = (EntityPath&lt;?&gt;)prop.getPathMeta().getParent();</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">            if(!entityMeta.getEntityType().equals(parentPath.getType())) {</span>
+<span class="nc" id="L173">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noIncludeProperty&quot;)</span>
+<span class="nc" id="L174">                        .paramWithClass(&quot;classType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L175">                        .param(&quot;properyName&quot;, propertyName)</span>
+<span class="nc" id="L176">                        .format());</span>
+
+            }
+
+<span class="fc" id="L180">            this.excludesProperties.add(propertyName);</span>
+        }
+
+<span class="fc" id="L183">        return this;</span>
+    }
+
+    @Override
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">    public AutoUpdateImpl&lt;T&gt; changedFrom(@NonNull final T beforeEntity) {</span>
+<span class="fc" id="L188">        this.beforeStates = new HashMap&lt;String, Object&gt;(entityMeta.getPropertyMetaSize());</span>
+
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        for(PropertyMeta propertyMeta : entityMeta.getAllColumnPropertyMeta()) {</span>
+<span class="fc" id="L191">            final String propertyName = propertyMeta.getName();</span>
+<span class="fc" id="L192">            final Object propertyValue = PropertyValueInvoker.getEmbeddedPropertyValue(propertyMeta, beforeEntity);</span>
+
+<span class="fc" id="L194">            this.beforeStates.put(propertyName, propertyValue);</span>
+<span class="fc" id="L195">        }</span>
+
+<span class="fc" id="L197">        return this;</span>
+    }
+
+    @Override
+    public AutoUpdateImpl&lt;T&gt; changedFrom(final Map&lt;String, Object&gt; beforeStates) {
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">        if(!beforeStates.isEmpty()) {</span>
+<span class="fc" id="L203">            this.beforeStates = Map.copyOf(beforeStates);</span>
+        }
+
+<span class="fc" id="L206">        return this;</span>
+    }
+
+    @Override
+    public int execute() {
+
+<span class="fc" id="L212">        context.getApplicationEventPublisher().publishEvent(new PreUpdateEvent(this, entityMeta, entity));</span>
+
+<span class="fc" id="L214">        final int result = new AutoUpdateExecutor(this)</span>
+<span class="fc" id="L215">                .execute();</span>
+
+<span class="fc" id="L217">        context.getApplicationEventPublisher().publishEvent(new PostUpdateEvent(this, entityMeta, entity));</span>
+<span class="fc" id="L218">        return result;</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

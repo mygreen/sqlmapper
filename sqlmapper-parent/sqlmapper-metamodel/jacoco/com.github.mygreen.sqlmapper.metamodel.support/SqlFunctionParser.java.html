@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SqlFunctionParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel.support</a> &gt; <span class="el_source">SqlFunctionParser.java</span></div><h1>SqlFunctionParser.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel.support;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionTokenizer.TokenType;
+
+import lombok.AllArgsConstructor;
+
+/**
+ * SQL関数の書式のパーサー
+ *
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L17">public class SqlFunctionParser {</span>
+
+    /**
+     * 字句解析してトークンに分解した結果
+     *
+     */
+    @AllArgsConstructor
+    public static class Token {
+
+        /**
+         * トークンのタイプ
+         */
+        public final TokenType type;
+
+        /**
+         * トークンの値。
+         */
+        public final String value;
+
+        /**
+         * バインド変数の場合のインデックス。
+         * &lt;p&gt;バインド変数でないときは、値は{@literal -1}です。
+         */
+        public final int bindBariableIndex;
+
+    }
+
+    /**
+     * SQL関数をパースしてトークンに分解します。
+     * @param sql パース対象のSQL
+     * @return トークンに分解した結果。
+     * @throws IllegalArgumentException 不明なトークンタイプの場合にスローされます。
+     */
+    public List&lt;Token&gt; parse(final String sql) {
+
+<span class="fc" id="L52">        SqlFunctionTokenizer tokenizer = new SqlFunctionTokenizer(sql);</span>
+
+<span class="fc" id="L54">        List&lt;Token&gt; tokens = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        while(TokenType.EOF != tokenizer.next()) {</span>
+<span class="fc" id="L56">            TokenType currentToken = tokenizer.getTokenType();</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">            if(currentToken == TokenType.SQL) {</span>
+<span class="fc" id="L58">                tokens.add(new Token(currentToken, tokenizer.getToken(), -1));</span>
+
+<span class="fc bfc" id="L60" title="All 2 branches covered.">            } else if(currentToken == TokenType.LEFT_VARIABLE) {</span>
+<span class="fc" id="L61">                tokens.add(new Token(currentToken, tokenizer.getToken(), -1));</span>
+
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">            } else if(currentToken == TokenType.BIND_VARIABLE) {</span>
+<span class="fc" id="L64">                int varIndex = tokenizer.getBindBariableNum() - 1;</span>
+<span class="fc" id="L65">                tokens.add(new Token(currentToken, tokenizer.getToken(), varIndex));</span>
+
+<span class="fc" id="L67">            } else {</span>
+<span class="nc" id="L68">                throw new IllegalArgumentException(&quot;unknown token type : &quot; + currentToken);</span>
+            }
+<span class="fc" id="L70">        }</span>
+
+<span class="fc" id="L72">        return tokens;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

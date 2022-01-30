@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AutoProcedureCallImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-apt</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.query.auto</a> &gt; <span class="el_source">AutoProcedureCallImpl.java</span></div><h1>AutoProcedureCallImpl.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.query.auto;
+
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
+
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.StoredName;
+import com.github.mygreen.sqlmapper.core.meta.StoredParamMeta;
+import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
+
+import lombok.Getter;
+
+/**
+ * ストアドプロシージャを呼び出すためのSQLを自動生成する処理の実装です。
+ *
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
+public class AutoProcedureCallImpl extends AutoStoredExecutorSupport implements AutoProcedureCall {
+
+    /**
+     * 呼び出すストアドプロシージャ名
+     */
+    @Getter
+    private final StoredName procedureName;
+
+    /**
+     * パラメータ
+     */
+    @Getter
+    private final Optional&lt;Object&gt; parameter;
+
+    /**
+     * パラメータのメタ情報。
+     * パラメータが空の時は{@literal null}を設定。
+     */
+    private final StoredParamMeta paramMeta;
+
+    @Getter
+    private Integer queryTimeout;
+
+    /**
+     * パラメータなしのコンストラクタ
+     *
+     * @param context
+     * @param procedureName
+     */
+    public AutoProcedureCallImpl(SqlMapperContext context, final StoredName procedureName) {
+<span class="nc" id="L54">        super(context);</span>
+<span class="nc" id="L55">        this.procedureName = procedureName;</span>
+<span class="nc" id="L56">        this.parameter = Optional.empty();</span>
+<span class="nc" id="L57">        this.paramMeta = null;</span>
+<span class="nc" id="L58">    }</span>
+
+    public AutoProcedureCallImpl(SqlMapperContext context, final StoredName procedureName, final Object parameter) {
+<span class="fc" id="L61">        super(context);</span>
+<span class="fc" id="L62">        this.procedureName = procedureName;</span>
+<span class="fc" id="L63">        this.parameter = Optional.of(parameter);</span>
+<span class="fc" id="L64">        this.paramMeta = context.getStoredParamMetaFactory().create(parameter.getClass());</span>
+<span class="fc" id="L65">    }</span>
+
+    @Override
+    public AutoProcedureCallImpl queryTimeout(int seconds) {
+<span class="nc" id="L69">        this.queryTimeout = seconds;</span>
+<span class="nc" id="L70">        return this;</span>
+    }
+
+    @Override
+    public void execute() {
+
+<span class="fc" id="L76">        final SimpleJdbcCall jdbcCall = new SimpleJdbcCall(getJdbcTemplate())</span>
+<span class="fc" id="L77">                .withProcedureName(procedureName.getName());</span>
+
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        if(procedureName.getCatalog() != null) {</span>
+<span class="nc" id="L80">            jdbcCall.withCatalogName(procedureName.getCatalog());</span>
+        }
+
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        if(procedureName.getSchema() != null) {</span>
+<span class="nc" id="L84">            jdbcCall.withSchemaName(procedureName.getSchema());</span>
+        }
+
+
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        if(parameter.isEmpty()) {</span>
+<span class="nc" id="L89">            jdbcCall.execute();</span>
+
+        } else {
+<span class="fc" id="L92">            SqlParameter[] parameterTypes = createSqlParameterTypes(paramMeta);</span>
+<span class="fc" id="L93">            Object[] parameterValues = parameter.map(p -&gt; createParameterValues(paramMeta, p))</span>
+<span class="pc" id="L94">                    .orElseGet(() -&gt; new Object[0]);</span>
+
+<span class="fc" id="L96">            Map&lt;String, Object&gt; out = jdbcCall.declareParameters(parameterTypes)</span>
+<span class="fc" id="L97">                    .execute(parameterValues);</span>
+
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">            if(containsResultParam(paramMeta, parameter)) {</span>
+                // 戻り値を持つパラメータの処理を行う。
+<span class="fc" id="L101">                doResultValue(paramMeta, parameter.get(), out);</span>
+            }
+        }
+
+<span class="fc" id="L105">    }</span>
+
+    /**
+     * {@link JdbcTemplate}を取得します。
+     * @return {@link JdbcTemplate}のインスタンス。
+     */
+    private JdbcTemplate getJdbcTemplate() {
+<span class="fc" id="L112">        return JdbcTemplateBuilder.create(context.getDataSource(), context.getJdbcTemplateProperties())</span>
+<span class="fc" id="L113">                .queryTimeout(queryTimeout)</span>
+<span class="fc" id="L114">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

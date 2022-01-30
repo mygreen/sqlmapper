@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>PathMeta.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel</a> &gt; <span class="el_source">PathMeta.java</span></div><h1>PathMeta.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel;
+
+import java.util.Optional;
+
+import lombok.Getter;
+import lombok.NonNull;
+
+/**
+ * パス情報を表現するクラス。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class PathMeta {
+
+    /**
+     * 親情報
+     */
+<span class="fc" id="L20">    private Optional&lt;Path&lt;?&gt;&gt; parent = Optional.empty();</span>
+
+    /**
+     * 要素の値
+     */
+    @Getter
+    private String element;
+
+    /**
+     * パスのタイプ
+     */
+    @Getter
+    private PathType type;
+
+<span class="pc bpc" id="L34" title="3 of 6 branches missed.">    public PathMeta(@NonNull Path&lt;?&gt; parent, @NonNull String element, @NonNull PathType type) {</span>
+<span class="fc" id="L35">        this.parent = Optional.of(parent);</span>
+<span class="fc" id="L36">        this.element = element;</span>
+<span class="fc" id="L37">        this.type = type;</span>
+<span class="fc" id="L38">    }</span>
+
+<span class="pc bpc" id="L40" title="2 of 4 branches missed.">    public PathMeta(@NonNull String element, @NonNull PathType type) {</span>
+<span class="fc" id="L41">        this.element = element;</span>
+<span class="fc" id="L42">        this.type = type;</span>
+<span class="fc" id="L43">    }</span>
+
+    /**
+     * 親情報を取得します。
+     * @return 親を持たない場合は{@literal null} を返します。
+     */
+    public Path&lt;?&gt; getParent() {
+<span class="fc" id="L50">        return parent.orElse(null);</span>
+    }
+
+    /**
+     * 親情報を取得します。
+     * @return 親情報。
+     */
+    public Optional&lt;Path&lt;?&gt;&gt; getParentAsOptional() {
+<span class="nc" id="L58">        return parent;</span>
+    }
+
+    /**
+     * ルートのパスを親をだ取り検索します。
+     * @return 自身がルート({@link PathType#ROOT})の場合は{@literal null}を返します。
+     */
+    public Path&lt;?&gt; findRootPath() {
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if(type == PathType.ROOT) {</span>
+<span class="nc" id="L67">            return null;</span>
+        }
+<span class="nc" id="L69">        PathMeta pathMeta = this;</span>
+<span class="nc" id="L70">        Path&lt;?&gt; parent = null;</span>
+        do{
+<span class="nc" id="L72">            parent = pathMeta.getParent();</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">            if(parent == null) {</span>
+                // ありえないが、nullチェックをする。
+<span class="nc" id="L75">                break;</span>
+            }
+<span class="nc" id="L77">            pathMeta = parent.getPathMeta();</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        } while(parent.getPathMeta().getType() != PathType.ROOT);</span>
+
+<span class="nc" id="L80">        return parent;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

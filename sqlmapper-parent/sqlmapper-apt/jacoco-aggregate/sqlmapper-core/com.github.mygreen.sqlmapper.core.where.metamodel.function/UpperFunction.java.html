@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>UpperFunction.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-apt</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.where.metamodel.function</a> &gt; <span class="el_source">UpperFunction.java</span></div><h1>UpperFunction.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.where.metamodel.function;
+
+import java.util.List;
+
+import com.github.mygreen.sqlmapper.core.where.metamodel.ExpressionEvaluator;
+import com.github.mygreen.sqlmapper.core.where.metamodel.SqlFunction;
+import com.github.mygreen.sqlmapper.core.where.metamodel.VisitorContext;
+import com.github.mygreen.sqlmapper.metamodel.Visitor;
+import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
+
+/**
+ * {@literal UPPER} 関数を処理します。
+ *
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
+
+<span class="fc" id="L19">public class UpperFunction implements SqlFunction {</span>
+
+    @Override
+    public void handle(List&lt;Expression&lt;?&gt;&gt; args, Visitor&lt;VisitorContext&gt; visitor, VisitorContext context,
+            ExpressionEvaluator evaluator) {
+
+<span class="fc" id="L25">        context.appendSql(&quot;upper(&quot;);</span>
+<span class="fc" id="L26">        evaluator.evaluate(args.get(0), visitor, context);</span>
+<span class="fc" id="L27">        context.appendSql(&quot;)&quot;);</span>
+
+<span class="fc" id="L29">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

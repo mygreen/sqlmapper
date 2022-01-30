@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>StoredPropertyMetaFactory.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.meta</a> &gt; <span class="el_source">StoredPropertyMetaFactory.java</span></div><h1>StoredPropertyMetaFactory.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.meta;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
+
+import com.github.mygreen.sqlmapper.core.annotation.Column;
+import com.github.mygreen.sqlmapper.core.annotation.In;
+import com.github.mygreen.sqlmapper.core.annotation.InOut;
+import com.github.mygreen.sqlmapper.core.annotation.Out;
+import com.github.mygreen.sqlmapper.core.annotation.ResultSet;
+import com.github.mygreen.sqlmapper.core.naming.NamingRule;
+import com.github.mygreen.sqlmapper.core.type.ValueType;
+import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
+import com.github.mygreen.sqlmapper.core.util.ClassUtils;
+import com.github.mygreen.sqlmapper.core.util.NameUtils;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * ストアドプロシージャ／ファンクション
+ *
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L36">public class StoredPropertyMetaFactory {</span>
+
+    @Getter
+    @Setter
+    @Autowired
+    private ValueTypeRegistry valueTypeRegistry;
+
+    @Getter
+    @Setter
+    @Autowired
+    private NamingRule namingRule;
+
+    /**
+     * フィールド情報を元に、ストアド用のエンティティ形式のパラメータのプロパティ情報を作成します。
+     *
+     * @param field フィールド情報
+     * @return プロパティ情報
+     */
+    public StoredPropertyMeta create(final Field field) {
+
+<span class="fc" id="L56">        final StoredPropertyMeta propertyMeta = new StoredPropertyMeta(field.getName(), field.getType());</span>
+<span class="fc" id="L57">        doField(propertyMeta, field);</span>
+
+        // フィールドに対するgetter/setterメソッドを設定します。
+<span class="fc" id="L60">        final Class&lt;?&gt; declaringClass = field.getDeclaringClass();</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        for(Method method : declaringClass.getMethods()) {</span>
+<span class="fc" id="L62">            ReflectionUtils.makeAccessible(method);</span>
+
+<span class="fc" id="L64">            int modifiers = method.getModifiers();</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">            if(Modifier.isStatic(modifiers)) {</span>
+<span class="nc" id="L66">                continue;</span>
+            }
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            if(ClassUtils.isSetterMethod(method)) {</span>
+<span class="fc" id="L70">                doSetterMethod(propertyMeta, method);</span>
+
+<span class="pc bpc" id="L72" title="1 of 4 branches missed.">            } else if(ClassUtils.isGetterMethod(method) || ClassUtils.isBooleanGetterMethod(method)) {</span>
+<span class="fc" id="L73">                doGetterMethod(propertyMeta, method);</span>
+            }
+        }
+
+<span class="fc bfc" id="L77" title="All 6 branches covered.">        if(propertyMeta.isIn() || propertyMeta.isOut() || propertyMeta.isInOut()) {</span>
+
+            // プロパティに対する型変換を設定します。
+<span class="fc" id="L80">            ValueType&lt;?&gt; valueType = valueTypeRegistry.findValueType(propertyMeta);</span>
+
+            //TODO: Oracleなどの純粋なタイプ
+<span class="fc" id="L83">            propertyMeta.setValueType(valueType);</span>
+<span class="fc" id="L84">            propertyMeta.setSingleValue(true);</span>
+
+            // パラメータ名の設定
+<span class="fc" id="L87">            Optional&lt;String&gt; paramName = propertyMeta.getAnnotation(In.class).map(a -&gt; a.name())</span>
+<span class="fc" id="L88">                    .or(() -&gt; propertyMeta.getAnnotation(Out.class).map(a -&gt; a.name()))</span>
+<span class="fc" id="L89">                    .or(() -&gt; propertyMeta.getAnnotation(InOut.class).map(a -&gt; a.name()));</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">            propertyMeta.setParamName(paramName.map(p -&gt; StringUtils.hasLength(p) ? p : namingRule.propertyToStoredParam(propertyMeta.getName()))</span>
+<span class="fc" id="L91">                    .orElseGet(() -&gt; namingRule.propertyToStoredParam(propertyMeta.getName())));</span>
+
+
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">        } else if(propertyMeta.isResultSet()) {</span>
+            // ResultSetの場合
+<span class="fc bfc" id="L96" title="All 2 branches covered.">            if(valueTypeRegistry.isRegisteredType(propertyMeta.getPropertyType())) {</span>
+                // 通常の値である場合
+<span class="fc" id="L98">                ValueType&lt;?&gt; valueType = valueTypeRegistry.findValueType(propertyMeta);</span>
+
+                //TODO: Oracleなどの純粋なタイプ
+<span class="fc" id="L101">                propertyMeta.setValueType(valueType);</span>
+<span class="fc" id="L102">                propertyMeta.setSingleValue(true);</span>
+
+<span class="fc" id="L104">            } else {</span>
+                // JavaBeanの場合
+                // JavaBeanのプロパティの抽出は、StoredParamMetaFactoryで行う。
+<span class="fc" id="L107">                propertyMeta.setSingleValue(false);</span>
+
+                // 総称型の設定
+<span class="fc" id="L110">                doComponentType(propertyMeta, field);</span>
+            }
+
+            // パラメータ名の設定
+<span class="fc" id="L114">            Optional&lt;String&gt; paramName = propertyMeta.getAnnotation(ResultSet.class).map(a -&gt; a.name());</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">            propertyMeta.setParamName(paramName.map(p -&gt; StringUtils.hasLength(p) ? p : namingRule.propertyToStoredParam(propertyMeta.getName()))</span>
+<span class="pc" id="L116">                    .orElseGet(() -&gt; namingRule.propertyToStoredParam(propertyMeta.getName())));</span>
+
+
+<span class="fc" id="L119">        } else {</span>
+            // ResultSetのネストしたプロパティの場合
+<span class="nc" id="L121">            ValueType&lt;?&gt; valueType = valueTypeRegistry.findValueType(propertyMeta);</span>
+<span class="nc" id="L122">            propertyMeta.setValueType(valueType);</span>
+<span class="nc" id="L123">            propertyMeta.setSingleValue(true);</span>
+
+            // パラメータ名の設定
+<span class="nc" id="L126">            Optional&lt;String&gt; paramName = propertyMeta.getAnnotation(Column.class).map(a -&gt; a.name());</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">            propertyMeta.setParamName(paramName.map(p -&gt; StringUtils.hasLength(p) ? p : namingRule.propertyToColumn(propertyMeta.getName()))</span>
+<span class="nc" id="L128">                    .orElseGet(() -&gt; namingRule.propertyToColumn(propertyMeta.getName())));</span>
+
+        }
+
+<span class="fc" id="L132">        return propertyMeta;</span>
+
+    }
+
+    /**
+     * プロパティのメタ情報に対する処理を実行します。
+     * @param propertyMeta プロパティのメタ情報
+     * @param field フィールド情報
+     */
+    private void doField(final StoredPropertyMeta propertyMeta, final Field field) {
+
+<span class="fc" id="L143">        propertyMeta.setField(field);</span>
+
+<span class="fc" id="L145">        final Annotation[] annos = field.getAnnotations();</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        for(Annotation anno : annos) {</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">            if(!isSupportedAnnotation(anno)) {</span>
+<span class="nc" id="L148">                continue;</span>
+            }
+
+<span class="fc" id="L151">            final Class&lt;? extends Annotation&gt; annoClass = anno.annotationType();</span>
+<span class="fc" id="L152">            propertyMeta.addAnnotation(annoClass, anno);</span>
+        }
+<span class="fc" id="L154">    }</span>
+
+    /**
+     * サポートするアノテーションか判定する。
+     * &lt;p&gt;確実に重複するJava標準のアノテーションは除外するようにします。&lt;/p&gt;
+     *
+     * @param anno 判定対象のアノテーション
+     * @return tureのときサポートします。
+     */
+    private boolean isSupportedAnnotation(final Annotation anno) {
+
+<span class="fc" id="L165">        final String name = anno.annotationType().getName();</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">        if(name.startsWith(&quot;java.lang.annotation.&quot;)) {</span>
+<span class="nc" id="L167">            return false;</span>
+        }
+
+<span class="fc" id="L170">        return true;</span>
+    }
+
+    /**
+     * setterメソッドの情報を処理する。
+     * @param propertyMeta プロパティのメタ情報
+     * @param method setterメソッド
+     */
+    private void doSetterMethod(final StoredPropertyMeta propertyMeta, final Method method) {
+
+<span class="fc" id="L180">        final String methodName = method.getName();</span>
+<span class="fc" id="L181">        final String propertyName = NameUtils.uncapitalize(methodName.substring(3));</span>
+
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        if(!propertyMeta.getName().equals(propertyName)) {</span>
+            // プロパティ名が一致しない場合はスキップする
+<span class="fc" id="L185">            return;</span>
+        }
+
+<span class="fc" id="L188">        propertyMeta.setWriteMethod(method);</span>
+
+<span class="fc" id="L190">    }</span>
+
+    /**
+     * getterメソッドの情報を処理する。
+     * @param propertyMeta プロパティのメタ情報
+     * @param method getterメソッド
+     */
+    private void doGetterMethod(final StoredPropertyMeta propertyMeta, final Method method) {
+
+<span class="fc" id="L199">        final String methodName = method.getName();</span>
+        final String propertyName;
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">        if(methodName.startsWith(&quot;get&quot;)) {</span>
+<span class="fc" id="L202">            propertyName = NameUtils.uncapitalize(methodName.substring(3));</span>
+        } else {
+            // 「is」から始まる場合
+<span class="nc" id="L205">            propertyName = NameUtils.uncapitalize(methodName.substring(2));</span>
+        }
+
+<span class="fc bfc" id="L208" title="All 2 branches covered.">        if(!propertyMeta.getName().equals(propertyName)) {</span>
+            // プロパティ名が一致しない場合はスキップする
+<span class="fc" id="L210">            return;</span>
+        }
+
+<span class="fc" id="L213">        propertyMeta.setReadMethod(method);</span>
+
+<span class="fc" id="L215">    }</span>
+
+    /**
+     * JavaBean型の場合、総称型を設定します。
+     * @param propertyMeta プロパティのメタ情報
+     * @param field フィールド情報
+     */
+    private void doComponentType(final StoredPropertyMeta propertyMeta, final Field field) {
+
+<span class="fc" id="L224">        Class&lt;?&gt; fieldType = field.getType();</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">        if(Collection.class.isAssignableFrom(fieldType)) {</span>
+<span class="fc" id="L226">            ParameterizedType type = (ParameterizedType) field.getGenericType();</span>
+<span class="fc" id="L227">            propertyMeta.setComponentType((Class&lt;?&gt;)type.getActualTypeArguments()[0]);</span>
+
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">        } else if(fieldType.isArray()) {</span>
+<span class="nc" id="L230">            propertyMeta.setComponentType(fieldType.getComponentType());</span>
+
+        }
+
+<span class="fc" id="L234">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

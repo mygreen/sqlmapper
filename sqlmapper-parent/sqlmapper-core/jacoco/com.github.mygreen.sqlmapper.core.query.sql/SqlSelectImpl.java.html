@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SqlSelectImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.query.sql</a> &gt; <span class="el_source">SqlSelectImpl.java</span></div><h1>SqlSelectImpl.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.query.sql;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import com.github.mygreen.splate.SqlTemplate;
+import com.github.mygreen.splate.SqlTemplateContext;
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.event.PostSelectEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+
+import lombok.Getter;
+import lombok.NonNull;
+
+/**
+ * SQLテンプレートによる抽出を行うクエリの実装です。
+ *
+ * @author T.TSUCHIE
+ *
+ * @param &lt;T&gt; 処理対象のエンティティの型
+ */
+public class SqlSelectImpl&lt;T&gt; implements SqlSelect&lt;T&gt; {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
+
+    /**
+     * SQLテンプレートです。
+     */
+    @Getter
+    private final SqlTemplate template;
+
+    /**
+     * SQLテンプレートのパラメータです。
+     */
+    @Getter
+    private final SqlTemplateContext parameter;
+
+    @Getter
+    private final Class&lt;T&gt; baseClass;
+
+    @Getter
+    private final EntityMeta entityMeta;
+
+    @Getter
+    private Integer queryTimeout;
+
+    @Getter
+    private Integer fetchSize;
+
+    @Getter
+    private Integer maxRows;
+
+    /**
+     * 取得するレコード数の上限値です。
+     * &lt;p&gt;負の値の時は無視します。
+     */
+<span class="fc" id="L62">    @Getter</span>
+    private int limit = -1;
+
+    /**
+     * 取得するレコード数の開始位置です。
+     * &lt;p&gt;負の値の時は無視します。
+     */
+<span class="fc" id="L69">    @Getter</span>
+    private int offset = -1;
+
+<span class="pc bpc" id="L72" title="2 of 4 branches missed.">    public SqlSelectImpl(@NonNull SqlMapperContext context, @NonNull Class&lt;T&gt; baseClass,</span>
+<span class="pc bpc" id="L73" title="2 of 4 branches missed.">            @NonNull SqlTemplate template, @NonNull SqlTemplateContext parameter) {</span>
+
+<span class="fc" id="L75">        this.context = context;</span>
+<span class="fc" id="L76">        this.template = template;</span>
+<span class="fc" id="L77">        this.parameter = parameter;</span>
+
+<span class="fc" id="L79">        this.baseClass = baseClass;</span>
+<span class="fc" id="L80">        this.entityMeta = context.getEntityMetaFactory().create(baseClass);</span>
+<span class="fc" id="L81">    }</span>
+
+    @Override
+    public SqlSelectImpl&lt;T&gt; queryTimeout(int seconds) {
+<span class="nc" id="L85">        this.queryTimeout = seconds;</span>
+<span class="nc" id="L86">        return this;</span>
+    }
+
+    @Override
+    public SqlSelectImpl&lt;T&gt; fetchSize(int fetchSize) {
+<span class="nc" id="L91">        this.fetchSize = fetchSize;</span>
+<span class="nc" id="L92">        return this;</span>
+    }
+
+    @Override
+    public SqlSelectImpl&lt;T&gt; maxRows(int maxRows) {
+<span class="nc" id="L97">        this.maxRows = maxRows;</span>
+<span class="nc" id="L98">        return this;</span>
+    }
+
+    @Override
+    public SqlSelectImpl&lt;T&gt; limit(int limit) {
+<span class="fc" id="L103">        this.limit = limit;</span>
+<span class="fc" id="L104">        return this;</span>
+    }
+
+    @Override
+    public SqlSelectImpl&lt;T&gt; offset(int offset) {
+<span class="fc" id="L109">        this.offset = offset;</span>
+<span class="fc" id="L110">        return this;</span>
+    }
+
+    @Override
+    public T getSingleResult() {
+<span class="fc" id="L115">        return new SqlSelectExecutor&lt;&gt;(this)</span>
+<span class="fc" id="L116">                .getSingleResult(entity -&gt; {</span>
+<span class="fc" id="L117">                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelectImpl.this, entityMeta, entity));</span>
+<span class="fc" id="L118">                });</span>
+    }
+
+    @Override
+    public Optional&lt;T&gt; getOptionalResult() {
+<span class="fc" id="L123">        return new SqlSelectExecutor&lt;&gt;(this)</span>
+<span class="fc" id="L124">                .getOptionalResult(entity -&gt; {</span>
+<span class="fc" id="L125">                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelectImpl.this, entityMeta, entity));</span>
+<span class="fc" id="L126">                });</span>
+    }
+
+    @Override
+    public List&lt;T&gt; getResultList() {
+<span class="fc" id="L131">        return new SqlSelectExecutor&lt;&gt;(this)</span>
+<span class="fc" id="L132">                .getResultList(entity -&gt; {</span>
+<span class="fc" id="L133">                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelectImpl.this, entityMeta, entity));</span>
+<span class="fc" id="L134">                });</span>
+    }
+
+    @Override
+    public Stream&lt;T&gt; getResultStream() {
+<span class="fc" id="L139">        return new SqlSelectExecutor&lt;&gt;(this)</span>
+<span class="fc" id="L140">                .getResultStream(entity -&gt; {</span>
+<span class="fc" id="L141">                    context.getApplicationEventPublisher().publishEvent(new PostSelectEvent(SqlSelectImpl.this, entityMeta, entity));</span>
+<span class="fc" id="L142">                });</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

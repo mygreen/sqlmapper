@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>ComparisionOpHandler.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.where.metamodel</a> &gt; <span class="el_source">ComparisionOpHandler.java</span></div><h1>ComparisionOpHandler.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.where.metamodel;
+
+import com.github.mygreen.sqlmapper.metamodel.Path;
+import com.github.mygreen.sqlmapper.metamodel.Visitor;
+import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
+import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
+import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
+import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
+
+/**
+ * 比較演算子({@link ComparisionOp})に対する処理を定義します。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L17">public class ComparisionOpHandler extends OperationHandler&lt;ComparisionOp&gt; {</span>
+
+    @Override
+    protected void init() {
+        // 比較演算子 - General
+<span class="fc" id="L22">        addTemplate(ComparisionOp.EQ, &quot;{0} = {1}&quot;);</span>
+<span class="fc" id="L23">        addTemplate(ComparisionOp.NE, &quot;{0} &lt;&gt; {1}&quot;);</span>
+<span class="fc" id="L24">        addTemplate(ComparisionOp.IN, &quot;{0} in {1}&quot;);</span>
+<span class="fc" id="L25">        addTemplate(ComparisionOp.NOT_IN, &quot;{0} not in {1}&quot;);</span>
+<span class="fc" id="L26">        addTemplate(ComparisionOp.BETWEEN, &quot;{0} between {1} and {2}&quot;);</span>
+<span class="fc" id="L27">        addTemplate(ComparisionOp.GOE, &quot;{0} &gt;= {1}&quot;);</span>
+<span class="fc" id="L28">        addTemplate(ComparisionOp.GT, &quot;{0} &gt; {1}&quot;);</span>
+<span class="fc" id="L29">        addTemplate(ComparisionOp.LOE, &quot;{0} &lt;= {1}&quot;);</span>
+<span class="fc" id="L30">        addTemplate(ComparisionOp.LT, &quot;{0} &lt; {1}&quot;);</span>
+<span class="fc" id="L31">    }</span>
+
+    @Override
+    public void handle(ComparisionOp operator, Operation&lt;?&gt; expr, Visitor&lt;VisitorContext&gt; visitor, VisitorContext context) {
+
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if(operator == ComparisionOp.BETWEEN) {</span>
+<span class="fc" id="L37">            handleBetween(operator, expr, visitor, context);</span>
+<span class="fc" id="L38">            return;</span>
+        }
+
+<span class="fc" id="L41">        Expression&lt;?&gt; left = expr.getArg(0);</span>
+<span class="fc" id="L42">        Expression&lt;?&gt; right = expr.getArg(1);</span>
+
+<span class="fc" id="L44">        VisitorContext leftContext = new VisitorContext(context);</span>
+<span class="fc" id="L45">        VisitorContext rightContext = new VisitorContext(context);</span>
+
+        // 左辺の評価
+<span class="fc" id="L48">        invoke(operator, left, visitor, leftContext);</span>
+
+        /*
+         * 比較演算子の場合、左変=プロパティパス、右辺=定数で構成される場合、
+         * 定数をプロパティの変換規則に従い変換する。
+         */
+<span class="fc bfc" id="L54" title="All 4 branches covered.">        if(isPropertyPath(left) &amp;&amp; right instanceof Constant) {</span>
+<span class="fc" id="L55">            visitConstantWithPropertyPath((Path&lt;?&gt;)left, (Constant&lt;?&gt;)right, rightContext);</span>
+        } else {
+<span class="fc" id="L57">            invoke(operator, right, visitor, rightContext);</span>
+        }
+
+        // 評価した結果を親のコンテキストに追加する
+<span class="fc" id="L61">        String sql = formatWithTemplate(operator, leftContext.getCriteria(), rightContext.getCriteria());</span>
+<span class="fc" id="L62">        context.appendSql(sql);</span>
+
+<span class="fc" id="L64">        context.addParamValues(leftContext.getParamValues());</span>
+<span class="fc" id="L65">        context.addParamValues(rightContext.getParamValues());</span>
+
+<span class="fc" id="L67">    }</span>
+
+    private void handleBetween(ComparisionOp operator, Operation&lt;?&gt; expr, Visitor&lt;VisitorContext&gt; visitor, VisitorContext context) {
+
+<span class="fc" id="L71">        Expression&lt;?&gt; left = expr.getArg(0);</span>
+<span class="fc" id="L72">        Expression&lt;?&gt; right1 = expr.getArg(1);</span>
+<span class="fc" id="L73">        Expression&lt;?&gt; right2 = expr.getArg(2);</span>
+
+<span class="fc" id="L75">        VisitorContext leftContext = new VisitorContext(context);</span>
+<span class="fc" id="L76">        VisitorContext rightContext1 = new VisitorContext(context);</span>
+<span class="fc" id="L77">        VisitorContext rightContext2 = new VisitorContext(context);</span>
+
+        // 左辺の評価
+<span class="fc" id="L80">        invoke(operator, left, visitor, leftContext);</span>
+
+        /*
+         * 比較演算子の場合、左変=プロパティパス、右辺=定数で構成される場合、
+         * 定数をプロパティの変換規則に従い変換する。
+         */
+<span class="pc bpc" id="L86" title="1 of 4 branches missed.">        if(isPropertyPath(left) &amp;&amp; right1 instanceof Constant) {</span>
+<span class="fc" id="L87">            visitConstantWithPropertyPath((Path&lt;?&gt;)left, (Constant&lt;?&gt;)right1, rightContext1);</span>
+        } else {
+<span class="fc" id="L89">            invoke(operator, right1, visitor, rightContext1);</span>
+        }
+
+<span class="pc bpc" id="L92" title="1 of 4 branches missed.">        if(isPropertyPath(left) &amp;&amp; right2 instanceof Constant) {</span>
+<span class="fc" id="L93">            visitConstantWithPropertyPath((Path&lt;?&gt;)left, (Constant&lt;?&gt;)right2, rightContext2);</span>
+        } else {
+<span class="fc" id="L95">            invoke(operator, right2, visitor, rightContext2);</span>
+        }
+
+        // 評価した結果を親のコンテキストに追加する
+<span class="fc" id="L99">        String sql = formatWithTemplate(operator, leftContext.getCriteria(), rightContext1.getCriteria(), rightContext2.getCriteria());</span>
+<span class="fc" id="L100">        context.appendSql(sql);</span>
+
+<span class="fc" id="L102">        context.addParamValues(leftContext.getParamValues());</span>
+<span class="fc" id="L103">        context.addParamValues(rightContext1.getParamValues());</span>
+<span class="fc" id="L104">        context.addParamValues(rightContext2.getParamValues());</span>
+
+<span class="fc" id="L106">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AutoBatchInsertImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.query.auto</a> &gt; <span class="el_source">AutoBatchInsertImpl.java</span></div><h1>AutoBatchInsertImpl.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.query.auto;
+
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import com.github.mygreen.sqlmapper.core.SqlMapperContext;
+import com.github.mygreen.sqlmapper.core.event.PostBatchInsertEvent;
+import com.github.mygreen.sqlmapper.core.event.PreBatchInsertEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+import com.github.mygreen.sqlmapper.core.query.IllegalOperateException;
+import com.github.mygreen.sqlmapper.metamodel.EntityPath;
+import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
+
+import lombok.Getter;
+import lombok.NonNull;
+
+/**
+ * バッチ挿入を行うSQLを自動生成するクエリの実装です。
+ * &lt;p&gt;主キーが識別子（IDENTITY）による自動生成の場合は、バッチ実行ではなく1件ずつ処理されるので注意してください。&lt;/p&gt;
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ * @param &lt;T&gt; エンティティタイプ
+ */
+public class AutoBatchInsertImpl&lt;T&gt; implements AutoBatchInsert&lt;T&gt; {
+
+    /**
+     * SqlMapperの設定情報。
+     */
+    @Getter
+    private final SqlMapperContext context;
+
+    @Getter
+    private final T[] entities;
+
+    @Getter
+    private final EntityMeta entityMeta;
+
+    @Getter
+    private Integer queryTimeout;
+
+    /**
+     * 挿入対象とするプロパティ一覧
+     */
+<span class="fc" id="L47">    @Getter</span>
+    private final Set&lt;String&gt; includesProperties = new LinkedHashSet&lt;&gt;();
+
+    /**
+     * 挿入対象から除外するプロパティ一覧
+     */
+<span class="fc" id="L53">    @Getter</span>
+    private final Set&lt;String&gt; excludesProperties = new LinkedHashSet&lt;&gt;();
+
+<span class="pc bpc" id="L56" title="2 of 4 branches missed.">    public AutoBatchInsertImpl(@NonNull SqlMapperContext context, @NonNull T[] entities) {</span>
+<span class="fc" id="L57">        this.context = context;</span>
+
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if(entities.length == 0) {</span>
+<span class="nc" id="L60">            throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.notEmptyEntity&quot;)</span>
+<span class="nc" id="L61">                    .format());</span>
+        }
+
+<span class="fc" id="L64">        this.entities = entities;</span>
+<span class="fc" id="L65">        this.entityMeta = context.getEntityMetaFactory().create(entities[0].getClass());;</span>
+<span class="fc" id="L66">    }</span>
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+<span class="pc bpc" id="L69" title="2 of 4 branches missed.">    public AutoBatchInsertImpl(@NonNull SqlMapperContext context, @NonNull Collection&lt;T&gt; entities) {</span>
+<span class="fc" id="L70">        this(context, (T[])entities.toArray());</span>
+<span class="fc" id="L71">    }</span>
+
+    /**
+     * インデックスを指定して処理対象のエンティティを取得します。
+     * @param index インデックス
+     * @return エンティティ
+     */
+    public T getEntity(final int index) {
+<span class="fc" id="L79">        return entities[index];</span>
+    }
+
+    /**
+     * 処理対象のエンティティの個数を取得します。
+     * @return エンティティの個数
+     */
+    public int getEntitySize() {
+<span class="fc" id="L87">        return entities.length;</span>
+    }
+
+    @Override
+    public AutoBatchInsertImpl&lt;T&gt; queryTimeout(int seconds) {
+<span class="nc" id="L92">        this.queryTimeout = seconds;</span>
+<span class="nc" id="L93">        return this;</span>
+    }
+
+    @Override
+    public AutoBatchInsertImpl&lt;T&gt; includes(final PropertyPath&lt;?&gt;... properties) {
+
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
+<span class="fc" id="L100">            String propertyName = prop.getPathMeta().getElement();</span>
+
+            // 挿入対象のプロパティの親のチェック
+<span class="fc" id="L103">            EntityPath&lt;?&gt; parentPath = (EntityPath&lt;?&gt;)prop.getPathMeta().getParent();</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">            if(!entityMeta.getEntityType().equals(parentPath.getType())) {</span>
+<span class="nc" id="L105">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noIncludeProperty&quot;)</span>
+<span class="nc" id="L106">                        .paramWithClass(&quot;classType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L107">                        .param(&quot;properyName&quot;, propertyName)</span>
+<span class="nc" id="L108">                        .format());</span>
+            }
+
+<span class="fc" id="L111">            this.includesProperties.add(propertyName);</span>
+        }
+
+<span class="fc" id="L114">        return this;</span>
+
+    }
+
+    @Override
+    public AutoBatchInsertImpl&lt;T&gt; excludes(final PropertyPath&lt;?&gt;... properties) {
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        for(PropertyPath&lt;?&gt; prop : properties) {</span>
+<span class="fc" id="L122">            String propertyName = prop.getPathMeta().getElement();</span>
+
+            // 除外対象のプロパティの親のチェック
+<span class="fc" id="L125">            EntityPath&lt;?&gt; parentPath = (EntityPath&lt;?&gt;)prop.getPathMeta().getParent();</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">            if(!entityMeta.getEntityType().equals(parentPath.getType())) {</span>
+<span class="nc" id="L127">                throw new IllegalOperateException(context.getMessageFormatter().create(&quot;query.noIncludeProperty&quot;)</span>
+<span class="nc" id="L128">                        .paramWithClass(&quot;classType&quot;, entityMeta.getEntityType())</span>
+<span class="nc" id="L129">                        .param(&quot;properyName&quot;, propertyName)</span>
+<span class="nc" id="L130">                        .format());</span>
+
+            }
+
+<span class="fc" id="L134">            this.excludesProperties.add(propertyName);</span>
+        }
+
+<span class="fc" id="L137">        return this;</span>
+
+    }
+
+    @Override
+    public int[] execute() {
+
+<span class="fc" id="L144">        context.getApplicationEventPublisher().publishEvent(new PreBatchInsertEvent(this, entityMeta, entities));</span>
+
+<span class="fc" id="L146">        final int[] result = new AutoBatchInsertExecutor(this)</span>
+<span class="fc" id="L147">                .execute();</span>
+
+<span class="fc" id="L149">        context.getApplicationEventPublisher().publishEvent(new PostBatchInsertEvent(this, entityMeta, entities));</span>
+<span class="fc" id="L150">        return result;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

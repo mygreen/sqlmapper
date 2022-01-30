@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SqliteDialect.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.dialect</a> &gt; <span class="el_source">SqliteDialect.java</span></div><h1>SqliteDialect.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.dialect;
+
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
+
+import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.core.where.metamodel.FuncOpHandler;
+import com.github.mygreen.sqlmapper.core.where.metamodel.function.OperatorConcatFunction;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
+
+/**
+ * SQLiteの方言の定義。
+ *
+ * @version 0.3
+ * @author T.TSUCHIE
+ *
+ */
+public class SqliteDialect extends DialectBase {
+
+<span class="fc" id="L21">    public SqliteDialect() {</span>
+
+        // SQL関数のカスタマイズ
+<span class="fc" id="L24">        FuncOpHandler funcHandler = new FuncOpHandler();</span>
+<span class="fc" id="L25">        funcHandler.register(FunctionOp.CONCAT, new OperatorConcatFunction());</span>
+<span class="fc" id="L26">        register(FunctionOp.class, funcHandler);</span>
+<span class="fc" id="L27">    }</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@literal &quot;sqlite&quot;} を返します。
+     */
+    @Override
+    public String getName() {
+<span class="fc" id="L36">        return &quot;sqlite&quot;;</span>
+    }
+
+   /**
+    * {@inheritDoc}
+    *
+    * @return
+    * &lt;ul&gt;
+    *  &lt;li&gt;{@link GenerationType#IDENTITY} : {@literal true}&lt;/li&gt;
+    *  &lt;li&gt;{@link GenerationType#SEQUENCE} : {@literal false}&lt;/li&gt;
+    *  &lt;li&gt;{@link GenerationType#TABLE} : {@literal true}&lt;/li&gt;
+     *  &lt;li&gt;{@link GenerationType#UUID} : {@literal true}&lt;/li&gt;
+    * &lt;/ul&gt;
+    */
+   @Override
+   public boolean supportsGenerationType(GenerationType generationType) {
+<span class="pc bpc" id="L52" title="1 of 5 branches missed.">       switch(generationType) {</span>
+           case IDENTITY:
+<span class="fc" id="L54">               return true;</span>
+           case SEQUENCE:
+<span class="fc" id="L56">               return false;</span>
+           case TABLE:
+<span class="fc" id="L58">               return true;</span>
+           case UUID:
+<span class="fc" id="L60">               return true;</span>
+           default:
+<span class="nc" id="L62">               return false;</span>
+       }
+   }
+
+    @Override
+    public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
+        // シーケンスはサポートしない
+<span class="fc" id="L69">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

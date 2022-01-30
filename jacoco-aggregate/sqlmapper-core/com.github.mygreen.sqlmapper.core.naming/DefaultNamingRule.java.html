@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>DefaultNamingRule.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.naming</a> &gt; <span class="el_source">DefaultNamingRule.java</span></div><h1>DefaultNamingRule.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.naming;
+
+
+/**
+ * {@link NamingRule}の標準実装。
+ * &lt;p&gt;エンティティのクラス名、プロパティ名をキャメルケースから、DBのテーブル名、カラム名としてスネークケースに変換する。&lt;/p&gt;
+ * &lt;p&gt;大文字に変換する。&lt;/p&gt;
+ *
+ * @version 0.3.2
+ * @since 0.3
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L14">public class DefaultNamingRule implements NamingRule {</span>
+
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;大文字のスネークケース変換します。({@literal SampleCustomer} {@literal =&gt;} {@literal SAMPLE_CUSTOMER})
+     */
+    @Override
+    public String entityToTable(final String entityName) {
+
+        // パッケージ名の除去
+<span class="fc" id="L24">        String simpleName = entityName;</span>
+<span class="fc" id="L25">        int index = simpleName.lastIndexOf('.');</span>
+
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if(index &gt;= 0){</span>
+<span class="fc" id="L28">            simpleName = simpleName.substring(index + 1);</span>
+        }
+
+        // 内部クラスの場合、クラス名を排除する。
+<span class="fc" id="L32">        index = simpleName.lastIndexOf('$');</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">        if(index &gt;= 0){</span>
+<span class="fc" id="L34">            simpleName = simpleName.substring(index + 1);</span>
+        }
+
+<span class="fc" id="L37">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        for(int i=0; i &lt; simpleName.length(); i++) {</span>
+<span class="fc" id="L40">            char c = simpleName.charAt(i);</span>
+
+<span class="fc bfc" id="L42" title="All 6 branches covered.">            if('A' &lt;= c &amp;&amp; c &lt;= 'Z' &amp;&amp; sb.length() &gt; 0) {</span>
+                // 先頭以外が大文字の場合
+<span class="fc" id="L44">                sb.append('_');</span>
+            }
+<span class="fc" id="L46">            sb.append(String.valueOf(c).toUpperCase());</span>
+        }
+
+<span class="fc" id="L49">        return sb.toString();</span>
+
+    }
+
+//    @Override
+//    public String tableToEntity(final String tableName) {
+//
+//        StringBuilder sb = new StringBuilder();
+//
+//        // TODO 自動生成されたメソッド・スタブ
+//        return null;
+//    }
+
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;大文字のスネークケース変換します。({@literal sampleName} {@literal =&gt;} {@literal SAMPLE_NAME})
+     */
+    @Override
+    public String propertyToColumn(final String propertyName) {
+<span class="fc" id="L68">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        for(int i=0; i &lt; propertyName.length(); i++) {</span>
+<span class="fc" id="L71">            char c = propertyName.charAt(i);</span>
+<span class="fc bfc" id="L72" title="All 4 branches covered.">            if('A' &lt;= c &amp;&amp; c &lt;= 'Z') {</span>
+                // 大文字の場合
+<span class="fc" id="L74">                sb.append('_');</span>
+            }
+
+<span class="fc" id="L77">            sb.append(String.valueOf(c).toUpperCase());</span>
+        }
+
+<span class="fc" id="L80">        return sb.toString();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;スネークケースから先頭が小文字のキャメルケースに変換します。({@literal SAMPLE_NAME} {@literal =&gt;} {@literal sampleName})
+     */
+
+    @Override
+    public String columnToProperty(final String columnName) {
+<span class="fc" id="L90">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="fc" id="L92">        boolean uppercase = false;</span>
+
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        for(int i=0; i &lt; columnName.length(); i++){</span>
+<span class="fc" id="L95">            char c = columnName.charAt(i);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">            if(c == '_'){</span>
+                // 先頭がアンダースコアで始まる場合
+<span class="fc" id="L98">                uppercase = true;</span>
+
+            } else {
+<span class="fc bfc" id="L101" title="All 2 branches covered.">                if(uppercase){</span>
+<span class="fc" id="L102">                    sb.append(String.valueOf(c).toUpperCase());</span>
+<span class="fc" id="L103">                    uppercase = false;</span>
+                } else {
+<span class="fc" id="L105">                    sb.append(String.valueOf(c).toLowerCase());</span>
+                }
+            }
+        }
+
+<span class="fc" id="L110">        return sb.toString();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;小文字のスネークケース変換します。({@literal sampleName} {@literal =&gt;} {@literal SAMPLE_NAME})
+     */
+    @Override
+    public String propertyToStoredParam(final String propertyName) {
+<span class="fc" id="L119">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        for(int i=0; i &lt; propertyName.length(); i++) {</span>
+<span class="fc" id="L122">            char c = propertyName.charAt(i);</span>
+<span class="fc bfc" id="L123" title="All 4 branches covered.">            if('A' &lt;= c &amp;&amp; c &lt;= 'Z') {</span>
+                // 大文字の場合
+<span class="fc" id="L125">                sb.append('_');</span>
+            }
+
+<span class="fc" id="L128">            sb.append(String.valueOf(c).toLowerCase());</span>
+        }
+
+<span class="fc" id="L131">        return sb.toString();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;大文字に変換したテーブル名とカラム名を結合します。({@literal SAMPLE_CUSTOMER}, {@literal sample_name} {@literal =&gt;} {@literal SAMPLE_CUSTOMER_SAMPLE_NAME})
+     */
+    @Override
+    public String sequenceNameForTableGenerator(final String tableName, final String columnName) {
+<span class="fc" id="L140">        return tableName.toUpperCase() + &quot;_&quot; + columnName.toUpperCase();</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;大文字に変換したテーブル名とカラム名を結合し、接尾語({@literal SEQ}) を付与します。 ({@literal SAMPLE_CUSTOMER}, {@literal sample_name} {@literal =&gt;} {@literal SAMPLE_CUSTOMER_SAMPLE_NAME})
+     */
+    @Override
+    public String sequenceNameForSequenceGenerator(String tableName, String columnName) {
+<span class="fc" id="L149">        return tableName.toUpperCase() + &quot;_&quot; + columnName.toUpperCase() + &quot;_SEQ&quot;;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

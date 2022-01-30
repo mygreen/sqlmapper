@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DebugVisitor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel.support</a> &gt; <span class="el_source">DebugVisitor.java</span></div><h1>DebugVisitor.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel.support;
+
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.github.mygreen.sqlmapper.metamodel.OrderSpecifier;
+import com.github.mygreen.sqlmapper.metamodel.Path;
+import com.github.mygreen.sqlmapper.metamodel.PathMeta;
+import com.github.mygreen.sqlmapper.metamodel.PathType;
+import com.github.mygreen.sqlmapper.metamodel.PropertyPath;
+import com.github.mygreen.sqlmapper.metamodel.Visitor;
+import com.github.mygreen.sqlmapper.metamodel.expression.Constant;
+import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
+import com.github.mygreen.sqlmapper.metamodel.expression.SubQueryExpression;
+import com.github.mygreen.sqlmapper.metamodel.operation.CustomFunctionOperation;
+import com.github.mygreen.sqlmapper.metamodel.operation.Operation;
+import com.github.mygreen.sqlmapper.metamodel.operation.SubQueryMeta;
+import com.github.mygreen.sqlmapper.metamodel.operator.ArithmeticOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.BooleanOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.ComparisionOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.FunctionOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.LikeOp;
+import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
+import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionParser.Token;
+import com.github.mygreen.sqlmapper.metamodel.support.SqlFunctionTokenizer.TokenType;
+
+/**
+ * 式を文字列として評価するためのデバッグ用のVisitor。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class DebugVisitor implements Visitor&lt;DebugVisitorContext&gt;{
+
+<span class="fc" id="L49">    private static final DateTimeFormatter FORMATTER_LOCAL_DATETIME = DateTimeFormatter.ofPattern(&quot;uuuu-MM-dd HH:mm:ss&quot;);</span>
+<span class="fc" id="L50">    private static final DateTimeFormatter FORMATTER_LOCAL_DATE = DateTimeFormatter.ofPattern(&quot;uuuu-MM-dd&quot;);</span>
+<span class="fc" id="L51">    private static final DateTimeFormatter FORMATTER_LOCAL_TIME = DateTimeFormatter.ofPattern(&quot;HH:mm:ss&quot;);</span>
+
+    /**
+     * 演算子に対する式テンプレートのマップ
+     */
+<span class="fc" id="L56">    private Map&lt;Operator, String&gt; operationTemplateMap = new HashMap&lt;&gt;();</span>
+
+<span class="fc" id="L58">    public DebugVisitor() {</span>
+<span class="fc" id="L59">        initOperationTemplate();</span>
+<span class="fc" id="L60">    }</span>
+
+    protected void initOperationTemplate() {
+
+        // BooleanOp
+<span class="fc" id="L65">        operationTemplateMap.put(BooleanOp.AND, &quot;{0} and {1}&quot;);</span>
+<span class="fc" id="L66">        operationTemplateMap.put(BooleanOp.OR, &quot;{0} or {1}&quot;);</span>
+
+        // UnaryOp
+<span class="fc" id="L69">        operationTemplateMap.put(UnaryOp.NOT, &quot;not {0}&quot;);</span>
+<span class="fc" id="L70">        operationTemplateMap.put(UnaryOp.IS_NULL, &quot;{0} is null&quot;);</span>
+<span class="fc" id="L71">        operationTemplateMap.put(UnaryOp.IS_NOT_NULL, &quot;{0} is not null&quot;);</span>
+<span class="fc" id="L72">        operationTemplateMap.put(UnaryOp.EXISTS, &quot;exists {0}&quot;);</span>
+<span class="fc" id="L73">        operationTemplateMap.put(UnaryOp.NOT_EXISTS, &quot;not exists {0}&quot;);</span>
+
+        // ComparisionOp
+<span class="fc" id="L76">        operationTemplateMap.put(ComparisionOp.EQ, &quot;{0} = {1}&quot;);</span>
+<span class="fc" id="L77">        operationTemplateMap.put(ComparisionOp.NE, &quot;{0} &lt;&gt; {1}&quot;);</span>
+<span class="fc" id="L78">        operationTemplateMap.put(ComparisionOp.IN, &quot;{0} in {1}&quot;);</span>
+<span class="fc" id="L79">        operationTemplateMap.put(ComparisionOp.NOT_IN, &quot;{0} not in {1}&quot;);</span>
+<span class="fc" id="L80">        operationTemplateMap.put(ComparisionOp.BETWEEN, &quot;{0} between {1} and {2}&quot;);</span>
+<span class="fc" id="L81">        operationTemplateMap.put(ComparisionOp.GOE, &quot;{0} &gt;= {1}&quot;);</span>
+<span class="fc" id="L82">        operationTemplateMap.put(ComparisionOp.GT, &quot;{0} &gt; {1}&quot;);</span>
+<span class="fc" id="L83">        operationTemplateMap.put(ComparisionOp.LOE, &quot;{0} &lt;= {1}&quot;);</span>
+<span class="fc" id="L84">        operationTemplateMap.put(ComparisionOp.LT, &quot;{0} &lt; {1}&quot;);</span>
+
+        // ArithmeticOp
+<span class="fc" id="L87">        operationTemplateMap.put(ArithmeticOp.MULT, &quot;{0} * {1}&quot;);</span>
+<span class="fc" id="L88">        operationTemplateMap.put(ArithmeticOp.DIV, &quot;{0} / {1}&quot;);</span>
+<span class="fc" id="L89">        operationTemplateMap.put(ArithmeticOp.MOD, &quot;mod({0}, {1})&quot;);</span>
+<span class="fc" id="L90">        operationTemplateMap.put(ArithmeticOp.ADD, &quot;{0} + {1}&quot;);</span>
+<span class="fc" id="L91">        operationTemplateMap.put(ArithmeticOp.SUB, &quot;{0} - {1}&quot;);</span>
+
+        // FunctionOp
+<span class="fc" id="L94">        operationTemplateMap.put(FunctionOp.LOWER, &quot;lower({0})&quot;);</span>
+<span class="fc" id="L95">        operationTemplateMap.put(FunctionOp.UPPER, &quot;upper({0})&quot;);</span>
+<span class="fc" id="L96">        operationTemplateMap.put(FunctionOp.CONCAT, &quot;concat({0}, {1})&quot;);</span>
+//        operationTemplateMap.put(FunctionOp.CURRENT_DATE, &quot;current_date&quot;);
+//        operationTemplateMap.put(FunctionOp.CURRENT_TIME, &quot;current_time&quot;);
+//        operationTemplateMap.put(FunctionOp.CURRENT_TIMESTAMP, &quot;current_timestamp&quot;);
+//        operationTemplateMap.put(FunctionOp.CUSTOM, &quot;custom()&quot;);
+
+        // LikeOp
+<span class="fc" id="L103">        operationTemplateMap.put(LikeOp.LIKE, &quot;{0} like {1}&quot;);</span>
+        // 関数として扱う
+<span class="fc" id="L105">        operationTemplateMap.put(LikeOp.CONTAINS, &quot;contains({0}, {1})&quot;);</span>
+<span class="fc" id="L106">        operationTemplateMap.put(LikeOp.STARTS, &quot;starts({0}, {1})&quot;);</span>
+<span class="fc" id="L107">        operationTemplateMap.put(LikeOp.ENDS, &quot;ends({0}, {1})&quot;);</span>
+
+<span class="fc" id="L109">    }</span>
+
+    @Override
+    public void visit(final Operation&lt;?&gt; expr, final DebugVisitorContext context) {
+
+<span class="fc" id="L114">        final Operator operator = expr.getOperator();</span>
+<span class="fc" id="L115">        final String template = operationTemplateMap.get(operator);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        if(template != null) {</span>
+            // 引数を評価します。
+<span class="fc" id="L118">            List&lt;Object&gt; evals = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">            for(Expression&lt;?&gt; arg : expr.getArgs()) {</span>
+<span class="fc" id="L120">                DebugVisitorContext argContext =  new DebugVisitorContext();</span>
+<span class="fc" id="L121">                invoke(operator, arg, argContext);</span>
+<span class="fc" id="L122">                evals.add(argContext.getCriteria());</span>
+<span class="fc" id="L123">            }</span>
+
+<span class="fc" id="L125">            String formatExpr = MessageFormat.format(template, evals.toArray(new Object[evals.size()]));</span>
+<span class="fc" id="L126">            context.append(formatExpr);</span>
+
+<span class="pc bpc" id="L128" title="2 of 6 branches missed.">        } else if(operator == FunctionOp.CURRENT_DATE</span>
+                || operator == FunctionOp.CURRENT_TIME
+                || operator == FunctionOp.CURRENT_TIMESTAMP) {
+<span class="fc" id="L131">            context.append(operator.name().toLowerCase());</span>
+            // 精度が存在するとき評価する
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">            if(!expr.getArgs().isEmpty()) {</span>
+<span class="nc" id="L134">                context.append(&quot;(&quot;);</span>
+<span class="nc" id="L135">                invoke(operator, expr.getArg(0), context);</span>
+<span class="nc" id="L136">                context.append(&quot;)&quot;);</span>
+
+            }
+
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">        } else if(operator == FunctionOp.CUSTOM) {</span>
+
+            // 左辺の評価
+<span class="fc" id="L143">            Expression&lt;?&gt; left = expr.getArg(0);</span>
+<span class="fc" id="L144">            DebugVisitorContext leftContext = new DebugVisitorContext();</span>
+<span class="fc" id="L145">            invoke(operator, left, leftContext);</span>
+
+            // トークンを置換していく
+<span class="fc" id="L148">            CustomFunctionOperation op = (CustomFunctionOperation) expr.getArg(1);</span>
+            @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L150">            List&lt;Token&gt; tokens = op.getTokens();</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">            for(Token token : tokens) {</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">                if(token.type == TokenType.SQL) {</span>
+<span class="fc" id="L153">                    context.append(token.value);</span>
+
+<span class="fc bfc" id="L155" title="All 2 branches covered.">                } else if(token.type == TokenType.LEFT_VARIABLE) {</span>
+<span class="fc" id="L156">                    context.append(leftContext.getCriteria());</span>
+
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">                } else if(token.type == TokenType.BIND_VARIABLE) {</span>
+<span class="fc" id="L159">                    int varIndex = token.bindBariableIndex;</span>
+<span class="fc" id="L160">                    Expression&lt;?&gt; arg = op.getArg(varIndex);</span>
+
+<span class="fc" id="L162">                    DebugVisitorContext argContext = new DebugVisitorContext();</span>
+<span class="fc" id="L163">                    invoke(operator, arg, argContext);</span>
+
+<span class="fc" id="L165">                    context.append(argContext.getCriteria());</span>
+
+                } else {
+                    // unknown token
+                }
+
+<span class="fc" id="L171">            }</span>
+
+        }
+<span class="fc" id="L174">    }</span>
+
+    @Override
+    public void visit(final Constant&lt;?&gt; expr, final DebugVisitorContext context) {
+
+<span class="fc" id="L179">        final Object constant = expr.getValue();</span>
+
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">        if(constant == null) {</span>
+<span class="nc" id="L182">            context.append(&quot;null&quot;);</span>
+
+<span class="fc bfc" id="L184" title="All 2 branches covered.">        } else if(expr.isExpandable()) {</span>
+<span class="fc" id="L185">            context.append(&quot;(&quot;);</span>
+<span class="fc" id="L186">            StringBuilder joined = new StringBuilder();</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">            for(Object value : (Collection&lt;?&gt;)constant) {</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">                if(joined.length() &gt; 0) {</span>
+<span class="fc" id="L189">                    joined.append(&quot;, &quot;);</span>
+                }
+<span class="fc" id="L191">                joined.append(formatConstantValue(value));</span>
+<span class="fc" id="L192">            }</span>
+<span class="fc" id="L193">            context.append(joined.toString())</span>
+<span class="fc" id="L194">                .append(&quot;)&quot;);</span>
+
+<span class="fc" id="L196">        } else {</span>
+<span class="fc" id="L197">            context.append(formatConstantValue(constant));</span>
+        }
+
+<span class="fc" id="L200">    }</span>
+
+    /**
+     * 定数の値をフォーマットします。
+     * @param value フォーマット対象の値
+     * @return フォーマットした値
+     */
+    private String formatConstantValue(final Object value) {
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">        if(value == null) {</span>
+<span class="nc" id="L209">            return &quot;null&quot;;</span>
+        }
+
+<span class="fc bfc" id="L212" title="All 2 branches covered.">        if(value instanceof CharSequence) {</span>
+<span class="fc" id="L213">            return &quot;'&quot; + value.toString() + &quot;'&quot;;</span>
+
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">        } else if(value instanceof Date) {</span>
+<span class="nc" id="L216">            return new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;).format(value);</span>
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        } else if(value instanceof java.sql.Date) {</span>
+<span class="nc" id="L218">            return new SimpleDateFormat(&quot;yyyy-MM-dd&quot;).format(value);</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">        } else if(value instanceof Time) {</span>
+<span class="nc" id="L220">            return new SimpleDateFormat(&quot;HH:mm:ss&quot;).format(value);</span>
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">        } else if(value instanceof Timestamp) {</span>
+<span class="nc" id="L222">            return new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss.SSS&quot;).format(value);</span>
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">        } else if(value instanceof LocalDateTime) {</span>
+<span class="nc" id="L224">            return FORMATTER_LOCAL_DATETIME.format((LocalDateTime)value);</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">        } else if(value instanceof LocalDate) {</span>
+<span class="fc" id="L226">            return FORMATTER_LOCAL_DATE.format((LocalDate)value);</span>
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        } else if(value instanceof LocalTime) {</span>
+<span class="nc" id="L228">            return FORMATTER_LOCAL_TIME.format((LocalTime)value);</span>
+        }
+
+<span class="fc" id="L231">        return value.toString();</span>
+    }
+
+    @Override
+    public void visit(final Path&lt;?&gt; expr, final DebugVisitorContext context) {
+
+<span class="fc" id="L237">        PathMeta pathMeta = expr.getPathMeta();</span>
+<span class="fc" id="L238">        String pathName = pathMeta.getElement();</span>
+<span class="fc" id="L239">        Path&lt;?&gt; parent = null;</span>
+
+        // 親をたどりパス名を追加していく。
+        // &lt;親のパス&gt;.&lt;子のパス&gt;
+        do {
+<span class="fc" id="L244">            parent = pathMeta.getParent();</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">            if(parent == null) {</span>
+<span class="nc" id="L246">                break;</span>
+            }
+<span class="fc" id="L248">            pathMeta = parent.getPathMeta();</span>
+            // 親の名前を先頭に追加していく。
+<span class="fc" id="L250">            pathName = pathMeta.getElement() + &quot;.&quot; + pathName;</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">        } while(parent.getPathMeta().getType() != PathType.ROOT);</span>
+
+<span class="fc" id="L253">        context.append(pathName);</span>
+
+<span class="fc" id="L255">    }</span>
+
+    @Override
+    public void visit(final SubQueryExpression&lt;?&gt; expr, final DebugVisitorContext context) {
+
+<span class="nc" id="L260">        final SubQueryMeta queryMeta = expr.getQueryMeta();</span>
+
+<span class="nc" id="L262">        context.append(&quot;select&quot;);</span>
+
+        // 抽出カラムの組み立て
+<span class="nc bnc" id="L265" title="All 2 branches missed.">        if(!queryMeta.getIncludesProperties().isEmpty()) {</span>
+<span class="nc" id="L266">            StringBuilder columnQuery = new StringBuilder();</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">            for(PropertyPath&lt;?&gt; propertyPath : queryMeta.getIncludesProperties()) {</span>
+<span class="nc bnc" id="L268" title="All 2 branches missed.">                if(columnQuery.length() &gt; 0) {</span>
+<span class="nc" id="L269">                    columnQuery.append(&quot;, &quot;);</span>
+                }
+
+                // プロパティのパスの評価
+<span class="nc" id="L273">                DebugVisitorContext propertyPathContext = new DebugVisitorContext();</span>
+<span class="nc" id="L274">                propertyPath.accept(this, propertyPathContext);</span>
+<span class="nc" id="L275">                columnQuery.append(propertyPathContext.getCriteria());</span>
+<span class="nc" id="L276">            }</span>
+<span class="nc" id="L277">            context.append(columnQuery.toString());</span>
+<span class="nc" id="L278">        } else {</span>
+<span class="nc" id="L279">            context.append(&quot; *&quot;);</span>
+        }
+
+        // from句の組み立て
+<span class="nc" id="L283">        context.append(&quot; from &quot;).append(queryMeta.getEntityPath().getPathMeta().getElement());</span>
+
+        // where句の組み立て
+<span class="nc bnc" id="L286" title="All 2 branches missed.">        if(queryMeta.getWhere() != null) {</span>
+            // 条件式の評価
+<span class="nc" id="L288">            DebugVisitorContext whereContext = new DebugVisitorContext();</span>
+<span class="nc" id="L289">            queryMeta.getWhere().accept(this, whereContext);</span>
+
+<span class="nc" id="L291">            context.append(&quot; whrere &quot;)</span>
+<span class="nc" id="L292">                .append(whereContext.getCriteria());</span>
+        }
+
+        // 並び順の組み立て
+<span class="nc bnc" id="L296" title="All 2 branches missed.">        if(!queryMeta.getOrders().isEmpty()) {</span>
+<span class="nc" id="L297">            StringBuilder orderQuery = new StringBuilder();</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">            for(OrderSpecifier order : queryMeta.getOrders()) {</span>
+<span class="nc bnc" id="L299" title="All 2 branches missed.">                if(orderQuery.length() &gt; 0) {</span>
+<span class="nc" id="L300">                    orderQuery.append(&quot;, &quot;);</span>
+                }
+
+                // 並び順のパスを評価する
+<span class="nc" id="L304">                DebugVisitorContext orderContext = new DebugVisitorContext();</span>
+<span class="nc" id="L305">                order.getPath().accept(this, orderContext);</span>
+<span class="nc" id="L306">                orderQuery.append(orderContext.getCriteria())</span>
+<span class="nc" id="L307">                    .append(&quot; &quot;)</span>
+<span class="nc" id="L308">                    .append(order.getOrder().name());</span>
+<span class="nc" id="L309">            }</span>
+<span class="nc" id="L310">            context.append(&quot; order by &quot;)</span>
+<span class="nc" id="L311">                .append(orderQuery.toString());</span>
+        }
+
+        // limit句の組み立て
+<span class="nc bnc" id="L315" title="All 6 branches missed.">        if(queryMeta.getLimit() &gt; 0 || queryMeta.getLimit() == 0 &amp;&amp; queryMeta.getOffset() &gt; 0) {</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">            if (queryMeta.getOffset() &gt; 0) {</span>
+<span class="nc" id="L317">                context.append(&quot; limit &quot;)</span>
+<span class="nc" id="L318">                    .append(queryMeta.getLimit())</span>
+<span class="nc" id="L319">                    .append(&quot; offset &quot;)</span>
+<span class="nc" id="L320">                    .append(queryMeta.getOffset());</span>
+            } else {
+<span class="nc" id="L322">                context.append(&quot; limit &quot;)</span>
+<span class="nc" id="L323">                    .append(queryMeta.getLimit());</span>
+            }
+        }
+
+<span class="nc" id="L327">    }</span>
+
+    protected void invoke(final Operator parentOperator, final Expression&lt;?&gt; expr, final DebugVisitorContext context) {
+
+<span class="fc bfc" id="L331" title="All 2 branches covered.">        if(expr instanceof Operation) {</span>
+<span class="fc" id="L332">            Operation&lt;?&gt; operation = (Operation&lt;?&gt;)expr;</span>
+            // /子ノードが演算子の場合、括弧で囲むか判定する。
+<span class="fc bfc" id="L334" title="All 2 branches covered.">            if(OperationUtils.isEnclosedParenthesis(parentOperator, operation.getOperator())) {</span>
+<span class="fc" id="L335">                context.append(&quot;(&quot;);</span>
+<span class="fc" id="L336">                visit(operation, context);</span>
+<span class="fc" id="L337">                context.append(&quot;)&quot;);</span>
+            } else {
+<span class="fc" id="L339">                visit(operation, context);</span>
+            }
+
+<span class="fc bfc" id="L342" title="All 2 branches covered.">        } else if(expr instanceof Constant) {</span>
+<span class="fc" id="L343">            visit((Constant&lt;?&gt;)expr, context);</span>
+<span class="pc bpc" id="L344" title="1 of 2 branches missed.">        } else if (expr instanceof Path) {</span>
+<span class="fc" id="L345">            visit((Path&lt;?&gt;)expr, context);</span>
+<span class="nc bnc" id="L346" title="All 2 branches missed.">        } else if(expr instanceof SubQueryExpression) {</span>
+<span class="nc" id="L347">            context.append(&quot;(&quot;);</span>
+<span class="nc" id="L348">            visit((SubQueryExpression&lt;?&gt;)expr, context);</span>
+<span class="nc" id="L349">            context.append(&quot;)&quot;);</span>
+        } else {
+<span class="nc" id="L351">            throw new IllegalArgumentException(&quot;not support Expression instance of &quot; + expr.getClass());</span>
+        }
+
+<span class="fc" id="L354">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

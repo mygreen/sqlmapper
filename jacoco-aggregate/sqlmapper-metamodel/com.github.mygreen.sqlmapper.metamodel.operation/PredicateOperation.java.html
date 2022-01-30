@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>PredicateOperation.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">SqlMapper</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-metamodel</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.metamodel.operation</a> &gt; <span class="el_source">PredicateOperation.java</span></div><h1>PredicateOperation.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.metamodel.operation;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import com.github.mygreen.sqlmapper.metamodel.Predicate;
+import com.github.mygreen.sqlmapper.metamodel.Visitor;
+import com.github.mygreen.sqlmapper.metamodel.expression.Expression;
+import com.github.mygreen.sqlmapper.metamodel.operator.Operator;
+import com.github.mygreen.sqlmapper.metamodel.operator.UnaryOp;
+import com.github.mygreen.sqlmapper.metamodel.support.OperationUtils;
+
+import lombok.NonNull;
+
+/**
+ * {@link Predicate} に対する 演算子処理の実装。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+public class PredicateOperation implements Operation&lt;Boolean&gt;, Predicate {
+
+    /**
+     * 演算子
+     */
+    private final Operator operator;
+
+    /**
+     * 演算子の引数(右辺や左辺など)
+     */
+    private final List&lt;Expression&lt;?&gt;&gt; args;
+
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">    public PredicateOperation(@NonNull Operator operator, Expression&lt;?&gt;... args) {</span>
+<span class="fc" id="L37">        this.operator = operator;</span>
+<span class="fc" id="L38">        this.args = Collections.unmodifiableList(Arrays.asList(args));</span>
+<span class="fc" id="L39">    }</span>
+
+    @Override
+    public Class&lt;? extends Boolean&gt; getType() {
+<span class="nc" id="L43">        return Boolean.class;</span>
+    }
+
+    @Override
+    public Predicate not() {
+<span class="nc" id="L48">        return new PredicateOperation(UnaryOp.NOT, this);</span>
+    }
+
+    @Override
+    public Operator getOperator() {
+<span class="fc" id="L53">        return operator;</span>
+    }
+
+    @Override
+    public Expression&lt;?&gt; getArg(int index) {
+<span class="fc" id="L58">        return args.get(index);</span>
+    }
+
+    @Override
+    public Optional&lt;Expression&lt;?&gt;&gt; getOptArg(int index) {
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if(index &gt;= args.size()) {</span>
+<span class="nc" id="L64">            return Optional.empty();</span>
+        }
+<span class="nc" id="L66">        return Optional.ofNullable(args.get(index));</span>
+    }
+
+    @Override
+    public List&lt;Expression&lt;?&gt;&gt; getArgs() {
+<span class="fc" id="L71">        return args;</span>
+    }
+
+    @Override
+    public &lt;C&gt; void accept(Visitor&lt;C&gt; visitor, C context) {
+<span class="nc" id="L76">        visitor.visit((Operation&lt;?&gt;)this, context);</span>
+<span class="nc" id="L77">    }</span>
+
+    /**
+     * {@inheritDoc}
+     * @return 式ノードを評価結果。
+     */
+    @Override
+    public String toString() {
+<span class="nc" id="L85">        return OperationUtils.toDebugString(this);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

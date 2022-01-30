@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ja"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>H2Dialect.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">sqlmapper-apt</a> &gt; <a href="../index.html" class="el_bundle">sqlmapper-core</a> &gt; <a href="index.source.html" class="el_package">com.github.mygreen.sqlmapper.core.dialect</a> &gt; <span class="el_source">H2Dialect.java</span></div><h1>H2Dialect.java</h1><pre class="source lang-java linenums">package com.github.mygreen.sqlmapper.core.dialect;
+
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
+
+import com.github.mygreen.sqlmapper.core.annotation.GeneratedValue.GenerationType;
+import com.github.mygreen.sqlmapper.core.id.CustomH2SequenceMaxValueIncrementer;
+
+/**
+ * H2用の方言の定義。
+ *
+ *
+ * @author T.TSUCHIE
+ *
+ */
+<span class="fc" id="L17">public class H2Dialect extends DialectBase {</span>
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@literal &quot;h2&quot;} を返します。
+     */
+    @Override
+    public String getName() {
+<span class="fc" id="L26">        return &quot;h2&quot;;</span>
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return
+     * &lt;ul&gt;
+     *  &lt;li&gt;{@link GenerationType#IDENTITY} : {@literal true}&lt;/li&gt;
+     *  &lt;li&gt;{@link GenerationType#SEQUENCE} : {@literal true}&lt;/li&gt;
+     *  &lt;li&gt;{@link GenerationType#TABLE} : {@literal true}&lt;/li&gt;
+     *  &lt;li&gt;{@link GenerationType#UUID} : {@literal true}&lt;/li&gt;
+     * &lt;/ul&gt;
+     */
+    @Override
+    public boolean supportsGenerationType(GenerationType generationType) {
+<span class="pc bpc" id="L42" title="1 of 5 branches missed.">        switch(generationType) {</span>
+            case IDENTITY:
+<span class="fc" id="L44">                return true;</span>
+            case SEQUENCE:
+<span class="fc" id="L46">                return true;</span>
+            case TABLE:
+<span class="fc" id="L48">                return true;</span>
+            case UUID:
+<span class="fc" id="L50">                return true;</span>
+            default:
+<span class="nc" id="L52">                return false;</span>
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link CustomH2SequenceMaxValueIncrementer} のインスタンスを返します。
+     */
+    @Override
+    public DataFieldMaxValueIncrementer getSequenceIncrementer(DataSource dataSource, String sequenceName) {
+//        return new H2SequenceMaxValueIncrementer(dataSource, sequenceName);
+<span class="fc" id="L64">        return new CustomH2SequenceMaxValueIncrementer(dataSource, sequenceName);</span>
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
