@@ -2,7 +2,6 @@ package com.github.mygreen.sqlmapper.boot.autoconfigure;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -12,8 +11,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DatabaseDriver;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.annotation.Bean;
@@ -67,12 +64,7 @@ import lombok.extern.slf4j.Slf4j;
 @PropertySource("classpath:/com/github/mygreen/sqlmapper/core/sqlmapper.properties")
 @EnableConfigurationProperties(SqlMapperProperties.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
-public class SqlMapperAutoConfiguration implements ApplicationContextAware, ApplicationEventPublisherAware {
-
-    /**
-     * Springのアプリケーションコンテキスト
-     */
-    private ApplicationContext applicationContext;
+public class SqlMapperAutoConfiguration implements ApplicationEventPublisherAware {
 
     /**
      * イベントを配信する機能
@@ -87,11 +79,6 @@ public class SqlMapperAutoConfiguration implements ApplicationContextAware, Appl
 
     @Autowired
     private DataSourceProperties dataSourceProperties;
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-       this.applicationContext = applicationContext;
-    }
 
     @Override
     public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {

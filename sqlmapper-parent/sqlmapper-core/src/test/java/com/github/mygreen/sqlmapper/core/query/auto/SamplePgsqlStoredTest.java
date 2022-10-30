@@ -220,6 +220,7 @@ public class SamplePgsqlStoredTest {
                 .withProcedureName("test_proc_hello");
 
         Object ret = jdbcCall.execute();
+        System.out.println(ret);
 
     }
 

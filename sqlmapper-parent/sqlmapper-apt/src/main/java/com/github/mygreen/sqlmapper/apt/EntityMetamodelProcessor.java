@@ -89,7 +89,7 @@ public class EntityMetamodelProcessor extends AbstractProcessor {
         processEntityAnno(roundEnv, entityModeles);
 
         // ソースの生成
-        EntitySpecFactory specFactory = new EntitySpecFactory(messager, metamodelConfig);
+        EntitySpecFactory specFactory = new EntitySpecFactory(metamodelConfig);
         for(EntityMetamodel entityModel : entityModeles) {
             TypeSpec typeSpec = specFactory.create(entityModel);
             generateEntityMetaModel(typeSpec, entityModel);

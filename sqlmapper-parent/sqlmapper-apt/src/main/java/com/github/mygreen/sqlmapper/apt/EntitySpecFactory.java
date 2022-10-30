@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.processing.Generated;
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.Modifier;
 
 import com.github.mygreen.sqlmapper.apt.model.AptType;
@@ -51,11 +50,6 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public class EntitySpecFactory {
-
-    /**
-     * APT用のメッセージ出力
-     */
-    private final Messager messager;
 
     /**
      * メタモデルの生成オプション
