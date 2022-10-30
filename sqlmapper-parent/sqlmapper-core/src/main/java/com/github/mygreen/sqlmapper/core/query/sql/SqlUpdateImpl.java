@@ -36,12 +36,12 @@ public class SqlUpdateImpl implements SqlUpdate {
      * SQLテンプレートのパラメータです。
      */
     @Getter
-    private final SqlTemplateContext parameter;
+    private final SqlTemplateContext<?> parameter;
 
     @Getter
     private Integer queryTimeout;
 
-    public SqlUpdateImpl(SqlMapperContext context, SqlTemplate template, SqlTemplateContext parameter) {
+    public SqlUpdateImpl(SqlMapperContext context, SqlTemplate template, SqlTemplateContext<?> parameter) {
         this.context = context;
         this.template = template;
         this.parameter = parameter;

@@ -50,7 +50,7 @@ public class SqlSelectTest extends QueryTestSupport {
     @Test
     void testBySqlFile() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("customerId", "005"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("customerId", "005"));
 
         Customer result = sqlMapper.selectBySqlFile(Customer.class, "/sqltemplate/customer_selectById.sql", templateContext)
                 .getSingleResult();
@@ -66,7 +66,7 @@ public class SqlSelectTest extends QueryTestSupport {
     @Test
     void testBySql() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("customerId", "005"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("customerId", "005"));
 
         String sql = loadResource("/sqltemplate/customer_selectById.sql", StandardCharsets.UTF_8);
 
@@ -85,7 +85,7 @@ public class SqlSelectTest extends QueryTestSupport {
     @Test
     void testBySqlFile_singleResult_found1() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("customerId", "005"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("customerId", "005"));
 
         Customer result = sqlMapper.selectBySqlFile(Customer.class, "/sqltemplate/customer_selectById.sql", templateContext)
                 .getSingleResult();
@@ -96,7 +96,7 @@ public class SqlSelectTest extends QueryTestSupport {
     @Test
     void testBySqlFile_singleResult_found0() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("customerId", "xx"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("customerId", "xx"));
 
         assertThatThrownBy(() ->
                 sqlMapper.selectBySqlFile(Customer.class, "/sqltemplate/customer_selectById.sql", templateContext)
@@ -107,7 +107,7 @@ public class SqlSelectTest extends QueryTestSupport {
     @Test
     void testBySqlFile_singleResult_found2() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("lastName", "Yamada"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("lastName", "Yamada"));
 
         assertThatThrownBy(() ->
                 sqlMapper.selectBySqlFile(Customer.class, "/sqltemplate/customer_selectByAny.sql", templateContext)
@@ -118,7 +118,7 @@ public class SqlSelectTest extends QueryTestSupport {
     @Test
     void testBySqlFile_optionalResult_found1() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("customerId", "005"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("customerId", "005"));
 
         Optional<Customer> result = sqlMapper.selectBySqlFile(Customer.class, "/sqltemplate/customer_selectById.sql", templateContext)
                 .getOptionalResult();
@@ -129,7 +129,7 @@ public class SqlSelectTest extends QueryTestSupport {
     @Test
     void testBySqlFile_optionalResult_found0() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("customerId", "xx"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("customerId", "xx"));
 
         Optional<Customer> result = sqlMapper.selectBySqlFile(Customer.class, "/sqltemplate/customer_selectById.sql", templateContext)
                 .getOptionalResult();
@@ -141,7 +141,7 @@ public class SqlSelectTest extends QueryTestSupport {
     @Test
     void testBySqlFile_optionalResult_found2() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("lastName", "Yamada"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("lastName", "Yamada"));
 
         assertThatThrownBy(() ->
                 sqlMapper.selectBySqlFile(Customer.class, "/sqltemplate/customer_selectByAny.sql", templateContext)
@@ -152,7 +152,7 @@ public class SqlSelectTest extends QueryTestSupport {
     @Test
     void testBySqlFile_resultList() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("lastName", "Yamada"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("lastName", "Yamada"));
 
         List<Customer> result = sqlMapper.selectBySqlFile(Customer.class, "/sqltemplate/customer_selectByAny.sql", templateContext)
                     .getResultList();
@@ -166,7 +166,7 @@ public class SqlSelectTest extends QueryTestSupport {
     @Test
     void testBySqlFile_resultStream() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("lastName", "Yamada"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("lastName", "Yamada"));
 
         List<Customer> result = sqlMapper.selectBySqlFile(Customer.class, "/sqltemplate/customer_selectByAny.sql", templateContext)
                     .getResultStream()
@@ -183,7 +183,7 @@ public class SqlSelectTest extends QueryTestSupport {
 
         Map<String, Object> params = new HashMap<>();
         params.put("lastName", null);
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(params);
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(params);
 
         List<Customer> result = sqlMapper.selectBySqlFile(Customer.class, "/sqltemplate/customer_selectByAny.sql", templateContext)
                 .limit(5)
@@ -200,7 +200,7 @@ public class SqlSelectTest extends QueryTestSupport {
 
         Map<String, Object> params = new HashMap<>();
         params.put("lastName", null);
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(params);
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(params);
 
         List<Customer> result = sqlMapper.selectBySqlFile(Customer.class, "/sqltemplate/customer_selectByAny.sql", templateContext)
                 .offset(2)
@@ -217,7 +217,7 @@ public class SqlSelectTest extends QueryTestSupport {
 
         Map<String, Object> params = new HashMap<>();
         params.put("lastName", null);
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(params);
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(params);
 
         List<Customer> result = sqlMapper.selectBySqlFile(Customer.class, "/sqltemplate/customer_selectByAny.sql", templateContext)
                 .offset(2)
