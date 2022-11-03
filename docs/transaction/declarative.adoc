@@ -1,7 +1,95 @@
 = 宣言的トランザクション管理
 
-TODO:
+Spring Frameworkのアノテーション ``@Transactional`` を使用した宣言的トランザクションの簡単な使用方法を説明します。
 
-アノテーション ``@Transactional`` を使用した宣言的トランザクション
+* Spring Bootを使用していない場合は、設定が必要になります。
+* 詳細は、 https://spring.pleiades.io/spring-framework/docs/current/reference/html/data-access.html#transaction-declarative[Spring Frameworkのドキュメント] を参照してください。
 
-https://spring.pleiades.io/spring-framework/docs/current/reference/html/data-access.html#transaction-declarative[]
+== Spring Fraemworkの設定
+
+* 機能を有効にするには、SpringFrameworkのアノテーション `@EnableTransactionManagement` を <<spring_normal_java_config,JavaConfigクラス>>に付与します。
+* アノテーション `@EnableTransactionManagement` を使用するには、ライブラリ https://mvnrepository.com/artifact/org.springframework/spring-tx[spring-tx] が必要ですが、SqlMapperの依存関係として追加されているため、Maven/Gradleなどを使用している場合は自動的に読み込まれているはずです。
+
+.宣言的トランザクションを有効にするJavaConfigの定義
+[source, java]
+----
+import javax.sql.DataSource;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigurationSupport;
+
+
+@EnableTransactionManagement
+@Configuration
+public class SqlMapperConfig extends SqlMapperConfigurationSupport {
+
+    // 省略
+}
+----
+
+
+== Spring Bootの設定
+
+<<setup_spring_boot,Spring Boot の SqlMapper 専用の starter>> を使っている場合は、特に設定は必要ありません。
+
+== 使い方
+
+* トランザクション境界のメソッドにアノテーション `@Transactional` を付与します。
+* 参照しか行わない場合は属性 `readOnly=true` を設定しておくことで、もし、間違ってDBを更新する処理を実行してしまったときに例外がスローされデータを守ることができます。
+** ただし、JDBCドライバー、TransactionManagerの種類によっては例外がスローされないこともあります。
+** 参照専用の場合は必ずしも必須ではありませんが、間違って更新することを防ぐためにも付与することをお勧めします。
+* アノテーション `@Transactional` が適用されるデフォルトの条件としては、publicメソッドのみです。
+** protected/private/パッケージprivate メソッドに `@Transactional`` を付けてもエラーは発生しません。
+
+
+
+.宣言的トランザクションの使用例
+[source, java]
+----
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.mygreen.sqlmapper.core.SqlMapper;
+
+@Service
+public class EmployeeService {
+
+    @Autowired
+    private SqlMapper sqlMapper;
+
+    // 読み取り専用のトランザクション
+    @Transactional(readOnly=true)
+    public List<Employee> findEmployee(String name) {
+        MEmployee e = MEmployee.employee;
+        List<Employee> results = sqlMapper.selectFrom(e)
+                .where(e.name.eq(name))
+                .orderBy(e.name.asc(), e.hireDate.desc())
+                .getResultList();
+    }
+
+    // 更新可能なトランザクション
+    @Transactional
+    public void saveOrUpdate(Employee employee) {
+        
+        MEmployee e = MEmployee.employee;
+        boolean exists  = sqlMapper.selectFrom(e)
+                .id(employee.getId())
+                .forUpdate()
+                .getCount() > 0;
+        if (exists) {
+            sqlMapper.update(employee)
+                .execute();
+        } else {
+            sqlMapper.insert(employee)
+                .execute();
+        }
+        
+
+    }
+}
+----
+

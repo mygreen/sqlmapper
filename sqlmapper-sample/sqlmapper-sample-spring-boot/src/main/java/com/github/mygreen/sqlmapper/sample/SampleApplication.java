@@ -49,7 +49,7 @@ public class SampleApplication implements CommandLineRunner {
     }
 
     @Transactional
-    private Customer createCustomer() {
+    public Customer createCustomer() {
 
         Customer entity = new Customer();
         entity.setFirstName("Nobunaga");
@@ -61,6 +61,5 @@ public class SampleApplication implements CommandLineRunner {
 
         return entity;
     }
-
 
 }
