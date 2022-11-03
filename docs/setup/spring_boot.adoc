@@ -99,7 +99,9 @@ dependencies {
 
 データソースの接続定義をアプリケーションプロパティに定義します。
 
-データソースの定義は、SpringBoot標準の定義を使用します。
+* データソースの定義は、SpringBoot標準の定義を使用します。
+* 読み込まれたJDBCドライバの定義によって、<<db_dialect,DBの方言種別設定>> が自動的に読み込まれます。
+** 判定は、Spring Bootの https://spring.pleiades.io/spring-boot/docs/current/api/org/springframework/boot/jdbc/DatabaseDriver.html[DatabaseDriver, role="externalink", window="_blank"] を使用して判定を行っているため、DatabaseDriverクラスが対応していないDBの場合は、 https://mygreen.github.io/sqlmapper/apidocs/com/github/mygreen/sqlmapper/core/dialect/Dialect.html[Dialect, role="externalink", window="_blank"] のSpring Beanを独自に定義して登録する必要があります。
 
 .データソースの定義
 [source,yaml]
@@ -111,6 +113,33 @@ spring:
     username: sa
     password: 
 ----
+
+[[jdbc_driver]]
+.DBのJDBCドライバー
+|===
+| DB種別| ドライバークラス | ライブラリ
+
+| https://www.h2database.com[H2 Database Engine, role="externalink", window="_blank"]
+|`org.h2.Driver`
+|https://mvnrepository.com/artifact/com.h2database/h2[com.h2database:h2, role="externalink", window="_blank"]
+
+| https://www.h2database.com/html/main.html[HSQLDB, role="externalink", window="_blank"]
+|`org.hsqldb.jdbc.JDBCDriver`
+|https://mvnrepository.com/artifact/org.hsqldb/hsqldb[org.hsqldb:hsqldb, role="externalink", window="_blank"]
+
+| https://www.postgresql.jp/[PostgreSQL, role="externalink", window="_blank"]
+|`org.postgresql.Driver`
+|https://mvnrepository.com/artifact/org.postgresql/postgresql[org.postgresql:postgresql, role="externalink", window="_blank"]
+
+| https://www.sqlite.org/[SQLite, role="externalink", window="_blank"]
+|`org.sqlite.JDBC`
+|https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc[org.xerial:sqlite-jdbc, role="externalink", window="_blank"]
+
+.2+| https://www.oracle.com/jp/database/[Oracleデータベース, role="externalink", window="_blank"]
+|`oracle.jdbc.OracleDriver`
+|https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc11[com.oracle.database.jdbc:ojdbc11, role="externalink", window="_blank"]
+
+|===
 
 [[spring_boot_properties]]
 === プロパティの上書き
