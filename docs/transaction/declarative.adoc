@@ -5,7 +5,7 @@ Spring Frameworkのアノテーション ``@Transactional`` を使用した宣�
 * Spring Bootを使用していない場合は、設定が必要になります。
 * 詳細は、 https://spring.pleiades.io/spring-framework/docs/current/reference/html/data-access.html#transaction-declarative[Spring Frameworkのドキュメント] を参照してください。
 
-== Spring Fraemworkの設定
+== Spring Frameworkの設定
 
 * 機能を有効にするには、SpringFrameworkのアノテーション `@EnableTransactionManagement` を <<spring_normal_java_config,JavaConfigクラス>>に付与します。
 * アノテーション `@EnableTransactionManagement` を使用するには、ライブラリ https://mvnrepository.com/artifact/org.springframework/spring-tx[spring-tx] が必要ですが、SqlMapperの依存関係として追加されているため、Maven/Gradleなどを使用している場合は自動的に読み込まれているはずです。
