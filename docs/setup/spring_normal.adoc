@@ -101,7 +101,7 @@ dependencies {
 
 SqlMapper用のJavaConfigのサポートクラス ``SqlMapperConfigurationSupport`` を継承して定義します。
 
-データソースとDBの方言種別を環境に合わせ定義します。
+データソースとDBの方言種別を環境に合わせ定義します。DBの方言の詳細については https://mygreen.github.io/sqlmapper/apidocs/com/github/mygreen/sqlmapper/core/dialect/package-summary.html[JavaDoc, role="externalink", window="_blank"] を参照してください。
 
 .JavaConfigの定義
 [source, java]
@@ -137,6 +137,36 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
     }
 }
 ----
+
+[[db_dialect]]
+.DBの方言種別
+|===
+| DB種別| クラス | 説明
+
+| https://www.h2database.com[H2 Database Engine, role="externalink", window="_blank"]
+|`H2Dialect`
+|Java製の組み込みDB。
+
+| https://www.h2database.com/html/main.html[HSQLDB, role="externalink", window="_blank"]
+|`HsqlDialect`
+|Java製の組み込みDB。
+
+| https://www.postgresql.jp/[PostgreSQL, role="externalink", window="_blank"]
+|`PostgresDialect`
+|OSSのRDMBS。
+
+| https://www.sqlite.org/[SQLite, role="externalink", window="_blank"]
+|`SqliteDialect`
+|組み込みDB。
+
+.2+| https://www.oracle.com/jp/database/[Oracleデータベース, role="externalink", window="_blank"]
+|`OracleDialect`
+|商用のRDBS。Oracle12c以上の場合に対応。
+|`OracleLegacyDialect`
+|Oracle11g以前に対応。
+
+|===
+
 
 [[spring_normal_properties]]
 === プロパティの上書き
