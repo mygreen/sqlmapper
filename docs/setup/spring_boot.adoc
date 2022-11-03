@@ -1,3 +1,4 @@
+[[setup_spring_boot]]
 = Spring Bootの設定
 
 Spring Boot のSqlMapper 専用の starter を使った環境設定方法を説明します。

@@ -1,3 +1,78 @@
-== プログラムによるトランザクション管理
+= プログラムによるトランザクション管理
 
-TODO:
+Spring Frameworkのクラス `TransactionTemplate` を使用した宣言的トランザクションの簡単な使用方法を説明します。
+
+詳細は、 https://spring.pleiades.io/spring-framework/docs/current/reference/html/data-access.html#transaction-programmatic[Spring Frameworkのドキュメント] を参照してください。
+
+* `PlatformTransactionManager` 元に `TransactionTemplate` のインスタンスを作成します。
+** `PlatformTransactionManager` は SqlMapper のJavaConfigである `SqlMapperConfigurationSupport` などで予めSpringBeanとして登録されています。
+* よく使用するトランザクション伝搬方式の REQUIRED_NEW と使いやすいです。
+* `TransactionTemplate#execute(TransactionCallback)` で戻り値がある場合のトランザクションを適用します。
+** `TransactionCallback` は関数型インタフェースのため、Lambda式で記述することができます。
+* `TransactionTemplate#executeWithoutResult(Consumer)` で戻り値がない場合のトランザクションを適用します。
+
+.プログラムによるトランザクションの使用例
+[source, java]
+----
+import java.util.List;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import com.github.mygreen.sqlmapper.core.SqlMapper;
+
+@Service
+public class EmployeeService {
+
+    @Autowired
+    private TransactionManager transactionManager;
+
+    @Autowired
+    private SqlMapper sqlMapper;
+
+    /**
+     * REQUIRED_NEWのトランザクションテンプレートを作成します。
+     */
+    protected TransactionTemplate txNew() {
+        TransactionTemplate template = new TransactionTemplate(transactionManager);
+        template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        return template;
+    }
+
+    // 戻り値ありのトランザクションを適用する
+    public Employee save(Employee employee) {
+        
+        Employee result = new Employee();
+        BeanUtils.copyProperties(employee, result)
+        return txNew().execute(status -> {
+            sqlMapper.insert(result)
+                    .execute();
+            return result;
+        });
+        
+    }
+
+    // 戻り値なしのトランザクションを適用する
+    public void saveOrUpdate(Employee employee) {
+        
+        txNew().executeWithoutResult(status -> {
+            MEmployee e = MEmployee.employee;
+            boolean exists  = sqlMapper.selectFrom(e)
+                    .id(employee.getId())
+                    .forUpdate()
+                    .getCount() > 0;
+            if (exists) {
+                sqlMapper.update(employee)
+                    .execute();
+            } else {
+                sqlMapper.insert(employee)
+                    .execute();
+            }
+        });
+
+    }
+}
+----

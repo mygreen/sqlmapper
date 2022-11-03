@@ -96,6 +96,7 @@ dependencies {
 }
 ----
 
+[[spring_normal_java_config]]
 == JavaConfigの設定
 
 SqlMapper用のJavaConfigのサポートクラス ``SqlMapperConfigurationSupport`` を継承して定義します。
