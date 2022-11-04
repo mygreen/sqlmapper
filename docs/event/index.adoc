@@ -1,0 +1,106 @@
+= イベントリスナー
+
+テーブルの参照／挿入／更新／削除時のイベントを https://spring.pleiades.io/spring-integration/reference/html/event.html[Spring Frameworkの ApplicationEvent] として受信することができます。
+
+* テーブルに対するエンティティの各種操作の処理の前後のイベントが用意されています。
+** 詳細は、 https://mygreen.github.io/sqlmapper/apidocs/com/github/mygreen/sqlmapper/core/event/package-summary.html[JavaDoc, role="externalink", window="_blank"] を参照してください。
+
+.イベント一覧
+|===
+| イベントクラス| 説明
+
+| `PostSelectEvent`
+|エンティティを参照後のイベントです。
+
+| `PreInsertEvent`
+|エンティティに対する挿入前のイベントです。
+
+| `PostInsertEvent`
+|エンティティに対する挿入後のイベントです。
+
+| `PreUpdateEvent`
+|エンティティに対する更新前のイベントです。
+
+| `PostUpdatetEvent`
+|エンティティに対する更新後のイベントです。
+
+| `PreDeleteEvent`
+|エンティティに対する削除前のイベントです。
+
+| `PostDeleteEvent`
+|エンティティに対する削除後のイベントです。
+
+| `PreBatchInsertEvent`
+|エンティティに対するバッチ挿入前のイベントです。
+
+| `PostBatchInsertEvent`
+|エンティティに対するバッチ挿入後のイベントです。
+
+| `PreBatchUpdateEvent`
+|エンティティに対するバッチ更新前のイベントです。
+
+| `PostBatchUpdateEvent`
+|エンティティに対するバッチ更新後のイベントです。
+
+| `PreBatchDeleteEvent`
+|エンティティに対するバッチ削除前のイベントです。
+
+| `PostBatchDeleteEvent`
+|エンティティに対するバッチ削除後のイベントです。
+
+|===
+
+イベントを受信するには、Spring Frameworkのアノテーション `@EventListener` を使用します。
+
+* 各処理後のイベントを受信するときには、DBトランザクションと同期する `@TransactionalEventListener` を使用します。
+
+.イベントの受信例
+[source, java]
+----
+import org.springframework.context.event.EventListener;
+import org.springframework.transaction.event.TransactionalEventListener;
+
+import com.github.mygreen.sqlmapper.core.event.PreInsertEvent;
+import com.github.mygreen.sqlmapper.core.event.PostUpdateEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+
+
+@Service
+public class SampleEventService {
+
+   /**
+     * 挿入前のエンティティ情報の受信処理
+     * @param event イベント情報。
+     */
+    @EventListener
+    public void onPreInsert(PreInsertEvent event) {
+
+        // メタ情報
+        EntityMeta meta = event.getEntityMeta();
+
+        // 挿入対象のエンティティのインスタンス
+        Object entity = getEntity();
+
+        // ・・・
+
+    }
+
+    /**
+     * 挿入後のエンティティ情報の受信処理
+     * @param event イベント情報。
+     */
+    @TransactionalEventListener
+    public void onPostInsert(PostInsertEvent event) {
+
+        // メタ情報
+        EntityMeta meta = event.getEntityMeta();
+
+        // 挿入対象のエンティティのインスタンス
+        Object entity = getEntity();
+
+        // ・・・
+
+    }
+
+}
+----
