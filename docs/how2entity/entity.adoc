@@ -40,7 +40,7 @@ public class User {
 
 [NOTE]
 ====
-手動でエンティティクラスを作成する際には、 https://projectlombok.org/[Lombok] を使用して記述減らすことをお勧めします。
+手動でエンティティクラスを作成する際には、 https://projectlombok.org/[Lombok, role="externalink", window="_blank"] を使用して記述減らすことをお勧めします。
 ====
 
 .Lombokを使用したエンティティの定義
