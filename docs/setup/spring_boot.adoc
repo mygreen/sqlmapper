@@ -99,7 +99,8 @@ dependencies {
 
 データソースの接続定義をアプリケーションプロパティに定義します。
 
-* データソースの定義は、SpringBoot標準の定義を使用します。
+* データソースの定義は、 https://spring.pleiades.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data[Spring Boot標準のプロパティ] を使用します。
+** プロパティ `spring.datasource.XXX` を使用して定義します。
 * 読み込まれたJDBCドライバの定義によって、<<db_dialect,DBの方言種別設定>> が自動的に読み込まれます。
 ** 判定は、Spring Bootの https://spring.pleiades.io/spring-boot/docs/current/api/org/springframework/boot/jdbc/DatabaseDriver.html[DatabaseDriver, role="externalink", window="_blank"] を使用して判定を行っているため、DatabaseDriverクラスが対応していないDBの場合は、 https://mygreen.github.io/sqlmapper/apidocs/com/github/mygreen/sqlmapper/core/dialect/Dialect.html[Dialect, role="externalink", window="_blank"] のSpring Beanを独自に定義して登録する必要があります。
 
@@ -148,3 +149,26 @@ spring:
 
 設定可能なプロパティは、<<available_properties,設定可能なプロパティ>> を参照してください。
 
+=== DBコネクションプールの設定
+
+* DBコネクションプールを使用する場合、 https://spring.pleiades.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data[Spring Boot標準のプロパティ] を使用します。
+** プロパティ `spring.datasource.XXX` を使用して定義します。
+* https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2] / https://github.com/brettwooldridge/HikariCP[HikariCP] など好きなものを使用してください。
+
+
+.DBコネクションプールのデータソースの定義
+[source,yaml]
+----
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/sampledb
+    username: sample_user
+    password: sample_password
+	# DBコネクションプールのタイプを指定
+	type: com.zaxxer.hikari.HikariDataSource
+	# 各コネクションプールの設定値を指定
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+----

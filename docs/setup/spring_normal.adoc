@@ -175,7 +175,7 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
 
 設定可能なプロパティは、<<available_properties,設定可能なプロパティ>> を参照してください。
 
-JavaConfigの定義
+.JavaConfigの定義
 [source, java]
 ----
 import org.springframework.context.annotation.PropertySource;
@@ -185,4 +185,55 @@ import org.springframework.context.annotation.PropertySource;
 public class SqlMapperConfig extends SqlMapperConfigurationSupport {
     // ・・・省略
 }
+----
+
+=== DBコネクションプールの設定
+
+DBコネクションプールを使用する場合、JavaConfigのDataSourceのインスタンスを変更します。
+
+* https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2] / https://github.com/brettwooldridge/HikariCP[HikariCP] など好きなものを使用してください。
+* 設定値は `application.properties` などに定義しておき、 https://spring.pleiades.io/spring-framework/docs/current/javadoc-api/org/springframework/core/env/Environment.html[Environment, role="externalink", window="_blank"] で参照します。
+** SqlMapperConfigurationSupportのプロパティ `env` で定義されてるため、JavaConfig内から参照できます。
+
+.DBコネクションプールの設定例
+[source, java]
+----
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigurationSupport;
+
+
+@Configuration
+@PropertySource("classpath:application.properties")
+public class SqlMapperConfig extends SqlMapperConfigurationSupport {
+
+    // データソースの定義
+	@Bean(destroyMethod = "close")
+    @Override
+    public DataSource dataSource() {
+		BasicDataSource dataSource = new BasicDataSource();
+		dataSource.setDriverClassName(env.getRequiredProperty("jdbc.driverClassName"));
+		dataSource.setUrl(env.getRequiredProperty("jdbc.url"));
+		dataSource.setUsername(env.getRequiredProperty("jdbc.username"));
+		dataSource.setPassword(env.getRequiredProperty("jdbc.password"));
+
+		return dataSource();
+    }
+
+    // ・・・
+}
+----
+
+.DB接続関連のプロパティ定義例
+[source, properties]
+----
+jdbc.driverClassName=org.postgresql.Driver
+jdbc.url=jdbc:postgresql://localhost:5432/sampledb
+jdbc.username=sample_user
+jdbc.password=sample_password
 ----
