@@ -447,9 +447,18 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
         margin-bottom: .8rem;
     }
     /**
-     * 外部リンクのアイコン
+     * 目次の外部リンクのアイコン
      */
      #toc.toc2 a.externalink {
+        display: inline-block;
+        padding-right: 16px;
+        background: url(_static/external-link-12.png) no-repeat right center;
+    }
+
+    /**
+     * 本文中の外部リンクのアイコン
+     */
+     #content a.externalink {
         display: inline-block;
         padding-right: 16px;
         background: url(_static/external-link-12.png) no-repeat right center;
@@ -483,10 +492,10 @@ $(document).ready(function(){
 <ul class="sectlevel3">
 <li><a href="#_mavenへのライブラリの依存関係の追加">1.2.1. Mavenへのライブラリの依存関係の追加</a></li>
 <li><a href="#_gradleへのライブラリの依存関係の追加">1.2.2. Gradleへのライブラリの依存関係の追加</a></li>
-<li><a href="#_javaconfigの設定">1.2.3. JavaConfigの設定</a></li>
+<li><a href="#spring_normal_java_config">1.2.3. JavaConfigの設定</a></li>
 </ul>
 </li>
-<li><a href="#_spring_bootの設定">1.3. Spring Bootの設定</a>
+<li><a href="#setup_spring_boot">1.3. Spring Bootの設定</a>
 <ul class="sectlevel3">
 <li><a href="#_mavenへのライブラリの依存関係の追加_2">1.3.1. Mavenへのライブラリの依存関係の追加</a></li>
 <li><a href="#_gradleへのライブラリの依存関係の追加_2">1.3.2. Gradleへのライブラリの依存関係の追加</a></li>
@@ -630,22 +639,26 @@ $(document).ready(function(){
 <ul class="sectlevel2">
 <li><a href="#_宣言的トランザクション管理">7.1. 宣言的トランザクション管理</a>
 <ul class="sectlevel3">
-<li><a href="#_プログラムによるトランザクション管理">7.1.1. プログラムによるトランザクション管理</a></li>
+<li><a href="#_spring_frameworkの設定">7.1.1. Spring Frameworkの設定</a></li>
+<li><a href="#_spring_bootの設定">7.1.2. Spring Bootの設定</a></li>
+<li><a href="#_使い方">7.1.3. 使い方</a></li>
 </ul>
 </li>
+<li><a href="#_プログラムによるトランザクション管理">7.2. プログラムによるトランザクション管理</a></li>
 </ul>
 </li>
-<li><a href="#_リリースノート">8. リリースノート</a>
+<li><a href="#_イベントリスナー">8. イベントリスナー</a></li>
+<li><a href="#_リリースノート">9. リリースノート</a>
 <ul class="sectlevel2">
-<li><a href="#_ver_0_3_1_2022_01_30">8.1. ver.0.3.1 - 2022-01-30</a></li>
-<li><a href="#_ver_0_3_1_2022_01_13">8.2. ver.0.3.1 - 2022-01-13</a></li>
-<li><a href="#_ver_0_3_2021_12_31">8.3. ver.0.3 - 2021-12-31</a>
+<li><a href="#_ver_0_3_2_2022_01_30">9.1. ver.0.3.2 - 2022-01-30</a></li>
+<li><a href="#_ver_0_3_1_2022_01_13">9.2. ver.0.3.1 - 2022-01-13</a></li>
+<li><a href="#_ver_0_3_2021_12_31">9.3. ver.0.3 - 2021-12-31</a>
 <ul class="sectlevel3">
-<li><a href="#_機能追加変更">8.3.1. 機能追加・変更</a></li>
-<li><a href="#_不具合修正">8.3.2. 不具合修正</a></li>
+<li><a href="#_機能追加変更">9.3.1. 機能追加・変更</a></li>
+<li><a href="#_不具合修正">9.3.2. 不具合修正</a></li>
 </ul>
 </li>
-<li><a href="#_ver_0_2_2021_07_10">8.4. ver.0.2 - 2021-07-10</a></li>
+<li><a href="#_ver_0_2_2021_07_10">9.4. ver.0.2 - 2021-07-10</a></li>
 </ul>
 </li>
 </ul>
@@ -850,12 +863,12 @@ $(document).ready(function(){
 </div>
 </div>
 <div class="sect3">
-<h4 id="_javaconfigの設定">1.2.3. JavaConfigの設定</h4>
+<h4 id="spring_normal_java_config">1.2.3. JavaConfigの設定</h4>
 <div class="paragraph">
 <p>SqlMapper用のJavaConfigのサポートクラス <code>SqlMapperConfigurationSupport</code> を継承して定義します。</p>
 </div>
 <div class="paragraph">
-<p>データソースとDBの方言種別を環境に合わせ定義します。</p>
+<p>データソースとDBの方言種別を環境に合わせ定義します。DBの方言の詳細については <a href="https://mygreen.github.io/sqlmapper/apidocs/com/github/mygreen/sqlmapper/core/dialect/package-summary.html" class="externalink" target="_blank" rel="noopener">JavaDoc</a> を参照してください。</p>
 </div>
 <div class="listingblock">
 <div class="title">JavaConfigの定義</div>
@@ -892,6 +905,52 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
 }</code></pre>
 </div>
 </div>
+<table id="db_dialect" class="tableblock frame-all grid-all stretch">
+<caption class="title">表 3. DBの方言種別</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">DB種別</th>
+<th class="tableblock halign-left valign-top">クラス</th>
+<th class="tableblock halign-left valign-top">説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.h2database.com" class="externalink" target="_blank" rel="noopener">H2 Database Engine</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>H2Dialect</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Java製の組み込みDB。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.h2database.com/html/main.html" class="externalink" target="_blank" rel="noopener">HSQLDB</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>HsqlDialect</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Java製の組み込みDB。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.postgresql.jp/" class="externalink" target="_blank" rel="noopener">PostgreSQL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PostgresDialect</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OSSのRDMBS。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.sqlite.org/" class="externalink" target="_blank" rel="noopener">SQLite</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>SqliteDialect</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">組み込みDB。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><a href="https://www.oracle.com/jp/database/" class="externalink" target="_blank" rel="noopener">Oracleデータベース</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OracleDialect</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">商用のRDBS。Oracle12c以上の場合に対応。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>OracleLegacyDialect</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oracle11g以前に対応。</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect4">
 <h5 id="spring_normal_properties">プロパティの上書き</h5>
 <div class="paragraph">
@@ -900,10 +959,8 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
 <div class="paragraph">
 <p>設定可能なプロパティは、<a href="#available_properties">設定可能なプロパティ</a> を参照してください。</p>
 </div>
-<div class="paragraph">
-<p>JavaConfigの定義</p>
-</div>
 <div class="listingblock">
+<div class="title">JavaConfigの定義</div>
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import org.springframework.context.annotation.PropertySource;
 
@@ -915,10 +972,76 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
 </div>
 </div>
 </div>
+<div class="sect4">
+<h5 id="_dbコネクションプールの設定">DBコネクションプールの設定</h5>
+<div class="paragraph">
+<p>DBコネクションプールを使用する場合、JavaConfigのDataSourceのインスタンスを変更します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://commons.apache.org/proper/commons-dbcp/" class="externalink" target="_blank" rel="noopener">Commons DBCP2</a> / <a href="https://github.com/brettwooldridge/HikariCP" class="externalink" target="_blank" rel="noopener">HikariCP</a> など好きなものを使用してください。</p>
+</li>
+<li>
+<p>設定値は <code>application.properties</code> などに定義しておき、 <a href="https://spring.pleiades.io/spring-framework/docs/current/javadoc-api/org/springframework/core/env/Environment.html" class="externalink" target="_blank" rel="noopener">Environment</a> で参照します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>SqlMapperConfigurationSupportのプロパティ <code>env</code> で定義されてるため、JavaConfig内から参照できます。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">DBコネクションプールの設定例</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSource;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigurationSupport;
+
+
+@Configuration
+@PropertySource("classpath:application.properties")
+public class SqlMapperConfig extends SqlMapperConfigurationSupport {
+
+    // データソースの定義
+	@Bean(destroyMethod = "close")
+    @Override
+    public DataSource dataSource() {
+		BasicDataSource dataSource = new BasicDataSource();
+		dataSource.setDriverClassName(env.getRequiredProperty("jdbc.driverClassName"));
+		dataSource.setUrl(env.getRequiredProperty("jdbc.url"));
+		dataSource.setUsername(env.getRequiredProperty("jdbc.username"));
+		dataSource.setPassword(env.getRequiredProperty("jdbc.password"));
+
+		return dataSource();
+    }
+
+    // ・・・
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">DB接続関連のプロパティ定義例</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">jdbc.driverClassName=org.postgresql.Driver
+jdbc.url=jdbc:postgresql://localhost:5432/sampledb
+jdbc.username=sample_user
+jdbc.password=sample_password</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_spring_bootの設定">1.3. Spring Bootの設定</h3>
+<h3 id="setup_spring_boot">1.3. Spring Bootの設定</h3>
 <div class="paragraph">
 <p>Spring Boot のSqlMapper 専用の starter を使った環境設定方法を説明します。</p>
 </div>
@@ -1027,8 +1150,29 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
 <div class="paragraph">
 <p>データソースの接続定義をアプリケーションプロパティに定義します。</p>
 </div>
-<div class="paragraph">
-<p>データソースの定義は、SpringBoot標準の定義を使用します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>データソースの定義は、 <a href="https://spring.pleiades.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data">Spring Boot標準のプロパティ</a> を使用します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>プロパティ <code>spring.datasource.XXX</code> を使用して定義します。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>読み込まれたJDBCドライバの定義によって、<a href="#db_dialect">DBの方言種別設定</a> が自動的に読み込まれます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>判定は、Spring Bootの <a href="https://spring.pleiades.io/spring-boot/docs/current/api/org/springframework/boot/jdbc/DatabaseDriver.html" class="externalink" target="_blank" rel="noopener">DatabaseDriver</a> を使用して判定を行っているため、DatabaseDriverクラスが対応していないDBの場合は、 <a href="https://mygreen.github.io/sqlmapper/apidocs/com/github/mygreen/sqlmapper/core/dialect/Dialect.html" class="externalink" target="_blank" rel="noopener">Dialect</a> のSpring Beanを独自に定義して登録する必要があります。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
 </div>
 <div class="listingblock">
 <div class="title">データソースの定義</div>
@@ -1041,6 +1185,48 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
     password:</code></pre>
 </div>
 </div>
+<table id="jdbc_driver" class="tableblock frame-all grid-all stretch">
+<caption class="title">表 4. DBのJDBCドライバー</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">DB種別</th>
+<th class="tableblock halign-left valign-top">ドライバークラス</th>
+<th class="tableblock halign-left valign-top">ライブラリ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.h2database.com" class="externalink" target="_blank" rel="noopener">H2 Database Engine</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>org.h2.Driver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://mvnrepository.com/artifact/com.h2database/h2" class="externalink" target="_blank" rel="noopener">com.h2database:h2</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.h2database.com/html/main.html" class="externalink" target="_blank" rel="noopener">HSQLDB</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>org.hsqldb.jdbc.JDBCDriver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://mvnrepository.com/artifact/org.hsqldb/hsqldb" class="externalink" target="_blank" rel="noopener">org.hsqldb:hsqldb</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.postgresql.jp/" class="externalink" target="_blank" rel="noopener">PostgreSQL</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>org.postgresql.Driver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://mvnrepository.com/artifact/org.postgresql/postgresql" class="externalink" target="_blank" rel="noopener">org.postgresql:postgresql</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://www.sqlite.org/" class="externalink" target="_blank" rel="noopener">SQLite</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>org.sqlite.JDBC</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc" class="externalink" target="_blank" rel="noopener">org.xerial:sqlite-jdbc</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top" rowspan="2"><p class="tableblock"><a href="https://www.oracle.com/jp/database/" class="externalink" target="_blank" rel="noopener">Oracleデータベース</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>oracle.jdbc.OracleDriver</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc11" class="externalink" target="_blank" rel="noopener">com.oracle.database.jdbc:ojdbc11</a></p></td>
+</tr>
+</tbody>
+</table>
 <div class="sect4">
 <h5 id="spring_boot_properties">プロパティの上書き</h5>
 <div class="paragraph">
@@ -1050,12 +1236,49 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
 <p>設定可能なプロパティは、<a href="#available_properties">設定可能なプロパティ</a> を参照してください。</p>
 </div>
 </div>
+<div class="sect4">
+<h5 id="_dbコネクションプールの設定_2">DBコネクションプールの設定</h5>
+<div class="ulist">
+<ul>
+<li>
+<p>DBコネクションプールを使用する場合、 <a href="https://spring.pleiades.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data" class="externalink" target="_blank" rel="noopener">Spring Boot標準のプロパティ</a> を使用します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>プロパティ <code>spring.datasource.XXX</code> を使用して定義します。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="https://commons.apache.org/proper/commons-dbcp/" class="externalink" target="_blank" rel="noopener">Commons DBCP2</a> / <a href="https://github.com/brettwooldridge/HikariCP" class="externalink" target="_blank" rel="noopener">HikariCP</a> など好きなものを使用してください。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">DBコネクションプールのデータソースの定義</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/sampledb
+    username: sample_user
+    password: sample_password
+	# DBコネクションプールのタイプを指定
+	type: com.zaxxer.hikari.HikariDataSource
+	# 各コネクションプールの設定値を指定
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="available_properties">1.4. 設定可能なプロパティ</h3>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">表 3. テーブルによるID生成の設定</caption>
+<caption class="title">表 5. テーブルによるID生成の設定</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -1107,7 +1330,7 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">表 4. SQLテンプレートの設定</caption>
+<caption class="title">表 6. SQLテンプレートの設定</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -2751,7 +2974,7 @@ int count = sqlMapper.updateBySqlFile(
 <div class="sect2">
 <h3 id="_アノテーション一覧">5.1. アノテーション一覧</h3>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">表 5. アノテーション一覧</caption>
+<caption class="title">表 7. アノテーション一覧</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -2924,7 +3147,7 @@ public class User {
 </td>
 <td class="content">
 <div class="paragraph">
-<p>手動でエンティティクラスを作成する際には、 <a href="https://projectlombok.org/">Lombok</a> を使用して記述減らすことをお勧めします。</p>
+<p>手動でエンティティクラスを作成する際には、 <a href="https://projectlombok.org/" class="externalink" target="_blank" rel="noopener">Lombok</a> を使用して記述減らすことをお勧めします。</p>
 </div>
 </td>
 </tr>
@@ -3112,7 +3335,7 @@ public class User {
 <p>DBの型は、JDBCドライバがサポートしていれば、対応しているJava型にマッピングが可能です。</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">表 6. 標準でサポートするタイプ</caption>
+<caption class="title">表 8. 標準でサポートするタイプ</caption>
 <colgroup>
 <col style="width: 33.3333%;">
 <col style="width: 33.3333%;">
@@ -3309,7 +3532,7 @@ public class User {
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">表 7. 識別子の生成方法</caption>
+<caption class="title">表 9. 識別子の生成方法</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -3587,7 +3810,7 @@ public class User {
 </div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">表 8. テーブルによる識別子生成のカスタマイズ可能な項目</caption>
+<caption class="title">表 10. テーブルによる識別子生成のカスタマイズ可能な項目</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3979,7 +4202,7 @@ public class Sample {
 <p>また、本ライブラリでは、Java8で追加された、Date and Time APIの <code>LocalDate</code> / <code>LocalTIme</code> / <code>LocalDateTime</code> も扱うことができます。</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">表 9. 時制型の定義方法</caption>
+<caption class="title">表 11. 時制型の定義方法</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -4592,28 +4815,400 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 <div class="sect2">
 <h3 id="_宣言的トランザクション管理">7.1. 宣言的トランザクション管理</h3>
 <div class="paragraph">
-<p>TODO:</p>
+<p>Spring Frameworkのアノテーション <code>@Transactional</code> を使用した宣言的トランザクションの簡単な使用方法を説明します。</p>
 </div>
-<div class="paragraph">
-<p>アノテーション <code>@Transactional</code> を使用した宣言的トランザクション</p>
-</div>
-<div class="paragraph">
-<p><a href="https://spring.pleiades.io/spring-framework/docs/current/reference/html/data-access.html#transaction-declarative" class="bare">https://spring.pleiades.io/spring-framework/docs/current/reference/html/data-access.html#transaction-declarative</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Spring Bootを使用していない場合は、設定が必要になります。</p>
+</li>
+<li>
+<p>詳細は、 <a href="https://spring.pleiades.io/spring-framework/docs/current/reference/html/data-access.html#transaction-declarative" class="externalink" target="_blank" rel="noopener">Spring Frameworkのドキュメント</a> を参照してください。</p>
+</li>
+</ul>
 </div>
 <div class="sect3">
-<h4 id="_プログラムによるトランザクション管理">7.1.1. プログラムによるトランザクション管理</h4>
+<h4 id="_spring_frameworkの設定">7.1.1. Spring Frameworkの設定</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>機能を有効にするには、SpringFrameworkのアノテーション <code>@EnableTransactionManagement</code> を <a href="#spring_normal_java_config">JavaConfigクラス</a>に付与します。</p>
+</li>
+<li>
+<p>アノテーション <code>@EnableTransactionManagement</code> を使用するには、ライブラリ <a href="https://mvnrepository.com/artifact/org.springframework/spring-tx" class="externalink" target="_blank" rel="noopener">spring-tx</a> が必要ですが、SqlMapperの依存関係として追加されているため、Maven/Gradleなどを使用している場合は自動的に読み込まれているはずです。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">宣言的トランザクションを有効にするJavaConfigの定義</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import javax.sql.DataSource;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigurationSupport;
+
+
+@EnableTransactionManagement
+@Configuration
+public class SqlMapperConfig extends SqlMapperConfigurationSupport {
+
+    // 省略
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_spring_bootの設定">7.1.2. Spring Bootの設定</h4>
 <div class="paragraph">
-<p>TODO:</p>
+<p><a href="#setup_spring_boot">Spring Boot の SqlMapper 専用の starter</a> を使っている場合は、特に設定は必要ありません。</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_使い方">7.1.3. 使い方</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>トランザクション境界のメソッドにアノテーション <code>@Transactional</code> を付与します。</p>
+</li>
+<li>
+<p>参照しか行わない場合は属性 <code>readOnly=true</code> を設定しておくことで、もし、間違ってDBを更新する処理を実行してしまったときに例外がスローされデータを守ることができます。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>ただし、JDBCドライバー、TransactionManagerの種類によっては例外がスローされないこともあります。</p>
+</li>
+<li>
+<p>参照専用の場合は必ずしも必須ではありませんが、間違って更新することを防ぐためにも付与することをお勧めします。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>アノテーション <code>@Transactional</code> が適用されるデフォルトの条件としては、publicメソッドのみです。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>protected/private/パッケージprivate メソッドに <code>@Transactional`</code> を付けてもエラーは発生しません。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">宣言的トランザクションの使用例</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.mygreen.sqlmapper.core.SqlMapper;
+
+@Service
+public class EmployeeService {
+
+    @Autowired
+    private SqlMapper sqlMapper;
+
+    // 読み取り専用のトランザクション
+    @Transactional(readOnly=true)
+    public List&lt;Employee&gt; findEmployee(String name) {
+        MEmployee e = MEmployee.employee;
+        List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
+                .where(e.name.eq(name))
+                .orderBy(e.name.asc(), e.hireDate.desc())
+                .getResultList();
+    }
+
+    // 更新可能なトランザクション
+    @Transactional
+    public void saveOrUpdate(Employee employee) {
+
+        MEmployee e = MEmployee.employee;
+        boolean exists  = sqlMapper.selectFrom(e)
+                .id(employee.getId())
+                .forUpdate()
+                .getCount() &gt; 0;
+        if (exists) {
+            sqlMapper.update(employee)
+                .execute();
+        } else {
+            sqlMapper.insert(employee)
+                .execute();
+        }
+
+
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_プログラムによるトランザクション管理">7.2. プログラムによるトランザクション管理</h3>
+<div class="paragraph">
+<p>Spring Frameworkのクラス <code>TransactionTemplate</code> を使用した宣言的トランザクションの簡単な使用方法を説明します。</p>
+</div>
+<div class="paragraph">
+<p>詳細は、 <a href="https://spring.pleiades.io/spring-framework/docs/current/reference/html/data-access.html#transaction-programmatic">Spring Frameworkのドキュメント</a> を参照してください。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>PlatformTransactionManager</code> 元に <code>TransactionTemplate</code> のインスタンスを作成します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>PlatformTransactionManager</code> は SqlMapper のJavaConfigである <code>SqlMapperConfigurationSupport</code> などで予めSpringBeanとして登録されています。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>よく使用するトランザクション伝搬方式の REQUIRED_NEW と使いやすいです。</p>
+</li>
+<li>
+<p><code>TransactionTemplate#execute(TransactionCallback)</code> で戻り値がある場合のトランザクションを適用します。</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>TransactionCallback</code> は関数型インタフェースのため、Lambda式で記述することができます。</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>TransactionTemplate#executeWithoutResult(Consumer)</code> で戻り値がない場合のトランザクションを適用します。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">プログラムによるトランザクションの使用例</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import java.util.List;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import com.github.mygreen.sqlmapper.core.SqlMapper;
+
+@Service
+public class EmployeeService {
+
+    @Autowired
+    private TransactionManager transactionManager;
+
+    @Autowired
+    private SqlMapper sqlMapper;
+
+    /**
+     * REQUIRED_NEWのトランザクションテンプレートを作成します。
+     */
+    protected TransactionTemplate txNew() {
+        TransactionTemplate template = new TransactionTemplate(transactionManager);
+        template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        return template;
+    }
+
+    // 戻り値ありのトランザクションを適用する
+    public Employee save(Employee employee) {
+
+        Employee result = new Employee();
+        BeanUtils.copyProperties(employee, result)
+        return txNew().execute(status -&gt; {
+            sqlMapper.insert(result)
+                    .execute();
+            return result;
+        });
+
+    }
+
+    // 戻り値なしのトランザクションを適用する
+    public void saveOrUpdate(Employee employee) {
+
+        txNew().executeWithoutResult(status -&gt; {
+            MEmployee e = MEmployee.employee;
+            boolean exists  = sqlMapper.selectFrom(e)
+                    .id(employee.getId())
+                    .forUpdate()
+                    .getCount() &gt; 0;
+            if (exists) {
+                sqlMapper.update(employee)
+                    .execute();
+            } else {
+                sqlMapper.insert(employee)
+                    .execute();
+            }
+        });
+
+    }
+}</code></pre>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_リリースノート">8. リリースノート</h2>
+<h2 id="_イベントリスナー">8. イベントリスナー</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>テーブルの参照／挿入／更新／削除時のイベントを <a href="https://spring.pleiades.io/spring-integration/reference/html/event.html" class="externalink" target="_blank" rel="noopener">Spring Frameworkの ApplicationEvent</a> として受信することができます。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>テーブルに対するエンティティの各種操作の処理の前後のイベントが用意されています。</p>
+<div class="ulist">
+<ul>
+<li>
+<p>詳細は、 <a href="https://mygreen.github.io/sqlmapper/apidocs/com/github/mygreen/sqlmapper/core/event/package-summary.html" class="externalink" target="_blank" rel="noopener">JavaDoc</a> を参照してください。</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">表 12. イベント一覧</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">イベントクラス</th>
+<th class="tableblock halign-left valign-top">説明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PostSelectEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティを参照後のイベントです。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PreInsertEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティに対する挿入前のイベントです。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PostInsertEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティに対する挿入後のイベントです。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PreUpdateEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティに対する更新前のイベントです。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PostUpdatetEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティに対する更新後のイベントです。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PreDeleteEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティに対する削除前のイベントです。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PostDeleteEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティに対する削除後のイベントです。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PreBatchInsertEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティに対するバッチ挿入前のイベントです。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PostBatchInsertEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティに対するバッチ挿入後のイベントです。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PreBatchUpdateEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティに対するバッチ更新前のイベントです。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PostBatchUpdateEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティに対するバッチ更新後のイベントです。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PreBatchDeleteEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティに対するバッチ削除前のイベントです。</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>PostBatchDeleteEvent</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">エンティティに対するバッチ削除後のイベントです。</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>イベントを受信するには、Spring Frameworkのアノテーション <code>@EventListener</code> を使用します。</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>各処理後のイベントを受信するときには、DBトランザクションと同期する <code>@TransactionalEventListener</code> を使用します。</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="title">イベントの受信例</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import org.springframework.context.event.EventListener;
+import org.springframework.transaction.event.TransactionalEventListener;
+
+import com.github.mygreen.sqlmapper.core.event.PreInsertEvent;
+import com.github.mygreen.sqlmapper.core.event.PostUpdateEvent;
+import com.github.mygreen.sqlmapper.core.meta.EntityMeta;
+
+
+@Service
+public class SampleEventService {
+
+   /**
+     * 挿入前のエンティティ情報の受信処理
+     * @param event イベント情報。
+     */
+    @EventListener
+    public void onPreInsert(PreInsertEvent event) {
+
+        // メタ情報
+        EntityMeta meta = event.getEntityMeta();
+
+        // 挿入対象のエンティティのインスタンス
+        Object entity = getEntity();
+
+        // ・・・
+
+    }
+
+    /**
+     * 挿入後のエンティティ情報の受信処理
+     * @param event イベント情報。
+     */
+    @TransactionalEventListener
+    public void onPostInsert(PostInsertEvent event) {
+
+        // メタ情報
+        EntityMeta meta = event.getEntityMeta();
+
+        // 挿入対象のエンティティのインスタンス
+        Object entity = getEntity();
+
+        // ・・・
+
+    }
+
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_リリースノート">9. リリースノート</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_ver_0_3_1_2022_01_30">8.1. ver.0.3.1 - 2022-01-30</h3>
+<h3 id="_ver_0_3_2_2022_01_30">9.1. ver.0.3.2 - 2022-01-30</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -4656,7 +5251,7 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 </div>
 </div>
 <div class="sect2">
-<h3 id="_ver_0_3_1_2022_01_13">8.2. ver.0.3.1 - 2022-01-13</h3>
+<h3 id="_ver_0_3_1_2022_01_13">9.2. ver.0.3.1 - 2022-01-13</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -4669,9 +5264,9 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 </div>
 </div>
 <div class="sect2">
-<h3 id="_ver_0_3_2021_12_31">8.3. ver.0.3 - 2021-12-31</h3>
+<h3 id="_ver_0_3_2021_12_31">9.3. ver.0.3 - 2021-12-31</h3>
 <div class="sect3">
-<h4 id="_機能追加変更">8.3.1. 機能追加・変更</h4>
+<h4 id="_機能追加変更">9.3.1. 機能追加・変更</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -4805,7 +5400,7 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 </div>
 </div>
 <div class="sect3">
-<h4 id="_不具合修正">8.3.2. 不具合修正</h4>
+<h4 id="_不具合修正">9.3.2. 不具合修正</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -4890,7 +5485,7 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 </div>
 </div>
 <div class="sect2">
-<h3 id="_ver_0_2_2021_07_10">8.4. ver.0.2 - 2021-07-10</h3>
+<h3 id="_ver_0_2_2021_07_10">9.4. ver.0.2 - 2021-07-10</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -4904,7 +5499,7 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-01-30 09:02:32 +0900
+Last updated 2022-11-04 11:14:31 +0900
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
