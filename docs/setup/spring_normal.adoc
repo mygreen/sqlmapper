@@ -191,7 +191,7 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
 
 DBコネクションプールを使用する場合、JavaConfigのDataSourceのインスタンスを変更します。
 
-* https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2] / https://github.com/brettwooldridge/HikariCP[HikariCP] など好きなものを使用してください。
+* https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2, role="externalink", window="_blank"] / https://github.com/brettwooldridge/HikariCP[HikariCP, role="externalink", window="_blank"] など好きなものを使用してください。
 * 設定値は `application.properties` などに定義しておき、 https://spring.pleiades.io/spring-framework/docs/current/javadoc-api/org/springframework/core/env/Environment.html[Environment, role="externalink", window="_blank"] で参照します。
 ** SqlMapperConfigurationSupportのプロパティ `env` で定義されてるため、JavaConfig内から参照できます。
 

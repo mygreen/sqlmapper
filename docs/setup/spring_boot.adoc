@@ -151,9 +151,9 @@ spring:
 
 === DBコネクションプールの設定
 
-* DBコネクションプールを使用する場合、 https://spring.pleiades.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data[Spring Boot標準のプロパティ] を使用します。
+* DBコネクションプールを使用する場合、 https://spring.pleiades.io/spring-boot/docs/current/reference/html/application-properties.html#appendix.application-properties.data[Spring Boot標準のプロパティ, role="externalink", window="_blank"] を使用します。
 ** プロパティ `spring.datasource.XXX` を使用して定義します。
-* https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2] / https://github.com/brettwooldridge/HikariCP[HikariCP] など好きなものを使用してください。
+* https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2, role="externalink", window="_blank"] / https://github.com/brettwooldridge/HikariCP[HikariCP, role="externalink", window="_blank"] など好きなものを使用してください。
 
 
 .DBコネクションプールのデータソースの定義
