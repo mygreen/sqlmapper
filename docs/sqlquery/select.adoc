@@ -7,7 +7,7 @@ SQLを使って、複数件検索をする場合は、`selectBySql(..)` と `get
 [source,java]
 ----
 SqlTemplateContext templateContext = new MapSqlTemplateContext(
-        Map.of("salary", nwe BigDecimal(2000)));
+        Map.of("salary", new BigDecimal(2000)));
 
 List<Employee> results = sqlMapper.selectBySql(
             Employee.class, 
@@ -98,7 +98,7 @@ NOTE: SQLファイルで定義したSQLを、`select count(*) from (<SQLテン�
 [source,java]
 ----
 SqlTemplateContext templateContext = new MapSqlTemplateContext(
-        Map.of("salary", nwe BigDecimal(2000)));
+        Map.of("salary", new BigDecimal(2000)));
 
 long count = sqlMapper.selectBySql(
             Employee.class, 
@@ -124,7 +124,7 @@ long count = sqlMapper.selectBySql(
 [source,java]
 ----
 SqlTemplateContext templateContext = new MapSqlTemplateContext(
-        Map.of("salary", nwe BigDecimal(2000)));
+        Map.of("salary", new BigDecimal(2000)));
 
 List<Employee> results = sqlMapper.selectBySql(
             Employee.class, 

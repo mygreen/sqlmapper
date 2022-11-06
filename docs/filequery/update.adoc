@@ -8,7 +8,7 @@ SQLファイルを使ってエンティティを更新する場合は、 `update
 [source,java]
 ----
 SqlTemplateContext templateContext = new MapSqlTemplateContext(
-        Map.of("salary", nwe BigDecimal(2000), "id", 5));
+        Map.of("salary", new BigDecimal(2000), "id", 5));
 
 int count = sqlMapper.updateBySqlFile(
             Employee.class, 
