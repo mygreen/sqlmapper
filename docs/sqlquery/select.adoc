@@ -55,37 +55,28 @@ Optional<Employee> result = sqlMapper.sqlMapper.selectBySql(
 
 == Streamによる検索
 
-検索結果を多くの行を返すため、`List` でまとめて受け取ることが困難な場合は、`getResultStream()` を使用します。
+検索結果を多くの行を返しメモリの消費量が多く`List` でまとめて受け取ることが困難な場合は、フェッチによる参照として `getResultStream()` を使用します。
 
-.検索結果の1件目を取得する
+* Streamは、必ずクローズするようにしてください。
+
+.Streamによるフェッチ検索
 [source,java]
 ----
 SqlTemplateContext templateContext = new MapSqlTemplateContext(
-        Map.of("salary", nwe BigDecimal(2000)));
+        Map.of("salary", new BigDecimal(2000)));
 
-List<Employee> results = sqlMapper.selectBySql(
+Stream<Employee> stream = sqlMapper.selectBySql(
             Employee.class, 
             "select * from employee where salary >= /*salary*/", 
             templateContext)
-        .getResultStream()
-        .findFirst()
-        .get()
-----
+        .getResultStream();
 
-.検索結果をイテレーションする
-[source,java]
-----
-SqlTemplateContext templateContext = new MapSqlTemplateContext(
-        Map.of("salary", nwe BigDecimal(2000)));
-
-List<Employee> results = sqlMapper.selectBySql(
-            Employee.class, 
-            "select * from employee where salary >= /*salary*/", 
-            templateContext)
-        .getResultStream()
-        .forEach({
-            //TODO:任意の処理
-        })
+// try-with-resourceでStreamをクローズする。
+try (stream) {
+    stream.forEarch(entity -> {
+        // 任意の処理
+    });
+}
 ----
 
 == 検索結果の行数取得

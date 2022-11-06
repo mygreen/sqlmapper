@@ -44,25 +44,22 @@ Optional<Employee> result = sqlMapper.selectFrom(MEmployee.employee)
 
 == Streamによる検索
 
-検索結果を多くの行を返すため、`List` でまとめて受け取ることが困難な場合は、`getResultStream()` を使用します。
+検索結果を多くの行を返しメモリの消費量が多く`List` でまとめて受け取ることが困難な場合は、フェッチによる参照として `getResultStream()` を使用します。
 
-.検索結果の1件目を取得する
+* Streamは、必ずクローズするようにしてください。
+
+.Streamによるフェッチ検索
 [source,java]
 ----
-Employee result = sqlMapper.selectFrom(MEmployee.employee)
+Stream<Employee> stream = sqlMapper.selectFrom(MEmployee.employee)
         .getResultStream()
-        .findFirst()
-        .get();
-----
 
-.検索結果をイテレーションする
-[source,java]
-----
-sqlMapper.selectFrom(MEmployee.employee)
-        .getResultStream()
-        .forEach({
-            //TODO:任意の処理
-        })
+// try-with-resourceでStreamをクローズする。
+try (stream) {
+    stream.forEarch(entity -> {
+        // 任意の処理
+    });
+}
 ----
 
 == 検索結果の行数取得
