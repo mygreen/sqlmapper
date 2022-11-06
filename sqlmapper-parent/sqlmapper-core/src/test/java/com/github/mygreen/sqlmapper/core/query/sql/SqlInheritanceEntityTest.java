@@ -43,7 +43,7 @@ public class SqlInheritanceEntityTest extends QueryTestSupport {
     @Test
     void testSqlSelectByFile() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("createAt", Timestamp.valueOf("2021-01-03 00:00:00")));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("createAt", Timestamp.valueOf("2021-01-03 00:00:00")));
 
         List<InheritanceTestEntity> result = sqlMapper.selectBySqlFile(InheritanceTestEntity.class, "/sqltemplate/inheritance_selectByCreateAt.sql", templateContext)
                 .getResultList();
@@ -59,7 +59,7 @@ public class SqlInheritanceEntityTest extends QueryTestSupport {
     @Test
     void testSqlCountBySql() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("createAt", Timestamp.valueOf("2021-01-03 00:00:00")));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("createAt", Timestamp.valueOf("2021-01-03 00:00:00")));
 
         long result = sqlMapper.getCountBySqlFile("/sqltemplate/inheritance_selectByCreateAt.sql", templateContext);
 
@@ -70,7 +70,7 @@ public class SqlInheritanceEntityTest extends QueryTestSupport {
     @Test
     void testSqlUpdateBySql_delete() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("createAt", Timestamp.valueOf("2021-01-03 00:00:00")));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("createAt", Timestamp.valueOf("2021-01-03 00:00:00")));
 
         int count = txNew().execute(action -> sqlMapper.updateBySqlFile("/sqltemplate/inheritance_deleteByCreateAt.sql", templateContext)
                 .execute());

@@ -38,7 +38,7 @@ public class SqlSelectImpl<T> implements SqlSelect<T> {
      * SQLテンプレートのパラメータです。
      */
     @Getter
-    private final SqlTemplateContext parameter;
+    private final SqlTemplateContext<?> parameter;
 
     @Getter
     private final Class<T> baseClass;
@@ -70,7 +70,7 @@ public class SqlSelectImpl<T> implements SqlSelect<T> {
     private int offset = -1;
 
     public SqlSelectImpl(@NonNull SqlMapperContext context, @NonNull Class<T> baseClass,
-            @NonNull SqlTemplate template, @NonNull SqlTemplateContext parameter) {
+            @NonNull SqlTemplate template, @NonNull SqlTemplateContext<?> parameter) {
 
         this.context = context;
         this.template = template;

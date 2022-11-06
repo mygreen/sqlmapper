@@ -194,7 +194,7 @@ public class SqlMapper {
      * @param parameter SQLテンプレートのパラメータ
      * @return SQLテンプレートによる抽出を行うクエリ
      */
-    public <T> SqlSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path, @NonNull SqlTemplateContext parameter) {
+    public <T> SqlSelect<T> selectBySqlFile(@NonNull Class<T> baseClass, @NonNull String path, @NonNull SqlTemplateContext<?> parameter) {
         return new SqlSelectImpl<T>(context, baseClass, context.getSqlTemplateEngine().getTemplate(path), parameter);
     }
 
@@ -214,7 +214,7 @@ public class SqlMapper {
      * @param parameter SQLテンプレートのパラメータ
      * @return カウント結果
      */
-    public long getCountBySqlFile(@NonNull String path, @NonNull SqlTemplateContext parameter) {
+    public long getCountBySqlFile(@NonNull String path, @NonNull SqlTemplateContext<?> parameter) {
         return new SqlCountImpl(context, context.getSqlTemplateEngine().getTemplate(path), parameter)
                 .getCount();
     }
@@ -234,7 +234,7 @@ public class SqlMapper {
      * @param parameter SQLテンプレートのパラメータ
      * @return SQLテンプレートによる更新を行うクエリ
      */
-    public SqlUpdate updateBySqlFile(@NonNull String path, @NonNull SqlTemplateContext parameter) {
+    public SqlUpdate updateBySqlFile(@NonNull String path, @NonNull SqlTemplateContext<?> parameter) {
         return new SqlUpdateImpl(context, context.getSqlTemplateEngine().getTemplate(path), parameter);
     }
 
@@ -257,7 +257,7 @@ public class SqlMapper {
      * @param parameter SQLテンプレートのパラメータ
      * @return SQLテンプレートによる抽出を行うクエリ
      */
-    public <T> SqlSelect<T> selectBySql(@NonNull Class<T> baseClass, @NonNull String sql, @NonNull SqlTemplateContext parameter) {
+    public <T> SqlSelect<T> selectBySql(@NonNull Class<T> baseClass, @NonNull String sql, @NonNull SqlTemplateContext<?> parameter) {
         return new SqlSelectImpl<T>(context, baseClass, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);
     }
 
@@ -277,7 +277,7 @@ public class SqlMapper {
      * @param parameter SQLテンプレートのパラメータ
      * @return カウント結果
      */
-    public long getCountBySql(@NonNull String sql, @NonNull SqlTemplateContext parameter) {
+    public long getCountBySql(@NonNull String sql, @NonNull SqlTemplateContext<?> parameter) {
         return new SqlCountImpl(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter)
                 .getCount();
     }
@@ -297,7 +297,7 @@ public class SqlMapper {
      * @param parameter SQLテンプレートのパラメータ
      * @return SQLテンプレートによる更新を行うクエリ
      */
-    public SqlUpdate updateBySql(@NonNull String sql, @NonNull SqlTemplateContext parameter) {
+    public SqlUpdate updateBySql(@NonNull String sql, @NonNull SqlTemplateContext<?> parameter) {
         return new SqlUpdateImpl(context, context.getSqlTemplateEngine().getTemplateByText(sql), parameter);
     }
 

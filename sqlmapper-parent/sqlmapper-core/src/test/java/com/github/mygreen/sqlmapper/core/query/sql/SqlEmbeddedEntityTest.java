@@ -42,7 +42,7 @@ public class SqlEmbeddedEntityTest extends QueryTestSupport {
     @Test
     void testSqlSelectByFile() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("id", new EmbeddedTestEntity.PK("001", 2l)));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("id", new EmbeddedTestEntity.PK("001", 2l)));
 
         EmbeddedTestEntity result = sqlMapper.selectBySqlFile(EmbeddedTestEntity.class, "/sqltemplate/embedded_selectById.sql", templateContext)
                 .getSingleResult();
@@ -68,7 +68,7 @@ public class SqlEmbeddedEntityTest extends QueryTestSupport {
     @Test
     void testSqlUpdateBySql_delete() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("id", new EmbeddedTestEntity.PK("001", 2l)));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("id", new EmbeddedTestEntity.PK("001", 2l)));
 
         int count = txNew().execute(action -> sqlMapper.updateBySqlFile("/sqltemplate/embedded_deleteById.sql", templateContext)
                 .execute());

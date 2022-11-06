@@ -41,7 +41,7 @@ public class SqlCountTest extends QueryTestSupport {
     @Test
     void testBySqlFile() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("lastName", "Yamada"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("lastName", "Yamada"));
 
         long result = sqlMapper.getCountBySqlFile("/sqltemplate/customer_selectByAny.sql", templateContext);
 
@@ -51,7 +51,7 @@ public class SqlCountTest extends QueryTestSupport {
     @Test
     void testBySql() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("lastName", "Yamada"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("lastName", "Yamada"));
 
         String sql = loadResource("/sqltemplate/customer_selectByAny.sql", StandardCharsets.UTF_8);
 

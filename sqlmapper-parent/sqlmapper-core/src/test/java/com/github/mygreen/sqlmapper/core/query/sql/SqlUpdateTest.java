@@ -45,7 +45,7 @@ public class SqlUpdateTest extends QueryTestSupport {
     @Test
     void testBySqlFile_dete() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("customerId", "005"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("customerId", "005"));
 
         int count = txNew().execute(action ->
                 sqlMapper.updateBySqlFile("/sqltemplate/customer_deleteById.sql", templateContext)
@@ -66,7 +66,7 @@ public class SqlUpdateTest extends QueryTestSupport {
     @Test
     void testBySql_delete() {
 
-        SqlTemplateContext templateContext = new MapSqlTemplateContext(Map.of("customerId", "005"));
+        SqlTemplateContext<?> templateContext = new MapSqlTemplateContext(Map.of("customerId", "005"));
 
         String sql = loadResource("/sqltemplate/customer_deleteById.sql", StandardCharsets.UTF_8);
 

@@ -35,12 +35,12 @@ public class SqlCountImpl implements SqlCount {
      * SQLテンプレートのパラメータです。
      */
     @Getter
-    private final SqlTemplateContext parameter;
+    private final SqlTemplateContext<?> parameter;
 
     @Getter
     private Integer queryTimeout;
 
-    public SqlCountImpl(SqlMapperContext context, SqlTemplate template, SqlTemplateContext parameter) {
+    public SqlCountImpl(SqlMapperContext context, SqlTemplate template, SqlTemplateContext<?> parameter) {
         this.context = context;
         this.template = template;
         this.parameter = parameter;
