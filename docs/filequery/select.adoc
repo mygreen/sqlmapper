@@ -7,7 +7,7 @@ SQLファイルを使って、複数件検索をする場合は、`selectBySqlFi
 [source,java]
 ----
 SqlTemplateContext templateContext = new MapSqlTemplateContext(
-        Map.of("salary", nwe BigDecimal(2000)));
+        Map.of("salary", new BigDecimal(2000)));
 
 List<Employee> results = sqlMapper.selectBySqlFile(
             Employee.class, 
@@ -56,39 +56,29 @@ Optional<Employee> result =sqlMapper.sqlMapper.selectBySqlFile(
 
 == Streamによる検索
 
-検索結果を多くの行を返すため、`List` でまとめて受け取ることが困難な場合は、`getResultStream()` を使用します。
+検索結果を多くの行を返しメモリの消費量が多く`List` でまとめて受け取ることが困難な場合は、フェッチによる参照として `getResultStream()` を使用します。
 
-.検索結果の1件目を取得する
+* Streamは、必ずクローズするようにしてください。
+
+.Streamによるフェッチ検索
 [source,java]
 ----
 SqlTemplateContext templateContext = new MapSqlTemplateContext(
-        Map.of("salary", nwe BigDecimal(2000)));
+        Map.of("salary", new BigDecimal(2000)));
 
-List<Employee> results = sqlMapper.selectBySqlFile(
+Stream<Employee> stream = sqlMapper.selectBySqlFile(
             Employee.class, 
             "examples/sql/employee/selectAll.sql", 
             templateContext)
-        .getResultStream()
-        .findFirst()
-        .get()
-----
+        .getResultStream();
 
-.検索結果をイテレーションする
-[source,java]
+// try-with-resourceでStreamをクローズする。
+try (stream) {
+    stream.forEarch(entity -> {
+        // 任意の処理
+    });
+}
 ----
-SqlTemplateContext templateContext = new MapSqlTemplateContext(
-        Map.of("salary", nwe BigDecimal(2000)));
-
-List<Employee> results = sqlMapper.selectBySqlFile(
-            Employee.class, 
-            "examples/sql/employee/selectAll.sql", 
-            templateContext)
-        .getResultStream()
-        .forEach({
-            //TODO:任意の処理
-        })
-----
-
 
 == 検索結果の行数取得
 
@@ -99,7 +89,7 @@ NOTE: SQLファイルで定義したSQLを、`select count(*) from (<SQLテン�
 [source,java]
 ----
 SqlTemplateContext templateContext = new MapSqlTemplateContext(
-        Map.of("salary", nwe BigDecimal(2000)));
+        Map.of("salary", new BigDecimal(2000)));
 
 long count = sqlMapper.selectBySqlFile(
             Employee.class, 
@@ -126,7 +116,7 @@ long count = sqlMapper.selectBySqlFile(
 [source,java]
 ----
 SqlTemplateContext templateContext = new MapSqlTemplateContext(
-        Map.of("salary", nwe BigDecimal(2000)));
+        Map.of("salary", new BigDecimal(2000)));
 
 List<Employee> results = sqlMapper.selectBySqlFile(
             Employee.class, 
