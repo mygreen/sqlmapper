@@ -68,9 +68,9 @@ public class User {
 * シーケンスをサポートしているDBMSで利用できます。
 
 * 利用する際には、事前に採番用のシーケンスを定義しておく必要があります。
-** シーケンス名は、アノテーション ``@SequenceGenerator`` でカスタマイズすることができます。
+** シーケンス名は、アノテーション ``@SequenceGenerator`` でカスタマイズできます。
 ** アノテーション ``@SequenceGenerator`` でシーケンス名を指定しない場合は、「``<テーブル名>_<カラム名>``」のシーケンス名を使用します。
-* 文字列にマッピングする際に、``@SequenceGenerator(format="xxx")`` でフォーマットを指定することができます。
+* 文字列にマッピングする際、``@SequenceGenerator(format="xxx")`` でフォーマットを指定できます。
 ** フォーマットは、``java.text.DecimalFormat`` で解釈可能な書式を指定します。
 
 .採番用シーケンスのDDL
@@ -118,8 +118,8 @@ public class User {
 IDENTITYやシーケンスなどの機能を使わないで、テーブルを使って採番を行うため、全てのDMBSにて利用できます。
 
 * 利用する際には、事前に採番用のテーブルを定義しておく必要があります。
-** テーブル名、カラム名などは、アノテーション ``@TableGenerator`` または、<<available_properties,プロパティ>> によってカスタマイズすることができます。
-* 文字列にマッピングする際に、``@TableGenerator(format="xxx")`` でフォーマットを指定することができます。
+** テーブル名、カラム名などは、アノテーション ``@TableGenerator`` または、<<available_properties,プロパティ>> によってカスタマイズできます。
+* 文字列にマッピングする際、``@TableGenerator(format="xxx")`` でフォーマットを指定できます。
 ** フォーマットは、``java.text.DecimalFormat`` で解釈可能な書式を指定します。
 
 .採番用テーブルのDDL
@@ -169,7 +169,7 @@ public class User {
 
 * カスタマイズする場合は、アノテーション ``@TableGenerator`` または、プロパティファイルにて定義します。
 * プロパティファイで定義する場合は、アプリ全体に反映されます。
-** <<spring_normal_properties,JavaConfigによる設定を行っている場合>>は、``@PropertySource`` にて定義したファイルを読み込んでください。
+** <<spring_normal_properties,JavaConfigによる設定している場合>>は、``@PropertySource`` にて定義したファイルを読み込んでください。
 ** <<spring_boot_properties,SpringBootを使用している場合>>は、``application.properties`` または、``application.yml``` に定義をしてください。
 
 .カスタマイズする場合

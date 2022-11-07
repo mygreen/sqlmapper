@@ -32,16 +32,16 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
 
 == Spring Bootの設定
 
-<<setup_spring_boot,Spring Boot の SqlMapper 専用の starter>> を使っている場合は、特に設定は必要ありません。
+<<setup_spring_boot,Spring BootのSqlMapper専用のstarter>> を使っている場合は、特に設定は必要ありません。
 
 == 使い方
 
 * トランザクション境界のメソッドにアノテーション `@Transactional` を付与します。
 * 参照しか行わない場合は属性 `readOnly=true` を設定しておくことで、もし、間違ってDBを更新する処理を実行してしまったときに例外がスローされデータを守ることができます。
 ** ただし、JDBCドライバー、TransactionManagerの種類によっては例外がスローされないこともあります。
-** 参照専用の場合は必ずしも必須ではありませんが、間違って更新することを防ぐためにも付与することをお勧めします。
+** 参照専用の場合は、必ずしも必須ではありませんが、間違って更新することを防ぐためにも付与することをお勧めします。
 * アノテーション `@Transactional` が適用されるデフォルトの条件としては、publicメソッドのみです。
-** protected/private/パッケージprivate メソッドに `@Transactional`` を付けてもエラーは発生しません。
+** protected/private/パッケージprivateメソッドに `@Transactional`` を付けてもエラーは発生しません。
 
 
 
@@ -78,8 +78,8 @@ public class EmployeeService {
         MEmployee e = MEmployee.employee;
         boolean exists  = sqlMapper.selectFrom(e)
                 .id(employee.getId())
-                .forUpdate()
-                .getCount() > 0;
+                .forUpdate() 
+                .getResultList().size() > 0;   // forUpdateのときはcountなどの集約関数は使用できない
         if (exists) {
             sqlMapper.update(employee)
                 .execute();

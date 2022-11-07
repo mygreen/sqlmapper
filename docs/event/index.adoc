@@ -1,6 +1,6 @@
 = イベントリスナー
 
-テーブルの参照／挿入／更新／削除時のイベントを https://spring.pleiades.io/spring-integration/reference/html/event.html[Spring Frameworkの ApplicationEvent, role="externalink", window="_blank"] として受信することができます。
+テーブルの参照／挿入／更新／削除時のイベントを https://spring.pleiades.io/spring-integration/reference/html/event.html[Spring Frameworkの ApplicationEvent, role="externalink", window="_blank"] として受信できます。
 
 * テーブルに対するエンティティの各種操作の処理の前後のイベントが用意されています。
 ** 詳細は、 https://mygreen.github.io/sqlmapper/apidocs/com/github/mygreen/sqlmapper/core/event/package-summary.html[JavaDoc, role="externalink", window="_blank"] を参照してください。

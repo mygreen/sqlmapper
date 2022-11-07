@@ -3,14 +3,14 @@
 == 機能追加・変更
 
 * https://github.com/mygreen/sqlmapper/pull/3[#3, window="_blank"] - 監査情報を記録するためのアノテーションの名称を変更しました。
-** ``@ModfiedAt`` -> ``UpdatedAt``
-** ``@ModfiedBy`` -> ``UpdatedBy``
+** ``@ModfiedAt`` ⇒ ``UpdatedAt``
+** ``@ModfiedBy`` ⇒ ``UpdatedBy``
 
 * https://github.com/mygreen/sqlmapper/pull/4[#4, window="_blank"] - <<custom_id_gnerarator,識別子の独自実装を指定できる機能>>を追加。
 
 * https://github.com/mygreen/sqlmapper/pull/5[#5, window="_blank"] - 以下のメソッド名を変更しました。
-** ``Dialect#isSupportedGenerationType`` -> ``Dialect#supportsGenerationType``
-** ``Dialect#isSupportedSelectForUpdate`` -> ``Dialect#supportsSelectForUpdate``
+** ``Dialect#isSupportedGenerationType`` ⇒ ``Dialect#supportsGenerationType``
+** ``Dialect#isSupportedSelectForUpdate`` ⇒ ``Dialect#supportsSelectForUpdate``
 
 * https://github.com/mygreen/sqlmapper/pull/6[#6, window="_blank"] - 識別子の生成戦略を ``@GeneratedValue(strategy=...)`` で指定したとき、DBの方言ごとにサポートしているかチェックを追加しました。
 
@@ -27,7 +27,7 @@
 * https://github.com/mygreen/sqlmapper/pull/14[#14, window="_blank"] - メタモデルの式において、文字列結合用の関数を追加しました。
 
 * https://github.com/mygreen/sqlmapper/pull/15[#15, window="_blank"] - メタモデルの式を内部処理として、関数ごとに処理を分割しました。
-** Dialectごとにカスタマイズ可能になりました。
+** Dialectごとに、カスタマイズ可能になりました。
 
 * https://github.com/mygreen/sqlmapper/pull/16[#16, window="_blank"] - メタモデルの式において、任意のSQL関数を指摘できる機能を追加しました。
 
@@ -37,7 +37,7 @@
 
 * https://github.com/mygreen/sqlmapper/pull/22[#22, window="_blank"] - メタモデルの式を評価する際に、親と子ノードが同じ演算子グループのとき括弧で囲むよう変更。
 
-* https://github.com/mygreen/sqlmapper/pull/28[#28, window="_blank"] - 各クエリのメソッドで、`includes` / `excludes` の両方を指定したとき、`includes` を有線するよう修正しました。
+* https://github.com/mygreen/sqlmapper/pull/28[#28, window="_blank"] - 各クエリのメソッドで、`includes` / `excludes` の両方を指定したとき、`includes` を優先するよう修正しました。
 
 * https://github.com/mygreen/sqlmapper/pull/30[#30, window="_blank"] - レコード挿入時のバージョンキーの初期値を `1` から `0` に変更しました。
 
@@ -49,10 +49,10 @@
 * https://github.com/mygreen/sqlmapper/pull/37[#37, window="_blank"] - テーブルによる自動採番処理において、キャッシュのリフレッシュ機能を追加しました。
 
 * https://github.com/mygreen/sqlmapper/pull/38[#38, window="_blank"] - テーブルを参照する処理用のメソッド `getOptionalResult()` において、レコードが複数件見つかったとき例外 `IncorrectResultSizeDataAccessException` をスローするよう変更しました。
-** さらに、`getSingleResult` で0件のとき例外を、`IncorrectResultSizeDataAccessException`  の サブクラス `EmptyResultDataAccessException` に変更。
+** さらに、`getSingleResult` で0件のとき例外を、`IncorrectResultSizeDataAccessException`  のサブクラス `EmptyResultDataAccessException` に変更。
 
 * https://github.com/mygreen/sqlmapper/pull/39[#39, window="_blank"] - SQLテンプレートで `getCountBySql` 実行時に、`select count(*) from (<SQLファイルの内容>)` のように、自動的にcount句を付与するよう修正、
-** さらに、 `selectBySql` 事項時に、offset/limit 句を指定できる機能を追加しました。
+** さらに、 `selectBySql` 事項時に、offset/limit句を指定できる機能を追加しました。
 
 * https://github.com/mygreen/sqlmapper/pull/41[#41, window="_blank"] - `java.sql.Blob` / `java.sql.Clob` 型をサポートしました。
 ** APTによるメタモデル生成処理において、Lob型のアノテーションが指定されている場合は、`GeneralPath` とするよう修正。
@@ -61,11 +61,11 @@
 
 == 不具合修正
 
-* https://github.com/mygreen/sqlmapper/pull/7[#7, window="_blank"] - フィールドに 修飾子 `transient` が付与されていても永続化対象外とならない事象を修正しました。
+* https://github.com/mygreen/sqlmapper/pull/7[#7, window="_blank"] - フィールドに修飾子 `transient` が付与されていても永続化対象外とならない事象を修正しました。
 
 * https://github.com/mygreen/sqlmapper/pull/8[#8, window="_blank"] - OracleのときのLIMIT句の文法間違いを修正。
 
-* https://github.com/mygreen/sqlmapper/pull/18[#18, window="_blank"] - LIMIT句のoffsetが-1のときlimit句が設定されない事象を修正しました。
+* https://github.com/mygreen/sqlmapper/pull/18[#18, window="_blank"] - LIMIT句のoffsetが `-1` のときlimit句が設定されない事象を修正しました。
 
 * https://github.com/mygreen/sqlmapper/pull/19[#19, window="_blank"] - メタモデルのIN句に渡した値を評価する際に、展開されない事象を修正しました。
 
@@ -97,8 +97,8 @@
 * https://github.com/mygreen/sqlmapper/pull/43[#43, window="_blank"] - 埋め込み型のプロパティを使用したときの次の不具合を修正しました。
 ** テーブルの値をマッピングする際に、例外が発生する事象を修正しました。
 ** SELECT句のメソッド `id(...)` で埋め込み型プロパティの値を指定したとき、個数チェックのエラーが発生する事象を修正しました。
-** ORDER BY句で埋め込み型のプロパティを指定したとき、SQLを評価する際に、テーブルのエイリアスが null となる事象を修正しました。
+** ORDER BY句で埋め込み型のプロパティを指定したとき、SQLを評価する際に、テーブルのエイリアスが ``null`` となる事象を修正しました。
 
 * https://github.com/mygreen/sqlmapper/pull/44[#44, window="_blank"] - `@CreateAt` / `@UpdateAt` にて、プロパティが `java.util.Date` のとき、`ClassCastException` が発生する事象を修正しました。
 
-* https://github.com/mygreen/sqlmapper/pull/45[#45, window="_blank] - 埋め込み型のプロパティに `@GeneratedValue` を付与した際に、不正なエンティティ定義と判定され例外が発生する事象を修正しました。
+* https://github.com/mygreen/sqlmapper/pull/45[#45, window="_blank"] - 埋め込み型プロパティに `@GeneratedValue` を付与した際に不正なエンティティ定義と判定され例外が発生する事象を修正しました。

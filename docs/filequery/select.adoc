@@ -29,7 +29,7 @@ SQLファイルを使って1件検索をする場合は、 `selectBySqlFile(...)
 SqlTemplateContext templateContext = new MapSqlTemplateContext(
         Map.of("id", 10));
 
-Employee result = sqlMapper.sqlMapper.selectBySqlFile(
+Employee result = sqlMapper.selectBySqlFile(
             Employee.class, 
             "examples/sql/employee/selectSingle.sql", 
             templateContext)
@@ -39,8 +39,8 @@ Employee result = sqlMapper.sqlMapper.selectBySqlFile(
 1件も見つからなかったときに例外をスローされないようにするには、`getOptionalResult()` を使用します。
 
 * 戻り値を `java.util.Optinal` で受け取ることができます。
-* ただし、2件以上見つかったときは Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
-** 例外がスローされないようにするためにメソッド `limit(1)` による件数を指定することをお勧めします。
+* ただし、2件以上見つかったときは、Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
+** 例外がスローされないように、メソッド `limit(1)` による件数を指定することをお勧めします。
 
 [source,java]
 ----
@@ -56,7 +56,7 @@ Optional<Employee> result =sqlMapper.sqlMapper.selectBySqlFile(
 
 == Streamによる検索
 
-検索結果を多くの行を返しメモリの消費量が多く`List` でまとめて受け取ることが困難な場合は、フェッチによる参照として `getResultStream()` を使用します。
+検索結果を多くの行を返しメモリの消費量が多くListでまとめて受け取ることが困難な場合は、フェッチによる参照として `getResultStream()` を使用します。
 
 * Streamは、必ずクローズするようにしてください。
 

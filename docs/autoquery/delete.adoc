@@ -6,10 +6,10 @@
 
 * `insert(...)` の引数はエンティティのインスタンスを指定します。
 * `execute()` の戻り値は、削除した行数です。
-* 削除するときに、バージョンによる楽観的排他制御をすることができます。
-** 楽観敵排他エラーが発生したときは例外 `org.springframework.dao.OptimisticLockingFailureException` がスローされます。。 
+* 削除するときに、バージョンによる楽観的排他チェックができます。
+** 楽観敵排他エラーが発生したときは、例外 `org.springframework.dao.OptimisticLockingFailureException` がスローされます。
 ** 詳しくは、 <<anno_version, バージョン定義>> を参照してください。
-* 識別子定義のなエンティティは `delete(...)` で削除することはできません。
+* 識別子定義のなエンティティは `delete(...)` で削除できません。
 ** 代わりに、`deleteFrom(...)` を使用してください。
 
 [source,java]
@@ -23,10 +23,10 @@ int count = sqlMapper.delete(employee)
 複数のエンティティをバッチ削除する場合は、`deleteBatch(...)` と `execute()` を組み合わせて使用します。
 
 * `execute()` の戻り値は、削除した行数の配列です。
-* 削除するときに、バージョンによる楽観的排他制御をすることができます。
-** 楽観敵排他エラーが発生したときは例外 `org.springframework.dao.
+* 削除するときに、バージョンによる楽観的排他チェックができます。
+** 楽観的排他エラーが発生したときは例外 `org.springframework.dao.OptimisticLockingFailureException` がスローされます。
 ** 詳しくは、 <<anno_version, バージョン定義>> を参照してください。
-* 識別子定義のなエンティティは `updateBatch(...)` で削除することはできません。
+* 識別子定義のなエンティティは `updateBatch(...)` で削除できません。
 
 [source,java]
 ----
@@ -39,7 +39,7 @@ NOTE: 処理時のバッチサイズは引数で指定したエンティティ�
 
 == 削除条件の指定
 
-任にの条件で削除を行う場合、`deleteFrom(...)` と `execute()` を使用します。
+任意の条件で削除する場合、`deleteFrom(...)` と `execute()` を使用します。
 
 * 条件を指定する場合は、`where(...)` を使用します。
 ** 条件を指定しなければ、全レコードが削除されるので注意してください。
@@ -68,11 +68,11 @@ int count = sqlMapper.delete(employee)
 
 == 削除行数をチェックしない
 
-バージョンによる楽観的排他制御を行う場合、 削除できた行数が0だと `org.springframework.dao.OptimisticLockingFailureException` が発生します。
+バージョンによる楽観的排他チェックを行う場合、 削除できた行数が0だと `org.springframework.dao.OptimisticLockingFailureException` がスローされます。
 
 削除行数を正しく返さないJDBCドライバを使用する場合は、`suppresOptimisticLockException()` を呼び出すことで、更新できた行数のチェックを行わなくなります。
 
-NOTE: 削除条件を指定する `deleteFrom(...)` を使用するときは、`suppresOptimisticLockException()`　を使用することはできません。
+NOTE: 削除条件を指定する `deleteFrom(...)` を使用するときは、`suppresOptimisticLockException()` を使用することはできません。
 
 
 [source,java]

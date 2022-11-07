@@ -7,10 +7,10 @@
 * `update(...)` の引数はエンティティのインスタンスを指定します。
 * `execute()` の戻り値は、更新した行数です。
 ** 更新対象のプロパティ（カラム）がない場合は、`0` を返します。
-* 更新するときに、バージョンによる楽観的排他制御をすることができます。
-** 楽観敵排他エラーが発生したときは例外 `org.springframework.dao.OptimisticLockingFailureException` がスローされます。。 
+* 更新するときに、バージョンによる楽観的排他チェックをができます。
+** 楽観敵排他エラーが発生したときは例外 `org.springframework.dao.OptimisticLockingFailureException` がスローされます。
 ** 詳しくは、 <<anno_version, バージョン定義>> を参照してください。
-* 識別子定義のなエンティティは `update(...)` で更新することはできません。
+* 識別子定義のなエンティティは、 `update(...)` で更新できません。
 
 [source,java]
 ----
@@ -20,14 +20,14 @@ int count = sqlMapper.update(employee)
 
 == バッチ更新
 
-複数のエンティティをバッチ更新する場合は、`updateBatch(...)` と `execute()`` を組み合わせます。
+複数のエンティティをバッチ更新する場合は、`updateBatch(...)` と `execute()` を組み合わせます。
 
 * `updateBatch(...)` の引数はエンティティのインスタンスのリストあるいは配列（可変長引数）を指定します。
 * `execute()` の戻り値は、更新した行数の配列です。
-* 更新するときに、バージョンによる楽観的排他制御をすることができます。
-** 楽観敵排他エラーが発生したときは例外 `org.springframework.dao.
+* 更新するときに、バージョンによる楽観的排他チェックをができます。
+** 楽観的排他エラーが発生したときは、例外 `org.springframework.dao.OptimisticLockingFailureException` がスローされます。
 ** 詳しくは、 <<anno_version, バージョン定義>> を参照してください。
-* 識別子定義のなエンティティは `updateBatch(...)` で更新することはできません。
+* 識別子定義のなエンティティは、 `updateBatch(...)` で更新できません。
 
 [source,java]
 ----
@@ -111,7 +111,7 @@ int count = sqlMapper.update(employee)
 
 == 更新行数をチェックしない
 
-バージョンによる楽観的排他制御を行う場合、 更新できた行数が0だと `org.springframework.dao.OptimisticLockingFailureException` が発生します。
+バージョンによる楽観的排他チェックを行う場合、 更新できた行数が0だと `org.springframework.dao.OptimisticLockingFailureException` が発生します。
 
 更新行数を正しく返さないJDBCドライバを使用する場合は、`suppresOptimisticLockException()` を呼び出すことで、更新できた行数のチェックを行わなくなります。
 
