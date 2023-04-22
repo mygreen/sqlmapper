@@ -5,10 +5,10 @@ Spring Frameworkのクラス `TransactionTemplate` を使用した宣言的ト�
 詳細は、 https://spring.pleiades.io/spring-framework/docs/current/reference/html/data-access.html#transaction-programmatic[Spring Frameworkのドキュメント] を参照してください。
 
 * `PlatformTransactionManager` 元に `TransactionTemplate` のインスタンスを作成します。
-** `PlatformTransactionManager` は SqlMapper のJavaConfigである `SqlMapperConfigurationSupport` などで予めSpringBeanとして登録されています。
-* よく使用するトランザクション伝搬方式の REQUIRED_NEW と使いやすいです。
+** `PlatformTransactionManager` は、SqlMapperのJavaConfigである `SqlMapperConfigurationSupport` などで予めSpringBeanとして登録されています。
+* よく使用するトランザクション伝搬方式の `REQUIRED_NEW` が使いやすいです。
 * `TransactionTemplate#execute(TransactionCallback)` で戻り値がある場合のトランザクションを適用します。
-** `TransactionCallback` は関数型インタフェースのため、Lambda式で記述することができます。
+** `TransactionCallback` は関数型インタフェースのため、Lambda式で記述できます。
 * `TransactionTemplate#executeWithoutResult(Consumer)` で戻り値がない場合のトランザクションを適用します。
 
 .プログラムによるトランザクションの使用例

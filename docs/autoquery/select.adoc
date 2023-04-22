@@ -33,8 +33,8 @@ Employee result = sqlMapper.selectFrom(MEmployee.employee)
 1件も見つからなかったときに例外をスローされないようにするには、`getOptionalResult()` を使用します。
 
 * 戻り値を `java.util.Optinal` で受け取ることができます。
-* ただし、2件以上見つかったときは Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
-** 例外がスローされないようにするためにメソッド `limit(1)` による件数を指定することをお勧めします。
+* ただし、2件以上見つかったときは、Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
+** 例外がスローされないように、メソッド `limit(1)` による件数を指定することをお勧めします。
 
 [source,java]
 ----
@@ -44,7 +44,7 @@ Optional<Employee> result = sqlMapper.selectFrom(MEmployee.employee)
 
 == Streamによる検索
 
-検索結果を多くの行を返しメモリの消費量が多く`List` でまとめて受け取ることが困難な場合は、フェッチによる参照として `getResultStream()` を使用します。
+検索結果を多くの行を返しメモリの消費量が多くListでまとめて受け取ることが困難な場合は、フェッチによる参照として `getResultStream()` を使用します。
 
 * Streamは、必ずクローズするようにしてください。
 
@@ -76,7 +76,7 @@ long count = sqlMapper.selectFrom(MEmployee.employee)
 
 他のエンティティと結合する場合は、次のメソッドを使用します。
 
-* `innerJoin(...)` : エンティティを内部結合（INNERT JOIN） します。
+* `innerJoin(...)` : エンティティを内部結合（INNERT JOIN）します。
 * `leftJoin(...)` : エンティティを左外部結合（LEFT OUTER JOIN）します。
 * 結合条件は、メタモデルを使用して指定します。
 * 結合したエンティティの保存は、`associate(...)` を使用してプログラマティックに行います。
@@ -126,9 +126,9 @@ Employee results = sqlMapper.selectFrom(MEmployee.employee)
         .getSingleResult();
 ----
 
-IDプロパティと同時にバージョンを指定することもできます。 バージョンプロパティを指定する場合は、 version(Object) を使います。
+IDプロパティと同時にバージョンを指定もできます。 バージョンプロパティを指定する場合は、 ``version(Object)`` を使います。
 
-* IDを指定しないでバージョンだけを指定することはできません。もしバージョンだけを指定した場合、例外 `IllegalOperateException` がスローされます。
+* IDを指定しないでバージョンだけを指定はできません。もしバージョンだけを指定した場合、例外 `IllegalOperateException` がスローされます。
 
 [source,java]
 ----
@@ -217,7 +217,7 @@ List<Employee> results = sqlMapper.selectFrom(e)
         .getResultList();
 ----
 
-次のように結合するエンティティのプロパティを指定することもできます
+次のように結合するエンティティのプロパティを指定もできます。
 
 [source,java]
 ----
@@ -251,7 +251,7 @@ List<Employee> results = sqlMapper.selectFrom(e)
         .getResultList();
 ----
 
-次のように結合するエンティティのプロパティを指定することもできます
+次のように結合するエンティティのプロパティを指定できます。
 
 [source,java]
 ----

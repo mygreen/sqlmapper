@@ -4,7 +4,7 @@
 本ライブラリで未サポートのJava型にマッピングする場合、アノテーション ``@Convert`` を付与します。
 
 * 属性 ``type`` にて、変換処理を行う ``ValueType`` の実装クラスを指定します。
-* 属性 ``name`` を指定した場合、``ValueType`` の実装を Springコンテナに登録されている Beanを取得します。
+* 属性 ``name`` を指定した場合、``ValueType`` の実装をSpringのコンテナに登録されているSpringBeanを取得します。
 
 .エンティティの定義
 [source,java]

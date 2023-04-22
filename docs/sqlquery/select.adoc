@@ -38,15 +38,15 @@ Employee result = sqlMapper.sqlMapper.selectBySql(
 1件も見つからなかったときに例外をスローされないようにするには、`getOptionalResult()` を使用します。
 
 * 戻り値を `java.util.Optinal` で受け取ることができます。
-* ただし、2件以上見つかったときは Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
-** 例外がスローされないようにするためにメソッド `limit(1)` による件数を指定することをお勧めします。
+* ただし、2件以上見つかったときは、Springの例外 `IncorrectResultSizeDataAccessException` がスローされます。
+** 例外がスローされないように、メソッド `limit(1)` による件数を指定することをお勧めします。
 
 [source,java]
 ----
 SqlTemplateContext templateContext = new MapSqlTemplateContext(
         Map.of("id", 10));
 
-Optional<Employee> result = sqlMapper.sqlMapper.selectBySql(
+Optional<Employee> result = sqlMapper.selectBySql(
             Employee.class, 
             "select * from employee where id = /*id*/", 
             templateContext)
@@ -55,7 +55,7 @@ Optional<Employee> result = sqlMapper.sqlMapper.selectBySql(
 
 == Streamによる検索
 
-検索結果を多くの行を返しメモリの消費量が多く`List` でまとめて受け取ることが困難な場合は、フェッチによる参照として `getResultStream()` を使用します。
+検索結果を多くの行を返しメモリの消費量が多くListでまとめて受け取ることが困難な場合は、フェッチによる参照として `getResultStream()` を使用します。
 
 * Streamは、必ずクローズするようにしてください。
 
