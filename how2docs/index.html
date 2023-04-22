@@ -616,7 +616,7 @@ $(document).ready(function(){
 </li>
 <li><a href="#anno_embedded_id">5.5. 複合識別子（複合主キー）の定義</a></li>
 <li><a href="#anno_mapped_superclass">5.6. 継承したエンティティを定義する</a></li>
-<li><a href="#anno_version">5.7. 楽観的排他制御用のバージョン</a></li>
+<li><a href="#anno_version">5.7. 楽観的排他チェック用のバージョン</a></li>
 <li><a href="#anno_enumerated">5.8. 列挙型を扱う</a>
 <ul class="sectlevel3">
 <li><a href="#_列挙型の任意のメソッドの値を使用する場合">5.8.1. 列挙型の任意のメソッドの値を使用する場合</a></li>
@@ -1172,7 +1172,7 @@ jdbc.password=sample_password</code></pre>
 <div class="ulist">
 <ul>
 <li>
-<p>判定は、Spring Bootの <a href="https://spring.pleiades.io/spring-boot/docs/current/api/org/springframework/boot/jdbc/DatabaseDriver.html" class="externalink" target="_blank" rel="noopener">DatabaseDriver</a> を使用して判定を行っているため、DatabaseDriverクラスが対応していないDBの場合は、 <a href="https://mygreen.github.io/sqlmapper/apidocs/com/github/mygreen/sqlmapper/core/dialect/Dialect.html" class="externalink" target="_blank" rel="noopener">Dialect</a> のSpring Beanを独自に定義して登録する必要があります。</p>
+<p>判定は、Spring Bootの <a href="https://spring.pleiades.io/spring-boot/docs/current/api/org/springframework/boot/jdbc/DatabaseDriver.html" class="externalink" target="_blank" rel="noopener">DatabaseDriver</a> を使用して判定しているため、DatabaseDriverクラスが対応していないDBの場合は、 <a href="https://mygreen.github.io/sqlmapper/apidocs/com/github/mygreen/sqlmapper/core/dialect/Dialect.html" class="externalink" target="_blank" rel="noopener">Dialect</a> のSpring Beanを独自に定義して登録する必要があります。</p>
 </li>
 </ul>
 </div>
@@ -1391,10 +1391,10 @@ jdbc.password=sample_password</code></pre>
 <div class="ulist">
 <ul>
 <li>
-<p>SUMなどの集計関数はサポートしていません。</p>
+<p><code>SUM</code> などの集計関数はサポートしていません。</p>
 </li>
 <li>
-<p>グループ化(<code>GROUP BY</code>)、<code>HAVING</code>句はサポートしていません。</p>
+<p>グループ化（<code>GROUP BY</code>）、<code>HAVING</code> 句はサポートしていません。</p>
 </li>
 </ul>
 </div>
@@ -1459,11 +1459,11 @@ jdbc.password=sample_password</code></pre>
 <p>戻り値を <code>java.util.Optinal</code> で受け取ることができます。</p>
 </li>
 <li>
-<p>ただし、2件以上見つかったときは Springの例外 <code>IncorrectResultSizeDataAccessException</code> がスローされます。</p>
+<p>ただし、2件以上見つかったときは、Springの例外 <code>IncorrectResultSizeDataAccessException</code> がスローされます。</p>
 <div class="ulist">
 <ul>
 <li>
-<p>例外がスローされないようにするためにメソッド <code>limit(1)</code> による件数を指定することをお勧めします。</p>
+<p>例外がスローされないように、メソッド <code>limit(1)</code> による件数を指定することをお勧めします。</p>
 </li>
 </ul>
 </div>
@@ -1480,7 +1480,7 @@ jdbc.password=sample_password</code></pre>
 <div class="sect3">
 <h4 id="_streamによる検索">2.2.3. Streamによる検索</h4>
 <div class="paragraph">
-<p>検索結果を多くの行を返しメモリの消費量が多く`List` でまとめて受け取ることが困難な場合は、フェッチによる参照として <code>getResultStream()</code> を使用します。</p>
+<p>検索結果を多くの行を返しメモリの消費量が多くListでまとめて受け取ることが困難な場合は、フェッチによる参照として <code>getResultStream()</code> を使用します。</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1524,7 +1524,7 @@ try (stream) {
 <div class="ulist">
 <ul>
 <li>
-<p><code>innerJoin(&#8230;&#8203;)</code> : エンティティを内部結合（INNERT JOIN） します。</p>
+<p><code>innerJoin(&#8230;&#8203;)</code> : エンティティを内部結合（INNERT JOIN）します。</p>
 </li>
 <li>
 <p><code>leftJoin(&#8230;&#8203;)</code> : エンティティを左外部結合（LEFT OUTER JOIN）します。</p>
@@ -1595,12 +1595,12 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 </div>
 </div>
 <div class="paragraph">
-<p>IDプロパティと同時にバージョンを指定することもできます。 バージョンプロパティを指定する場合は、 version(Object) を使います。</p>
+<p>IDプロパティと同時にバージョンを指定もできます。 バージョンプロパティを指定する場合は、 <code>version(Object)</code> を使います。</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>IDを指定しないでバージョンだけを指定することはできません。もしバージョンだけを指定した場合、例外 <code>IllegalOperateException</code> がスローされます。</p>
+<p>IDを指定しないでバージョンだけを指定はできません。もしバージョンだけを指定した場合、例外 <code>IllegalOperateException</code> がスローされます。</p>
 </li>
 </ul>
 </div>
@@ -1727,7 +1727,7 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 </div>
 </div>
 <div class="paragraph">
-<p>次のように結合するエンティティのプロパティを指定することもできます</p>
+<p>次のように結合するエンティティのプロパティを指定もできます。</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1779,7 +1779,7 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 </div>
 </div>
 <div class="paragraph">
-<p>次のように結合するエンティティのプロパティを指定することもできます</p>
+<p>次のように結合するエンティティのプロパティを指定できます。</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1850,7 +1850,7 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 <p><code>execute()</code> の戻り値は、更新した行数です。</p>
 </li>
 <li>
-<p>挿入するときに識別子を自動設定することができます。</p>
+<p>挿入するときに識別子を自動設定できます。</p>
 <div class="ulist">
 <ul>
 <li>
@@ -1885,7 +1885,7 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 <p><code>execute()</code> の戻り値は、更新した行数の配列です。</p>
 </li>
 <li>
-<p>挿入するときに識別子を自動設定することができます。</p>
+<p>挿入するときに識別子を自動設定できます。</p>
 <div class="ulist">
 <ul>
 <li>
@@ -1971,7 +1971,7 @@ int count = sqlMapper.insert(employee)
 <p>指定したプロパティを挿入対象から除外する場合は、 <code>excludes()</code> を使用します。</p>
 </li>
 <li>
-<p>次のプロパティは自動的に挿入対象となり、除外対象とすることはできません。</p>
+<p>次のプロパティは自動的に挿入対象となり、除外対象に指定できません。</p>
 <div class="ulist">
 <ul>
 <li>
@@ -2019,11 +2019,11 @@ int count = sqlMapper.insert(employee)
 </div>
 </li>
 <li>
-<p>更新するときに、バージョンによる楽観的排他制御をすることができます。</p>
+<p>更新するときに、バージョンによる楽観的排他チェックをができます。</p>
 <div class="ulist">
 <ul>
 <li>
-<p>楽観敵排他エラーが発生したときは例外 <code>org.springframework.dao.OptimisticLockingFailureException</code> がスローされます。。</p>
+<p>楽観敵排他エラーが発生したときは例外 <code>org.springframework.dao.OptimisticLockingFailureException</code> がスローされます。</p>
 </li>
 <li>
 <p>詳しくは、 <a href="#anno_version">バージョン定義</a> を参照してください。</p>
@@ -2032,7 +2032,7 @@ int count = sqlMapper.insert(employee)
 </div>
 </li>
 <li>
-<p>識別子定義のなエンティティは <code>update(&#8230;&#8203;)</code> で更新することはできません。</p>
+<p>識別子定義のなエンティティは、 <code>update(&#8230;&#8203;)</code> で更新できません。</p>
 </li>
 </ul>
 </div>
@@ -2046,7 +2046,7 @@ int count = sqlMapper.insert(employee)
 <div class="sect3">
 <h4 id="_バッチ更新">2.4.2. バッチ更新</h4>
 <div class="paragraph">
-<p>複数のエンティティをバッチ更新する場合は、<code>updateBatch(&#8230;&#8203;)</code> と <code>execute()`</code> を組み合わせます。</p>
+<p>複数のエンティティをバッチ更新する場合は、<code>updateBatch(&#8230;&#8203;)</code> と <code>execute()</code> を組み合わせます。</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2057,11 +2057,11 @@ int count = sqlMapper.insert(employee)
 <p><code>execute()</code> の戻り値は、更新した行数の配列です。</p>
 </li>
 <li>
-<p>更新するときに、バージョンによる楽観的排他制御をすることができます。</p>
+<p>更新するときに、バージョンによる楽観的排他チェックをができます。</p>
 <div class="ulist">
 <ul>
 <li>
-<p>楽観敵排他エラーが発生したときは例外 `org.springframework.dao.</p>
+<p>楽観的排他エラーが発生したときは、例外 <code>org.springframework.dao.OptimisticLockingFailureException</code> がスローされます。</p>
 </li>
 <li>
 <p>詳しくは、 <a href="#anno_version">バージョン定義</a> を参照してください。</p>
@@ -2070,7 +2070,7 @@ int count = sqlMapper.insert(employee)
 </div>
 </li>
 <li>
-<p>識別子定義のなエンティティは <code>updateBatch(&#8230;&#8203;)</code> で更新することはできません。</p>
+<p>識別子定義のなエンティティは、 <code>updateBatch(&#8230;&#8203;)</code> で更新できません。</p>
 </li>
 </ul>
 </div>
@@ -2207,7 +2207,7 @@ int count = sqlMapper.update(employee)
 <div class="sect3">
 <h4 id="_更新行数をチェックしない">2.4.8. 更新行数をチェックしない</h4>
 <div class="paragraph">
-<p>バージョンによる楽観的排他制御を行う場合、 更新できた行数が0だと <code>org.springframework.dao.OptimisticLockingFailureException</code> が発生します。</p>
+<p>バージョンによる楽観的排他チェックを行う場合、 更新できた行数が0だと <code>org.springframework.dao.OptimisticLockingFailureException</code> が発生します。</p>
 </div>
 <div class="paragraph">
 <p>更新行数を正しく返さないJDBCドライバを使用する場合は、<code>suppresOptimisticLockException()</code> を呼び出すことで、更新できた行数のチェックを行わなくなります。</p>
@@ -2239,11 +2239,11 @@ int count = sqlMapper.update(employee)
 <p><code>execute()</code> の戻り値は、削除した行数です。</p>
 </li>
 <li>
-<p>削除するときに、バージョンによる楽観的排他制御をすることができます。</p>
+<p>削除するときに、バージョンによる楽観的排他チェックができます。</p>
 <div class="ulist">
 <ul>
 <li>
-<p>楽観敵排他エラーが発生したときは例外 <code>org.springframework.dao.OptimisticLockingFailureException</code> がスローされます。。</p>
+<p>楽観敵排他エラーが発生したときは、例外 <code>org.springframework.dao.OptimisticLockingFailureException</code> がスローされます。</p>
 </li>
 <li>
 <p>詳しくは、 <a href="#anno_version">バージョン定義</a> を参照してください。</p>
@@ -2252,7 +2252,7 @@ int count = sqlMapper.update(employee)
 </div>
 </li>
 <li>
-<p>識別子定義のなエンティティは <code>delete(&#8230;&#8203;)</code> で削除することはできません。</p>
+<p>識別子定義のなエンティティは <code>delete(&#8230;&#8203;)</code> で削除できません。</p>
 <div class="ulist">
 <ul>
 <li>
@@ -2281,11 +2281,11 @@ int count = sqlMapper.update(employee)
 <p><code>execute()</code> の戻り値は、削除した行数の配列です。</p>
 </li>
 <li>
-<p>削除するときに、バージョンによる楽観的排他制御をすることができます。</p>
+<p>削除するときに、バージョンによる楽観的排他チェックができます。</p>
 <div class="ulist">
 <ul>
 <li>
-<p>楽観敵排他エラーが発生したときは例外 `org.springframework.dao.</p>
+<p>楽観的排他エラーが発生したときは例外 <code>org.springframework.dao.OptimisticLockingFailureException</code> がスローされます。</p>
 </li>
 <li>
 <p>詳しくは、 <a href="#anno_version">バージョン定義</a> を参照してください。</p>
@@ -2294,7 +2294,7 @@ int count = sqlMapper.update(employee)
 </div>
 </li>
 <li>
-<p>識別子定義のなエンティティは <code>updateBatch(&#8230;&#8203;)</code> で削除することはできません。</p>
+<p>識別子定義のなエンティティは <code>updateBatch(&#8230;&#8203;)</code> で削除できません。</p>
 </li>
 </ul>
 </div>
@@ -2321,7 +2321,7 @@ int count = sqlMapper.update(employee)
 <div class="sect3">
 <h4 id="_削除条件の指定">2.5.3. 削除条件の指定</h4>
 <div class="paragraph">
-<p>任にの条件で削除を行う場合、<code>deleteFrom(&#8230;&#8203;)</code> と <code>execute()</code> を使用します。</p>
+<p>任意の条件で削除する場合、<code>deleteFrom(&#8230;&#8203;)</code> と <code>execute()</code> を使用します。</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2375,7 +2375,7 @@ int count = sqlMapper.deleteFrom(e)
 <div class="sect3">
 <h4 id="_削除行数をチェックしない">2.5.5. 削除行数をチェックしない</h4>
 <div class="paragraph">
-<p>バージョンによる楽観的排他制御を行う場合、 削除できた行数が0だと <code>org.springframework.dao.OptimisticLockingFailureException</code> が発生します。</p>
+<p>バージョンによる楽観的排他チェックを行う場合、 削除できた行数が0だと <code>org.springframework.dao.OptimisticLockingFailureException</code> がスローされます。</p>
 </div>
 <div class="paragraph">
 <p>削除行数を正しく返さないJDBCドライバを使用する場合は、<code>suppresOptimisticLockException()</code> を呼び出すことで、更新できた行数のチェックを行わなくなります。</p>
@@ -2387,7 +2387,7 @@ int count = sqlMapper.deleteFrom(e)
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-削除条件を指定する <code>deleteFrom(&#8230;&#8203;)</code> を使用するときは、<code>suppresOptimisticLockException()</code>　を使用することはできません。
+削除条件を指定する <code>deleteFrom(&#8230;&#8203;)</code> を使用するときは、<code>suppresOptimisticLockException()</code> を使用することはできません。
 </td>
 </tr>
 </table>
@@ -2421,7 +2421,7 @@ int count = sqlMapper.delete(employee)
 <p>単純なSQLとしても使用できますが、SQLテンプレート独自の文法も使用できます。</p>
 </li>
 <li>
-<p>文法などの詳細な情報は、splate のドキュメントを参照してください。</p>
+<p>文法などの詳細な情報は、splateのドキュメントを参照してください。</p>
 </li>
 </ul>
 </div>
@@ -2484,11 +2484,11 @@ Employee result = sqlMapper.sqlMapper.selectBySql(
 <p>戻り値を <code>java.util.Optinal</code> で受け取ることができます。</p>
 </li>
 <li>
-<p>ただし、2件以上見つかったときは Springの例外 <code>IncorrectResultSizeDataAccessException</code> がスローされます。</p>
+<p>ただし、2件以上見つかったときは、Springの例外 <code>IncorrectResultSizeDataAccessException</code> がスローされます。</p>
 <div class="ulist">
 <ul>
 <li>
-<p>例外がスローされないようにするためにメソッド <code>limit(1)</code> による件数を指定することをお勧めします。</p>
+<p>例外がスローされないように、メソッド <code>limit(1)</code> による件数を指定することをお勧めします。</p>
 </li>
 </ul>
 </div>
@@ -2500,7 +2500,7 @@ Employee result = sqlMapper.sqlMapper.selectBySql(
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
         Map.of("id", 10));
 
-Optional&lt;Employee&gt; result = sqlMapper.sqlMapper.selectBySql(
+Optional&lt;Employee&gt; result = sqlMapper.selectBySql(
             Employee.class,
             "select * from employee where id = /*id*/",
             templateContext)
@@ -2511,7 +2511,7 @@ Optional&lt;Employee&gt; result = sqlMapper.sqlMapper.selectBySql(
 <div class="sect3">
 <h4 id="_streamによる検索_2">3.1.3. Streamによる検索</h4>
 <div class="paragraph">
-<p>検索結果を多くの行を返しメモリの消費量が多く`List` でまとめて受け取ることが困難な場合は、フェッチによる参照として <code>getResultStream()</code> を使用します。</p>
+<p>検索結果を多くの行を返しメモリの消費量が多くListでまとめて受け取ることが困難な場合は、フェッチによる参照として <code>getResultStream()</code> を使用します。</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2660,7 +2660,7 @@ int count = sqlMapper.updateBySql(
 <p>SQLファイルによるクエリの実行方法を説明します。</p>
 </div>
 <div class="paragraph">
-<p>単純なSQLだとソースコードに直接記述したほうが、面倒くさくなくて楽（わざわざファイルを作る必要がない）ですが、複雑なSQLはファイルに記述した方がメンテナンスがしやすくなります。</p>
+<p>単純なSQLだとソースコードに直接記述したほうが、面倒くさくなくて楽（わざわざファイルを作る必要がない）ですが、複雑なSQLはファイルに記述した方がメンテナンスしやすくなります。</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2669,7 +2669,7 @@ int count = sqlMapper.updateBySql(
 <div class="ulist">
 <ul>
 <li>
-<p>文法などの詳細な情報は、splate のドキュメントを参照してください。</p>
+<p>文法などの詳細情報は、splateのドキュメントを参照してください。</p>
 </li>
 </ul>
 </div>
@@ -2733,7 +2733,7 @@ List&lt;Employee&gt; results = sqlMapper.selectBySqlFile(
 <p>SQLファイルのデフォルトの文字コードは、<code>UTF-8</code> です。</p>
 </li>
 <li>
-<p>SQLファイルはデフォルトでパースした結果をキャッシュしておき次回実行時の性能向上を行います。</p>
+<p>SQLファイルはデフォルトでパースした結果をキャッシュしておき次回実行時の性能向上します。</p>
 </li>
 </ul>
 </div>
@@ -2779,7 +2779,7 @@ List&lt;Employee&gt; results = sqlMapper.selectBySqlFile(
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">SqlTemplateContext templateContext = new MapSqlTemplateContext(
         Map.of("id", 10));
 
-Employee result = sqlMapper.sqlMapper.selectBySqlFile(
+Employee result = sqlMapper.selectBySqlFile(
             Employee.class,
             "examples/sql/employee/selectSingle.sql",
             templateContext)
@@ -2795,11 +2795,11 @@ Employee result = sqlMapper.sqlMapper.selectBySqlFile(
 <p>戻り値を <code>java.util.Optinal</code> で受け取ることができます。</p>
 </li>
 <li>
-<p>ただし、2件以上見つかったときは Springの例外 <code>IncorrectResultSizeDataAccessException</code> がスローされます。</p>
+<p>ただし、2件以上見つかったときは、Springの例外 <code>IncorrectResultSizeDataAccessException</code> がスローされます。</p>
 <div class="ulist">
 <ul>
 <li>
-<p>例外がスローされないようにするためにメソッド <code>limit(1)</code> による件数を指定することをお勧めします。</p>
+<p>例外がスローされないように、メソッド <code>limit(1)</code> による件数を指定することをお勧めします。</p>
 </li>
 </ul>
 </div>
@@ -2822,7 +2822,7 @@ Optional&lt;Employee&gt; result =sqlMapper.sqlMapper.selectBySqlFile(
 <div class="sect3">
 <h4 id="_streamによる検索_3">4.2.3. Streamによる検索</h4>
 <div class="paragraph">
-<p>検索結果を多くの行を返しメモリの消費量が多く`List` でまとめて受け取ることが困難な場合は、フェッチによる参照として <code>getResultStream()</code> を使用します。</p>
+<p>検索結果を多くの行を返しメモリの消費量が多くListでまとめて受け取ることが困難な場合は、フェッチによる参照として <code>getResultStream()</code> を使用します。</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2968,7 +2968,7 @@ int count = sqlMapper.updateBySqlFile(
 <h2 id="how2entity">5. エンティティの定義方法</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>アノテーションを使って定義を行います。</p>
+<p>アノテーションを使って定義します。</p>
 </div>
 <div class="sect2">
 <h3 id="_アノテーション一覧">5.1. アノテーション一覧</h3>
@@ -3201,7 +3201,7 @@ public class User {
 <div class="ulist">
 <ul>
 <li>
-<p>アノテーション <code>@Table</code> では、その他に、スキーマ名やカタログ名を定義することができます。</p>
+<p>アノテーション <code>@Table</code> では、その他に、スキーマ名やカタログ名を定義できます。</p>
 </li>
 </ul>
 </div>
@@ -3461,7 +3461,7 @@ public class User {
 <div class="ulist">
 <ul>
 <li>
-<p>アノテーション <code>@Column</code> では、その他に、スキーマ名やカタログ名を定義することができます。</p>
+<p>アノテーション <code>@Column</code> では、その他に、スキーマ名やカタログ名を定義できます。</p>
 </li>
 </ul>
 </div>
@@ -3640,7 +3640,7 @@ public class User {
 <div class="ulist">
 <ul>
 <li>
-<p>シーケンス名は、アノテーション <code>@SequenceGenerator</code> でカスタマイズすることができます。</p>
+<p>シーケンス名は、アノテーション <code>@SequenceGenerator</code> でカスタマイズできます。</p>
 </li>
 <li>
 <p>アノテーション <code>@SequenceGenerator</code> でシーケンス名を指定しない場合は、「<code>&lt;テーブル名&gt;_&lt;カラム名&gt;</code>」のシーケンス名を使用します。</p>
@@ -3649,7 +3649,7 @@ public class User {
 </div>
 </li>
 <li>
-<p>文字列にマッピングする際に、<code>@SequenceGenerator(format="xxx")</code> でフォーマットを指定することができます。</p>
+<p>文字列にマッピングする際、<code>@SequenceGenerator(format="xxx")</code> でフォーマットを指定できます。</p>
 <div class="ulist">
 <ul>
 <li>
@@ -3711,13 +3711,13 @@ public class User {
 <div class="ulist">
 <ul>
 <li>
-<p>テーブル名、カラム名などは、アノテーション <code>@TableGenerator</code> または、<a href="#available_properties">プロパティ</a> によってカスタマイズすることができます。</p>
+<p>テーブル名、カラム名などは、アノテーション <code>@TableGenerator</code> または、<a href="#available_properties">プロパティ</a> によってカスタマイズできます。</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>文字列にマッピングする際に、<code>@TableGenerator(format="xxx")</code> でフォーマットを指定することができます。</p>
+<p>文字列にマッピングする際、<code>@TableGenerator(format="xxx")</code> でフォーマットを指定できます。</p>
 <div class="ulist">
 <ul>
 <li>
@@ -3782,7 +3782,7 @@ public class User {
 <div class="ulist">
 <ul>
 <li>
-<p><a href="#spring_normal_properties">JavaConfigによる設定を行っている場合</a>は、<code>@PropertySource</code> にて定義したファイルを読み込んでください。</p>
+<p><a href="#spring_normal_properties">JavaConfigによる設定している場合</a>は、<code>@PropertySource</code> にて定義したファイルを読み込んでください。</p>
 </li>
 <li>
 <p><a href="#spring_boot_properties">SpringBootを使用している場合</a>は、<code>application.properties</code> または、<code>application.yml</code>` に定義をしてください。</p>
@@ -3982,10 +3982,10 @@ public class Sample {
 <p>エンティティクラスと同様、引数ありのコンストラクタを定義した場合、デフォルトコンストラクタを必ず定義します。</p>
 </li>
 <li>
-<p><code>@Column</code> にて、カラム名のとのマッピングを定義することもできます。</p>
+<p><code>@Column</code> にて、カラム名のとのマッピングを定義もできます。</p>
 </li>
 <li>
-<p>埋め込みクラスは、staticな内部クラスとしても定義することができます。</p>
+<p>埋め込みクラスは、staticな内部クラスとしても定義できます。</p>
 </li>
 </ul>
 </div>
@@ -4025,7 +4025,7 @@ public class Sample {
 <div class="sect2">
 <h3 id="anno_mapped_superclass">5.6. 継承したエンティティを定義する</h3>
 <div class="paragraph">
-<p>登録日時や更新日など、各テーブルに共通的なカラムを持つ場合は、継承専用のクラスに集約することができます。</p>
+<p>登録日時や更新日など、各テーブルに共通的なカラムを持つ場合は、継承専用のクラスに集約できます。</p>
 </div>
 <div class="ulist">
 <ul>
@@ -4079,20 +4079,20 @@ public class User extends AbstractEntity {
 </div>
 </div>
 <div class="sect2">
-<h3 id="anno_version">5.7. 楽観的排他制御用のバージョン</h3>
+<h3 id="anno_version">5.7. 楽観的排他チェック用のバージョン</h3>
 <div class="paragraph">
 <p>エンティティ更新時にバージョンキー（排他キー）を利用して楽観的排他ロックを行う場合、アノテーション <code>@Version</code> を付与します。</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>楽観的排他制御とは、排他処理のために DB ないしテーブルにロックをかけるのではなく、更新時にレコードが既に他のトランザクションによって更新されていないことを検出する手法です。</p>
+<p>楽観的排他チェックとは、排他処理のために、DBないしテーブルにロックをかけるのではなく、更新時にレコードが既に他のトランザクションによって更新されていないことを検出する手法です。</p>
 </li>
 <li>
-<p>レコードを更新するときに、更新対象のレコードのバージョンキーと更新元のデータの値を比較し同じであれば「+1」し、異なれば既に他のトランザクションによって更新されていると判断し例外をスローます。</p>
+<p>レコードを更新するときに、更新対象のレコードのバージョンキーと更新元のデータの値を比較し同じであれば「+1」し、異なれば既に他のトランザクションによって更新されていると判断し例外をスローします。</p>
 </li>
 <li>
-<p>楽観的排他の制約に違反した場合、「org.springframework.dao.OptimisticLockingFailureException」がスローされます。</p>
+<p>楽観的排他チェックの制約に違反した場合、<code>org.springframework.dao.OptimisticLockingFailureException</code> がスローされます。</p>
 </li>
 <li>
 <p>バージョンキーとして定義可能なフィールドの型は、<code>int/Integer</code> または、<code>long/Long</code> です。</p>
@@ -4177,10 +4177,10 @@ public enum UserType {
 <div class="sect2">
 <h3 id="anno_temporal">5.9. 時制を扱う</h3>
 <div class="paragraph">
-<p>フィールドのタイプが、<code>java.sql.Date</code> / <code>java.sql.Time</code> などの場合、マッピングする　SQLの型がそれぞれ <code>DATE</code>、<code>TIME</code> と明確なため自動的にマッピングできます。</p>
+<p>フィールドのタイプが、<code>java.sql.Date</code> / <code>java.sql.Time</code> などの場合、マッピングするSQLの型がそれぞれ <code>DATE</code>、<code>TIME</code> と明確なため自動的にマッピングできます。</p>
 </div>
 <div class="paragraph">
-<p>しかし、<code>java.util.Date</code> の場合は、日付/時間/日時 なのか不明なため、アノテーション <code>@Temporal</code> を使用し、マッピング規則を指定する必要があります。</p>
+<p>しかし、<code>java.util.Date</code> の場合は、日付/時間/日時なのか不明なため、アノテーション <code>@Temporal</code> を使用し、マッピング規則を指定する必要があります。</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -4272,7 +4272,7 @@ public class Sample {
 <div class="ulist">
 <ul>
 <li>
-<p>BLOB(Binay Large Object) と CLOB(Character Large Object)の区別なく同じアノテーションを付与します。</p>
+<p>BLOB(Binay Large Object)とCLOB(Character Large Object)の区別なく同じアノテーションを付与します。</p>
 </li>
 <li>
 <p>DBMSによって、BLOBとCLOBのデータ型は異なるため、詳しくは利用するDBMSのドキュメント及び、JDBCドライバを参照してください。</p>
@@ -4305,10 +4305,8 @@ public class Sample {
 }</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>ラージオブジェクトの対応</p>
-</div>
 <table class="tableblock frame-all grid-all stretch">
+<caption class="title">表 12. ラージオブジェクトの対応</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -4338,7 +4336,7 @@ public class Sample {
 <div class="sect2">
 <h3 id="anno_transient">5.11. 永続化対象外を指定する</h3>
 <div class="paragraph">
-<p>SqlMapper では、フィールドを定義すると、標準で永続化対象となります。
+<p>SqlMapperでは、フィールドを定義すると、標準で永続化対象となります。
 そのため、該当するカラムがテーブルに存在しないとSQL実行エラーとなる場合があります。</p>
 </div>
 <div class="paragraph">
@@ -4350,14 +4348,14 @@ public class Sample {
 <p>アノテーション <code>@Transient</code> を付与したフィールドはメタモデルの生成からも除外されます。</p>
 </li>
 <li>
-<p>Java の修飾子「transient」を指定しても SqlMapper の永続化対象外と同じ効果を得られます。</p>
+<p>Javaの修飾子 <code>transient</code> を指定しても、SqlMapperの永続化対象外と同じ効果を得られます。</p>
 <div class="ulist">
 <ul>
 <li>
-<p>修飾子「transient」は Web のセッションにおいても永続化、直列化（serialize）から対象外となるため、SqlMapper としては使用しないで、アノテーション <code>@Transient</code> の方を利用することをお勧めします。</p>
+<p>修飾子 <code>transient</code> は、Webセッションにおいても永続化、直列化（serialize）から対象外となるため、SqlMapperとしては使用しないで、アノテーション <code>@Transient</code> の方を利用することをお勧めします。</p>
 </li>
 <li>
-<p>修飾子「transient」の使い道は、インタフェース「java.io.Serializable」を実装していないクラスで、値を格納するような Entity や DTO ではない Spring Bean のような機能を持ったインスタンスを永続化対象から外すために使用します。</p>
+<p>修飾子 <code>transient</code> の使い道は、インタフェース <code>java.io.Serializable</code> を実装していないクラスで、値を格納するようなEntityやDTOではないSpringBeanのような機能を持ったインスタンスを永続化対象から外すために使用します。</p>
 </li>
 </ul>
 </div>
@@ -4398,10 +4396,10 @@ public class User {
 <p>アノテーションを付与するには<a href="#temporal_type">時制型</a>である必要があります。</p>
 </li>
 <li>
-<p><code>@CreatedAt</code> は、レコードの作成、すなわち、SQLのINSERT 文を実行するときにシステム日時を設定します。</p>
+<p><code>@CreatedAt</code> は、レコードの作成、すなわち、SQLの <code>INSERT</code> 文を実行するときにシステム日時を設定します。</p>
 </li>
 <li>
-<p><code>@UpdatedAt</code> は、レコードの作成時と更新時、すなわわち SQLの <code>INSERT / UPDATE</code> 文を実行するときにシステム日時を設定します。</p>
+<p><code>@UpdatedAt</code> は、レコードの作成時と更新時、すなわち、SQLの <code>INSERT / UPDATE</code> 文を実行するときにシステム日時を設定します。</p>
 </li>
 </ul>
 </div>
@@ -4454,16 +4452,16 @@ public class User {
 <div class="ulist">
 <ul>
 <li>
-<p>SpringSecurity を利用している場合は、<code>SecurityContextHolder</code> からユーザ情報を取得します。</p>
+<p>Spring Securityを利用している場合は、<code>SecurityContextHolder</code> からユーザ情報を取得します。</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p><code>@CreatedBy</code> は、レコードの作成、すなわち、SQLのINSERT 文を実行するときにユーザ情報を設定します。</p>
+<p><code>@CreatedBy</code> は、レコードの作成、すなわち、SQLの <code>INSERT</code> 文を実行するときにユーザ情報を設定します。</p>
 </li>
 <li>
-<p><code>@UpdatedBy</code> は、レコードの作成時と更新時、すなわわち SQLの <code>INSERT / UPDATE</code> 文を実行するときにユーザ情報を設定します。</p>
+<p><code>@UpdatedBy</code> は、レコードの作成時と更新時、すなわち、SQLの <code>INSERT / UPDATE</code> 文を実行するときにユーザ情報を設定します。</p>
 </li>
 </ul>
 </div>
@@ -4546,7 +4544,7 @@ public class MyAuditorProvider&lt;String&gt; implements AuditorProvider {
 <p>属性 <code>type</code> にて、変換処理を行う <code>ValueType</code> の実装クラスを指定します。</p>
 </li>
 <li>
-<p>属性 <code>name</code> を指定した場合、<code>ValueType</code> の実装を Springコンテナに登録されている Beanを取得します。</p>
+<p>属性 <code>name</code> を指定した場合、<code>ValueType</code> の実装をSpringのコンテナに登録されているSpringBeanを取得します。</p>
 </li>
 </ul>
 </div>
@@ -4615,7 +4613,7 @@ public class UrlType implements ValueType&lt;URL&gt; {
 <div class="sect2">
 <h3 id="_メタモデルとは">6.1. メタモデルとは</h3>
 <div class="paragraph">
-<p>エンティティのメタモデルとは、Criteria API を使ってクエリを組み立てる際の補助的なクラスです。</p>
+<p>エンティティのメタモデルとは、Criteria APIを使ってクエリを組み立てる際の補助的なクラスです。</p>
 </div>
 <div class="paragraph">
 <p>次のようなエンティティクラスが定義されているとします。</p>
@@ -4670,7 +4668,7 @@ public class Employee {
 </div>
 </div>
 <div class="paragraph">
-<p>Criteria APIを使用して検索を行うとき、メタモデルクラスは検索条件を組み立てるときに使用できます。</p>
+<p>Criteria APIを使用して検索するとき、メタモデルクラスは検索条件を組み立てるときに使用できます。</p>
 </div>
 <div class="paragraph">
 <p>プロパティのクラスタイプによって、予めSQLの演算子に対応するメソッドが実装されており、迷うことなくクエリを組み立てることができます。</p>
@@ -4696,7 +4694,7 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 <div class="ulist">
 <ul>
 <li>
-<p>メタモデルを使用すると、演算子に対するメソッドの引数として、ジェネリクスを使用しているため、ある程度 <strong>型安全（タイプセーフ</strong> に利用できます。</p>
+<p>メタモデルを使用すると、演算子に対するメソッドの引数として、ジェネリクスを使用しているため、ある程度 <strong>型安全（タイプセーフ）</strong> に利用できます。</p>
 <div class="ulist">
 <ul>
 <li>
@@ -4706,7 +4704,7 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 </div>
 </li>
 <li>
-<p>また、メタモデルの他の利点として、テーブルのカラムを変更する際、エンティティのプロパティの名称も変更しますが、Criteria APIで使用している個所がコンパイルエラーとなり、 <strong>影響個所</strong> がすぐにわかります。さらに、プロパティ名の綴り間違など防ぐことができます。</p>
+<p>また、メタモデルの他の利点としてテーブルのカラムを変更する際、エンティティのプロパティの名称も変更しますが、Criteria APIで使用している個所がコンパイルエラーとなり、 <strong>影響個所</strong> がすぐにわかります。さらに、プロパティ名の綴り間違など防ぐことができます。</p>
 </li>
 </ul>
 </div>
@@ -4739,7 +4737,7 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 <div class="ulist">
 <ul>
 <li>
-<p>メタモデルのクラス名の接頭語／接尾語をカスタマイズを行う場合は、タグ <code>&lt;option&gt;</code> の中で指定を行います。</p>
+<p>メタモデルのクラス名の接頭語／接尾語をカスタマイズを行う場合は、タグ <code>&lt;option&gt;</code> の中で指定します。</p>
 </li>
 <li>
 <p><code>&lt;sqlmapper.prefix&gt;</code> : メタでモルのクラス名の接頭語。</p>
@@ -4756,7 +4754,7 @@ List&lt;Employee&gt; results = sqlMapper.selectFrom(e)
 <div class="ulist">
 <ul>
 <li>
-<p>デフォルトは、`` (空文字) です。</p>
+<p>デフォルトは、空文字です。</p>
 </li>
 </ul>
 </div>
@@ -4861,7 +4859,7 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
 <div class="sect3">
 <h4 id="_spring_bootの設定">7.1.2. Spring Bootの設定</h4>
 <div class="paragraph">
-<p><a href="#setup_spring_boot">Spring Boot の SqlMapper 専用の starter</a> を使っている場合は、特に設定は必要ありません。</p>
+<p><a href="#setup_spring_boot">Spring BootのSqlMapper専用のstarter</a> を使っている場合は、特に設定は必要ありません。</p>
 </div>
 </div>
 <div class="sect3">
@@ -4879,7 +4877,7 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
 <p>ただし、JDBCドライバー、TransactionManagerの種類によっては例外がスローされないこともあります。</p>
 </li>
 <li>
-<p>参照専用の場合は必ずしも必須ではありませんが、間違って更新することを防ぐためにも付与することをお勧めします。</p>
+<p>参照専用の場合は、必ずしも必須ではありませんが、間違って更新することを防ぐためにも付与することをお勧めします。</p>
 </li>
 </ul>
 </div>
@@ -4889,7 +4887,7 @@ public class SqlMapperConfig extends SqlMapperConfigurationSupport {
 <div class="ulist">
 <ul>
 <li>
-<p>protected/private/パッケージprivate メソッドに <code>@Transactional`</code> を付けてもエラーは発生しません。</p>
+<p>protected/private/パッケージprivateメソッドに <code>@Transactional`</code> を付けてもエラーは発生しません。</p>
 </li>
 </ul>
 </div>
@@ -4930,7 +4928,7 @@ public class EmployeeService {
         boolean exists  = sqlMapper.selectFrom(e)
                 .id(employee.getId())
                 .forUpdate()
-                .getCount() &gt; 0;
+                .getResultList().size() &gt; 0;   // forUpdateのときはcountなどの集約関数は使用できない
         if (exists) {
             sqlMapper.update(employee)
                 .execute();
@@ -4961,20 +4959,20 @@ public class EmployeeService {
 <div class="ulist">
 <ul>
 <li>
-<p><code>PlatformTransactionManager</code> は SqlMapper のJavaConfigである <code>SqlMapperConfigurationSupport</code> などで予めSpringBeanとして登録されています。</p>
+<p><code>PlatformTransactionManager</code> は、SqlMapperのJavaConfigである <code>SqlMapperConfigurationSupport</code> などで予めSpringBeanとして登録されています。</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p>よく使用するトランザクション伝搬方式の REQUIRED_NEW と使いやすいです。</p>
+<p>よく使用するトランザクション伝搬方式の <code>REQUIRED_NEW</code> が使いやすいです。</p>
 </li>
 <li>
 <p><code>TransactionTemplate#execute(TransactionCallback)</code> で戻り値がある場合のトランザクションを適用します。</p>
 <div class="ulist">
 <ul>
 <li>
-<p><code>TransactionCallback</code> は関数型インタフェースのため、Lambda式で記述することができます。</p>
+<p><code>TransactionCallback</code> は関数型インタフェースのため、Lambda式で記述できます。</p>
 </li>
 </ul>
 </div>
@@ -5057,7 +5055,7 @@ public class EmployeeService {
 <h2 id="_イベントリスナー">8. イベントリスナー</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>テーブルの参照／挿入／更新／削除時のイベントを <a href="https://spring.pleiades.io/spring-integration/reference/html/event.html" class="externalink" target="_blank" rel="noopener">Spring Frameworkの ApplicationEvent</a> として受信することができます。</p>
+<p>テーブルの参照／挿入／更新／削除時のイベントを <a href="https://spring.pleiades.io/spring-integration/reference/html/event.html" class="externalink" target="_blank" rel="noopener">Spring Frameworkの ApplicationEvent</a> として受信できます。</p>
 </div>
 <div class="ulist">
 <ul>
@@ -5074,7 +5072,7 @@ public class EmployeeService {
 </ul>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">表 12. イベント一覧</caption>
+<caption class="title">表 13. イベント一覧</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -5218,20 +5216,20 @@ public class SampleEventService {
 <p>テーブルによるID採番時に、シーケンス名が空になる事象を修正。</p>
 </li>
 <li>
-<p>シーケンス名の決定方法を、NamingRule で決定するよう変更。</p>
+<p>シーケンス名の決定方法を、NamingRuleで決定するよう変更。</p>
 </li>
 </ul>
 </div>
 </li>
 <li>
-<p><a href="https://github.com/mygreen/sqlmapper/pull/54" target="_blank" rel="noopener">#54</a> - プロパティファイルによるテーブルによる採番の初期値が反映されない事象の修正</p>
+<p><a href="https://github.com/mygreen/sqlmapper/pull/54" target="_blank" rel="noopener">#54</a> - プロパティファイルによるテーブルを使った採番の初期値が反映されない事象の修正。</p>
 </li>
 <li>
 <p><a href="https://github.com/mygreen/sqlmapper/pull/55" target="_blank" rel="noopener">#55</a> - テーブルによる自動採番のインクリメントの条件を修正。</p>
 <div class="ulist">
 <ul>
 <li>
-<p>テーブルによる自動採番において、allocationSize=1 or 2 のとき、DBの更新値が間違っている事象を修正。</p>
+<p>テーブルによる自動採番において、<code>allocationSize=1 or 2</code> のとき、DBの更新値が間違っている事象を修正。</p>
 </li>
 </ul>
 </div>
@@ -5273,10 +5271,10 @@ public class SampleEventService {
 <div class="ulist">
 <ul>
 <li>
-<p><code>@ModfiedAt</code> &#8594; <code>UpdatedAt</code></p>
+<p><code>@ModfiedAt</code> ⇒ <code>UpdatedAt</code></p>
 </li>
 <li>
-<p><code>@ModfiedBy</code> &#8594; <code>UpdatedBy</code></p>
+<p><code>@ModfiedBy</code> ⇒ <code>UpdatedBy</code></p>
 </li>
 </ul>
 </div>
@@ -5289,10 +5287,10 @@ public class SampleEventService {
 <div class="ulist">
 <ul>
 <li>
-<p><code>Dialect#isSupportedGenerationType</code> &#8594; <code>Dialect#supportsGenerationType</code></p>
+<p><code>Dialect#isSupportedGenerationType</code> ⇒ <code>Dialect#supportsGenerationType</code></p>
 </li>
 <li>
-<p><code>Dialect#isSupportedSelectForUpdate</code> &#8594; <code>Dialect#supportsSelectForUpdate</code></p>
+<p><code>Dialect#isSupportedSelectForUpdate</code> ⇒ <code>Dialect#supportsSelectForUpdate</code></p>
 </li>
 </ul>
 </div>
@@ -5323,7 +5321,7 @@ public class SampleEventService {
 <div class="ulist">
 <ul>
 <li>
-<p>Dialectごとにカスタマイズ可能になりました。</p>
+<p>Dialectごとに、カスタマイズ可能になりました。</p>
 </li>
 </ul>
 </div>
@@ -5341,7 +5339,7 @@ public class SampleEventService {
 <p><a href="https://github.com/mygreen/sqlmapper/pull/22" target="_blank" rel="noopener">#22</a> - メタモデルの式を評価する際に、親と子ノードが同じ演算子グループのとき括弧で囲むよう変更。</p>
 </li>
 <li>
-<p><a href="https://github.com/mygreen/sqlmapper/pull/28" target="_blank" rel="noopener">#28</a> - 各クエリのメソッドで、<code>includes</code> / <code>excludes</code> の両方を指定したとき、<code>includes</code> を有線するよう修正しました。</p>
+<p><a href="https://github.com/mygreen/sqlmapper/pull/28" target="_blank" rel="noopener">#28</a> - 各クエリのメソッドで、<code>includes</code> / <code>excludes</code> の両方を指定したとき、<code>includes</code> を優先するよう修正しました。</p>
 </li>
 <li>
 <p><a href="https://github.com/mygreen/sqlmapper/pull/30" target="_blank" rel="noopener">#30</a> - レコード挿入時のバージョンキーの初期値を <code>1</code> から <code>0</code> に変更しました。</p>
@@ -5367,7 +5365,7 @@ public class SampleEventService {
 <div class="ulist">
 <ul>
 <li>
-<p>さらに、<code>getSingleResult</code> で0件のとき例外を、<code>IncorrectResultSizeDataAccessException</code>  の サブクラス <code>EmptyResultDataAccessException</code> に変更。</p>
+<p>さらに、<code>getSingleResult</code> で0件のとき例外を、<code>IncorrectResultSizeDataAccessException</code>  のサブクラス <code>EmptyResultDataAccessException</code> に変更。</p>
 </li>
 </ul>
 </div>
@@ -5377,7 +5375,7 @@ public class SampleEventService {
 <div class="ulist">
 <ul>
 <li>
-<p>さらに、 <code>selectBySql</code> 事項時に、offset/limit 句を指定できる機能を追加しました。</p>
+<p>さらに、 <code>selectBySql</code> 事項時に、offset/limit句を指定できる機能を追加しました。</p>
 </li>
 </ul>
 </div>
@@ -5403,13 +5401,13 @@ public class SampleEventService {
 <div class="ulist">
 <ul>
 <li>
-<p><a href="https://github.com/mygreen/sqlmapper/pull/7" target="_blank" rel="noopener">#7</a> - フィールドに 修飾子 <code>transient</code> が付与されていても永続化対象外とならない事象を修正しました。</p>
+<p><a href="https://github.com/mygreen/sqlmapper/pull/7" target="_blank" rel="noopener">#7</a> - フィールドに修飾子 <code>transient</code> が付与されていても永続化対象外とならない事象を修正しました。</p>
 </li>
 <li>
 <p><a href="https://github.com/mygreen/sqlmapper/pull/8" target="_blank" rel="noopener">#8</a> - OracleのときのLIMIT句の文法間違いを修正。</p>
 </li>
 <li>
-<p><a href="https://github.com/mygreen/sqlmapper/pull/18" target="_blank" rel="noopener">#18</a> - LIMIT句のoffsetが-1のときlimit句が設定されない事象を修正しました。</p>
+<p><a href="https://github.com/mygreen/sqlmapper/pull/18" target="_blank" rel="noopener">#18</a> - LIMIT句のoffsetが <code>-1</code> のときlimit句が設定されない事象を修正しました。</p>
 </li>
 <li>
 <p><a href="https://github.com/mygreen/sqlmapper/pull/19" target="_blank" rel="noopener">#19</a> - メタモデルのIN句に渡した値を評価する際に、展開されない事象を修正しました。</p>
@@ -5468,7 +5466,7 @@ public class SampleEventService {
 <p>SELECT句のメソッド <code>id(&#8230;&#8203;)</code> で埋め込み型プロパティの値を指定したとき、個数チェックのエラーが発生する事象を修正しました。</p>
 </li>
 <li>
-<p>ORDER BY句で埋め込み型のプロパティを指定したとき、SQLを評価する際に、テーブルのエイリアスが null となる事象を修正しました。</p>
+<p>ORDER BY句で埋め込み型のプロパティを指定したとき、SQLを評価する際に、テーブルのエイリアスが <code>null</code> となる事象を修正しました。</p>
 </li>
 </ul>
 </div>
@@ -5477,7 +5475,7 @@ public class SampleEventService {
 <p><a href="https://github.com/mygreen/sqlmapper/pull/44" target="_blank" rel="noopener">#44</a> - <code>@CreateAt</code> / <code>@UpdateAt</code> にて、プロパティが <code>java.util.Date</code> のとき、<code>ClassCastException</code> が発生する事象を修正しました。</p>
 </li>
 <li>
-<p><a href="https://github.com/mygreen/sqlmapper/pull/45" target=""_blank">#45</a> - 埋め込み型のプロパティに <code>@GeneratedValue</code> を付与した際に、不正なエンティティ定義と判定され例外が発生する事象を修正しました。</p>
+<p><a href="https://github.com/mygreen/sqlmapper/pull/45" target="_blank" rel="noopener">#45</a> - 埋め込み型プロパティに <code>@GeneratedValue</code> を付与した際に不正なエンティティ定義と判定され例外が発生する事象を修正しました。</p>
 </li>
 </ul>
 </div>
@@ -5498,7 +5496,7 @@ public class SampleEventService {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-11-06 16:41:52 +0900
+Last updated 2022-11-07 21:41:38 +0900
 </div>
 </div>
 <script src="_static/highlight/highlight.min.js"></script>
