@@ -1,0 +1,33 @@
+{
+  "name": "git_sqlmapper",
+  "version": "1.0.0",
+  "description": "**SqlMapper** は、Spring Framework の JDBC関連の機能を使って 「S2JDBC の再実装 + 機能追加」 を目指した O/R Mapperのライブラリです。",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mygreen/sqlmapper.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mygreen/sqlmapper/issues"
+  },
+  "homepage": "https://github.com/mygreen/sqlmapper#readme",
+  "dependencies": {
+    "textlint-plugin-asciidoctor": "^1.1.0",
+    "textlint-rule-no-dropping-the-ra": "^3.0.0"
+  },
+  "devDependencies": {
+    "textlint": "^13.3.2",
+    "textlint-rule-preset-ja-technical-writing": "^7.0.0",
+    "textlint-rule-preset-jtf-style": "^2.3.13",
+    "textlint-rule-spellcheck-tech-word": "^5.0.0"
+  }
+}

@@ -49,3 +49,8 @@ target/
 make_mvn_folder.bat
 
 /memo
+
+## node
+
+node_modules/
+
