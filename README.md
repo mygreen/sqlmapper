@@ -1,17 +1,17 @@
 # SqlMapper
 
-**SqlMapper** は、Spring Framework の JDBC関連の機能を使って 「S2JDBC の再実装 + 機能追加」 を目指した O/R Mapperのライブラリです。
+**SqlMapper** は、Spring FrameworkのJDBC関連の機能を使って「S2JDBCの再実装 + 機能追加」を目指したO/R Mapperのライブラリです。
 
-- アノテーションにより簡単にエンティティ用クラスを定義することができます。
+- アノテーションにより簡単にエンティティ用クラスを定義できます。
   - JPAのアノテーションを参考に本ライブラリ独自に作成しているため、JPAを知っていれば理解しやすい。
 - エンティティのメタモデルを自動生成し、それを使うことによってある程度のタイプセーフにクエリを組み立てることができます。
   - メタモデルは、 [QueryDSL](http://www.querydsl.com/) を参考にしています。
-- 2Way-SQLと呼ばれる SQLテンプレートを使用し、複雑なクエリを記述することができます。
+- 2Way-SQLと呼ばれるSQLテンプレートを使用し、複雑なクエリを記述できます。
   - 2Way-SQLのライブラリとして、[splate](https://mygreen.github.io/splate/) を利用しています。
-- Spring Framework ネイティブのため、他のDBアクセスフレームワークと異なり、トランザクションやデータソースなどをブリッジするための無駄な設定なく利用できます。
-  - Spring Boot 用の機能も提供しており、より簡単に利用できるようになっています。
+- Spring Frameworkネイティブのため、他のDBアクセスフレームワークと異なり、トランザクションやデータソースなどをブリッジするための無駄な設定なく利用できます。
+  - Spring Boot用の機能も提供しており、より簡単に利用できるようになっています。
 - リレーションのマッピングには対応していません。
-- 現状の使い勝手は、 [Doma2](https://doma.readthedocs.io/en/latest/) の Criteria API に近いものとなっています。
+- 現状の使い勝手は、 [Doma2](https://doma.readthedocs.io/en/latest/) のCriteria APIに近いものとなっています。
 
 ## ライセンス
 
