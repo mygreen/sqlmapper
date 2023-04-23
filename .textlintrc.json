@@ -4,7 +4,6 @@
   ],
   "filters": {},
   "rules": {
-    "no-dropping-the-ra": true,
     "preset-ja-technical-writing": true,
     "preset-jtf-style": true
   }
