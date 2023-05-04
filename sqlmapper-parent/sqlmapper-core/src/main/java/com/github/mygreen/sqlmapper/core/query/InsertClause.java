@@ -37,7 +37,7 @@ public class InsertClause {
     }
 
     /**
-     * INTO句をSQLに変換します。
+     * INTO句({@literal  (col1, col2...)をSQLに変換します。
      * @return SQL
      */
     public String toIntoSql() {
@@ -45,7 +45,7 @@ public class InsertClause {
     }
 
     /**
-     * VALUES句をSQLに変換します。
+     * VALUES句({@literal  values (exp1, exp2, ...)}
      * @return SQL
      */
     public String toValuesSql() {

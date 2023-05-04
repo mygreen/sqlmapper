@@ -549,7 +549,7 @@ public class AutoSelectExecutor<T> {
      */
     public long getCount() {
         prepare();
-
+        context.getSqlLogger().out(executedSql, paramValues);
         return getJdbcTemplate().queryForObject(executedSql, Long.class, paramValues.toArray());
     }
 
@@ -562,6 +562,7 @@ public class AutoSelectExecutor<T> {
      */
     public T getSingleResult(EntityMappingCallback<T> callback) {
         prepare();
+        context.getSqlLogger().out(executedSql, paramValues);
 
         AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
@@ -577,6 +578,7 @@ public class AutoSelectExecutor<T> {
      */
     public Optional<T> getOptionalResult(EntityMappingCallback<T> callback) {
         prepare();
+        context.getSqlLogger().out(executedSql, paramValues);
 
         AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
@@ -598,6 +600,7 @@ public class AutoSelectExecutor<T> {
      */
     public List<T> getResultList(EntityMappingCallback<T> callback) {
         prepare();
+        context.getSqlLogger().out(executedSql, paramValues);
 
         AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));
@@ -611,6 +614,7 @@ public class AutoSelectExecutor<T> {
      */
     public Stream<T> getResultStream(EntityMappingCallback<T> callback) {
         prepare();
+        context.getSqlLogger().out(executedSql, paramValues);
 
         AutoEntityRowMapper<T> rowMapper = new AutoEntityRowMapper<T>(query.getBaseClass(), targetPropertyMetaEntityTypeMap,
                 query.getJoinAssociations(), Optional.ofNullable(callback));

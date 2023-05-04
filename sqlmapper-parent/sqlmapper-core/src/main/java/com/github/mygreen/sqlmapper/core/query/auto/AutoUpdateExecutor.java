@@ -239,6 +239,8 @@ public class AutoUpdateExecutor {
             return 0;
         }
 
+        context.getSqlLogger().out(executedSql, paramValues);
+
         final int rows = getJdbcTemplate().update(executedSql, paramValues.toArray());
         if(isOptimisticLock()) {
             validateRows(rows);

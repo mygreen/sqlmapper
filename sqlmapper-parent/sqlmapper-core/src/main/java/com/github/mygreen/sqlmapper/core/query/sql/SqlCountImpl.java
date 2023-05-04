@@ -56,6 +56,9 @@ public class SqlCountImpl implements SqlCount {
     public long getCount() {
         ProcessResult result = template.process(parameter);
         String sql = context.getDialect().convertGetCountSql(result.getSql());
+
+        context.getSqlLogger().out(sql, result.getParameters());
+
         return getJdbcTemplate().queryForObject(sql, Long.class, result.getParameters().toArray());
 
     }

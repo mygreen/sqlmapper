@@ -56,6 +56,7 @@ public class SqlUpdateImpl implements SqlUpdate {
     @Override
     public int execute() {
         ProcessResult result = template.process(parameter);
+        context.getSqlLogger().out(result.getSql(), result.getParameters());
         return getJdbcTemplate().update(result.getSql(), result.getParameters().toArray());
 
     }

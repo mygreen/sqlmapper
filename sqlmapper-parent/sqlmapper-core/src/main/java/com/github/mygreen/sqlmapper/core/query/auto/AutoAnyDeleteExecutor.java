@@ -108,6 +108,8 @@ public class AutoAnyDeleteExecutor {
      */
     public int execute() {
         prepare();
+        context.getSqlLogger().out(executedSql, paramValues);
+
         return getJdbcTemplate().update(executedSql, paramValues.toArray());
     }
 
