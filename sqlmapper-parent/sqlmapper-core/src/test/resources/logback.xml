@@ -12,6 +12,11 @@
 		</filter>
 	</appender>
 
+	<!-- 実行SQL出力設定 -->
+	<logger name="com.github.mygreen.sqlmapper.core.query.SqlLogger" level="DEBUG" additivity="false">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
 	<root>
 		<level value="DEBUG" />
 		<appender-ref ref="CONSOLE" />
