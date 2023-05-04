@@ -9,3 +9,7 @@ sqlmapper:
   table-id-generator:
     allocation-size: 1
     initial-value: 10
+  show-sql:
+    enabled: true
+    bind-param:
+      enabled: true
