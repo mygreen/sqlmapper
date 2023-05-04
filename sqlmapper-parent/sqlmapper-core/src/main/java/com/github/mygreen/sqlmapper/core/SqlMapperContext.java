@@ -15,6 +15,7 @@ import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.meta.StoredParamMetaFactory;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
+import com.github.mygreen.sqlmapper.core.query.SqlLogger;
 import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
 
 import lombok.Getter;
@@ -86,6 +87,11 @@ public class SqlMapperContext {
      * SQLテンプレートエンジン
      */
     private SqlTemplateEngine sqlTemplateEngine;
+
+    /**
+     * SQLログ出力
+     */
+    private SqlLogger sqlLogger;
 
     /**
      * トランザクションの伝搬タイプが {@link TransactionDefinition#PROPAGATION_REQUIRES_NEW} のトランザクションテンプレートを作成します。

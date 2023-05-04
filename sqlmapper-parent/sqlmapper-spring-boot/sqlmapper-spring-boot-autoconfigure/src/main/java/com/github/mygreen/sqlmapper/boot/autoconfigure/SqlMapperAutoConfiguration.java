@@ -31,6 +31,7 @@ import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
 import com.github.mygreen.sqlmapper.core.config.JdbcTemplateProperties;
+import com.github.mygreen.sqlmapper.core.config.ShowSqlProperties;
 import com.github.mygreen.sqlmapper.core.config.SqlTemplateProperties;
 import com.github.mygreen.sqlmapper.core.config.TableIdGeneratorProperties;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
@@ -46,6 +47,7 @@ import com.github.mygreen.sqlmapper.core.meta.StoredParamMetaFactory;
 import com.github.mygreen.sqlmapper.core.meta.StoredPropertyMetaFactory;
 import com.github.mygreen.sqlmapper.core.naming.DefaultNamingRule;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
+import com.github.mygreen.sqlmapper.core.query.SqlLogger;
 import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * SqlMapperによるAuto-Configuration設定
  *
- * @version 0.3
+ * @version 0.4
  * @author T.TSUCHIE
  *
  */
@@ -107,6 +109,7 @@ public class SqlMapperAutoConfiguration implements ApplicationEventPublisherAwar
         context.setDataSource(dataSource);
         context.setJdbcTemplateProperties(jdbcTemplateProperties());
         context.setTransactionManager(transactionManager());
+        context.setSqlLogger(sqlLogger());
 
         return context;
 
@@ -128,6 +131,12 @@ public class SqlMapperAutoConfiguration implements ApplicationEventPublisherAwar
     @ConditionalOnMissingBean
     public TableIdGeneratorProperties tableIdGeneratorProperties() {
         return sqlMapperProperties.getTableIdGenerator();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ShowSqlProperties showSqlProperties() {
+        return sqlMapperProperties.getShowSql();
     }
 
     @Bean
@@ -246,5 +255,10 @@ public class SqlMapperAutoConfiguration implements ApplicationEventPublisherAwar
         return new AuditingEntityListener();
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public SqlLogger sqlLogger() {
+        return new SqlLogger(showSqlProperties());
+    }
 
 }
