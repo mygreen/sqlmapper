@@ -72,7 +72,6 @@ public class AutoProcedureCallImpl extends AutoStoredExecutorSupport implements 
 
     @Override
     public void execute() {
-
         final SimpleJdbcCall jdbcCall = new SimpleJdbcCall(getJdbcTemplate())
                 .withProcedureName(procedureName.getName());
 
@@ -84,14 +83,16 @@ public class AutoProcedureCallImpl extends AutoStoredExecutorSupport implements 
             jdbcCall.withSchemaName(procedureName.getSchema());
         }
 
-
         if(parameter.isEmpty()) {
+            context.getSqlLogger().outCall(procedureName.toFullName(), null);
             jdbcCall.execute();
 
         } else {
             SqlParameter[] parameterTypes = createSqlParameterTypes(paramMeta);
             Object[] parameterValues = parameter.map(p -> createParameterValues(paramMeta, p))
                     .orElseGet(() -> new Object[0]);
+
+            context.getSqlLogger().outCall(procedureName.toFullName(), parameterValues);
 
             Map<String, Object> out = jdbcCall.declareParameters(parameterTypes)
                     .execute(parameterValues);

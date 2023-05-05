@@ -74,7 +74,6 @@ public class AutoFunctionCallImpl<T> extends AutoStoredExecutorSupport implement
 
     @Override
     public T execute() {
-
         final SimpleJdbcCall jdbcCall = new SimpleJdbcCall(getJdbcTemplate())
                 .withFunctionName(functionName.getName());
 
@@ -88,12 +87,15 @@ public class AutoFunctionCallImpl<T> extends AutoStoredExecutorSupport implement
 
 
         if(parameter.isEmpty()) {
+            context.getSqlLogger().outCall(functionName.toFullName(), null);
             return jdbcCall.executeFunction(resultClass);
 
         } else {
             SqlParameter[] parameterTypes = createSqlParameterTypes(paramMeta);
             Object[] parameterValues = parameter.map(p -> createParameterValues(paramMeta, p))
                     .orElseGet(() -> new Object[0]);
+
+            context.getSqlLogger().outCall(functionName.toFullName(), parameterValues);
 
             if(containsResultParam(paramMeta, parameter)) {
                 Map<String, Object> out = jdbcCall.declareParameters(parameterTypes)

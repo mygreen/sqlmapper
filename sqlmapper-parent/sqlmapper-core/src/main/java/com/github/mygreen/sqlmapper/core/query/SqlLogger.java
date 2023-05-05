@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.util.CollectionUtils;
 
 import com.github.mygreen.sqlmapper.core.config.ShowSqlProperties;
+import com.github.mygreen.sqlmapper.core.util.QueryUtils;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +56,7 @@ public class SqlLogger {
      */
     public void out(final String sql, final Object[] params) {
         outSql(sql);
-        if(prop.getBindParam().isEnabled() && params != null) {
+        if(prop.getBindParam().isEnabled() && !QueryUtils.isEmpty(params)) {
             outParams(Arrays.asList(params));
         }
 
@@ -80,6 +81,16 @@ public class SqlLogger {
         outSql(sql);
         outBatchParams(batchParams);
 
+    }
+
+    /**
+     * ストアドプロシージャ／ストアドファンクションのログを出力する。
+     * @param callName ストアドプロシージャ／ストアドファンクションのSQL
+     * @param callParams ストアドプロシージャ／ストアドファンクションのバインド変数
+     */
+    public void outCall(final String callName, final Object[] callParams) {
+        outCallName(callName, callParams);
+        outCallParams(callParams);
     }
 
     /**
@@ -138,6 +149,44 @@ public class SqlLogger {
             recordCount++;
         }
     }
+
+    /**
+     * ストアドプロシージャ/ストアドファンクションの名称をログ出力する。
+     * @param callName 名称
+     * @param callParams パラメータ
+     */
+    private void outCallName(final String callName, final Object[] callParams) {
+        if(!prop.isEnabled()) {
+            return;
+        }
+
+        int paramCount = (callParams == null) ? 0 : callParams.length;
+        String args = QueryUtils.repeat("?", ", ", paramCount);
+        invokeLog(prop.getBindParam().getLogLevel(), "sql call : {}({})", new Object[]{callName, args});
+    }
+
+    /**
+     * ストアドプロシージャ/ストアドファンクションのパラメータをログ出力する。
+     * @param callParams パラメータ
+     */
+    private void outCallParams(final Object[] callParams) {
+        if(!prop.isEnabled() || !prop.getBindParam().isEnabled() || QueryUtils.isEmpty(callParams)) {
+            return;
+        }
+
+        int paramCount = 1;
+        for(Object param : callParams) {
+            String paramType = resolveBindParamType(param);
+            String paramValue = resolveBindParamValue(param);
+
+            invokeLog(prop.getBindParam().getLogLevel(), "sql call binding parameter : [{}] as [{}] - [{}]",
+                    new Object[]{paramCount, paramType, paramValue });
+
+            paramCount++;
+        }
+    }
+
+
 
     /**
      * ログレベルを指定してログに出力する。
