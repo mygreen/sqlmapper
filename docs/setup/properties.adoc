@@ -48,3 +48,24 @@
 | ``UTF-8``
 | SQLテンプレートのファイルの文字コード。
 |===
+
+.SQLログ出力の設定
+|===
+| キー | デフォルト値 | 説明
+
+| ``sqlmapper.show-sql.enabled``
+| ``false``
+| 実行するSQLをログ出力するかどうか。``true`` のときログ出力します。
+
+| ``sqlmapper.show-sql.log-level``
+| ``DEBUG``
+| SQLをログ出力するときのログレベル。Slf4jのログレベル( `TRACE` / `DEBUG` / `INFO` / `WARN` / `ERROR` ) の何れかを指定できます。
+
+| ``sqlmapper.show-sql.bind-param.enabled``
+| ``false``
+| 実行するSQLのバインド変数をログ出力するかどうか。``true`` のときログ出力します。
+
+| ``sqlmapper.show-sql.bind-param.log-level``
+| ``DEBUG``
+| SQLのバインド変数をログ出力するときのログレベル。Slf4jのログレベル( `TRACE` / `DEBUG` / `INFO` / `WARN` / `ERROR` ) の何れかを指定できます。
+|===
