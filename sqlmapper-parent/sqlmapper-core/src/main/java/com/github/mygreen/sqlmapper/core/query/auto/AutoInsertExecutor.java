@@ -19,6 +19,7 @@ import com.github.mygreen.sqlmapper.core.id.IdGenerator;
 import com.github.mygreen.sqlmapper.core.id.IdentityIdGenerator;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMeta;
 import com.github.mygreen.sqlmapper.core.meta.PropertyValueInvoker;
+import com.github.mygreen.sqlmapper.core.query.InsertClause;
 import com.github.mygreen.sqlmapper.core.query.JdbcTemplateBuilder;
 import com.github.mygreen.sqlmapper.core.type.ValueType;
 import com.github.mygreen.sqlmapper.core.util.NumberConvertUtils;
@@ -49,6 +50,11 @@ public class AutoInsertExecutor {
      * 設定情報
      */
     private final SqlMapperContext context;
+
+    /**
+     * INSERT句 - SQLログ出力のために使用する。
+     */
+    private InsertClause insertClause = new InsertClause();
 
     /**
      * クエリのパラメータです。
@@ -127,6 +133,10 @@ public class AutoInsertExecutor {
             // IDENTITYの主キーでない場合は通常カラムとして追加
             if(!usingIdentityKeyColumnNames.contains(columnName)) {
                 usingColumnNames.add(columnName);
+
+                if(context.getSqlLogger().getProp().isEnabled()) {
+                    insertClause.addSql(columnName, "?");
+                }
             }
 
             // クエリのパラメータの組み立て
@@ -224,6 +234,15 @@ public class AutoInsertExecutor {
      */
     public int execute() {
         prepare();
+
+        if(context.getSqlLogger().getProp().isEnabled()) {
+            String executedSql = "insert into "
+                    + query.getEntityMeta().getTableMeta().getFullName()
+                    + insertClause.toIntoSql()
+                    + insertClause.toValuesSql();
+
+            context.getSqlLogger().out(executedSql, paramSource.getValues().values());
+        }
 
         if(this.usingIdentityKeyColumnNames.isEmpty()) {
             // 主キーがIDENTITYによる生成しない場合

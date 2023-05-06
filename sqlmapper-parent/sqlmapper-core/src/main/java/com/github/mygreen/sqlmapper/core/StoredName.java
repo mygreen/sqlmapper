@@ -1,5 +1,7 @@
 package com.github.mygreen.sqlmapper.core;
 
+import com.github.mygreen.sqlmapper.core.util.NameUtils;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,6 +9,7 @@ import lombok.RequiredArgsConstructor;
  * ストアドプロシージャ／ストアドファンクションの名称を指定するためのクラス。
  * <p>スキーマ／カタログを指定する際に利用します。
  *
+ * @version 0.4
  * @since 0.3
  * @author T.TSUCHIE
  *
@@ -50,6 +53,15 @@ public class StoredName {
     public StoredName withCatalog(String catalog) {
         this.catalog = catalog;
         return this;
+    }
+
+    /**
+     * スキーマ名／カタログ名を考慮したフルネームを取得します。
+     * @since 0.4
+     * @return フルネームを取得します。
+     */
+    public String toFullName() {
+        return NameUtils.tableFullName(name, catalog, schema);
     }
 
 }

@@ -1,0 +1,44 @@
+[[showsql]]
+= SQLのログ出力
+
+* 実行するSQLをログ出力したい場合は、プロパティファイルにて機能の有効に設定します。
+** 詳細は、<<available_properties,SQLログ出力の設定可能なプロパティ>> を参照して設定変更をしてください。
+* クラス `com.github.mygreen.sqlmapper.core.query.SqlLogger` に対してログ出力設定を追加します。
+** ログレベルは、プロパティファイルに定義した値と対応する必要があります。
+** ログレベルの初期値は、`DEBUG` です。
+
+.SQLのログ出力の有効化
+[source,yaml]
+----
+sqlmapper:
+  show-sql:
+    enabled: true   # ログ出力機能を有効にします。
+    bind-param:
+      enabled: true # バインド変数のログ出力機能を有効にします。
+----
+
+.SQLのロガー設定(例.logback.xml)
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<Pattern>.%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level) %cyan(%logger{15}) - %msg %n</Pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+	</appender>
+
+	<!-- SQLのログ出力設定 -->
+	<logger name="com.github.mygreen.sqlmapper.core.query.SqlLogger" level="DEBUG" additivity="false">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
+	<root>
+		<level value="WARN" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+</configuration>
+----

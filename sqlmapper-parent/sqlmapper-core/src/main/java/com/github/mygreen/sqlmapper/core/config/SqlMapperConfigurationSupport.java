@@ -2,6 +2,7 @@ package com.github.mygreen.sqlmapper.core.config;
 
 import javax.sql.DataSource;
 
+import org.slf4j.event.Level;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -26,6 +27,7 @@ import com.github.mygreen.splate.SqlTemplateEngine;
 import com.github.mygreen.sqlmapper.core.SqlMapper;
 import com.github.mygreen.sqlmapper.core.SqlMapperContext;
 import com.github.mygreen.sqlmapper.core.audit.AuditingEntityListener;
+import com.github.mygreen.sqlmapper.core.config.ShowSqlProperties.BindParamProperties;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.meta.EntityMetaFactory;
 import com.github.mygreen.sqlmapper.core.meta.PropertyMetaFactory;
@@ -33,6 +35,7 @@ import com.github.mygreen.sqlmapper.core.meta.StoredParamMetaFactory;
 import com.github.mygreen.sqlmapper.core.meta.StoredPropertyMetaFactory;
 import com.github.mygreen.sqlmapper.core.naming.DefaultNamingRule;
 import com.github.mygreen.sqlmapper.core.naming.NamingRule;
+import com.github.mygreen.sqlmapper.core.query.SqlLogger;
 import com.github.mygreen.sqlmapper.core.type.ValueTypeRegistry;
 
 /**
@@ -93,6 +96,7 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
         context.setDataSource(dataSource());
         context.setJdbcTemplateProperties(jdbcTemplateProperties());
         context.setTransactionManager(transactionManager());
+        context.setSqlLogger(sqlLogger());
 
         return context;
 
@@ -133,6 +137,22 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
         prop.setValueColumn(env.getProperty("sqlmapper.table-id-generator.value-column"));
         prop.setAllocationSize(Long.parseLong(env.getProperty("sqlmapper.table-id-generator.allocation-size")));
         prop.setInitialValue(Long.parseLong(env.getProperty("sqlmapper.table-id-generator.initial-value")));
+
+        return prop;
+    }
+
+    @Bean
+    @Description("SQLのログ出力設定")
+    public ShowSqlProperties showSqlProperties() {
+
+        ShowSqlProperties prop = new ShowSqlProperties();
+        prop.setEnabled(Boolean.parseBoolean(env.getProperty("sqlmapper.show-sql.enabled")));
+        prop.setLogLevel(Level.valueOf(env.getProperty("sqlmapper.show-sql.log-level").toUpperCase()));
+
+        BindParamProperties bindProp = new BindParamProperties();
+        bindProp.setEnabled(Boolean.parseBoolean(env.getProperty("sqlmapper.show-sql.bind-param.enabled")));
+        bindProp.setLogLevel(Level.valueOf(env.getProperty("sqlmapper.show-sql.bind-param.log-level").toUpperCase()));
+        prop.setBindParam(bindProp);
 
         return prop;
     }
@@ -236,6 +256,12 @@ public abstract class SqlMapperConfigurationSupport implements ApplicationContex
     @Description("クエリ実行時のイベントを処理するBean。")
     public AuditingEntityListener auditingEntityListener() {
         return new AuditingEntityListener();
+    }
+
+    @Bean
+    @Description("SQLのログ出力処理")
+    public SqlLogger sqlLogger() {
+        return new SqlLogger(showSqlProperties());
     }
 
 }

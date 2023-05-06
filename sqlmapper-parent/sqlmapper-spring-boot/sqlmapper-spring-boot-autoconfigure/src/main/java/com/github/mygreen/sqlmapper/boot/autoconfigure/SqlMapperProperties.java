@@ -3,6 +3,7 @@ package com.github.mygreen.sqlmapper.boot.autoconfigure;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.github.mygreen.sqlmapper.core.config.JdbcTemplateProperties;
+import com.github.mygreen.sqlmapper.core.config.ShowSqlProperties;
 import com.github.mygreen.sqlmapper.core.config.SqlTemplateProperties;
 import com.github.mygreen.sqlmapper.core.config.TableIdGeneratorProperties;
 
@@ -39,4 +40,10 @@ public class SqlMapperProperties {
      * SQLテンプレートの設定値
      */
     private SqlTemplateProperties sqlTemplate;
+
+    /**
+     * SQLのログ出力の設定値
+     */
+    private ShowSqlProperties showSql;
+
 }

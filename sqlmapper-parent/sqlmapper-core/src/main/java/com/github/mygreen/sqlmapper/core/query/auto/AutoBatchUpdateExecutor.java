@@ -235,7 +235,10 @@ public class AutoBatchUpdateExecutor {
             return new int[query.getEntitySize()];
         }
 
-        int[] res = getJdbcTemplate().batchUpdate(executedSql, QueryUtils.convertBatchArgs(batchParams));
+        final List<Object[]> batchArgs = QueryUtils.convertBatchArgs(batchParams);
+        context.getSqlLogger().outBatch(executedSql, batchArgs);
+
+        int[] res = getJdbcTemplate().batchUpdate(executedSql, batchArgs);
 
         final int dataSize = query.getEntitySize();
         for(int i=0; i < dataSize; i++) {

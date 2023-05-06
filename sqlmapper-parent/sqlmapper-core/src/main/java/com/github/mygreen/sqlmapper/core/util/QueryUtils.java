@@ -9,7 +9,7 @@ import org.springframework.util.StringUtils;
 /**
  * クエリ組み立て時のヘルパークラス
  *
- *
+ * @version 0.4
  * @author T.TSUCHIE
  *
  */
@@ -136,6 +136,21 @@ public class QueryUtils {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * 配列が空かどうか判定します。
+     *
+     * @since 0.4
+     * @param array 判定対象の配列
+     * @return 配列が {@literal null} または要素数が {@literal 0}のときに {@literal true} を返します。
+     */
+    public static boolean isEmpty(final Object[] array) {
+        if(array == null || array.length == 0) {
+            return true;
+        }
+
+        return false;
     }
 
 }

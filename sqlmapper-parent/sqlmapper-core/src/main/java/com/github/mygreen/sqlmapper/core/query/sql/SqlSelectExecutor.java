@@ -88,6 +88,7 @@ public class SqlSelectExecutor<T> {
      */
     public T getSingleResult(EntityMappingCallback<T> callback) {
         prepare();
+        context.getSqlLogger().out(executedSql, paramValues);
 
         SqlEntityRowMapper<T> rowMapper = new SqlEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         return getJdbcTemplate().queryForObject(executedSql, rowMapper, paramValues);
@@ -102,6 +103,7 @@ public class SqlSelectExecutor<T> {
      */
     public Optional<T> getOptionalResult(EntityMappingCallback<T> callback) {
         prepare();
+        context.getSqlLogger().out(executedSql, paramValues);
 
         SqlEntityRowMapper<T> rowMapper = new SqlEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         final List<T> ret = getJdbcTemplate().query(executedSql, rowMapper, paramValues);
@@ -122,6 +124,7 @@ public class SqlSelectExecutor<T> {
      */
     public List<T> getResultList(EntityMappingCallback<T> callback) {
         prepare();
+        context.getSqlLogger().out(executedSql, paramValues);
 
         SqlEntityRowMapper<T> rowMapper = new SqlEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         return getJdbcTemplate().query(executedSql, rowMapper, paramValues);
@@ -134,6 +137,7 @@ public class SqlSelectExecutor<T> {
      */
     public Stream<T> getResultStream(EntityMappingCallback<T> callback) {
         prepare();
+        context.getSqlLogger().out(executedSql, paramValues);
 
         SqlEntityRowMapper<T> rowMapper = new SqlEntityRowMapper<T>(query.getEntityMeta(), Optional.ofNullable(callback));
         return getJdbcTemplate().queryForStream(executedSql, rowMapper, paramValues);

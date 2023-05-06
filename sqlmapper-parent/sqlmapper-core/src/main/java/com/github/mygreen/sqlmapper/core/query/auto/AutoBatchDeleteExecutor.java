@@ -143,6 +143,7 @@ public class AutoBatchDeleteExecutor {
     public int execute() {
 
         prepare();
+        context.getSqlLogger().out(executedSql, paramValues);
 
         final int rows = getJdbcTemplate().update(executedSql, paramValues.toArray());
         if(isOptimisticLock()) {

@@ -7,6 +7,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.github.mygreen.sqlmapper.core.config.ShowSqlProperties;
 import com.github.mygreen.sqlmapper.core.config.SqlMapperConfigurationSupport;
 import com.github.mygreen.sqlmapper.core.dialect.Dialect;
 import com.github.mygreen.sqlmapper.core.dialect.H2Dialect;
@@ -36,5 +37,15 @@ public class H2TestConfig extends SqlMapperConfigurationSupport {
     @Override
     public Dialect dialect() {
         return new H2Dialect();
+    }
+
+    @Override
+    public ShowSqlProperties showSqlProperties() {
+
+        ShowSqlProperties prop = super.showSqlProperties();
+        prop.setEnabled(true);
+        prop.getBindParam().setEnabled(true);
+
+        return prop;
     }
 }
